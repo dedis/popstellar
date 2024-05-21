@@ -4,10 +4,10 @@ import { dispatch } from 'core/redux';
 import { LinkedOrganizationsCompositionConfiguration } from '../interface';
 import { Challenge } from '../objects/Challenge';
 import { addChallenge } from '../reducer';
-import { ChallengeMessage } from './messages/ChallengeMessage';
 import { ChallengeRequest } from './messages';
-import { FederationInit } from './messages/FederationInit';
+import { ChallengeMessage } from './messages/ChallengeMessage';
 import { FederationExpect } from './messages/FederationExpect';
+import { FederationInit } from './messages/FederationInit';
 
 /**
  * Handler for linked organization messages
@@ -68,16 +68,13 @@ export const handleChallengeRequestMessage =
       console.warn(makeErr('no Lao is currently active'));
       return false;
     }
-    try {
+    if (msg.messageData instanceof ChallengeRequest) {
       const challengeRequest = msg.messageData as ChallengeRequest;
-  
-      const jsonObj = {
-        timestamp: challengeRequest.timestamp.valueOf(),
-      };
-      return true;
-    } catch {
-      return false;
+      if (challengeRequest.timestamp) {
+        return true;
+      }
     }
+    return false;
   };
 
 /**
@@ -102,19 +99,18 @@ export const handleFederationInitMessage =
       return false;
     }
 
-    try {
+    if (msg.messageData instanceof FederationInit) {
       const federationInit = msg.messageData as FederationInit;
-  
-      const jsonObj = {
-        lao_id: federationInit.lao_id.valueOf(),
-        public_key: federationInit.public_key.valueOf(),
-        server_address: federationInit.server_address,
-        challenge: federationInit.challenge,
-      };
-      return true;
-    } catch {
-      return false;
+      if (
+        federationInit.lao_id &&
+        federationInit.public_key &&
+        federationInit.server_address &&
+        federationInit.challenge
+      ) {
+        return true;
+      }
     }
+    return false;
   };
 
 /**
@@ -139,17 +135,16 @@ export const handleFederationExpectMessage =
       return false;
     }
 
-    try {
+    if (msg.messageData instanceof FederationExpect) {
       const federationExpect = msg.messageData as FederationExpect;
-  
-      const jsonObj = {
-        lao_id: federationExpect.lao_id.valueOf(),
-        public_key: federationExpect.public_key.valueOf(),
-        server_address: federationExpect.server_address,
-        challenge: federationExpect.challenge,
-      };
-      return true;
-    } catch {
-      return false;
+      if (
+        federationExpect.lao_id &&
+        federationExpect.public_key &&
+        federationExpect.server_address &&
+        federationExpect.challenge
+      ) {
+        return true;
+      }
     }
+    return false;
   };

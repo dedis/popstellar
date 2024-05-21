@@ -61,7 +61,7 @@ export const mockLaoStateServerAddress: LaoState = {
   last_modified: mockLaoCreationTime.valueOf(),
   organizer: org.valueOf(),
   witnesses: [],
-  server_addresses: ["ws://127.0.0.1:9000/client"],
+  server_addresses: ['ws://127.0.0.1:9000/client'],
   subscribed_channels: [channelFromIds(mockLaoId)],
   last_roll_call_id: undefined,
   last_tokenized_roll_call_id: undefined,

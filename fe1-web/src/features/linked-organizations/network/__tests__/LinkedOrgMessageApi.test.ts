@@ -1,17 +1,24 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { configureTestFeatures, mockLao, serializedMockLaoId, mockLaoId, mockLaoId2, mockKeyPair, mockLaoServerAddress } from '__tests__/utils';
+import {
+  configureTestFeatures,
+  serializedMockLaoId,
+  mockLaoId,
+  mockLaoId2,
+  mockKeyPair,
+  mockLaoServerAddress,
+} from '__tests__/utils';
 import { ActionType, Message, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
-import { publish as mockPublish} from 'core/network/JsonRpcApi';
+import { publish as mockPublish } from 'core/network/JsonRpcApi';
 import { Hash, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
-
-import { ChallengeRequest } from '../messages';
-import * as msApi from '../LinkedOrgMessageApi';
-import { FederationInit } from '../messages/FederationInit';
 import { Challenge, ChallengeState } from 'features/linked-organizations/objects/Challenge';
+
+import * as msApi from '../LinkedOrgMessageApi';
+import { ChallengeRequest } from '../messages';
 import { FederationExpect } from '../messages/FederationExpect';
+import { FederationInit } from '../messages/FederationInit';
 
 jest.mock('core/network/JsonRpcApi', () => {
   return {
@@ -22,8 +29,9 @@ jest.mock('core/network/JsonRpcApi', () => {
 // Type casting to ensure Jest recognizes the mock functions
 const publishMock = mockPublish as jest.MockedFunction<typeof mockPublish>;
 
-
-const VALID_HASH_VALUE = new Hash('8c01ef1ff091d3ec5650a0d40f9fbdb911606a32c2252144eecbe30235a1d938');
+const VALID_HASH_VALUE = new Hash(
+  '8c01ef1ff091d3ec5650a0d40f9fbdb911606a32c2252144eecbe30235a1d938',
+);
 const VALID_TIMESTAMP = new Timestamp(1716306892);
 
 const checkDataChallengeRequest = (obj: MessageData) => {
@@ -68,9 +76,7 @@ beforeEach(() => {
 
 describe('LinkedOrgMessageApi', () => {
   it('should create the correct request for requestChallenge', async () => {
-    await msApi.requestChallenge(
-      mockLaoId,
-    );
+    await msApi.requestChallenge(mockLaoId);
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
@@ -117,5 +123,4 @@ describe('LinkedOrgMessageApi', () => {
     expect(channel).toBe(`/root/${mockLaoId2.valueOf()}/federation`);
     checkDataFederationExpect(msgData);
   });
-
 });
