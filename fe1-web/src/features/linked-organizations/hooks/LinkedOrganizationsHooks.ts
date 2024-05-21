@@ -25,7 +25,7 @@ export namespace LinkedOrganizationsHooks {
    */
   export const useCurrentLaoId = () => useLinkedOrganizationsContext().useCurrentLaoId();
 
-    /**
+  /**
    * Gets the current lao , throws an error if there is none
    */
   export const useCurrentLao = () => useLinkedOrganizationsContext().useCurrentLao();
@@ -35,6 +35,4 @@ export namespace LinkedOrganizationsHooks {
    */
   export const useIsLaoOrganizer = (laoId: Hash) =>
     useLinkedOrganizationsContext().useIsLaoOrganizer(laoId);
-
-  
 }

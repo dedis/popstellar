@@ -3,7 +3,7 @@
  * param-reassign. Please do not disable other errors.
  */
 /* eslint-disable no-param-reassign */
-import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash } from 'core/objects';
 
@@ -13,18 +13,16 @@ export const CHALLENGE_REDUCER_PATH = 'challenge';
 
 export interface ChallengeReducerState {
   byLaoId: Record<string, ChallengeState>;
-  allLaoIds: string[];
 }
 
 const initialState: ChallengeReducerState = {
   byLaoId: {},
-  allLaoIds: [],
 };
 
 const challengeSlice = createSlice({
   name: CHALLENGE_REDUCER_PATH,
   initialState,
-  reducers: {   
+  reducers: {
     addChallenge: {
       prepare(laoId: Hash, challenge: ChallengeState) {
         return {
@@ -34,10 +32,9 @@ const challengeSlice = createSlice({
           },
         };
       },
-      reducer(state, action: PayloadAction<{ laoId: string; challenge: ChallengeState; }>) {
+      reducer(state, action: PayloadAction<{ laoId: string; challenge: ChallengeState }>) {
         const { laoId, challenge } = action.payload;
         state.byLaoId[laoId] = challenge;
-        state.allLaoIds.push(laoId);
       },
     },
   },

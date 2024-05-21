@@ -20,7 +20,7 @@ const {
   CHALLENGE,
   CHALLENGE_REQUEST,
   FEDERATION_INIT,
-  FEDERATION_EXPECT
+  FEDERATION_EXPECT,
 } = ActionType;
 
 export enum WitnessingType {

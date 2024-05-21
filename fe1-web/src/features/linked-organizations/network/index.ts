@@ -1,12 +1,17 @@
-import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
-import { Hash, PublicKey } from 'core/objects';
-import { dispatch } from 'core/redux';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+
 import { LinkedOrganizationsCompositionConfiguration } from '../interface';
-import { handleChallengeMessage, handleChallengeRequestMessage, handleFederationExpectMessage, handleFederationInitMessage } from './LinkedOrgHandler';
-import { ChallengeMessage } from './messages/ChallengeMessage';
+import {
+  handleChallengeMessage,
+  handleChallengeRequestMessage,
+  handleFederationExpectMessage,
+  handleFederationInitMessage,
+} from './LinkedOrgHandler';
 import { ChallengeRequest } from './messages';
-import { FederationInit } from './messages/FederationInit';
+import { ChallengeMessage } from './messages/ChallengeMessage';
 import { FederationExpect } from './messages/FederationExpect';
+import { FederationInit } from './messages/FederationInit';
+
 export * from './LinkedOrgMessageApi';
 
 /**
@@ -14,8 +19,7 @@ export * from './LinkedOrgMessageApi';
  *
  *  @param configuration - The configuration object for the linked organizationfeature.
  */
-export function configureNetwork(configuration: LinkedOrganizationsCompositionConfiguration
-) {
+export function configureNetwork(configuration: LinkedOrganizationsCompositionConfiguration) {
   configuration.messageRegistry.add(
     ObjectType.FEDERATION,
     ActionType.CHALLENGE,

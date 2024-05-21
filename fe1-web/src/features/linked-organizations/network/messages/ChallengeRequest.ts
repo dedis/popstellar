@@ -13,7 +13,9 @@ export class ChallengeRequest implements MessageData {
 
   constructor(msg: Partial<ChallengeRequest>) {
     if (!msg.timestamp) {
-      throw new ProtocolError("Undefined 'timestamp' parameter encountered during 'RequestChallenge'");
+      throw new ProtocolError(
+        "Undefined 'timestamp' parameter encountered during 'RequestChallenge'",
+      );
     }
     this.timestamp = msg.timestamp;
   }

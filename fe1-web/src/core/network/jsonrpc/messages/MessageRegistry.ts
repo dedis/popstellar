@@ -6,7 +6,8 @@ import { ProcessableMessage } from './ProcessableMessage';
 type HandleFunction = (msg: ProcessableMessage) => boolean;
 type BuildFunction = (data: MessageData, laoId?: Hash) => MessageData;
 
-const { LAO, MEETING, ROLL_CALL, ELECTION, MESSAGE, CHIRP, REACTION, COIN, POPCHA, FEDERATION } = ObjectType;
+const { LAO, MEETING, ROLL_CALL, ELECTION, MESSAGE, CHIRP, REACTION, COIN, POPCHA, FEDERATION } =
+  ObjectType;
 const {
   CREATE,
   STATE,
@@ -102,10 +103,10 @@ export class MessageRegistry {
     [k(POPCHA, AUTH), { signature: POP_TOKEN }],
 
     // Linked Organizations
-    [k(FEDERATION, CHALLENGE_REQUEST), {signature: KEYPAIR}],
-    [k(FEDERATION, CHALLENGE), {signature: KEYPAIR}],
-    [k(FEDERATION, FEDERATION_INIT), {signature: KEYPAIR}],
-    [k(FEDERATION, FEDERATION_EXPECT), {signature: KEYPAIR}],
+    [k(FEDERATION, CHALLENGE_REQUEST), { signature: KEYPAIR }],
+    [k(FEDERATION, CHALLENGE), { signature: KEYPAIR }],
+    [k(FEDERATION, FEDERATION_INIT), { signature: KEYPAIR }],
+    [k(FEDERATION, FEDERATION_EXPECT), { signature: KEYPAIR }],
   ]);
 
   /**

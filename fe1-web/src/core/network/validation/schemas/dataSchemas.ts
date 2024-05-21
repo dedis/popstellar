@@ -69,7 +69,7 @@ const dataSchemas = [
   dataDeleteReaction,
 
   dataAuthenticateUser,
-  
+
   dataFederationChallenge,
   dataFederationChallengeRequest,
   dataFederationExpect,

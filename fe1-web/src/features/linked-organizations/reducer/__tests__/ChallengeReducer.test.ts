@@ -1,12 +1,17 @@
 import { describe } from '@jest/globals';
 import { AnyAction } from 'redux';
 
-import { mockLaoId, mockLaoId2, mockPublicKey, serializedMockLaoId } from '__tests__/utils';
+import { mockLaoId, mockLaoId2, serializedMockLaoId } from '__tests__/utils';
 import { Hash, Timestamp } from 'core/objects';
-import { Challenge } from 'features/linked-organizations/objects/Challenge';
-import { ChallengeState } from 'features/linked-organizations/objects/Challenge';
-import { addChallenge, CHALLENGE_REDUCER_PATH, challengeReduce, ChallengeReducerState, makeChallengeSelector } from '../ChallengeReducer';
+import { Challenge, ChallengeState } from 'features/linked-organizations/objects/Challenge';
 
+import {
+  addChallenge,
+  CHALLENGE_REDUCER_PATH,
+  challengeReduce,
+  ChallengeReducerState,
+  makeChallengeSelector,
+} from '../ChallengeReducer';
 
 const mockChallenge: Challenge = new Challenge({
   value: new Hash('82520f235f413b26571529f69d53d751335873efca97e15cd7c47d063ead830d'),
@@ -34,7 +39,6 @@ describe('ChallengeReducer', () => {
       );
       expect(newState.byLaoId[serializedMockLaoId]).toEqual(mockChallengeState);
     });
-
   });
 });
 
@@ -48,11 +52,9 @@ describe('makeChallengeSelector', () => {
     );
     expect(newState.byLaoId[serializedMockLaoId]).toEqual(mockChallengeState);
     expect(
-      makeChallengeSelector(
-        mockLaoId
-      )({
+      makeChallengeSelector(mockLaoId)({
         [CHALLENGE_REDUCER_PATH]: {
-          byLaoId: { [serializedMockLaoId]: mockChallengeState }
+          byLaoId: { [serializedMockLaoId]: mockChallengeState },
         } as ChallengeReducerState,
       }),
     ).toEqual(mockChallengeState);
@@ -67,11 +69,9 @@ describe('makeChallengeSelector', () => {
     );
     expect(newState.byLaoId[serializedMockLaoId]).toEqual(mockChallengeState);
     expect(
-      makeChallengeSelector(
-        mockLaoId2
-      )({
+      makeChallengeSelector(mockLaoId2)({
         [CHALLENGE_REDUCER_PATH]: {
-          byLaoId: { [serializedMockLaoId]: mockChallengeState }
+          byLaoId: { [serializedMockLaoId]: mockChallengeState },
         } as ChallengeReducerState,
       }),
     ).toBeUndefined();

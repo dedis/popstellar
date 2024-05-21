@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Text, View, Modal, StyleSheet, ViewStyle, ScrollView } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
+import { useSelector } from 'react-redux';
 
 import { DatePicker, Input, PoPButton, PoPIcon, PoPTextButton, QRCode } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
@@ -18,12 +19,10 @@ import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { LinkedOrganizationsHooks } from '../hooks';
-import { Challenge, ChallengeState } from '../objects/Challenge';
-import { Organization } from '../objects/Organization';
-import { Lao } from 'features/lao/objects';
 import { expectFederation, initFederation, requestChallenge } from '../network';
+import { Challenge } from '../objects/Challenge';
+import { Organization } from '../objects/Organization';
 import { makeChallengeSelector } from '../reducer';
-import { useSelector } from 'react-redux';
 
 const initialOrganizations: Organization[] = [];
 
@@ -86,7 +85,6 @@ const LinkedOrganizationsScreen = () => {
 
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
 
-
   const [qrCodeData, setQRCodeData] = useState<string>('');
   const [isClientA, setIsClientA] = useState<boolean>(false);
   const [manualLaoId, setManualLaoID] = useState<string>('');
@@ -101,6 +99,67 @@ const LinkedOrganizationsScreen = () => {
   // this is needed as otherwise the camera may stay turned on
   const [showScanner, setShowScanner] = useState(false);
 
+  const onRequestChallenge = useCallback(() => {
+    console.log('Requesting challenge');
+    requestChallenge(laoId)
+      .then(() => {
+        console.log('Success: Requesting challenge');
+      })
+      .catch((err) => {
+        console.error('Could not request Challenge, error:', err);
+      });
+  }, [laoId]);
+
+  const getQRCodeData = () => {
+    if (!isClientA) {
+      onRequestChallenge();
+    } else {
+      const jsonObj = {
+        lao_id: laoId,
+        server_address: lao.server_addresses.at(0),
+        public_key: lao.organizer,
+      };
+      setQRCodeData(JSON.stringify(jsonObj));
+      console.log('qrCodeData:', jsonObj);
+    }
+  };
+
+  const onFederationExpect = useCallback(
+    (org: Organization) => {
+      console.log('Expect Federation');
+      if (challengeState) {
+        expectFederation(
+          laoId,
+          org.lao_id,
+          org.server_address,
+          org.public_key,
+          Challenge.fromState(challengeState),
+        )
+          .then(() => {
+            console.log('Success: Expect Federation');
+          })
+          .catch((err) => {
+            console.error('Could not expect Federation, error:', err);
+          });
+      }
+    },
+    [laoId, challengeState],
+  );
+
+  const onFederationInit = useCallback(
+    (org: Organization) => {
+      console.log('Init Federation');
+      initFederation(laoId, org.lao_id, org.server_address, org.public_key, org.challenge!)
+        .then(() => {
+          console.log('Success: Init Federation');
+        })
+        .catch((err) => {
+          console.error('Could not init Federation, error:', err);
+        });
+    },
+    [laoId],
+  );
+
   const onScanData = (qrCode: string | null) => {
     console.log(qrCode);
     const qrcode1 = qrCode ?? '';
@@ -110,7 +169,7 @@ const LinkedOrganizationsScreen = () => {
       setShowScanner(false);
       setShowQRScannerModal(!showQRScannerModal);
       if (isClientA) {
-        getQRCodeData()
+        getQRCodeData();
         setShowQRCodeModal(!showQRCodeModal);
         onFederationInit(org1);
       } else {
@@ -131,42 +190,6 @@ const LinkedOrganizationsScreen = () => {
     }
   };
 
-  const onFederationExpect = useCallback((org: Organization) => {
-    console.log('Expect Federation');
-    if (challengeState) {
-      expectFederation(laoId, org.lao_id, org.server_address, org.public_key, Challenge.fromState(challengeState))
-      .then(() => {
-        console.log('Success: Expect Federation');
-      })
-      .catch((err) => {
-        console.error('Could not expect Federation, error:', err);
-      });
-    }
-  }, [laoId]);
-
-
-  const onFederationInit = useCallback((org: Organization) => {
-    console.log('Init Federation');
-    initFederation(laoId, org.lao_id, org.server_address, org.public_key, org.challenge!)
-    .then(() => {
-      console.log('Success: Init Federation');
-    })
-    .catch((err) => {
-      console.error('Could not init Federation, error:', err);
-    });
-  }, [laoId]);
-
-  const onRequestChallenge = useCallback(() => {
-    console.log('Requesting challenge');
-    requestChallenge(laoId)
-      .then(() => {
-        console.log('Success: Requesting challenge');
-      })
-      .catch((err) => {
-        console.error('Could not request Challenge, error:', err);
-      });
-  }, [laoId]);
-
   useEffect(() => {
     if (challengeState) {
       const challenge = Challenge.fromState(challengeState);
@@ -180,23 +203,9 @@ const LinkedOrganizationsScreen = () => {
         },
       };
       setQRCodeData(JSON.stringify(jsonObj));
-      console.log("qrCodeData:", jsonObj);
+      console.log('qrCodeData:', jsonObj);
     }
-  }, [challengeState, laoId]);
-
-  const getQRCodeData = () => {
-    if (!isClientA) {
-      onRequestChallenge();
-    } else {
-      const jsonObj = {
-        lao_id: laoId,
-        server_address: lao.server_addresses.at(0),
-        public_key: lao.organizer,
-      };
-      setQRCodeData(JSON.stringify(jsonObj));
-      console.log("qrCodeData:", jsonObj);
-    }
-  }
+  }, [challengeState, laoId, lao.organizer, lao.server_addresses]);
 
   return (
     <View style={styles.flex1}>
@@ -293,6 +302,7 @@ const LinkedOrganizationsScreen = () => {
               onRequestClose={() => {
                 setShowQRScannerModal(!showQRScannerModal);
                 setShowScanner(false);
+                setIsClientA(false);
               }}
               style={styles.flex1}>
               <TouchableWithoutFeedback
@@ -308,6 +318,7 @@ const LinkedOrganizationsScreen = () => {
                   onClose={() => {
                     setShowQRScannerModal(!showQRScannerModal);
                     setShowScanner(false);
+                    setIsClientA(false);
                   }}>
                   {STRINGS.linked_organizations_addlinkedorg_scanQRCode}
                 </ModalHeader>
@@ -341,6 +352,7 @@ const LinkedOrganizationsScreen = () => {
               visible={showQRCodeModal}
               onRequestClose={() => {
                 setShowQRCodeModal(!showQRCodeModal);
+                setIsClientA(false);
               }}>
               <TouchableWithoutFeedback
                 containerStyle={ModalStyles.modalBackground}
@@ -449,19 +461,15 @@ const LinkedOrganizationsScreen = () => {
                 <PoPTextButton
                   testID="add-manually"
                   onPress={() => {
-                    if ((
-                      isClientA && (
-                      !manualLaoId ||
-                      !manualPublicKey ||
-                      !manualServerAddress ||
-                      !manualChallengeValue ||
-                      manualChallengeValidUntil <= Timestamp.EpochNow())) ||
-                      (
-                        !isClientA && (
-                        !manualLaoId ||
-                        !manualPublicKey ||
-                        !manualServerAddress)
-                    )) {
+                    if (
+                      (isClientA &&
+                        (!manualLaoId ||
+                          !manualPublicKey ||
+                          !manualServerAddress ||
+                          !manualChallengeValue ||
+                          manualChallengeValidUntil <= Timestamp.EpochNow())) ||
+                      (!isClientA && (!manualLaoId || !manualPublicKey || !manualServerAddress))
+                    ) {
                       toast.show(
                         `All fields are required and Valid Until has to be in the Future`,
                         {
@@ -473,20 +481,21 @@ const LinkedOrganizationsScreen = () => {
                       return;
                     }
 
-                    const tmpOrg = isClientA ? {
-                      lao_id: new Hash(manualLaoId),
-                      public_key: new Hash(manualPublicKey),
-                      server_address: manualServerAddress,
-                      challenge: new Challenge({
-                        value: new Hash(manualChallengeValue),
-                        valid_until: manualChallengeValidUntil,
-                      }),
-                    } :
-                    {
-                      lao_id: new Hash(manualLaoId),
-                      public_key: new Hash(manualPublicKey),
-                      server_address: manualServerAddress
-                    };
+                    const tmpOrg = isClientA
+                      ? {
+                          lao_id: new Hash(manualLaoId),
+                          public_key: new Hash(manualPublicKey),
+                          server_address: manualServerAddress,
+                          challenge: new Challenge({
+                            value: new Hash(manualChallengeValue),
+                            valid_until: manualChallengeValidUntil,
+                          }),
+                        }
+                      : {
+                          lao_id: new Hash(manualLaoId),
+                          public_key: new Hash(manualPublicKey),
+                          server_address: manualServerAddress,
+                        };
                     onScanData(JSON.stringify(tmpOrg));
                     setInputModalIsVisible(!inputModalIsVisible);
                     setManualLaoID('');

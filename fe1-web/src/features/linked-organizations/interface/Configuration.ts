@@ -1,16 +1,17 @@
-import { AnyAction, Reducer } from 'redux';
+import { Reducer } from 'redux';
+
 import { KeyPairRegistry } from 'core/keypair';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, PublicKey } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
+import { Lao } from 'features/lao/objects';
 
-import { LinkedOrganizationsFeature } from './Feature';
 import { CHALLENGE_REDUCER_PATH, ChallengeReducerState } from '../reducer';
 import {
   LinkedOrganizationReducerState,
   LINKEDORGANIZATIONS_REDUCER_PATH,
 } from '../reducer/LinkedOrganizationsReducer';
-import { Lao } from 'features/lao/objects';
+import { LinkedOrganizationsFeature } from './Feature';
 
 export const LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER = 'linked-organizations';
 
@@ -48,9 +49,9 @@ export interface LinkedOrganizationsCompositionConfiguration {
   getLaoOrganizerBackendPublicKey: (laoId: Hash) => PublicKey | undefined;
 
   /**
- * Gets the current lao
- * @returns The current lao
- */
+   * Gets the current lao
+   * @returns The current lao
+   */
   useCurrentLao: () => Lao;
 }
 

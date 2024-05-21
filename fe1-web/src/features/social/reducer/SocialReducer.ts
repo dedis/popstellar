@@ -77,7 +77,6 @@ const socialSlice = createSlice({
     // Add a chirp to the list of chirps
     addChirp: {
       prepare(laoId: Hash, chirp: Chirp) {
-        console.log("herec1");
         return {
           payload: {
             laoId: laoId.toState(),
@@ -92,7 +91,6 @@ const socialSlice = createSlice({
           chirp: ChirpState;
         }>,
       ) {
-        console.log("herec2");
         const { laoId, chirp } = action.payload;
 
         if (!(laoId in state.byLaoId)) {

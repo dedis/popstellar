@@ -10,7 +10,7 @@ export class ChallengeMessage implements MessageData {
 
   // The challenge
   public readonly value: Hash;
-  
+
   public readonly valid_until: Timestamp;
 
   constructor(msg: Partial<ChallengeMessage>) {

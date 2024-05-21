@@ -1,6 +1,6 @@
 import { ActionType, Message, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { validateDataObject } from 'core/network/validation';
-import { Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
+import { Hash, ProtocolError, PublicKey } from 'core/objects';
 
 /** Data sent to initialize the Federation */
 export class FederationInit implements MessageData {
@@ -22,13 +22,19 @@ export class FederationInit implements MessageData {
       throw new ProtocolError("Undefined 'lao_id' parameter encountered during 'FederationInit'");
     }
     if (!msg.server_address) {
-        throw new ProtocolError("Undefined 'server_address' parameter encountered during 'FederationInit'");
-      }
+      throw new ProtocolError(
+        "Undefined 'server_address' parameter encountered during 'FederationInit'",
+      );
+    }
     if (!msg.public_key) {
-        throw new ProtocolError("Undefined 'public_key' parameter encountered during 'FederationInit'");
+      throw new ProtocolError(
+        "Undefined 'public_key' parameter encountered during 'FederationInit'",
+      );
     }
     if (!msg.challenge) {
-        throw new ProtocolError("Undefined 'challenge' parameter encountered during 'FederationInit'");
+      throw new ProtocolError(
+        "Undefined 'challenge' parameter encountered during 'FederationInit'",
+      );
     }
     this.lao_id = msg.lao_id;
     this.server_address = msg.server_address;

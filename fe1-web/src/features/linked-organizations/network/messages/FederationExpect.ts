@@ -1,6 +1,6 @@
 import { ActionType, Message, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { validateDataObject } from 'core/network/validation';
-import { Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
+import { Hash, ProtocolError, PublicKey } from 'core/objects';
 
 /** Data sent to expect Federation */
 export class FederationExpect implements MessageData {
@@ -22,13 +22,19 @@ export class FederationExpect implements MessageData {
       throw new ProtocolError("Undefined 'lao_id' parameter encountered during 'FederationExpect'");
     }
     if (!msg.server_address) {
-        throw new ProtocolError("Undefined 'server_address' parameter encountered during 'FederationExpect'");
-      }
+      throw new ProtocolError(
+        "Undefined 'server_address' parameter encountered during 'FederationExpect'",
+      );
+    }
     if (!msg.public_key) {
-        throw new ProtocolError("Undefined 'public_key' parameter encountered during 'FederationExpect'");
+      throw new ProtocolError(
+        "Undefined 'public_key' parameter encountered during 'FederationExpect'",
+      );
     }
     if (!msg.challenge) {
-        throw new ProtocolError("Undefined 'challenge' parameter encountered during 'FederationExpect'");
+      throw new ProtocolError(
+        "Undefined 'challenge' parameter encountered during 'FederationExpect'",
+      );
     }
     this.lao_id = msg.lao_id;
     this.server_address = msg.server_address;

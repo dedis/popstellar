@@ -51,14 +51,12 @@ export class Organization {
         public_key: this.public_key.toState(),
         challenge: this.challenge.toState(),
       };
-    } else {
-      return {
-        lao_id: this.lao_id.toState(),
-        server_address: this.server_address,
-        public_key: this.public_key.toState(),
-      };
     }
-
+    return {
+      lao_id: this.lao_id.toState(),
+      server_address: this.server_address,
+      public_key: this.public_key.toState(),
+    };
   }
 
   public static fromState(orgState: OrganizationState): Organization {
@@ -69,14 +67,12 @@ export class Organization {
         public_key: PublicKey.fromState(orgState.public_key),
         challenge: Challenge.fromState(orgState.challenge),
       });
-    } else {
-      return new Organization({
-        lao_id: Hash.fromState(orgState.lao_id),
-        server_address: orgState.server_address,
-        public_key: PublicKey.fromState(orgState.public_key),
-      });
     }
-
+    return new Organization({
+      lao_id: Hash.fromState(orgState.lao_id),
+      server_address: orgState.server_address,
+      public_key: PublicKey.fromState(orgState.public_key),
+    });
   }
 
   public static fromJson(obj: any): Organization {
@@ -92,14 +88,12 @@ export class Organization {
         public_key: new PublicKey(obj.public_key),
         challenge: Challenge.fromJson(obj.challenge),
       });
-    } else {
-      return new Organization({
-        lao_id: new Hash(obj.lao_id),
-        server_address: obj.server_address,
-        public_key: new PublicKey(obj.public_key),
-      });
     }
-
+    return new Organization({
+      lao_id: new Hash(obj.lao_id),
+      server_address: obj.server_address,
+      public_key: new PublicKey(obj.public_key),
+    });
   }
 
   public toJson(): string {
@@ -113,12 +107,11 @@ export class Organization {
           valid_until: this.challenge.valid_until.valueOf(),
         },
       });
-    } else {
-      return JSON.stringify({
-        lao_id: this.lao_id,
-        server_address: this.server_address,
-        public_key: this.public_key.valueOf(),
-      });
     }
+    return JSON.stringify({
+      lao_id: this.lao_id,
+      server_address: this.server_address,
+      public_key: this.public_key.valueOf(),
+    });
   }
 }
