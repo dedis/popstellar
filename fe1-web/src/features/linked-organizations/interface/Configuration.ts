@@ -4,7 +4,6 @@ import { KeyPairRegistry } from 'core/keypair';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, PublicKey } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
-import { Lao } from 'features/lao/objects';
 
 import { CHALLENGE_REDUCER_PATH, ChallengeReducerState } from '../reducer';
 import {
@@ -52,7 +51,7 @@ export interface LinkedOrganizationsCompositionConfiguration {
    * Gets the current lao
    * @returns The current lao
    */
-  useCurrentLao: () => Lao;
+  useCurrentLao: () => LinkedOrganizationsFeature.Lao;
 }
 
 /**
