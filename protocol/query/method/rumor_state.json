@@ -14,11 +14,11 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "rumor_state": {
+                "state": {
                     "$ref": "object/rumor_state.json"
                 }
             },
-            "required": ["rumor_state"]
+            "required": ["state"]
         },
 
         "jsonrpc": {
