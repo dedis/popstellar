@@ -5,6 +5,9 @@ import { LinkedOrganizationsCompositionConfiguration } from '../interface';
 import { Challenge } from '../objects/Challenge';
 import { addChallenge } from '../reducer';
 import { ChallengeMessage } from './messages/ChallengeMessage';
+import { ChallengeRequest } from './messages';
+import { FederationInit } from './messages/FederationInit';
+import { FederationExpect } from './messages/FederationExpect';
 
 /**
  * Handler for linked organization messages
@@ -29,15 +32,19 @@ export const handleChallengeMessage = () => (msg: ProcessableMessage) => {
     console.warn(makeErr('message was not sent on a lao subchannel'));
     return false;
   }
+  try {
+    const challengeMessage = msg.messageData as ChallengeMessage;
 
-  const challengeMessage = msg.messageData as ChallengeMessage;
-  const jsonObj = {
-    value: challengeMessage.value.toString(),
-    valid_until: challengeMessage.valid_until.valueOf(),
-  };
-  const challenge = Challenge.fromJson(jsonObj);
-  dispatch(addChallenge(msg.laoId, challenge.toState()));
-  return true;
+    const jsonObj = {
+      value: challengeMessage.value.toString(),
+      valid_until: challengeMessage.valid_until,
+    };
+    const challenge = Challenge.fromJson(jsonObj);
+    dispatch(addChallenge(msg.laoId, challenge.toState()));
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 /**
@@ -61,8 +68,16 @@ export const handleChallengeRequestMessage =
       console.warn(makeErr('no Lao is currently active'));
       return false;
     }
-
-    return true;
+    try {
+      const challengeRequest = msg.messageData as ChallengeRequest;
+  
+      const jsonObj = {
+        timestamp: challengeRequest.timestamp.valueOf(),
+      };
+      return true;
+    } catch {
+      return false;
+    }
   };
 
 /**
@@ -87,7 +102,19 @@ export const handleFederationInitMessage =
       return false;
     }
 
-    return true;
+    try {
+      const federationInit = msg.messageData as FederationInit;
+  
+      const jsonObj = {
+        lao_id: federationInit.lao_id.valueOf(),
+        public_key: federationInit.public_key.valueOf(),
+        server_address: federationInit.server_address,
+        challenge: federationInit.challenge,
+      };
+      return true;
+    } catch {
+      return false;
+    }
   };
 
 /**
@@ -112,5 +139,17 @@ export const handleFederationExpectMessage =
       return false;
     }
 
-    return true;
+    try {
+      const federationExpect = msg.messageData as FederationExpect;
+  
+      const jsonObj = {
+        lao_id: federationExpect.lao_id.valueOf(),
+        public_key: federationExpect.public_key.valueOf(),
+        server_address: federationExpect.server_address,
+        challenge: federationExpect.challenge,
+      };
+      return true;
+    } catch {
+      return false;
+    }
   };
