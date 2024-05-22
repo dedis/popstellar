@@ -47,6 +47,9 @@
         },
         {
             "$ref": "method/rumor_state.json"
+        },
+        {
+            "$ref": "method/paged_catchup.json"
         }
     ],
 

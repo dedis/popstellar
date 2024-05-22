@@ -78,9 +78,6 @@ final case class Monitor(
         // For any other message, we schedule a single heartbeat to reduce messages propagation delay
 
         case _ =>
-          if (jsonRpcMessage.method == MethodType.rumor) {
-            gossipManagerRef ! GossipManager.MonitoredRumor(jsonRpcMessage)
-          }
           if (someServerConnected && !timers.isTimerActive(singleHbKey)) {
             log.info(s"Scheduling single heartbeat")
             timers.startSingleTimer(singleHbKey, TriggerHeartbeat, messageDelay)
