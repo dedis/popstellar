@@ -5,3 +5,4 @@ fix.EmptyInterpolatedString
 fix.ImpossibleOptionSizeCondition
 fix.IllegalFormatString
 fix.IncorrectNumberOfArgsToFormat
+fix.IncorrectlyNamedExceptions
