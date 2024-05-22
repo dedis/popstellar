@@ -879,9 +879,6 @@ func (s *SQLite) GetElectionSecretKey(electionPath string) (kyber.Scalar, error)
 }
 
 func (s *SQLite) getElectionState(electionPath string) (string, error) {
-	dbLock.Lock()
-	defer dbLock.Unlock()
-
 	var state string
 	err := s.database.QueryRow(selectLastElectionMessage, electionPath, messagedata.ElectionObject, messagedata.VoteActionCastVote).Scan(&state)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
@@ -978,9 +975,6 @@ func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{},
 }
 
 func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (messagedata.ElectionSetup, error) {
-	dbLock.Lock()
-	defer dbLock.Unlock()
-
 	var electionSetupBytes []byte
 	err := tx.QueryRow(selectElectionSetup, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&electionSetupBytes)
 	if err != nil {
