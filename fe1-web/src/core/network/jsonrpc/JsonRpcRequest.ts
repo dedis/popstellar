@@ -8,6 +8,7 @@ import { JsonRpcParams } from './JsonRpcParams';
 import { Publish } from './Publish';
 import { Subscribe } from './Subscribe';
 import { Unsubscribe } from './Unsubscribe';
+import { PagedCatchup } from './PagedCatchup';
 
 /**
  * This class represents a JSON-RPC 2.0 Request (or Notification)
@@ -42,6 +43,7 @@ export class JsonRpcRequest {
       case JsonRpcMethod.SUBSCRIBE:
       case JsonRpcMethod.UNSUBSCRIBE:
       case JsonRpcMethod.CATCHUP:
+      case JsonRpcMethod.PAGED_CATCHUP:
         if (req.id === undefined) {
           throw new ProtocolError("Undefined 'id' parameter in JSON-RPC request");
         }
@@ -86,6 +88,8 @@ export class JsonRpcRequest {
         return Unsubscribe.fromJson(params);
       case JsonRpcMethod.CATCHUP:
         return Catchup.fromJson(params);
+      case JsonRpcMethod.PAGED_CATCHUP:
+        return PagedCatchup.fromJson(params);
       default:
         throw new ProtocolError('Unsupported method in JSON-RPC');
     }
