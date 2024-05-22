@@ -11,10 +11,14 @@ import { LinkedOrganizationsFeature } from '../interface';
 import LinkedOrganizationsScreen from '../screens/LinkedOrganizationsScreen';
 import AddLinkedOrganizationButton from '../components/AddLinkedOrganizationButton';
 import AddLinkedOrganizationModal from '../components/AddLinkedOrganizationModal';
+import { LinkedOrganizationsHooks } from '../hooks';
 
 const LinkedOrganizationsNavigator = createStackNavigator<LinkedOrganizationsParamList>();
 
 const LinkedOrganizationsNavigation = () => {
+  const laoId = LinkedOrganizationsHooks.useCurrentLaoId();
+  const isOrganizer = LinkedOrganizationsHooks.useIsLaoOrganizer(laoId);
+  
   return (
     <LinkedOrganizationsNavigator.Navigator
       initialRouteName={STRINGS.navigation_linked_organizations}
@@ -25,7 +29,7 @@ const LinkedOrganizationsNavigation = () => {
         options={{
           headerTitle: STRINGS.navigation_linked_organizations_title,
           headerLeft: DrawerMenuButton,
-          headerRight: AddLinkedOrganizationButton,
+          headerRight: () => isOrganizer ? <AddLinkedOrganizationButton/> : null,
         }}
       />
       <LinkedOrganizationsNavigator.Screen

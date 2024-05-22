@@ -543,8 +543,10 @@ namespace STRINGS {
   export const popcha_url_type_input = 'Url';
 
   /* --- Linked Organizations Strings --- */
-  export const linked_organizations_description =
-    'Here you can find all linked organizations, unlink them and add new ones.';
+  export const linked_organizations_description_organizer =
+    'Here you can find all linked organizations, and add new ones.';
+    export const linked_organizations_description =
+    'Here you can find all linked organizations.';
   export const linked_organizations_addlinkedorg_title = 'Add Linked Organization';
   export const linked_organizations_addlinkedorg_info =
     'To link two organizations, one organizer has to first join the other organization by generating a QR Code (Join Organization), which other one links to his organization by scanning the QR Code (Link Organization). Subsequent to scanning the first QR Code, the other QR Code will appear. After the first QR Code was scanned, the other scanner for the second QR Code can be opened by clicking the “Next” button.';

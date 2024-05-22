@@ -1,5 +1,5 @@
 import { ListItem } from '@rneui/themed';
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 
 import { PoPIcon} from 'core/components';
@@ -7,8 +7,10 @@ import ScreenWrapper from 'core/components/ScreenWrapper';
 import { List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 import { LinkedOrganization } from '../objects/LinkedOrganization';
+import { LinkedOrganizationsHooks } from '../hooks';
+import { useSelector } from 'react-redux';
+import { makeLinkedOrganizationSelector } from '../reducer/LinkedOrganizationsReducer';
 
-const initialOrganizations: LinkedOrganization[] = [];
 
 const styles = StyleSheet.create({
   flex1: {
@@ -17,34 +19,32 @@ const styles = StyleSheet.create({
 });
 
 const LinkedOrganizationsScreen = () => {
-  const [organizations, setOrganizations] = useState<LinkedOrganization[]>(initialOrganizations);
+  const laoId = LinkedOrganizationsHooks.useCurrentLaoId();
+  const isOrganizer = LinkedOrganizationsHooks.useIsLaoOrganizer(laoId);
+  const linkedOrganizationSelector = useMemo(() => makeLinkedOrganizationSelector(laoId), [laoId]);
+  const linkedOrganizationStates = useSelector(linkedOrganizationSelector);
 
   return (
     <View style={styles.flex1}>
       <ScreenWrapper>
-        <Text style={Typography.paragraph}>{STRINGS.linked_organizations_description}</Text>
+        <Text style={Typography.paragraph}>
+          {isOrganizer
+                ? STRINGS.linked_organizations_description_organizer
+                : STRINGS.linked_organizations_description}
+           </Text>
         <View style={List.container}>
-          {organizations.map((organization, idx) => {
-            const listStyle = List.getListItemStyles(
-              true && idx === 0,
-              idx === organizations.length - 1,
-            );
-
-            return (
+          {linkedOrganizationStates.map((linkedOrgState, i) => (
               <ListItem
-                containerStyle={listStyle}
-                style={listStyle}
-                bottomDivider
-                key={organization.lao_id.valueOf()}>
-                <PoPIcon name="business" />
-                <ListItem.Content>
-                  <ListItem.Title>
-                    {STRINGS.linked_organizations_LaoID} {organization.lao_id}
-                  </ListItem.Title>
-                </ListItem.Content>
-              </ListItem>
-            );
-          })}
+              bottomDivider
+              key={linkedOrgState.lao_id.valueOf()}>
+              <PoPIcon name="business" />
+              <ListItem.Content>
+                <ListItem.Title>
+                  {STRINGS.linked_organizations_LaoID} {linkedOrgState.lao_id.valueOf()}
+                </ListItem.Title>
+              </ListItem.Content>
+            </ListItem>
+          ))}
         </View>
       </ScreenWrapper>
     </View>

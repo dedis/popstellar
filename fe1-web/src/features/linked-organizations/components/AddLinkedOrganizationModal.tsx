@@ -15,13 +15,14 @@ import { LinkedOrganizationsHooks } from '../hooks';
 import { makeChallengeSelector } from '../reducer';
 import { useSelector } from 'react-redux';
 import { LinkedOrganization } from '../objects/LinkedOrganization';
-import { Timestamp } from 'core/objects';
 import { expectFederation, initFederation, requestChallenge } from '../network';
 import { Challenge } from '../objects/Challenge';
 import { FOUR_SECONDS } from 'resources/const';
 import QRCodeModal from './QRCodeModal';
 import QRCodeScannerModal from './QRCodeScannerModal';
 import ManualInputModal from './ManualInputModal';
+import { dispatch } from 'core/redux';
+import { addLinkedOrganization } from '../reducer/LinkedOrganizationsReducer';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<
@@ -57,7 +58,6 @@ const AddLinkedOrganizationModal = () => {
   const challengeSelector = useMemo(() => makeChallengeSelector(laoId), [laoId]);
   const challengeState = useSelector(challengeSelector);
 
-  const [organizations, setOrganizations] = useState<LinkedOrganization[]>([]);
   const [showModal, setShowModal] = useState<boolean>(true);
 
   const [showQRScannerModal, setShowQRScannerModal] = useState<boolean>(false);
@@ -109,6 +109,8 @@ const AddLinkedOrganizationModal = () => {
         )
           .then(() => {
             console.log('Success: Expect Federation');
+            console.log("here2");
+            dispatch(addLinkedOrganization(laoId, org.toState()));
           })
           .catch((err) => {
             console.error('Could not expect Federation, error:', err);
@@ -124,6 +126,8 @@ const AddLinkedOrganizationModal = () => {
       initFederation(laoId, org.lao_id, org.server_address, org.public_key, org.challenge!)
         .then(() => {
           console.log('Success: Init Federation');
+          console.log("here1");
+          dispatch(addLinkedOrganization(laoId, org.toState()));
         })
         .catch((err) => {
           console.error('Could not init Federation, error:', err);
@@ -138,7 +142,6 @@ const AddLinkedOrganizationModal = () => {
     try {
       // Data of the Linked Organization that was just scanned
       const scannedLinkedOrganization = LinkedOrganization.fromJson(JSON.parse(qrcode_checked));
-      setOrganizations([...organizations, scannedLinkedOrganization]);
       setShowScanner(false);
       setShowQRScannerModal(false);
       if (isInitiatingOrganizer) {

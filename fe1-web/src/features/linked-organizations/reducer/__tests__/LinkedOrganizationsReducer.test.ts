@@ -4,14 +4,14 @@ import { AnyAction } from 'redux';
 import { mockLaoId, mockLaoId2, mockPublicKey, serializedMockLaoId } from '__tests__/utils';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { Challenge } from 'features/linked-organizations/objects/Challenge';
-import { OrganizationState } from 'features/linked-organizations/objects/Organization';
+import { LinkedOrganizationState } from 'features/linked-organizations/objects/LinkedOrganization';
 
 import {
-  addOrganization,
+  addLinkedOrganization,
   LinkedOrganizationReducerState,
   LINKEDORGANIZATIONS_REDUCER_PATH,
   linkedOrganizationsReduce,
-  makeLinkedOrganizationSelector,
+  makeSingleLinkedOrganizationSelector,
 } from '../LinkedOrganizationsReducer';
 
 const mockChallenge: Challenge = new Challenge({
@@ -24,7 +24,7 @@ const mockOrganizationState = {
   server_address: 'wss://epfl.ch:9000/server',
   public_key: new PublicKey(mockPublicKey).toState(),
   challenge: mockChallenge.toState(),
-} as OrganizationState;
+} as LinkedOrganizationState;
 
 describe('LinkedOrganizationReducer', () => {
   describe('returns a valid initial state', () => {
@@ -42,10 +42,10 @@ describe('LinkedOrganizationReducer', () => {
         {
           byLaoId: {},
         } as LinkedOrganizationReducerState,
-        addOrganization(mockLaoId2, mockOrganizationState),
+        addLinkedOrganization(mockLaoId2, mockOrganizationState),
       );
       expect(newState.byLaoId[serializedMockLaoId2].allLaoIds).toEqual([serializedMockLaoId]);
-      expect(newState.byLaoId[serializedMockLaoId2].byLaoId).toHaveProperty(
+      expect(newState.byLaoId[serializedMockLaoId2].byLinkedLaoId).toHaveProperty(
         serializedMockLaoId,
         mockOrganizationState,
       );
@@ -57,15 +57,15 @@ describe('LinkedOrganizationReducer', () => {
         {
           byLaoId: {},
         } as LinkedOrganizationReducerState,
-        addOrganization(mockLaoId2, mockOrganizationState),
+        addLinkedOrganization(mockLaoId2, mockOrganizationState),
       );
       expect(newState.byLaoId[serializedMockLaoId2].allLaoIds).toEqual([serializedMockLaoId]);
-      expect(newState.byLaoId[serializedMockLaoId2].byLaoId).toHaveProperty(
+      expect(newState.byLaoId[serializedMockLaoId2].byLinkedLaoId).toHaveProperty(
         serializedMockLaoId,
         mockOrganizationState,
       );
       expect(() =>
-        linkedOrganizationsReduce(newState, addOrganization(mockLaoId2, mockOrganizationState)),
+        linkedOrganizationsReduce(newState, addLinkedOrganization(mockLaoId2, mockOrganizationState)),
       ).toThrow();
     });
   });
@@ -78,15 +78,15 @@ describe('makeLinkedOrganizationsSelector', () => {
       {
         byLaoId: {},
       } as LinkedOrganizationReducerState,
-      addOrganization(mockLaoId2, mockOrganizationState),
+      addLinkedOrganization(mockLaoId2, mockOrganizationState),
     );
     expect(newState.byLaoId[serializedMockLaoId2].allLaoIds).toEqual([serializedMockLaoId]);
-    expect(newState.byLaoId[serializedMockLaoId2].byLaoId).toHaveProperty(
+    expect(newState.byLaoId[serializedMockLaoId2].byLinkedLaoId).toHaveProperty(
       serializedMockLaoId,
       mockOrganizationState,
     );
     expect(
-      makeLinkedOrganizationSelector(
+      makeSingleLinkedOrganizationSelector(
         mockLaoId2,
         serializedMockLaoId,
       )({
@@ -94,7 +94,7 @@ describe('makeLinkedOrganizationsSelector', () => {
           byLaoId: {
             [serializedMockLaoId2]: {
               allLaoIds: [serializedMockLaoId],
-              byLaoId: { [serializedMockLaoId]: mockOrganizationState },
+              byLinkedLaoId: { [serializedMockLaoId]: mockOrganizationState },
             },
           },
         } as LinkedOrganizationReducerState,
@@ -108,15 +108,15 @@ describe('makeLinkedOrganizationsSelector', () => {
       {
         byLaoId: {},
       } as LinkedOrganizationReducerState,
-      addOrganization(mockLaoId2, mockOrganizationState),
+      addLinkedOrganization(mockLaoId2, mockOrganizationState),
     );
     expect(newState.byLaoId[serializedMockLaoId2].allLaoIds).toEqual([serializedMockLaoId]);
-    expect(newState.byLaoId[serializedMockLaoId2].byLaoId).toHaveProperty(
+    expect(newState.byLaoId[serializedMockLaoId2].byLinkedLaoId).toHaveProperty(
       serializedMockLaoId,
       mockOrganizationState,
     );
     expect(
-      makeLinkedOrganizationSelector(
+      makeSingleLinkedOrganizationSelector(
         mockLaoId2,
         'false-lao-id',
       )({
@@ -124,7 +124,7 @@ describe('makeLinkedOrganizationsSelector', () => {
           byLaoId: {
             [serializedMockLaoId2]: {
               allLaoIds: [serializedMockLaoId],
-              byLaoId: { [serializedMockLaoId]: mockOrganizationState },
+              byLinkedLaoId: { [serializedMockLaoId]: mockOrganizationState },
             },
           },
         } as LinkedOrganizationReducerState,
