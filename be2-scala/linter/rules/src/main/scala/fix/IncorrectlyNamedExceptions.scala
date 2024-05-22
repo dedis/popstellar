@@ -41,15 +41,12 @@ class IncorrectlyNamedExceptions extends SemanticRule("IncorrectlyNamedException
 
   override def fix(implicit doc: SemanticDocument): Patch = {
     doc.tree.collect {
-      case cl@Defn.Class.After_4_6_0(_, Type.Name(name), _, _, _) =>
+      case cl @ Defn.Class.After_4_6_0(_, Type.Name(name), _, _, _) =>
         cl.symbol.info.get.signature match {
           case ClassSignature(_, parents, _, _) =>
-            if (!name.contains("Exception") && parents.map(_.asInstanceOf[TypeRef].symbol).exists(inheritsFromException)) {
+            if (!name.contains("Exception") && parents.map(_.asInstanceOf[TypeRef].symbol).exists(inheritsFromException))
               Patch.lint(IncorrectlyNamedExceptionsDiag(cl))
-            } else {
-              Patch.empty
-
-            }
+            else Patch.empty
           case _ => Patch.empty
         }
     }.asPatch
