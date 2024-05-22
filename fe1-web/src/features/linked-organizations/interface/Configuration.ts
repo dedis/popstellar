@@ -52,7 +52,6 @@ export interface LinkedOrganizationsConfiguration {
    * @returns The current lao
    */
   useCurrentLao: () => LinkedOrganizationsFeature.Lao;
-
 }
 
 /**

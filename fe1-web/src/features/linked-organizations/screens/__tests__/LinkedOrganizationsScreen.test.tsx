@@ -7,13 +7,13 @@ import { combineReducers } from 'redux';
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLao, mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
+import AddLinkedOrganizationModal from 'features/linked-organizations/components/AddLinkedOrganizationModal';
 import {
   LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER,
   LinkedOrganizationsReactContext,
 } from 'features/linked-organizations/interface';
 
 import LinkedOrganizationsScreen from '../LinkedOrganizationsScreen';
-import AddLinkedOrganizationModal from 'features/linked-organizations/components/AddLinkedOrganizationModal';
 
 const mockLinkedOrganizationsContextValue = (isOrganizer: boolean) => ({
   [LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER]: {
@@ -43,7 +43,6 @@ const renderLinkedOrganizationsScreen = () =>
       </FeatureContext.Provider>
     </Provider>,
   );
-
 
 const renderLinkedOrganizationsScreenAddModal = () =>
   render(

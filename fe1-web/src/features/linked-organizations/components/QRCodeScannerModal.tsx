@@ -1,10 +1,11 @@
 import React from 'react';
 import { Text, View, Modal, StyleSheet, ViewStyle } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+
 import ModalHeader from 'core/components/ModalHeader';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
 import QrCodeScanOverlay from 'core/components/QrCodeScanOverlay';
-import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import { ModalStyles, Typography, Spacing, Color } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -38,6 +39,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: Spacing.contentSpacing,
   } as ViewStyle,
+  textAlignCenter: {
+    textAlign: 'center',
+  },
 });
 
 const QRCodeScannerModal: React.FC<QRCodeScannerModalProps> = ({
@@ -54,15 +58,12 @@ const QRCodeScannerModal: React.FC<QRCodeScannerModalProps> = ({
       visible={visible}
       onRequestClose={onClose}
       style={styles.modalContainer}>
-      <TouchableWithoutFeedback
-        containerStyle={ModalStyles.modalBackground}
-        onPress={onClose}
-      />
+      <TouchableWithoutFeedback containerStyle={ModalStyles.modalBackground} onPress={onClose} />
       <View style={styles.modalContainer}>
         <ModalHeader onClose={onClose}>
           {STRINGS.linked_organizations_addlinkedorg_scanQRCode}
         </ModalHeader>
-        <Text style={{ ...Typography.paragraph, textAlign: 'center' }}>
+        <Text style={{ ...Typography.paragraph, ...styles.textAlignCenter }}>
           {STRINGS.linked_organizations_addlinkedorg_Scanner_info}
         </Text>
         <QrCodeScanner showCamera={showScanner} handleScan={onScanData}>
@@ -72,9 +73,7 @@ const QRCodeScannerModal: React.FC<QRCodeScannerModalProps> = ({
             </View>
             <View style={styles.scannerTextItems}>
               <View style={styles.openManuallyView}>
-                <PoPTouchableOpacity
-                  testID="open_add_manually"
-                  onPress={onOpenManualInput}>
+                <PoPTouchableOpacity testID="open_add_manually" onPress={onOpenManualInput}>
                   <Text style={[Typography.base, Typography.accent, Typography.centered]}>
                     {STRINGS.general_enter_manually}
                   </Text>

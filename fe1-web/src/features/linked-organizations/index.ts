@@ -10,12 +10,10 @@ import { challengeReducer, linkedOrganizationsReducer } from './reducer';
 /**
  * Configures the linked organizations feature
  */
-export function configure(configuration: LinkedOrganizationsConfiguration): LinkedOrganizationsInterface {
-  const {
-    useCurrentLao, 
-    useCurrentLaoId,
-    useIsLaoOrganizer,
-  } = configuration;
+export function configure(
+  configuration: LinkedOrganizationsConfiguration,
+): LinkedOrganizationsInterface {
+  const { useCurrentLao, useCurrentLaoId, useIsLaoOrganizer } = configuration;
   configureNetwork(configuration);
   return {
     identifier: LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER,

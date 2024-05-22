@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Text, View, Modal, StyleSheet, ScrollView } from 'react-native';
+import { Text, Modal, ScrollView } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
+
 import { DatePicker, Input, PoPTextButton } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
-import { ModalStyles, Typography } from 'core/styles';
 import { Timestamp, Hash } from 'core/objects';
-import STRINGS from 'resources/strings';
+import { ModalStyles, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
+import STRINGS from 'resources/strings';
+
 import { Challenge } from '../objects/Challenge';
 
 interface ManualInputModalProps {
@@ -34,15 +36,8 @@ const ManualInputModal: React.FC<ManualInputModalProps> = ({
   const [startDate, setStartDate] = useState(manualChallengeValidUntil.toDate());
 
   return (
-    <Modal
-      testID="modal-manual-input"
-      transparent
-      visible={visible}
-      onRequestClose={onClose}>
-      <TouchableWithoutFeedback
-        containerStyle={ModalStyles.modalBackground}
-        onPress={onClose}
-      />
+    <Modal testID="modal-manual-input" transparent visible={visible} onRequestClose={onClose}>
+      <TouchableWithoutFeedback containerStyle={ModalStyles.modalBackground} onPress={onClose} />
       <ScrollView style={ModalStyles.modalContainer}>
         <ModalHeader onClose={onClose}>
           {STRINGS.linked_organizations_addmanually_title}
@@ -54,27 +49,21 @@ const ManualInputModal: React.FC<ManualInputModalProps> = ({
           onChange={setManualLaoID}
           placeholder={STRINGS.linked_organizations_placeholderLaoID}
         />
-        <Text style={Typography.paragraph}>
-          {STRINGS.linked_organizations_enterPublicKey}
-        </Text>
+        <Text style={Typography.paragraph}>{STRINGS.linked_organizations_enterPublicKey}</Text>
         <Input
           testID="modal-input-publickey"
           value={manualPublicKey}
           onChange={setManualPublicKey}
           placeholder={STRINGS.linked_organizations_placeholderPublicKey}
         />
-        <Text style={Typography.paragraph}>
-          {STRINGS.linked_organizations_enterServerAddress}
-        </Text>
+        <Text style={Typography.paragraph}>{STRINGS.linked_organizations_enterServerAddress}</Text>
         <Input
           testID="modal-input-serveraddress"
           value={manualServerAddress}
           onChange={setManualServerAddress}
           placeholder={STRINGS.linked_organizations_placeholderServerAddress}
         />
-        <Text style={Typography.paragraph}>
-          {STRINGS.linked_organizations_enterChallengeValue}
-        </Text>
+        <Text style={Typography.paragraph}>{STRINGS.linked_organizations_enterChallengeValue}</Text>
         <Input
           testID="modal-input-challengeval"
           value={manualChallengeValue}
@@ -105,14 +94,11 @@ const ManualInputModal: React.FC<ManualInputModalProps> = ({
                   manualChallengeValidUntil <= Timestamp.EpochNow())) ||
               (!isInitiatingOrganizer && (!manualLaoId || !manualPublicKey || !manualServerAddress))
             ) {
-              toast.show(
-                `All fields are required and Valid Until has to be in the Future`,
-                {
-                  type: 'danger',
-                  placement: 'bottom',
-                  duration: FOUR_SECONDS,
-                },
-              );
+              toast.show(`All fields are required and Valid Until has to be in the Future`, {
+                type: 'danger',
+                placement: 'bottom',
+                duration: FOUR_SECONDS,
+              });
               return;
             }
 

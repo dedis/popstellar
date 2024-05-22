@@ -7,18 +7,14 @@ import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
 import { LinkedOrganizationsParamList } from 'core/navigation/typing/LinkedOrganizationsParamList';
 import STRINGS from 'resources/strings';
 
-import { LinkedOrganizationsFeature } from '../interface';
-import LinkedOrganizationsScreen from '../screens/LinkedOrganizationsScreen';
 import AddLinkedOrganizationButton from '../components/AddLinkedOrganizationButton';
 import AddLinkedOrganizationModal from '../components/AddLinkedOrganizationModal';
-import { LinkedOrganizationsHooks } from '../hooks';
+import { LinkedOrganizationsFeature } from '../interface';
+import LinkedOrganizationsScreen from '../screens/LinkedOrganizationsScreen';
 
 const LinkedOrganizationsNavigator = createStackNavigator<LinkedOrganizationsParamList>();
 
 const LinkedOrganizationsNavigation = () => {
-  const laoId = LinkedOrganizationsHooks.useCurrentLaoId();
-  const isOrganizer = LinkedOrganizationsHooks.useIsLaoOrganizer(laoId);
-  
   return (
     <LinkedOrganizationsNavigator.Navigator
       initialRouteName={STRINGS.navigation_linked_organizations}
@@ -29,7 +25,7 @@ const LinkedOrganizationsNavigation = () => {
         options={{
           headerTitle: STRINGS.navigation_linked_organizations_title,
           headerLeft: DrawerMenuButton,
-          headerRight: () => isOrganizer ? <AddLinkedOrganizationButton/> : null,
+          headerRight: AddLinkedOrganizationButton,
         }}
       />
       <LinkedOrganizationsNavigator.Screen
@@ -38,7 +34,6 @@ const LinkedOrganizationsNavigation = () => {
         options={{
           presentation: 'transparentModal',
           headerTitle: STRINGS.navigation_linked_organizations_title,
-
         }}
       />
     </LinkedOrganizationsNavigator.Navigator>

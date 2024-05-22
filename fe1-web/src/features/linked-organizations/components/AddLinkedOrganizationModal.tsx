@@ -1,28 +1,30 @@
+import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Text, View, Modal, StyleSheet, ViewStyle } from 'react-native';
+import { Text, View, Modal, StyleSheet } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { useToast } from 'react-native-toast-notifications';
+import { useSelector } from 'react-redux';
+
 import { PoPButton } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
-import { Spacing, Typography, Color, ModalStyles } from 'core/styles';
-import STRINGS from 'resources/strings';
-import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
-import { StackScreenProps } from '@react-navigation/stack';
-import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { LinkedOrganizationsParamList } from 'core/navigation/typing/LinkedOrganizationsParamList';
-import { useToast } from 'react-native-toast-notifications';
+import { dispatch } from 'core/redux';
+import { Spacing, Typography, Color, ModalStyles } from 'core/styles';
+import { FOUR_SECONDS } from 'resources/const';
+import STRINGS from 'resources/strings';
+
 import { LinkedOrganizationsHooks } from '../hooks';
-import { makeChallengeSelector } from '../reducer';
-import { useSelector } from 'react-redux';
-import { LinkedOrganization } from '../objects/LinkedOrganization';
 import { expectFederation, initFederation, requestChallenge } from '../network';
 import { Challenge } from '../objects/Challenge';
-import { FOUR_SECONDS } from 'resources/const';
+import { LinkedOrganization } from '../objects/LinkedOrganization';
+import { makeChallengeSelector } from '../reducer';
+import { addLinkedOrganization } from '../reducer/LinkedOrganizationsReducer';
+import ManualInputModal from './ManualInputModal';
 import QRCodeModal from './QRCodeModal';
 import QRCodeScannerModal from './QRCodeScannerModal';
-import ManualInputModal from './ManualInputModal';
-import { dispatch } from 'core/redux';
-import { addLinkedOrganization } from '../reducer/LinkedOrganizationsReducer';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<
@@ -73,17 +75,16 @@ const AddLinkedOrganizationModal = () => {
 
   const onRequestChallenge = useCallback(() => {
     requestChallenge(laoId)
-      .then(() => {
-      })
+      .then(() => {})
       .catch((err) => {
         console.error('Could not request Challenge, error:', err);
         toast.show(`Could not request Challenge, error: ${err}`, {
-            type: 'danger',
-            placement: 'bottom',
-            duration: FOUR_SECONDS,
-          });
+          type: 'danger',
+          placement: 'bottom',
+          duration: FOUR_SECONDS,
+        });
       });
-  }, [laoId]);
+  }, [laoId, toast]);
 
   const getQRCodeData = () => {
     if (!isInitiatingOrganizer) {
@@ -110,51 +111,51 @@ const AddLinkedOrganizationModal = () => {
         )
           .then(() => {
             toast.show(`Success: Expect Federation`, {
-                type: 'success',
-                placement: 'bottom',
-                duration: FOUR_SECONDS,
-              });
+              type: 'success',
+              placement: 'bottom',
+              duration: FOUR_SECONDS,
+            });
             dispatch(addLinkedOrganization(laoId, org.toState()));
           })
           .catch((err) => {
             toast.show(`Could not expect Federation, error: ${err}`, {
-                type: 'danger',
-                placement: 'bottom',
-                duration: FOUR_SECONDS,
-              });
+              type: 'danger',
+              placement: 'bottom',
+              duration: FOUR_SECONDS,
+            });
           });
       }
     },
-    [laoId, challengeState],
+    [laoId, challengeState, toast],
   );
 
   const onFederationInit = useCallback(
     (org: LinkedOrganization) => {
       initFederation(laoId, org.lao_id, org.server_address, org.public_key, org.challenge!)
         .then(() => {
-            toast.show(`Success: Init Federation`, {
-                type: 'success',
-                placement: 'bottom',
-                duration: FOUR_SECONDS,
-              });
+          toast.show(`Success: Init Federation`, {
+            type: 'success',
+            placement: 'bottom',
+            duration: FOUR_SECONDS,
+          });
           dispatch(addLinkedOrganization(laoId, org.toState()));
         })
         .catch((err) => {
-            toast.show(`Could not init Federation, error: ${err}`, {
-                type: 'danger',
-                placement: 'bottom',
-                duration: FOUR_SECONDS,
-              });
+          toast.show(`Could not init Federation, error: ${err}`, {
+            type: 'danger',
+            placement: 'bottom',
+            duration: FOUR_SECONDS,
+          });
         });
     },
-    [laoId],
+    [laoId, toast],
   );
 
   const onScanData = (qrCode: string | null) => {
-    const qrcode_checked = qrCode ?? '';
+    const qrcodeChecked = qrCode ?? '';
     try {
       // Data of the Linked Organization that was just scanned
-      const scannedLinkedOrganization = LinkedOrganization.fromJson(JSON.parse(qrcode_checked));
+      const scannedLinkedOrganization = LinkedOrganization.fromJson(JSON.parse(qrcodeChecked));
       setShowScanner(false);
       setShowQRScannerModal(false);
       if (isInitiatingOrganizer) {
@@ -217,7 +218,7 @@ const AddLinkedOrganizationModal = () => {
             onClose={() => {
               setShowModal(false);
               setIsInitiatingOrganizer(false);
-              navigation.goBack()
+              navigation.goBack();
             }}>
             {STRINGS.linked_organizations_addlinkedorg_title}
           </ModalHeader>
@@ -258,8 +259,8 @@ const AddLinkedOrganizationModal = () => {
       <QRCodeModal
         visible={showQRCodeModal}
         onClose={() => {
-            setShowQRCodeModal(false);
-            navigation.navigate(STRINGS.navigation_linked_organizations);
+          setShowQRCodeModal(false);
+          navigation.navigate(STRINGS.navigation_linked_organizations);
         }}
         qrCodeData={qrCodeData}
         isInitiatingOrganizer={isInitiatingOrganizer}

@@ -66,7 +66,10 @@ describe('LinkedOrganizationReducer', () => {
         mockOrganizationState,
       );
       expect(() =>
-        linkedOrganizationsReduce(newState, addLinkedOrganization(mockLaoId2, mockOrganizationState)),
+        linkedOrganizationsReduce(
+          newState,
+          addLinkedOrganization(mockLaoId2, mockOrganizationState),
+        ),
       ).toThrow();
     });
   });
@@ -149,9 +152,7 @@ describe('makeLinkedOrganizationsSelector', () => {
       mockOrganizationState,
     );
     expect(
-      makeLinkedOrganizationSelector(
-        mockLaoId2
-      )({
+      makeLinkedOrganizationSelector(mockLaoId2)({
         [LINKEDORGANIZATIONS_REDUCER_PATH]: {
           byLaoId: {
             [serializedMockLaoId2]: {
@@ -179,9 +180,7 @@ describe('makeLinkedOrganizationsSelector', () => {
       mockOrganizationState,
     );
     expect(
-      makeLinkedOrganizationSelector(
-        new Hash('false-lao-id'),
-      )({
+      makeLinkedOrganizationSelector(new Hash('false-lao-id'))({
         [LINKEDORGANIZATIONS_REDUCER_PATH]: {
           byLaoId: {
             [serializedMockLaoId2]: {

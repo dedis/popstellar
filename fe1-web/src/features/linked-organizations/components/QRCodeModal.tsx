@@ -1,6 +1,7 @@
 import React from 'react';
-import { Text, View, Modal, StyleSheet, ViewStyle } from 'react-native';
+import { Text, View, Modal, StyleSheet } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+
 import { PoPButton, QRCode } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
 import { ModalStyles, Typography, Spacing, Color } from 'core/styles';
@@ -34,15 +35,8 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({
   onNext,
 }) => {
   return (
-    <Modal
-      testID="modal-show-qr-code"
-      transparent
-      visible={visible}
-      onRequestClose={onClose}>
-      <TouchableWithoutFeedback
-        containerStyle={ModalStyles.modalBackground}
-        onPress={onClose}
-      />
+    <Modal testID="modal-show-qr-code" transparent visible={visible} onRequestClose={onClose}>
+      <TouchableWithoutFeedback containerStyle={ModalStyles.modalBackground} onPress={onClose} />
       <View style={styles.modalContainer}>
         <ModalHeader onClose={onClose}>
           {STRINGS.linked_organizations_addlinkedorg_genQRCode}

@@ -39,7 +39,10 @@ const linkedOrganizationSlice = createSlice({
           },
         };
       },
-      reducer(state, action: PayloadAction<{ laoId: string; linkedOrganization: LinkedOrganizationState }>) {
+      reducer(
+        state,
+        action: PayloadAction<{ laoId: string; linkedOrganization: LinkedOrganizationState }>,
+      ) {
         const { laoId, linkedOrganization } = action.payload;
 
         if (state.byLaoId[laoId] === undefined) {
@@ -64,7 +67,7 @@ const linkedOrganizationSlice = createSlice({
   },
 });
 
-export const { addLinkedOrganization: addLinkedOrganization } = linkedOrganizationSlice.actions;
+export const { addLinkedOrganization } = linkedOrganizationSlice.actions;
 
 export const getLinkedOrganizationState = (state: any): LinkedOrganizationReducerState =>
   state[LINKEDORGANIZATIONS_REDUCER_PATH];
@@ -80,7 +83,9 @@ export const makeSingleLinkedOrganizationSelector = (laoId: Hash, linked_lao_id:
     // First input: a map containing all linked organizations
     (state: any) => getLinkedOrganizationState(state),
     // Selector: returns the linked organization for a specific lao and linked_lao_id
-    (linkedOrganizationState: LinkedOrganizationReducerState): LinkedOrganizationState | undefined => {
+    (
+      linkedOrganizationState: LinkedOrganizationReducerState,
+    ): LinkedOrganizationState | undefined => {
       const serializedLaoId = laoId.valueOf();
       return linkedOrganizationState.byLaoId[serializedLaoId]?.byLinkedLaoId[linked_lao_id];
     },

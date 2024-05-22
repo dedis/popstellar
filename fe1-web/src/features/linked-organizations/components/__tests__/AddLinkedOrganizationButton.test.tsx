@@ -7,14 +7,17 @@ import { combineReducers } from 'redux';
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLaoId, mockLaoServerAddress } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-
+import {
+  LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER,
+  LinkedOrganizationsReactContext,
+} from 'features/linked-organizations/interface';
 import { linkedOrganizationsReduce } from 'features/linked-organizations/reducer/LinkedOrganizationsReducer';
-import { LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER, LinkedOrganizationsReactContext } from 'features/linked-organizations/interface';
+
 import AddLinkedOrganizationButton from '../AddLinkedOrganizationButton';
 
 const mockStore = configureStore({
   reducer: combineReducers({
-    ...linkedOrganizationsReduce
+    ...linkedOrganizationsReduce,
   }),
 });
 
@@ -22,7 +25,7 @@ const contextValue = {
   [LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoId,
     useIsLaoOrganizer: () => false,
-    useCurrentLao:() => mockLaoServerAddress,
+    useCurrentLao: () => mockLaoServerAddress,
   } as LinkedOrganizationsReactContext,
 };
 

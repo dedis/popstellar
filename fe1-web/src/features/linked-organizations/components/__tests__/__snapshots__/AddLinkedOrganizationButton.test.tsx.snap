@@ -326,30 +326,7 @@ exports[`AddLinkedOrganizationButton renders correctly 1`] = `
                           "flex": 1,
                         }
                       }
-                    >
-                      <View
-                        accessible={true}
-                        collapsable={false}
-                        focusable={true}
-                        onClick={[Function]}
-                        onResponderGrant={[Function]}
-                        onResponderMove={[Function]}
-                        onResponderRelease={[Function]}
-                        onResponderTerminate={[Function]}
-                        onResponderTerminationRequest={[Function]}
-                        onStartShouldSetResponder={[Function]}
-                        style={
-                          {
-                            "opacity": 1,
-                          }
-                        }
-                        testID="add_linked_organization_selector"
-                      >
-                        <View>
-                          {"name":"ios-add-circle","size":25,"color":"#8E8E8E"}
-                        </View>
-                      </View>
-                    </View>
+                    />
                   </View>
                 </View>
               </View>
