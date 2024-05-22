@@ -127,11 +127,10 @@ enum class ScanningAction(
       R.string.manual_add_organization_title,
       arrayOf(
           InputFieldConfig(R.string.manual_add_organization_lao_id_hint, true),
-          InputFieldConfig(R.string.manual_add_organization_server_ulr_hint, true),
-          InputFieldConfig(R.string.manual_add_organization_organizer_public_key_hint, true),
-          InputFieldConfig(R.string.manual_add_organization_challenge_hint, true)),
+          InputFieldConfig(R.string.manual_add_organization_server_url_hint, true),
+          InputFieldConfig(R.string.manual_add_organization_organizer_public_key_hint, true)),
       { inputs ->
-        "{\"lao_id\":\"${inputs[R.string.manual_add_organization_lao_id_hint]}\",\"server_address\":\"${inputs[R.string.manual_add_organization_server_ulr_hint]}\",\"public_key\":\"${inputs[R.string.manual_add_organization_organizer_public_key_hint]}\",\"challenge\":${inputs[R.string.manual_add_organization_challenge_hint]}}"
+        "{\"lao_id\":\"${inputs[R.string.manual_add_organization_lao_id_hint]}\",\"server_address\":\"${inputs[R.string.manual_add_organization_server_url_hint]}\",\"public_key\":\"${inputs[R.string.manual_add_organization_organizer_public_key_hint]}}"
       },
       { activity: FragmentActivity, laoId: String? ->
         LaoActivity.obtainLinkedOrganizationsViewModel(activity, laoId)
@@ -150,10 +149,11 @@ enum class ScanningAction(
       R.string.manual_add_organization_title,
       arrayOf(
           InputFieldConfig(R.string.manual_add_organization_lao_id_hint, true),
-          InputFieldConfig(R.string.manual_add_organization_server_ulr_hint, true),
-          InputFieldConfig(R.string.manual_add_organization_organizer_public_key_hint, true)),
+          InputFieldConfig(R.string.manual_add_organization_server_url_hint, true),
+          InputFieldConfig(R.string.manual_add_organization_organizer_public_key_hint, true),
+          InputFieldConfig(R.string.manual_add_organization_challenge_hint, true)),
       { inputs ->
-        "{\"lao_id\":\"${inputs[R.string.manual_add_organization_lao_id_hint]}\",\"server_address\":\"${inputs[R.string.manual_add_organization_server_ulr_hint]}\",\"public_key\":\"${inputs[R.string.manual_add_organization_organizer_public_key_hint]}\"}"
+        "{\"lao_id\":\"${inputs[R.string.manual_add_organization_lao_id_hint]}\",\"server_address\":\"${inputs[R.string.manual_add_organization_server_url_hint]}\",\"public_key\":\"${inputs[R.string.manual_add_organization_organizer_public_key_hint]}\",\"challenge\":${inputs[R.string.manual_add_organization_challenge_hint]}}"
       },
       { activity: FragmentActivity, laoId: String? ->
         LaoActivity.obtainLinkedOrganizationsViewModel(activity, laoId)

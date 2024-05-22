@@ -154,9 +154,9 @@
 
   <string name="manual_add_organization_title">Invite an organization</string>
   <string name="manual_add_organization_lao_id_hint">Other LAO\'s ID</string>
-  <string name="manual_add_organization_server_ulr_hint">Other LAO\'s Server URL</string>
+  <string name="manual_add_organization_server_url_hint">Other LAO\'s Server URL</string>
   <string name="manual_add_organization_organizer_public_key_hint">Other Organizer\'s Public Key</string>
-  <string name="manual_add_organization_challenge_hint">Other Organizer\'s Public Key</string>
+  <string name="manual_add_organization_challenge_hint">Other Organizer\'s Challenge</string>
 
 
   <!--  Witnessing-->
