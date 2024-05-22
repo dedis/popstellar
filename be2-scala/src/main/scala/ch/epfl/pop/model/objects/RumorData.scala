@@ -16,6 +16,14 @@ final case class RumorData(
     new RumorData((rumorId :: rumorIds).sorted)
   }
 
+  def lastRumorId(): Int = {
+    if (rumorIds.isEmpty) {
+      -1
+    } else {
+      rumorIds.max
+    }
+  }
+
 }
 
 object RumorData extends Parsable {
