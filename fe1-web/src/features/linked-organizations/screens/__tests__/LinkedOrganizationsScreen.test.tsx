@@ -13,6 +13,7 @@ import {
 } from 'features/linked-organizations/interface';
 
 import LinkedOrganizationsScreen from '../LinkedOrganizationsScreen';
+import AddLinkedOrganizationModal from 'features/linked-organizations/components/AddLinkedOrganizationModal';
 
 const mockLinkedOrganizationsContextValue = (isOrganizer: boolean) => ({
   [LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER]: {
@@ -43,6 +44,17 @@ const renderLinkedOrganizationsScreen = () =>
     </Provider>,
   );
 
+
+const renderLinkedOrganizationsScreenAddModal = () =>
+  render(
+    <Provider store={mockStore}>
+      <FeatureContext.Provider value={mockLinkedOrganizationsContextValue(true)}>
+        <MockNavigator component={LinkedOrganizationsScreen} />
+        <MockNavigator component={AddLinkedOrganizationModal} />
+      </FeatureContext.Provider>
+    </Provider>,
+  );
+
 describe('LinkedOrganizationsScreenNoOrganizer', () => {
   it('renders correctly no organizer', () => {
     const renderLinkedOrganizationsScreen2 = () =>
@@ -64,32 +76,22 @@ describe('LinkedOrganizationsScreen', () => {
     expect(toJSON()).toMatchSnapshot();
   });
 
-  it('opens modal on FAB press', () => {
-    const { getByTestId, toJSON } = renderLinkedOrganizationsScreen();
-    fireEvent.press(getByTestId('fab-button'));
-    expect(getByTestId('modal-add-organization').props.visible).toBe(true);
-    expect(toJSON()).toMatchSnapshot();
-  });
-
   it('opens modal on press join org', () => {
-    const { getByTestId, toJSON } = renderLinkedOrganizationsScreen();
-    fireEvent.press(getByTestId('fab-button'));
+    const { getByTestId, toJSON } = renderLinkedOrganizationsScreenAddModal();
     fireEvent.press(getByTestId('show-qr-code'));
     expect(getByTestId('modal-show-qr-code').props.visible).toBe(true);
     expect(toJSON()).toMatchSnapshot();
   });
 
   it('opens modal on press link org', () => {
-    const { getByTestId, toJSON } = renderLinkedOrganizationsScreen();
-    fireEvent.press(getByTestId('fab-button'));
+    const { getByTestId, toJSON } = renderLinkedOrganizationsScreenAddModal();
     fireEvent.press(getByTestId('show-scanner'));
     expect(getByTestId('modal-show-scanner').props.visible).toBe(true);
     expect(toJSON()).toMatchSnapshot();
   });
 
   it('opens modal on press next', () => {
-    const { getByTestId, toJSON } = renderLinkedOrganizationsScreen();
-    fireEvent.press(getByTestId('fab-button'));
+    const { getByTestId, toJSON } = renderLinkedOrganizationsScreenAddModal();
     fireEvent.press(getByTestId('show-qr-code'));
     expect(getByTestId('modal-show-qr-code').props.visible).toBe(true);
     fireEvent.press(getByTestId('button-next-finish'));
@@ -98,8 +100,7 @@ describe('LinkedOrganizationsScreen', () => {
   });
 
   it('manual input of correct organization details', async () => {
-    const { getByTestId, toJSON } = renderLinkedOrganizationsScreen();
-    fireEvent.press(getByTestId('fab-button'));
+    const { getByTestId, toJSON } = renderLinkedOrganizationsScreenAddModal();
     fireEvent.press(getByTestId('show-scanner'));
     await waitFor(() => {
       expect(getByTestId('open_add_manually')).toBeTruthy();
@@ -121,8 +122,7 @@ describe('LinkedOrganizationsScreen', () => {
   });
 
   it('manual input of wrong organization details', async () => {
-    const { getByTestId, toJSON } = renderLinkedOrganizationsScreen();
-    fireEvent.press(getByTestId('fab-button'));
+    const { getByTestId, toJSON } = renderLinkedOrganizationsScreenAddModal();
     fireEvent.press(getByTestId('show-scanner'));
     await waitFor(() => {
       expect(getByTestId('open_add_manually')).toBeTruthy();

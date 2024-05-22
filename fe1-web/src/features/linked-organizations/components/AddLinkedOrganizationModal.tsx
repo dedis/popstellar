@@ -72,13 +72,16 @@ const AddLinkedOrganizationModal = () => {
   const [showScanner, setShowScanner] = useState(false);
 
   const onRequestChallenge = useCallback(() => {
-    console.log('Requesting challenge');
     requestChallenge(laoId)
       .then(() => {
-        console.log('Success: Requesting challenge');
       })
       .catch((err) => {
         console.error('Could not request Challenge, error:', err);
+        toast.show(`Could not request Challenge, error: ${err}`, {
+            type: 'danger',
+            placement: 'bottom',
+            duration: FOUR_SECONDS,
+          });
       });
   }, [laoId]);
 
@@ -92,13 +95,11 @@ const AddLinkedOrganizationModal = () => {
         public_key: lao.organizer,
       };
       setQRCodeData(JSON.stringify(jsonObj));
-      console.log('qrCodeData:', jsonObj);
     }
   };
 
   const onFederationExpect = useCallback(
     (org: LinkedOrganization) => {
-      console.log('Expect Federation');
       if (challengeState) {
         expectFederation(
           laoId,
@@ -108,12 +109,19 @@ const AddLinkedOrganizationModal = () => {
           Challenge.fromState(challengeState),
         )
           .then(() => {
-            console.log('Success: Expect Federation');
-            console.log("here2");
+            toast.show(`Success: Expect Federation`, {
+                type: 'success',
+                placement: 'bottom',
+                duration: FOUR_SECONDS,
+              });
             dispatch(addLinkedOrganization(laoId, org.toState()));
           })
           .catch((err) => {
-            console.error('Could not expect Federation, error:', err);
+            toast.show(`Could not expect Federation, error: ${err}`, {
+                type: 'danger',
+                placement: 'bottom',
+                duration: FOUR_SECONDS,
+              });
           });
       }
     },
@@ -122,22 +130,27 @@ const AddLinkedOrganizationModal = () => {
 
   const onFederationInit = useCallback(
     (org: LinkedOrganization) => {
-      console.log('Init Federation');
       initFederation(laoId, org.lao_id, org.server_address, org.public_key, org.challenge!)
         .then(() => {
-          console.log('Success: Init Federation');
-          console.log("here1");
+            toast.show(`Success: Init Federation`, {
+                type: 'success',
+                placement: 'bottom',
+                duration: FOUR_SECONDS,
+              });
           dispatch(addLinkedOrganization(laoId, org.toState()));
         })
         .catch((err) => {
-          console.error('Could not init Federation, error:', err);
+            toast.show(`Could not init Federation, error: ${err}`, {
+                type: 'danger',
+                placement: 'bottom',
+                duration: FOUR_SECONDS,
+              });
         });
     },
     [laoId],
   );
 
   const onScanData = (qrCode: string | null) => {
-    console.log(qrCode);
     const qrcode_checked = qrCode ?? '';
     try {
       // Data of the Linked Organization that was just scanned
@@ -163,7 +176,6 @@ const AddLinkedOrganizationModal = () => {
         placement: 'bottom',
         duration: FOUR_SECONDS,
       });
-      console.log(error);
     }
   };
 
@@ -180,7 +192,6 @@ const AddLinkedOrganizationModal = () => {
         },
       };
       setQRCodeData(JSON.stringify(jsonObj));
-      console.log('qrCodeData:', jsonObj);
     }
   }, [challengeState, laoId, lao.organizer, lao.server_addresses]);
 

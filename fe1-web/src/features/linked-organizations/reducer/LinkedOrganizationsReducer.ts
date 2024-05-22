@@ -55,8 +55,6 @@ const linkedOrganizationSlice = createSlice({
             `Tried to store organization with lao id ${linkedOrganization.lao_id} but there already exists one with the same lao id`,
           );
         }
-        console.log(state.byLaoId[laoId].allLaoIds);
-        console.log(state.byLaoId[laoId].allLaos);
 
         state.byLaoId[laoId].allLaoIds.push(linkedOrganization.lao_id);
         state.byLaoId[laoId].allLaos.push(linkedOrganization);
@@ -101,6 +99,9 @@ export const makeLinkedOrganizationSelector = (laoId: Hash) => {
     // Selector: returns the linked organization for a specific lao and linked_lao_id
     (linkedOrganizationState: LinkedOrganizationReducerState): LinkedOrganizationState[] | [] => {
       const serializedLaoId = laoId.valueOf();
+      if (!linkedOrganizationState) {
+        return [];
+      }
       if (!linkedOrganizationState.byLaoId[serializedLaoId]) {
         return [];
       }

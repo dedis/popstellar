@@ -29,7 +29,6 @@ export function requestAddChirp(
     parent_id: parentId,
     timestamp: timestamp,
   });
-  console.log(message);
   return publish(getUserSocialChannel(laoId, publicKey), message);
 }
 

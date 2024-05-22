@@ -28,7 +28,6 @@ const AddLinkedOrganizationButton = () => {
       },
       (idx) => {
         if (idx !== undefined && idx == 0) {
-          console.log(idx);
           navigation.navigate(STRINGS.navigation_app_lao, {
             screen: STRINGS.navigation_linked_organizations_title,
             params: {

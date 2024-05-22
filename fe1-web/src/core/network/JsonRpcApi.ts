@@ -58,8 +58,6 @@ export async function publish(
     }),
     id: AUTO_ASSIGN_ID,
   });
-  console.log(request);
-  console.log(message.data);
   await getNetworkManager().sendPayload(request, connections);
 }
 

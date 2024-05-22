@@ -11,6 +11,7 @@ import {
   LinkedOrganizationReducerState,
   LINKEDORGANIZATIONS_REDUCER_PATH,
   linkedOrganizationsReduce,
+  makeLinkedOrganizationSelector,
   makeSingleLinkedOrganizationSelector,
 } from '../LinkedOrganizationsReducer';
 
@@ -71,7 +72,7 @@ describe('LinkedOrganizationReducer', () => {
   });
 });
 
-describe('makeLinkedOrganizationsSelector', () => {
+describe('makeSingleLinkedOrganizationsSelector', () => {
   it('returns the correct linked organization', () => {
     const serializedMockLaoId2 = mockLaoId2.valueOf();
     const newState = linkedOrganizationsReduce(
@@ -130,5 +131,66 @@ describe('makeLinkedOrganizationsSelector', () => {
         } as LinkedOrganizationReducerState,
       }),
     ).toBeUndefined();
+  });
+});
+
+describe('makeLinkedOrganizationsSelector', () => {
+  it('returns the correct linked organization', () => {
+    const serializedMockLaoId2 = mockLaoId2.valueOf();
+    const newState = linkedOrganizationsReduce(
+      {
+        byLaoId: {},
+      } as LinkedOrganizationReducerState,
+      addLinkedOrganization(mockLaoId2, mockOrganizationState),
+    );
+    expect(newState.byLaoId[serializedMockLaoId2].allLaoIds).toEqual([serializedMockLaoId]);
+    expect(newState.byLaoId[serializedMockLaoId2].byLinkedLaoId).toHaveProperty(
+      serializedMockLaoId,
+      mockOrganizationState,
+    );
+    expect(
+      makeLinkedOrganizationSelector(
+        mockLaoId2
+      )({
+        [LINKEDORGANIZATIONS_REDUCER_PATH]: {
+          byLaoId: {
+            [serializedMockLaoId2]: {
+              allLaoIds: [serializedMockLaoId],
+              byLinkedLaoId: { [serializedMockLaoId]: mockOrganizationState },
+              allLaos: [mockOrganizationState],
+            },
+          },
+        } as LinkedOrganizationReducerState,
+      }),
+    ).toEqual([mockOrganizationState]);
+  });
+
+  it('returns undefined if the linked organization  is not in the store', () => {
+    const serializedMockLaoId2 = mockLaoId2.valueOf();
+    const newState = linkedOrganizationsReduce(
+      {
+        byLaoId: {},
+      } as LinkedOrganizationReducerState,
+      addLinkedOrganization(mockLaoId2, mockOrganizationState),
+    );
+    expect(newState.byLaoId[serializedMockLaoId2].allLaoIds).toEqual([serializedMockLaoId]);
+    expect(newState.byLaoId[serializedMockLaoId2].byLinkedLaoId).toHaveProperty(
+      serializedMockLaoId,
+      mockOrganizationState,
+    );
+    expect(
+      makeLinkedOrganizationSelector(
+        new Hash('false-lao-id'),
+      )({
+        [LINKEDORGANIZATIONS_REDUCER_PATH]: {
+          byLaoId: {
+            [serializedMockLaoId2]: {
+              allLaoIds: [serializedMockLaoId],
+              byLinkedLaoId: { [serializedMockLaoId]: mockOrganizationState },
+            },
+          },
+        } as LinkedOrganizationReducerState,
+      }),
+    ).toEqual([]);
   });
 });
