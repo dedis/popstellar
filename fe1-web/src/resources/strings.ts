@@ -558,11 +558,11 @@ namespace STRINGS {
   export const linked_organizations_addlinkedorg_finished = 'Finish';
   export const linked_organizations_addlinkedorg_next = 'Next';
   export const linked_organizations_addmanually_title = 'Add a Linked Organization';
-  export const linked_organizations_enterLaoId = 'Enter Lao ID:';
-  export const linked_organizations_enterPublicKey = 'Enter Public Key:';
-  export const linked_organizations_enterServerAddress = 'Enter Server Address:';
-  export const linked_organizations_enterChallengeValue = 'Enter Challenge Value:';
-  export const linked_organizations_enterChallengeValidUntil = 'Enter Challenge Valid Until:';
+  export const linked_organizations_enterLaoId = 'Enter Lao ID';
+  export const linked_organizations_enterPublicKey = 'Enter Public Key';
+  export const linked_organizations_enterServerAddress = 'Enter Server Address';
+  export const linked_organizations_enterChallengeValue = 'Enter Challenge Value';
+  export const linked_organizations_enterChallengeValidUntil = 'Enter Challenge Valid Until';
   export const linked_organizations_placeholderLaoID = 'Lao ID';
   export const linked_organizations_placeholderPublicKey = 'Public Key';
   export const linked_organizations_placeholderServerAddress = 'Server Address';

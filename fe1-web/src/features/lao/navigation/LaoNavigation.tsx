@@ -110,20 +110,6 @@ const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentCompo
 const LaoNavigation: React.FC<unknown> = () => {
   const passedScreens = LaoHooks.useLaoNavigationScreens();
 
-  const laoId = LaoHooks.useCurrentLaoId();
-  const isOrganizer = LaoHooks.useIsLaoOrganizer(laoId);
-  if (!isOrganizer) {
-    const iterator = passedScreens.entries();
-    let result = iterator.next();
-    while (!result.done) {
-      const [index, value] = result.value;
-      if (value.id === 'Linked Organizations') {
-        passedScreens.splice(index, 1);
-      }
-      result = iterator.next();
-    }
-  }
-
   // add the organizer or attendee screen depeding on the user
   const screens: LaoFeature.LaoScreen[] = useMemo(() => {
     return (

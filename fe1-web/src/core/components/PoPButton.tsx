@@ -43,7 +43,8 @@ const PoPButton = (props: IPropTypes) => {
     viewStyles.push(styles.outline);
   }
 
-  // popBlue button style changes background color
+  // tertiary button style changes background color to popBlue
+  // necessary for Modal in LinkedOrganization
   if (buttonStyle === 'tertiary') {
     viewStyles.push({ backgroundColor: popBlue, borderColor: popBlue });
   }
