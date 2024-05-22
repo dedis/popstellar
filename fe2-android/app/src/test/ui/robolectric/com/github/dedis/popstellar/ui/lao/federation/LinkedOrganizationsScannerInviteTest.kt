@@ -42,7 +42,7 @@ import org.mockito.junit.MockitoTestRule
 @LargeTest
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
-class LinkedOrganizationsScannerTest {
+class LinkedOrganizationsScannerInviteTest {
     @BindValue @Mock lateinit var repository: LAORepository
 
     @JvmField @Rule var rule = InstantTaskExecutorRule()
