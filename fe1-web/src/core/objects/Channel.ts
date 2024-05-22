@@ -63,6 +63,37 @@ export function getReactionChannel(laoIdHash: Hash): Channel {
 }
 
 /**
+ * Returns the paged user channel of chirps.
+ *
+ * @param laoIdHash - The hash containing the laoID of the currently opened LAO
+ * @param userPublicKey - The public key of the user
+ */
+export function getPagedUserChirpsChannel(laoIdHash: Hash, userPublicKey: PublicKey): Channel {
+  return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/chirps/${userPublicKey}`;
+}
+
+/**
+ * Returns the paged user profile channel.
+ *
+ * @param laoIdHash - The hash containing the laoID of the currently opened LAO
+ * @param profilePublicKey - The public key of the user whose profile is being viewed
+ * @param senderPublicKey - The public key of the user viewing the profile
+ */
+export function getPagedUserProfileChannel(laoIdHash: Hash, profilePublicKey: PublicKey, senderPublicKey: PublicKey): Channel {
+  return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/profile/${profilePublicKey}/${senderPublicKey}`;
+}
+
+/**
+ * Returns the paged user reactions channel.
+ *
+ * @param laoIdHash - The hash containing the laoID of the currently opened LAO
+ * @param userPublicKey - The public key of the user
+ */
+export function getTopChirpsChannel(laoIdHash: Hash): Channel {
+  return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/top-chirps`;
+}
+
+/**
  * Returns the popcha authentifcation channel of a specific LAO
  *
  * @param laoId - The id of the Lao in which to authenticate
