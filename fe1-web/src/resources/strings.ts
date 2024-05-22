@@ -311,7 +311,7 @@ namespace STRINGS {
     'The Roll Call is currently open and you as the organizer should start adding attendees by scanning their PoP tokens.';
   export const roll_call_open_attendee =
     'The Roll Call is currently open and you as an attendee should let the organizer scan your PoP token encoded in the QR Code below.';
-  export const roll_call_qrcode_text = 'Scan to add attendee';
+  export const roll_call_qrcode_text = 'Scan to\nadd\nattendee';
 
   export const roll_call_error_open_roll_call = 'Unable to send roll call open request';
   export const roll_call_error_scanning_no_alias =
@@ -568,6 +568,8 @@ namespace STRINGS {
   export const linked_organizations_placeholderServerAddress = 'Server Address';
   export const linked_organizations_placeholderChallengeValue = 'Challenge Value';
   export const linked_organizations_placeholderChallengeValidUntil = 'Challenge Valid Until';
+  export const linked_organizations_LaoID = 'Lao ID:';
+  export const linked_organizations_navigation_addlinkedorgModal = 'AddLinkedOrgModal';
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';

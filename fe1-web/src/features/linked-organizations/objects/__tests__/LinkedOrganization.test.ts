@@ -5,7 +5,7 @@ import { validateFederationExchange } from 'core/network/validation/Validator';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 
 import { Challenge } from '../Challenge';
-import { Organization, OrganizationState } from '../Organization';
+import { LinkedOrganization, LinkedOrganizationState } from '../LinkedOrganization';
 
 const VALID_LAO_ID: Hash = mockLaoId;
 const VALID_PUBLIC_KEY: PublicKey = new PublicKey(mockPublicKey);
@@ -21,13 +21,13 @@ const VALID_SERVER_ADDRESS = 'wss://epfl.ch:9000/server';
 
 describe('state and JSON round trips', () => {
   it('does a state round trip correctly', () => {
-    const orgState: OrganizationState = {
+    const orgState: LinkedOrganizationState = {
       lao_id: VALID_LAO_ID.toState(),
       server_address: VALID_SERVER_ADDRESS,
       public_key: VALID_PUBLIC_KEY.toState(),
       challenge: VALID_CHALLENGE.toState(),
     };
-    const org = Organization.fromState(orgState);
+    const org = LinkedOrganization.fromState(orgState);
     expect(org.toState()).toStrictEqual(orgState);
   });
 
@@ -41,19 +41,19 @@ describe('state and JSON round trips', () => {
         valid_until: VALID_CHALLENGE.valid_until.valueOf(),
       },
     };
-    const org = Organization.fromJson(jsonObj);
+    const org = LinkedOrganization.fromJson(jsonObj);
     expect(JSON.parse(org.toJson())).toStrictEqual(jsonObj);
   });
 });
 
 describe('constructor', () => {
   it('throws an error when the object is undefined', () => {
-    const createOrg = () => new Organization(undefined as unknown as Organization);
+    const createOrg = () => new LinkedOrganization(undefined as unknown as LinkedOrganization);
     expect(createOrg).toThrow(Error);
   });
 
   it('throws an error when the object is null', () => {
-    const createOrg = () => new Organization(null as unknown as Organization);
+    const createOrg = () => new LinkedOrganization(null as unknown as LinkedOrganization);
     expect(createOrg).toThrow(Error);
   });
 });
@@ -64,7 +64,7 @@ describe('fromJson', () => {
     expect(ret.errors).not.toBeNull();
   });
 
-  it('creates an organization correctly when validation passes', () => {
+  it('creates an linked organization correctly when validation passes', () => {
     const sampleJsonString = `{
       "lao_id": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
       "public_key": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
@@ -78,8 +78,8 @@ describe('fromJson', () => {
     const ret = validateFederationExchange(sampleJson);
     expect(ret.errors).toBeNull();
 
-    const org = Organization.fromJson(sampleJson);
-    expect(org).toBeInstanceOf(Organization);
+    const org = LinkedOrganization.fromJson(sampleJson);
+    expect(org).toBeInstanceOf(LinkedOrganization);
     expect(org.lao_id).toBeInstanceOf(Hash);
     expect(org.server_address).toEqual(VALID_SERVER_ADDRESS);
     expect(org.public_key).toBeInstanceOf(PublicKey);

@@ -207,6 +207,10 @@ const iconNameMap = {
     iconName: 'vpn-key',
     IconFamily: MaterialIcons,
   } as MaterialIcon,
+  addLinkedOrg: {
+    iconName: 'ios-add-circle',
+    IconFamily: Ionicons,
+  } as IonIcon,
 };
 
 export type PopIconName = keyof typeof iconNameMap;

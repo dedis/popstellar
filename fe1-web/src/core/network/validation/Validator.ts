@@ -74,6 +74,12 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
   [ObjectType.POPCHA]: {
     [ActionType.AUTH]: 'dataAuthenticateUser',
   },
+  [ObjectType.FEDERATION]: {
+    [ActionType.CHALLENGE_REQUEST]: 'dataFederationChallengeRequest',
+    [ActionType.CHALLENGE]: 'dataFederationChallenge',
+    [ActionType.FEDERATION_INIT]: 'dataFederationInit',
+    [ActionType.FEDERATION_EXPECT]: 'dataFederationExpect',
+  },
 };
 
 function getSchema(obj: ObjectType, action: ActionType): string | null {

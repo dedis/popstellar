@@ -1,30 +1,33 @@
 import {
   LinkedOrganizationsInterface,
   LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER,
-  LinkedOrganizationsCompositionConfiguration,
-  LinkedOrganizationsCompositionInterface,
+  LinkedOrganizationsConfiguration,
 } from './interface';
 import { LinkedOrganizationsLaoScreen } from './navigation/LinkedOrganizationsNavigation';
+import { configureNetwork } from './network';
+import { challengeReducer, linkedOrganizationsReducer } from './reducer';
 
 /**
  * Configures the linked organizations feature
  */
-export function configure(): LinkedOrganizationsInterface {
+export function configure(configuration: LinkedOrganizationsConfiguration): LinkedOrganizationsInterface {
+  const {
+    useCurrentLao, 
+    useCurrentLaoId,
+    useIsLaoOrganizer,
+  } = configuration;
+  configureNetwork(configuration);
   return {
     identifier: LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER,
     laoScreens: [LinkedOrganizationsLaoScreen],
-  };
-}
-
-export function compose(
-  configuration: LinkedOrganizationsCompositionConfiguration,
-): LinkedOrganizationsCompositionInterface {
-  return {
-    identifier: LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER,
-    reducers: {},
+    reducers: {
+      ...challengeReducer,
+      ...linkedOrganizationsReducer,
+    },
     context: {
-      useCurrentLaoId: configuration.useCurrentLaoId,
-      useIsLaoOrganizer: configuration.useIsLaoOrganizer,
+      useCurrentLaoId: useCurrentLaoId,
+      useIsLaoOrganizer: useIsLaoOrganizer,
+      useCurrentLao: useCurrentLao,
     },
   };
 }

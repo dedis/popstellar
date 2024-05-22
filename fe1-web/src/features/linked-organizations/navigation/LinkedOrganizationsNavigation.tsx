@@ -9,6 +9,8 @@ import STRINGS from 'resources/strings';
 
 import { LinkedOrganizationsFeature } from '../interface';
 import LinkedOrganizationsScreen from '../screens/LinkedOrganizationsScreen';
+import AddLinkedOrganizationButton from '../components/AddLinkedOrganizationButton';
+import AddLinkedOrganizationModal from '../components/AddLinkedOrganizationModal';
 
 const LinkedOrganizationsNavigator = createStackNavigator<LinkedOrganizationsParamList>();
 
@@ -23,6 +25,16 @@ const LinkedOrganizationsNavigation = () => {
         options={{
           headerTitle: STRINGS.navigation_linked_organizations_title,
           headerLeft: DrawerMenuButton,
+          headerRight: AddLinkedOrganizationButton,
+        }}
+      />
+      <LinkedOrganizationsNavigator.Screen
+        name={STRINGS.linked_organizations_navigation_addlinkedorgModal}
+        component={AddLinkedOrganizationModal}
+        options={{
+          presentation: 'transparentModal',
+          headerTitle: STRINGS.navigation_linked_organizations_title,
+
         }}
       />
     </LinkedOrganizationsNavigator.Navigator>

@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLaoId } from '__tests__/utils';
+import { mockLao, mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import {
   LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER,
@@ -19,6 +19,7 @@ const mockLinkedOrganizationsContextValue = (isOrganizer: boolean) => ({
     useCurrentLaoId: () => mockLaoId,
     useConnectedToLao: () => true,
     useIsLaoOrganizer: () => isOrganizer,
+    useCurrentLao: () => mockLao,
   } as LinkedOrganizationsReactContext,
 });
 
@@ -96,7 +97,7 @@ describe('LinkedOrganizationsScreen', () => {
     expect(toJSON()).toMatchSnapshot();
   });
 
-  it('input of correct organization details manually', async () => {
+  it('manual input of correct organization details', async () => {
     const { getByTestId, toJSON } = renderLinkedOrganizationsScreen();
     fireEvent.press(getByTestId('fab-button'));
     fireEvent.press(getByTestId('show-scanner'));
@@ -119,7 +120,7 @@ describe('LinkedOrganizationsScreen', () => {
     expect(toJSON()).toMatchSnapshot();
   });
 
-  it('input of wrong organization details manually', async () => {
+  it('manual input of wrong organization details', async () => {
     const { getByTestId, toJSON } = renderLinkedOrganizationsScreen();
     fireEvent.press(getByTestId('fab-button'));
     fireEvent.press(getByTestId('show-scanner'));

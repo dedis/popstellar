@@ -27,7 +27,6 @@ export function configureFeatures() {
   const digitalCashConfiguration = digitalCash.configure();
 
   const notificationConfiguration = notification.configure();
-  const linkedOrganizationsConfiguration = linkedOrganizations.configure();
   const laoConfiguration = lao.configure({ registry: messageRegistry });
 
   const evotingConfiguration = evoting.configure({
@@ -133,6 +132,16 @@ export function configureFeatures() {
     generateToken: walletConfiguration.functions.generateToken,
   });
 
+  const linkedOrganizationsConfiguration = linkedOrganizations.configure({
+    messageRegistry: messageRegistry,
+    keyPairRegistry: keyPairRegistry,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
+    useCurrentLao: laoConfiguration.hooks.useCurrentLao,
+    getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
+    getLaoOrganizerBackendPublicKey: laoConfiguration.functions.getLaoOrganizerBackendPublicKey,
+  });
+
   // compose features
   const notificationComposition = notification.compose({
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
@@ -167,13 +176,6 @@ export function configureFeatures() {
     ],
     useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
-  });
-
-  const linkedOrganizationsComposition = linkedOrganizations.compose({
-    messageRegistry: messageRegistry,
-    keyPairRegistry: keyPairRegistry,
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
-    useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
   });
 
   const laoComposition = lao.compose({
@@ -216,6 +218,7 @@ export function configureFeatures() {
     ...evotingConfiguration.reducers,
     ...walletComposition.reducers,
     ...witnessConfiguration.reducers,
+    ...linkedOrganizationsConfiguration.reducers,
   });
 
   return {
@@ -242,7 +245,7 @@ export function configureFeatures() {
       [digitalCashComposition.identifier]: digitalCashComposition.context,
       [socialConfiguration.identifier]: socialConfiguration.context,
       [popchaConfiguration.identifier]: popchaConfiguration.context,
-      [linkedOrganizationsComposition.identifier]: linkedOrganizationsComposition.context,
+      [linkedOrganizationsConfiguration.identifier]: linkedOrganizationsConfiguration.context,
     },
   };
 }
