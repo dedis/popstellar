@@ -852,7 +852,7 @@ exports[`LinkedOrganizationsScreen input of correct organization details manuall
                                             "width": "100%",
                                           }
                                         }
-                                        value="{"lao_id":"fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=","public_key":"J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=","server_address":"wss://epfl.ch:9000/server","challenge":{"value":"82520f235f413b26571529f69d53d751335873efca97e15cd7c47d063ead830d","valid_until":1714491502}}"
+                                        value="{"lao_id":"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=","public_key":"J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="}"
                                         viewBox="0 0 256 256"
                                       />
                                       <View
@@ -861,15 +861,15 @@ exports[`LinkedOrganizationsScreen input of correct organization details manuall
                                             "alignItems": "center",
                                             "backgroundColor": "#3742fa",
                                             "borderRadius": 100,
-                                            "bottom": "27.9%",
+                                            "bottom": "32.4%",
                                             "display": "flex",
                                             "justifyContent": "center",
-                                            "left": "27.9%",
+                                            "left": "32.4%",
                                             "overflow": "hidden",
                                             "padding": "4",
                                             "position": "absolute",
-                                            "right": "27.9%",
-                                            "top": "27.9%",
+                                            "right": "32.4%",
+                                            "top": "32.4%",
                                           }
                                         }
                                       >
@@ -877,10 +877,8 @@ exports[`LinkedOrganizationsScreen input of correct organization details manuall
                                           style={
                                             [
                                               {
-                                                "color": "#000",
-                                                "fontSize": 20,
-                                                "lineHeight": 26,
-                                                "textAlign": "left",
+                                                "fontSize": 16,
+                                                "lineHeight": 20,
                                               },
                                               {
                                                 "textAlign": "center",
@@ -3108,7 +3106,7 @@ exports[`LinkedOrganizationsScreen opens modal on press join org 1`] = `
                                             "width": "100%",
                                           }
                                         }
-                                        value="{"lao_id":"fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=","public_key":"J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=","server_address":"wss://epfl.ch:9000/server","challenge":{"value":"82520f235f413b26571529f69d53d751335873efca97e15cd7c47d063ead830d","valid_until":1714491502}}"
+                                        value=""
                                         viewBox="0 0 256 256"
                                       />
                                       <View
@@ -3117,15 +3115,15 @@ exports[`LinkedOrganizationsScreen opens modal on press join org 1`] = `
                                             "alignItems": "center",
                                             "backgroundColor": "#3742fa",
                                             "borderRadius": 100,
-                                            "bottom": "27.9%",
+                                            "bottom": "32.4%",
                                             "display": "flex",
                                             "justifyContent": "center",
-                                            "left": "27.9%",
+                                            "left": "32.4%",
                                             "overflow": "hidden",
                                             "padding": "4",
                                             "position": "absolute",
-                                            "right": "27.9%",
-                                            "top": "27.9%",
+                                            "right": "32.4%",
+                                            "top": "32.4%",
                                           }
                                         }
                                       >
@@ -3133,10 +3131,8 @@ exports[`LinkedOrganizationsScreen opens modal on press join org 1`] = `
                                           style={
                                             [
                                               {
-                                                "color": "#000",
-                                                "fontSize": 20,
-                                                "lineHeight": 26,
-                                                "textAlign": "left",
+                                                "fontSize": 16,
+                                                "lineHeight": 20,
                                               },
                                               {
                                                 "textAlign": "center",

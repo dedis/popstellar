@@ -174,6 +174,9 @@ export function configureFeatures() {
     keyPairRegistry: keyPairRegistry,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
     useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
+    useCurrentLao: laoConfiguration.hooks.useCurrentLao,
+    getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
+    getLaoOrganizerBackendPublicKey: laoConfiguration.functions.getLaoOrganizerBackendPublicKey,
   });
 
   const laoComposition = lao.compose({
@@ -216,6 +219,7 @@ export function configureFeatures() {
     ...evotingConfiguration.reducers,
     ...walletComposition.reducers,
     ...witnessConfiguration.reducers,
+    ...linkedOrganizationsComposition.reducers,
   });
 
   return {

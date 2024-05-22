@@ -1,11 +1,11 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationConnExpect.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationExpect.json",
     "description": "Sent by an organizer client to its server, signals that a connection from a remote LAO is expected",
     "type": "object",
     "properties": {
         "object": {
-            "const": "conn"
+            "const": "federation"
         },
         "action": {
             "const": "expect"
@@ -17,7 +17,7 @@
         },
         "server_address": {
             "type": "string",
-            "pattern": "^(ws|wss):\\/\\/.*(:\\d{0,5})?\\/.*$",
+            "pattern": "^(ws|wss):\/\/.*(:\\d{0,5})?\/.*$",
             "$comment": "public address of the remote organizer server"
         },
         "public_key": {
@@ -26,20 +26,8 @@
             "$comment": "public key of the remote organizer"
         },
         "challenge": {
-            "type": "object",
-            "properties": {
-                "value": {
-                    "type": "string",
-                    "description": "The challenge value, which is a string of 32 random bytes encoded in base64 format"
-                },
-                "valid_until": {
-                    "type": "integer",
-                    "description": "[Timestamp] of the expiration time",
-                    "minimum": 0
-                }
-            },
-            "additionalProperties": false,
-            "required": ["value", "valid_until"]
+            "$ref": "../message.json",
+            "$comment": "message containing a FederationChallenge"
         }
     },
     "additionalProperties": false,

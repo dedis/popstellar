@@ -8,7 +8,7 @@ export interface OrganizationState {
   lao_id: HashState;
   server_address: string;
   public_key: PublicKeyState;
-  challenge: ChallengeState;
+  challenge?: ChallengeState;
 }
 
 export class Organization {
@@ -18,7 +18,7 @@ export class Organization {
 
   public readonly public_key: PublicKey;
 
-  public readonly challenge: Challenge;
+  public readonly challenge?: Challenge;
 
   constructor(org: OmitMethods<Organization>) {
     if (org === undefined || org === null) {
@@ -35,31 +35,43 @@ export class Organization {
     if (org.public_key === undefined) {
       throw new Error("Undefined 'public_key' when creating 'Organization'");
     }
-    if (org.challenge === undefined) {
-      throw new Error("Undefined 'challenge' when creating 'Organization'");
+    if (org.challenge) {
+      this.challenge = org.challenge;
     }
-
     this.lao_id = org.lao_id;
     this.server_address = org.server_address;
     this.public_key = org.public_key;
-    this.challenge = org.challenge;
   }
 
   public toState(): OrganizationState {
+    if (this.challenge) {
+      return {
+        lao_id: this.lao_id.toState(),
+        server_address: this.server_address,
+        public_key: this.public_key.toState(),
+        challenge: this.challenge.toState(),
+      };
+    }
     return {
       lao_id: this.lao_id.toState(),
       server_address: this.server_address,
       public_key: this.public_key.toState(),
-      challenge: this.challenge.toState(),
     };
   }
 
   public static fromState(orgState: OrganizationState): Organization {
+    if (orgState.challenge) {
+      return new Organization({
+        lao_id: Hash.fromState(orgState.lao_id),
+        server_address: orgState.server_address,
+        public_key: PublicKey.fromState(orgState.public_key),
+        challenge: Challenge.fromState(orgState.challenge),
+      });
+    }
     return new Organization({
       lao_id: Hash.fromState(orgState.lao_id),
       server_address: orgState.server_address,
       public_key: PublicKey.fromState(orgState.public_key),
-      challenge: Challenge.fromState(orgState.challenge),
     });
   }
 
@@ -69,23 +81,37 @@ export class Organization {
     if (errors !== null) {
       throw new ProtocolError(`Invalid Linked Organization QR Code\n\n${errors}`);
     }
+    if (obj.challenge) {
+      return new Organization({
+        lao_id: new Hash(obj.lao_id),
+        server_address: obj.server_address,
+        public_key: new PublicKey(obj.public_key),
+        challenge: Challenge.fromJson(obj.challenge),
+      });
+    }
     return new Organization({
       lao_id: new Hash(obj.lao_id),
       server_address: obj.server_address,
       public_key: new PublicKey(obj.public_key),
-      challenge: Challenge.fromJson(obj.challenge),
     });
   }
 
   public toJson(): string {
+    if (this.challenge) {
+      return JSON.stringify({
+        lao_id: this.lao_id,
+        server_address: this.server_address,
+        public_key: this.public_key.valueOf(),
+        challenge: {
+          value: this.challenge.value,
+          valid_until: this.challenge.valid_until.valueOf(),
+        },
+      });
+    }
     return JSON.stringify({
       lao_id: this.lao_id,
       server_address: this.server_address,
       public_key: this.public_key.valueOf(),
-      challenge: {
-        value: this.challenge.value,
-        valid_until: this.challenge.valid_until.valueOf(),
-      },
     });
   }
 }
