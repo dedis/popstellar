@@ -2,14 +2,10 @@ package standard_hub
 
 import (
 	"bytes"
-	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/websocket"
 	"io"
-	"net"
-	"net/http"
 	"os"
 	"path/filepath"
 	"popstellar/channel"
@@ -1960,75 +1956,8 @@ func Test_Handle_GreetServer_Already_Received(t *testing.T) {
 	require.NotEqual(t, serverInfo2, peersInfo[0])
 }
 
-// Test_ConnectToServerAsClient tests that a websocket connection to the given
-// address is created, and that messages sent using this client are received
-func Test_ConnectToServerAsClient(t *testing.T) {
-	listenAddress := "localhost:18004"
-	serverAddress := fmt.Sprintf("ws://%s/client", listenAddress)
-	keypair := generateKeyPair(t)
-
-	hub, err := NewHub(keypair.public, "", "", nolog, nil)
-	require.NoError(t, err)
-
-	msgCh := make(chan []byte, 1)
-	startCh := make(chan struct{}, 1)
-	startWsServer(t, listenAddress, msgCh, startCh)
-
-	// wait that the ws server has started listening
-	<-startCh
-
-	client, err := hub.ConnectToServerAsClient(serverAddress)
-	require.NoError(t, err)
-	require.IsType(t, &socket.ClientSocket{}, client)
-
-	randomMsg := make([]byte, 128)
-	_, _ = rand.Read(randomMsg)
-	client.Send(randomMsg)
-
-	select {
-	case m := <-msgCh:
-		assert.Equal(t, randomMsg, m)
-	case <-time.After(time.Second):
-		t.Errorf("Timed out waiting for expected message")
-	}
-}
-
 // -----------------------------------------------------------------------------
 // Utility functions
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
-
-func websocketHandler(t *testing.T, msgCh chan []byte) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		conn, err := upgrader.Upgrade(w, r, nil)
-		require.NoError(t, err)
-		defer conn.Close()
-
-		for {
-			mt, msg, err := conn.ReadMessage()
-			require.NoError(t, err)
-
-			require.Equal(t, websocket.TextMessage, mt)
-			msgCh <- msg
-		}
-	}
-}
-
-func startWsServer(t *testing.T, listenAddress string, msgCh chan []byte, startCh chan struct{}) {
-	http.HandleFunc("/client", websocketHandler(t, msgCh))
-	go func() {
-		listener, err := net.Listen("tcp", listenAddress)
-		require.NoError(t, err)
-
-		// signal that the ws server has started listening
-		startCh <- struct{}{}
-
-		err = http.Serve(listener, nil)
-		require.NoError(t, err)
-	}()
-}
 
 type keypair struct {
 	public    kyber.Point
