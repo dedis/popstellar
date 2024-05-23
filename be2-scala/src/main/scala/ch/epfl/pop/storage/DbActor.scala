@@ -171,7 +171,7 @@ final case class DbActor(
 
     val askAddresses = Await.ready(connectionMediator ? ConnectionMediator.ReadPeersClientAddress(), duration).value.get
     val addresses = askAddresses match {
-      case Success(ConnectionMediator.ReadPeersClientAddressAck(result)) => List.empty // result
+      case Success(ConnectionMediator.ReadPeersClientAddressAck(result)) => result
       case _                                                             => List.empty
     }
 
