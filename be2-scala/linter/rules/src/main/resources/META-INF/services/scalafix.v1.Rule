@@ -7,3 +7,4 @@ fix.IllegalFormatString
 fix.IncorrectNumberOfArgsToFormat
 fix.IncorrectlyNamedExceptions
 fix.LonelySealedTrait
+fix.MapGetAndGetOrElse
