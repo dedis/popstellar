@@ -2,12 +2,16 @@ package handler
 
 import (
 	"encoding/json"
+	"popstellar"
+	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/state"
 	"popstellar/message/answer"
 	"popstellar/message/query/method"
 	"popstellar/network/socket"
 	"strings"
 )
+
+const thresholdMessagesByRumor = 3
 
 func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	var publish method.Publish
@@ -29,9 +33,27 @@ func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return nil, nil
 	}
 
-	errAnswer = state.NotifyRumorSenderForNewMessage(publish.Params.Message.MessageID)
+	db, errAnswer := database.GetRumorSenderRepositoryInstance()
 	if errAnswer != nil {
-		return nil, errAnswer
+		popstellar.Logger.Error().Err(errAnswer)
+		return nil, nil
+	}
+
+	popstellar.Logger.Debug().Msgf("sender rumor need to add message %s", publish.Params.Message.MessageID)
+	nbMessagesInsideRumor, err := db.AddMessageToMyRumor(publish.Params.Message.MessageID)
+	if err != nil {
+		popstellar.Logger.Error().Err(err)
+		return nil, nil
+	}
+
+	if nbMessagesInsideRumor < thresholdMessagesByRumor {
+		popstellar.Logger.Debug().Msgf("no enough message to send rumor %s", publish.Params.Message.MessageID)
+		return nil, nil
+	}
+
+	errAnswer = state.NotifyResetRumorSender()
+	if errAnswer != nil {
+		popstellar.Logger.Error().Err(errAnswer)
 	}
 
 	return nil, nil

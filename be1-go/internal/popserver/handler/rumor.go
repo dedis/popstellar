@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"popstellar"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/utils"
 	"popstellar/message/answer"
 	"popstellar/message/query/method"
@@ -41,6 +42,8 @@ func handleRumor(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	}
 
 	socket.SendResult(rumor.ID, nil, nil)
+
+	SendRumor(socket, rumor)
 
 	processedMsgs := tryHandlingMessagesByChannel(rumor.Params.Messages)
 
@@ -124,4 +127,32 @@ func sortChannels(msgsByChannel map[string][]message.Message) []string {
 		return len(sortedChannelIDs[i]) < len(sortedChannelIDs[j])
 	})
 	return sortedChannelIDs
+}
+
+func SendRumor(socket socket.Socket, rumor method.Rumor) {
+	id, errAnswer := state.GetNextID()
+	if errAnswer != nil {
+		popstellar.Logger.Error().Err(errAnswer)
+		return
+	}
+
+	rumor.ID = id
+
+	errAnswer = state.AddRumorQuery(id, rumor)
+	if errAnswer != nil {
+		popstellar.Logger.Error().Err(errAnswer)
+		return
+	}
+
+	buf, err := json.Marshal(rumor)
+	if err != nil {
+		popstellar.Logger.Error().Err(err)
+		return
+	}
+
+	popstellar.Logger.Debug().Msgf("sending rumor %s-%d query %d", rumor.Params.SenderID, rumor.Params.RumorID, rumor.ID)
+	errAnswer = state.SendRumor(socket, rumor.Params.SenderID, rumor.Params.RumorID, buf)
+	if errAnswer != nil {
+		popstellar.Logger.Err(errAnswer)
+	}
 }

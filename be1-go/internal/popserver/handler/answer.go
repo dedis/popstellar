@@ -82,7 +82,18 @@ func handleRumorAnswer(msg answer.Answer) *answer.Error {
 		popstellar.Logger.Debug().Msgf("continue mongering rumor query %d", *msg.ID)
 	}
 
-	return state.NotifyRumorSenderForAgain(*msg.ID)
+	popstellar.Logger.Debug().Msgf("sender rumor need to continue sending query %d", *msg.ID)
+	rumor, ok, errAnswer := state.GetRumorFromPastQuery(*msg.ID)
+	if errAnswer != nil {
+		return errAnswer
+	}
+	if !ok {
+		return answer.NewInternalServerError("rumor query %d doesn't exist", *msg.ID)
+	}
+
+	SendRumor(nil, rumor)
+
+	return nil
 }
 
 func handleGetMessagesByIDAnswer(msg answer.Answer) *answer.Error {

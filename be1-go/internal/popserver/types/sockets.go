@@ -1,28 +1,48 @@
 package types
 
 import (
+	"fmt"
+	"math/rand"
 	"popstellar"
 	"popstellar/network/socket"
 	"sync"
 )
 
 // NewSockets returns a new initialized Sockets
-func NewSockets() Sockets {
-	return Sockets{
-		rumorFirstSocket:      make(map[int]string),
-		nextSocketToSendRumor: 0,
-		socketIDs:             make([]string, 0),
-		store:                 make(map[string]socket.Socket),
+func NewSockets() *Sockets {
+	return &Sockets{
+		rState:    make(map[string]rumorState),
+		socketIDs: make([]string, 0),
+		store:     make(map[string]socket.Socket),
 	}
+}
+
+type rumorState struct {
+	counter      int
+	index        int
+	bannedSocket string
 }
 
 // Sockets provides thread-functionalities around a socket store.
 type Sockets struct {
 	sync.RWMutex
-	rumorFirstSocket      map[int]string
-	nextSocketToSendRumor int
-	socketIDs             []string
-	store                 map[string]socket.Socket
+	rState    map[string]rumorState
+	socketIDs []string
+	store     map[string]socket.Socket
+}
+
+func (s *Sockets) newRumorState(socket socket.Socket) rumorState {
+	bannedSocket := ""
+
+	if socket != nil {
+		bannedSocket = socket.ID()
+	}
+
+	return rumorState{
+		counter:      0,
+		index:        rand.Intn(len(s.store)),
+		bannedSocket: bannedSocket,
+	}
 }
 
 // Len returns the number of Sockets.
@@ -40,7 +60,7 @@ func (s *Sockets) SendToAll(buf []byte) {
 	}
 }
 
-func (s *Sockets) SendRumor(rumorID int, buf []byte) {
+func (s *Sockets) SendRumor(socket socket.Socket, senderID string, rumorID int, buf []byte) {
 	s.Lock()
 	defer s.Unlock()
 
@@ -48,19 +68,36 @@ func (s *Sockets) SendRumor(rumorID int, buf []byte) {
 		return
 	}
 
-	socketID := s.socketIDs[s.nextSocketToSendRumor]
+	senderRumorID := fmt.Sprintf("%s%d", senderID, rumorID)
 
-	firstSocketID, ok := s.rumorFirstSocket[rumorID]
+	rState, ok := s.rState[senderRumorID]
 	if !ok {
-		s.rumorFirstSocket[rumorID] = socketID
-	} else if firstSocketID == socketID {
+		rState = s.newRumorState(socket)
+		s.rState[senderRumorID] = rState
+	} else {
+		// to be sure to not overflow
+		rState.index %= len(s.store)
+		s.rState[senderRumorID] = rState
+	}
+
+	if s.socketIDs[rState.index] == rState.bannedSocket {
+		rState.index += 1
+		rState.index %= len(s.store)
+		rState.counter += 1
+		s.rState[senderRumorID] = rState
+	}
+
+	if rState.counter >= len(s.store) {
 		popstellar.Logger.Debug().Msgf("stop sending rumor because completed cycle")
 		return
 	}
 
-	s.nextSocketToSendRumor = (s.nextSocketToSendRumor + 1) % len(s.socketIDs)
+	s.store[s.socketIDs[rState.index]].Send(buf)
 
-	s.store[socketID].Send(buf)
+	rState.index += 1
+	rState.index %= len(s.store)
+	rState.counter += 1
+	s.rState[senderRumorID] = rState
 }
 
 // Upsert upserts a socket into the Sockets store.
