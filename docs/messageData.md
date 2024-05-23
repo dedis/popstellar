@@ -2219,6 +2219,9 @@ protocol, the reaction will always exist in historical records of the reactions�
   "required": ["object", "action", "reaction_id", "timestamp"]
 }
 ```
+## Top chirps
+
+As mentioned in the catchup message section in `protocol.md`, to request top chirps, a catchup message should be sent to the subchannel `/root/{lao_id}/social/top_chirps`, where the server responds with the top 3 chirps among those that it has ranked by reactions. Where '👍' is a +1, '👎' is a -1, and '❤️' is a +1.   
 
 ## Consensus (introduction)
 
