@@ -3,7 +3,8 @@ package be.utils;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.nio.file.Files;
+import java.io.IOException;
 
 public class GoServer extends Server implements Configurable {
   private String dbPath;
@@ -14,17 +15,22 @@ public class GoServer extends Server implements Configurable {
   }
 
   public GoServer() {
-    this("localhost", 9000, 9001, 9100, Paths.get("..", "..", "be1-go", "database-a").toString(), null);
+    this("localhost", 9000, 9001, 9100, null, null);
   }
 
   @Override
-  public String[] getCmd() {
+  public String[] getCmd() throws IOException {
     Map<String, String> args = new HashMap<>();
     args.put("client-port", String.valueOf(clientPort));
     args.put("server-port", String.valueOf(serverPort));
     args.put("auth-port", String.valueOf(authPort));
     args.put("server-public-address", host);
     args.put("server-listen-address", host);
+
+    if (dbPath == null) {
+      dbPath = Files.createTempFile("go_database", ".sqlite").toString();
+    }
+    args.put("database-path", dbPath);
 
     if (peers.size() > 0) {
       args.put("other-servers", String.join(",", peers));
@@ -57,6 +63,12 @@ public class GoServer extends Server implements Configurable {
 
   @Override
   public void deleteDatabaseDir() {
-    System.out.println("No database to delete");
+    if (dbPath != null) {
+      try {
+        Files.deleteIfExists(Paths.get(dbPath));
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
   }
 }
