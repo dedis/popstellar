@@ -238,13 +238,14 @@ object HighLevelProtocol extends DefaultJsonProtocol {
         case Seq(channel @ JsString(_), numberOfMessages @ JsNumber(_), beforeMessageID @ JsString(_)) =>
           PagedCatchup(
             channel.convertTo[Channel],
-            numberOfMessages.convertTo[String],
+            numberOfMessages.convertTo[Int],
             beforeMessageID.convertTo[Option[String]]
           )
         case Seq(channel @ JsString(_), numberOfMessages @ JsNumber(_)) =>
           PagedCatchup(
             channel.convertTo[Channel],
-            numberOfMessages.convertTo[String]
+            numberOfMessages.convertTo[Int],
+            null
           )
         case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a PagedCatchup object")
       }
@@ -257,14 +258,14 @@ object HighLevelProtocol extends DefaultJsonProtocol {
           PARAM_NUMBER_OF_MESSAGES -> obj.numberOfMessages.toJson,
           PARAM_BEFORE_MESSAGE_ID -> obj.beforeMessageID.toJson
         )
+        JsObject(jsObjContent)
       } else {
         val jsObjContent: ListMap[String, JsValue] = ListMap[String, JsValue](
           PARAM_CHANNEL -> obj.channel.toJson,
           PARAM_NUMBER_OF_MESSAGES -> obj.numberOfMessages.toJson
         )
+        JsObject(jsObjContent)
       }
-
-      JsObject(jsObjContent)
     }
 
   }

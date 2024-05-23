@@ -1,5 +1,8 @@
 package ch.epfl.pop.storage
 
+import akka.actor.{Actor, ActorLogging, ActorRef, Status}
+import akka.event.LoggingReceive
+import akka.pattern.AskableActorRef
 import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
@@ -227,7 +230,7 @@ final case class DbActor(
   private def pagedCatchupChannel(channel: Channel, numberOfMessages: Int, beforeMessageID: Option[String]): List[Message] = {
 
     @scala.annotation.tailrec
-    def buildPagedCatchupList(msgIds: List[Hash], acc: List[Message], channelToPage: channel): List[Message] = {
+    def buildPagedCatchupList(msgIds: List[Hash], acc: List[Message], channelToPage: Channel): List[Message] = {
       msgIds match {
         case Nil => acc
         case head :: tail =>
@@ -246,7 +249,7 @@ final case class DbActor(
 
     chirpsPattern.findFirstMatchIn(channel.toString) match {
       case Some(_) => {
-        val chirpsChannel = s"/root/${channel.decodeChannelLaoId}/social/chirps"
+        val chirpsChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/chirps")
 
         val channelData: ChannelData = readChannelData(chirpsChannel)
 
@@ -262,13 +265,13 @@ final case class DbActor(
         }
 
         // sort from oldest to newest message
-        val sortedPagedList = pagedCatchupList.sortBy(msg => -AddChirp.buildFromJson(msg.toJsonString).timestamp)
+        var sortedPagedList = pagedCatchupList.sortBy(msg => AddChirp.buildFromJson(msg.toJsonString).timestamp.toString).reverse
 
         beforeMessageID match {
           case Some(msgID) => {
             val indexOfMessage = sortedPagedList.indexOf(msgID)
             if (indexOfMessage != -1 && indexOfMessage != 0) {
-              val startingIndex = indexOfMessage - numberOfMessages
+              var startingIndex = indexOfMessage - numberOfMessages
               if (startingIndex < 0) {
                 startingIndex = 0
               }
@@ -276,7 +279,7 @@ final case class DbActor(
             }
           }
           case None => {
-            val startingIndex = sortedPagedList.length - numberOfMessages
+            var startingIndex = sortedPagedList.length - numberOfMessages
             if (startingIndex < 0) {
               startingIndex = 0
             }
@@ -293,7 +296,7 @@ final case class DbActor(
     profilePattern.findFirstMatchIn(channel.toString) match {
       case Some(_) => {
         val profilePublicKey = channel.toString.split("/")(5)
-        val profileChannel = s"/root/${channel.decodeChannelLaoId}/social/${profilePublicKey}"
+        val profileChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/${profilePublicKey}")
 
         val channelData: ChannelData = readChannelData(profileChannel)
 
@@ -309,13 +312,13 @@ final case class DbActor(
         }
 
         // sort from oldest to newest message
-        val sortedPagedList = pagedCatchupList.sortBy(msg => -AddChirp.buildFromJson(msg.toJsonString).timestamp)
+        var sortedPagedList = pagedCatchupList.sortBy(msg => AddChirp.buildFromJson(msg.toJsonString).timestamp.toString).reverse
 
         beforeMessageID match {
           case Some(msgID) => {
             val indexOfMessage = sortedPagedList.indexOf(msgID)
             if (indexOfMessage != -1 && indexOfMessage != 0) {
-              val startingIndex = indexOfMessage - numberOfMessages
+              var startingIndex = indexOfMessage - numberOfMessages
               if (startingIndex < 0) {
                 startingIndex = 0
               }
@@ -323,7 +326,7 @@ final case class DbActor(
             }
           }
           case None => {
-            val startingIndex = sortedPagedList.length - numberOfMessages
+            var startingIndex = sortedPagedList.length - numberOfMessages
             if (startingIndex < 0) {
               startingIndex = 0
             }
