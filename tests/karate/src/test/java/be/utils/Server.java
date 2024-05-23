@@ -41,16 +41,51 @@ public abstract class Server implements Runnable {
     this.logPath = logPath;
   }
 
+  /**
+   * Adds a peer to the server
+   *
+   * @param peer server to add as peer
+   */
   public void addPeer(Server peer) {
     peers.add(peer.host + ":" + peer.serverPort);
   }
 
+  /**
+   * Pair two servers together.
+   * Equivalent to calling addPeer on both servers.
+   *
+   * @param peer server to pair with
+   */
+  public void pairWith(Server peer) {
+    addPeer(peer);
+    peer.addPeer(this);
+  }
+
+  /**
+   * Get the server port
+   *
+   * @return server port
+   */
   public int getServerPort() {
     return serverPort;
   }
 
+  /**
+   * Get the host
+   *
+   * @return host
+   */
   public String getHost() {
     return host;
+  }
+
+  /**
+   * Get the log path
+   *
+   * @return log path
+   */
+  public String getLogPath() {
+    return logPath;
   }
 
   /**
@@ -127,15 +162,6 @@ public abstract class Server implements Runnable {
     return process.isAlive();
   }
 
-  @Override
-  public boolean start() throws IOException {
-    return start(getCmd(), getDir(), getLogPath());
-  }
-
-  public abstract String[] getCmd() throws IOException;
-
-  public abstract String getDir();
-
   /**
    * Runs the server command in specified directory
    *
@@ -145,6 +171,16 @@ public abstract class Server implements Runnable {
    */
   public boolean start(String[] cmd, String dir) {
     return start(cmd, dir, null);
+  }
+
+  /**
+   * Runs the server command in specified directory
+   *
+   * @return true if the server has started correctly, false otherwise
+   */
+  @Override
+  public boolean start() throws IOException {
+    return start(getCmd(), getDir(), getLogPath());
   }
 
   /**
@@ -174,16 +210,27 @@ public abstract class Server implements Runnable {
       return false;
     }
   }
-   /**
-   * Deletes database of the server
+
+  /**
+   * Deletes the database directory
    */
   public abstract void deleteDatabaseDir();
 
+  /**
+   * Get the command to start the server
+   *
+   * @return command to start the server
+   */
+  public abstract String[] getCmd() throws IOException;
+
+  /**
+   * Get the directory where the server is located
+   *
+   * @return directory where the server is located
+   */
+  public abstract String getDir();
+
   public static boolean isWindowsOS() {
     return System.getProperty("os.name").toLowerCase().contains("windows");
-  }
-
-  public String getLogPath() {
-    return logPath;
   }
 }
