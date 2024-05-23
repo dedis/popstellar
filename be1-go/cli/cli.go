@@ -71,14 +71,6 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 		s.ServerAddress = fmt.Sprintf("ws://%s:%d/server", s.PublicAddress, s.ServerPort)
 	}
 
-	if s.DatabasePath == "" {
-		if s.ClientPort == 9002 {
-			s.DatabasePath = "./database-b/" + sqlite.DefaultPath
-		} else {
-			s.DatabasePath = "./database-a/" + sqlite.DefaultPath
-		}
-	}
-
 	var point kyber.Point = nil
 	err := ownerKey(s.PublicKey, &point)
 	if err != nil {

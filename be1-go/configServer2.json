@@ -10,5 +10,6 @@
     "auth-port"                            : 9101,
     "other-servers": [
         "localhost:9001"
-    ]
+    ],
+    "database-path"                        : "./database-b/sqlite.db"
 }
