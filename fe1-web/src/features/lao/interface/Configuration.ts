@@ -129,7 +129,7 @@ export interface LaoConfigurationInterface extends FeatureInterface {
     useDisconnectFromLao: () => () => void;
 
     /**
-     * Returns a map from lao ids to the respective name
+     * Returns a map from lao id to the respective name
      */
     useNamesByLaoId: () => { [laoId: string]: string };
   };
