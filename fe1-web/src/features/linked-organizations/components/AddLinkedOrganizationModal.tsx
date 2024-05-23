@@ -156,8 +156,6 @@ const AddLinkedOrganizationModal = () => {
     try {
       // Data of the Linked Organization that was just scanned
       const scannedLinkedOrganization = LinkedOrganization.fromJson(JSON.parse(qrcodeChecked));
-      setShowScanner(false);
-      setShowQRScannerModal(false);
       if (isInitiatingOrganizer) {
         getQRCodeData();
         setShowQRCodeModal(true);
@@ -166,6 +164,8 @@ const AddLinkedOrganizationModal = () => {
         onFederationExpect(scannedLinkedOrganization);
         navigation.navigate(STRINGS.navigation_linked_organizations);
       }
+      setShowScanner(false);
+      setShowQRScannerModal(false);
       toast.show(`QR Code successfully scanned`, {
         type: 'success',
         placement: 'bottom',
@@ -227,9 +227,9 @@ const AddLinkedOrganizationModal = () => {
             <PoPButton
               testID="show-qr-code"
               onPress={() => {
+                getQRCodeData();
                 setShowQRCodeModal(true);
                 setIsInitiatingOrganizer(false);
-                getQRCodeData();
                 setShowModal(false);
               }}
               buttonStyle="primary"
@@ -243,9 +243,9 @@ const AddLinkedOrganizationModal = () => {
             testID="show-scanner"
             buttonStyle="tertiary"
             onPress={() => {
+              setIsInitiatingOrganizer(true);
               setShowQRScannerModal(true);
               setShowScanner(true);
-              setIsInitiatingOrganizer(true);
               setShowModal(false);
             }}
             disabled={false}>
@@ -265,13 +265,13 @@ const AddLinkedOrganizationModal = () => {
         qrCodeData={qrCodeData}
         isInitiatingOrganizer={isInitiatingOrganizer}
         onNext={() => {
-          setShowQRCodeModal(false);
           if (!isInitiatingOrganizer) {
             setShowQRScannerModal(true);
             setShowScanner(true);
           } else {
             navigation.navigate(STRINGS.navigation_linked_organizations);
           }
+          setShowQRCodeModal(false);
         }}
       />
       <QRCodeScannerModal
