@@ -92,7 +92,7 @@ func (h *Hub) Start() {
 		defer h.wg.Done()
 		defer popstellar.Logger.Info().Msg("stopping rumor sender")
 
-		popstellar.Logger.Debug().Msg("starting rumor sender")
+		popstellar.Logger.Info().Msg("starting rumor sender")
 
 		reset, errAnswer := state.GetResetRumorSender()
 		if errAnswer != nil {
@@ -225,7 +225,7 @@ func (h *Hub) tryToSendRumor() {
 		return
 	}
 	if !ok {
-		popstellar.Logger.Info().Msg("no new rumor to send")
+		popstellar.Logger.Debug().Msg("no new rumor to send")
 		return
 	}
 
