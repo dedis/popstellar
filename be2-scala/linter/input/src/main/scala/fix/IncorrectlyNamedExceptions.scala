@@ -3,6 +3,7 @@ rule = IncorrectlyNamedExceptions
  */
 package fix
 
+// Test values taken from Scapegoat test
 object IncorrectlyNamedExceptions {
   class NotException // scalafix: ok;
 

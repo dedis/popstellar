@@ -3,6 +3,7 @@ rule = LonelySealedTrait
  */
 package fix
 
+// Test values taken from Scapegoat test
 object LonelySealedTrait {
 
   sealed trait NoImpl // assert: LonelySealedTrait
