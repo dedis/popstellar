@@ -6,3 +6,4 @@ fix.ImpossibleOptionSizeCondition
 fix.IllegalFormatString
 fix.IncorrectNumberOfArgsToFormat
 fix.IncorrectlyNamedExceptions
+fix.LonelySealedTrait
