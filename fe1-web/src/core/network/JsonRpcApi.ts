@@ -58,7 +58,7 @@ export async function publish(
     }),
     id: AUTO_ASSIGN_ID,
   });
-  
+
   await getNetworkManager().sendPayload(request, connections);
 }
 
