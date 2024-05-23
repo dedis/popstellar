@@ -78,7 +78,7 @@ Feature: Open an Election
   # if an open election message is sent by a non-organizer
   @electionOpen4
   Scenario: Non organizer opening the election should result in an error
-    Given def notOrganizer = call createMockClient
+    Given def notOrganizer = call createMockFrontend
     And def validElectionOpen =
       """
         {
