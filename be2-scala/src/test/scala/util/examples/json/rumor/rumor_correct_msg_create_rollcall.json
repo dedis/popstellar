@@ -1,0 +1,36 @@
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "rumor",
+  "params": {
+    "sender_id" : "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+    "rumor_id" : 1,
+    "messages" : {
+      "/root/ceHTqZJb51sgryoxygl-nwuMQLWF3xQ_W29fclqvwis=": [
+        {
+          "data": "eyJvYmplY3QiOiJtZWV0aW5nIiwiYWN0aW9uIjoiY3JlYXRlIiwibmFtZSI6Im5ldyBtZWV0aW5nIiwiY3JlYXRpb24iOjE3MTUxMTI4MDEsImxvY2F0aW9uIjoiQkM0MTAiLCJzdGFydCI6MTcxNTExMjgwMSwiZW5kIjoxNzE1MTE2Mzg5LCJpZCI6IjFBSzJ6NXFQdi1BZGliMjNYeDhzckRVUnQtckw1RzBiRXg3cV9Od1RRU1E9In0=",
+          "message_id": "xTraLPJgPXpUYNG0h0gzNOBSUDI7oebqCtzJDYHD0FE=",
+          "sender": "zsdFSPBgcohg17wiRm3VJ6FAE1UHj7el2xTD1-MkgHM=",
+          "signature": "9vZBJMzeGQ93Wc6bXB6AUHC5O8yb1dKXkX-OvP9blM_f3Q_HpEtqNiw9Xf-tjkt3yPlq1s3bmK06ar8fEL4kCw==",
+          "witness_signatures": []
+        },
+        {
+          "data": "eyJvYmplY3QiOiJyb2xsX2NhbGwiLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoibmV3Um9sbENhbGwiLCJjcmVhdGlvbiI6MTcxNTExMzEyNCwicHJvcG9zZWRfc3RhcnQiOjE3MTUxMTMxMjQsInByb3Bvc2VkX2VuZCI6MTcxNTExNjY2OSwibG9jYXRpb24iOiJCQzQxMCIsImRlc2NyaXB0aW9uIjoibmV3IHJvbGwgY2FsbCIsImlkIjoiSmJCZk1ManAwU0tGRlh4YzZNdTVxUVdWNzFPR0lBMEhDa3E5bUwyeThDND0ifQ==",
+          "message_id": "L9yYdabmrnGYV56-HZSfzE_Vw8MNP2DKITyhgSbXu04=",
+          "sender": "zsdFSPBgcohg17wiRm3VJ6FAE1UHj7el2xTD1-MkgHM=",
+          "signature": "Dgg9TzFBVrMUYx71ysWZxPDtimw8TEhYBPAsyZU4FWwyUY8vfOmr-MraNKAUj2XDTbm0TijkzEGo2aVx1JZdAg==",
+          "witness_signatures": []
+        }
+      ],
+      "/root": [
+        {
+          "data": "eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoibmV3T3JnIiwiY3JlYXRpb24iOjE3MTUxMTI3NTUsIm9yZ2FuaXplciI6InpzZEZTUEJnY29oZzE3d2lSbTNWSjZGQUUxVUhqN2VsMnhURDEtTWtnSE09Iiwid2l0bmVzc2VzIjpbXSwiaWQiOiJjZUhUcVpKYjUxc2dyeW94eWdsLW53dU1RTFdGM3hRX1cyOWZjbHF2d2lzPSJ9",
+          "message_id": "NLsLn_VwL9zBqCOZC131OlS_xh0xwGt8KiJXpFZGftk=",
+          "sender": "zsdFSPBgcohg17wiRm3VJ6FAE1UHj7el2xTD1-MkgHM=",
+          "signature": "JEQubIvBJCpoADClMey3X8zd8NpRmUK5qDeARYORW9yv9G09k22I4ACBk_zW_QJis9kxxWcaUtHgEsi9YffoDg==",
+          "witness_signatures": []
+        }
+      ]
+    }
+  }
+}
