@@ -92,25 +92,7 @@ func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
 		return SQLite{}, err
 	}
 
-	_, err = tx.Exec(createRumor)
-	if err != nil {
-		db.Close()
-		return SQLite{}, err
-	}
-
-	_, err = tx.Exec(createMessageRumor)
-	if err != nil {
-		db.Close()
-		return SQLite{}, err
-	}
-
-	_, err = tx.Exec(createUnprocessedMessage)
-	if err != nil {
-		db.Close()
-		return SQLite{}, err
-	}
-
-	_, err = tx.Exec(createUnprocessedMessageRumor)
+	err = initRumorTables(tx)
 	if err != nil {
 		db.Close()
 		return SQLite{}, err
@@ -123,6 +105,30 @@ func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
 	}
 
 	return SQLite{database: db}, nil
+}
+
+func initRumorTables(tx *sql.Tx) error {
+	_, err := tx.Exec(createRumor)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(createMessageRumor)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(createUnprocessedMessage)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(createUnprocessedMessageRumor)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Close closes the SQLite database.
