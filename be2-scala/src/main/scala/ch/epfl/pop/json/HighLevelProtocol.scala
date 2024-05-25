@@ -117,6 +117,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
         case paramsWithMap: ParamsWithMap         => paramsWithMap.toJson
         case greetServer: GreetServer             => greetServer.toJson(GreetServerFormat)
         case rumor: Rumor                         => rumor.toJson(RumorFormat)
+        case rumorState: RumorState               => rumorState.toJson(RumorStateFormat)
       }
 
   }
@@ -225,6 +226,22 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       JsObject(jsObjContent)
     }
 
+  }
+
+  implicit object RumorStateFormat extends RootJsonFormat[RumorState] {
+
+    final private val PARAM_STATE = "state"
+
+    override def read(json: JsValue): RumorState = {
+      json.asJsObject.getFields(PARAM_STATE) match
+        case Seq(stateObject @ JsObject(_)) =>
+          val state: Map[PublicKey, Int] = stateObject.fields.map((pk, rumorId) => (PublicKey(Base64Data(pk)), rumorId.convertTo[Int]))
+          RumorState(state)
+    }
+    override def write(rumorState: RumorState): JsValue = {
+      val rumorStateObject = rumorState.state.map((pk, rumorId) => pk.base64Data.data -> rumorId.toJson)
+      JsObject.apply(rumorStateObject)
+    }
   }
 
   implicit val errorObjectFormat: JsonFormat[ErrorObject] = jsonFormat2(ErrorObject.apply)
