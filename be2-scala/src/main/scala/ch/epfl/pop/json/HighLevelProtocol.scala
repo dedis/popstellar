@@ -237,10 +237,11 @@ object HighLevelProtocol extends DefaultJsonProtocol {
         case Seq(stateObject @ JsObject(_)) =>
           val state: Map[PublicKey, Int] = stateObject.fields.map((pk, rumorId) => (PublicKey(Base64Data(pk)), rumorId.convertTo[Int]))
           RumorState(state)
+        case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a RumorState object")
     }
     override def write(rumorState: RumorState): JsValue = {
-      val rumorStateObject = rumorState.state.map((pk, rumorId) => pk.base64Data.data -> rumorId.toJson)
-      JsObject.apply(rumorStateObject)
+      val rumorStateObject = JsObject(rumorState.state.map((pk, rumorId) => pk.base64Data.data -> rumorId.toJson))
+      JsObject(PARAM_STATE -> rumorStateObject)
     }
   }
 
@@ -281,7 +282,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
           case MethodType.catchup            => paramsJsObject.convertTo[Catchup]
           case MethodType.get_messages_by_id => paramsJsObject.convertTo[GetMessagesById]
           case MethodType.rumor              => paramsJsObject.convertTo[Rumor]
-          case MethodType.rumor_state => paramsJsObject.convertTo[RumorState]
+          case MethodType.rumor_state        => paramsJsObject.convertTo[RumorState]
           case _                             => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
 
