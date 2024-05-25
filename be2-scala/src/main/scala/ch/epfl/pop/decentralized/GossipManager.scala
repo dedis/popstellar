@@ -137,6 +137,8 @@ final case class GossipManager(
       log.info(s"Actor (gossip) $self will not be able to start rumors because it has no publicKey")
   }
 
+  private def handleRumorState(jsonRpcRequest: JsonRpcRequest): Unit = ???
+
   override def receive: Receive = {
     case GossipManager.HandleRumor(jsonRpcRequest: JsonRpcRequest) =>
       handleRumor(jsonRpcRequest)
@@ -146,6 +148,9 @@ final case class GossipManager(
 
     case GossipManager.StartGossip(messages) =>
       startGossip(messages)
+
+    case GossipManager.HandleRumorState(jsonRpcRequest) =>
+      handleRumorState(jsonRpcRequest)
 
     case _ =>
       log.info(s"Actor $self received an unexpected message")
@@ -174,20 +179,32 @@ object GossipManager extends AskPatternConstants {
     case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"GossipManager received an unexpected message:$graphMessage while monitoring responses", None))
   }
 
-  def startGossip(gossipManager: AskableActorRef, actorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+  def startGossip(gossipManager: AskableActorRef, clientRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcRequest: JsonRpcRequest) =>
       jsonRpcRequest.getParamsMessage match
         case Some(message) =>
           // Start gossiping only if message comes from a real actor (and not from processing pipeline)
-          if (actorRef != Actor.noSender)
+          if (clientRef != Actor.noSender)
             gossipManager ? StartGossip(Map(jsonRpcRequest.getParamsChannel -> List(message)))
         case None => /* Do nothing */
       Right(jsonRpcRequest)
     case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"GossipManager received an unexpected message:$graphMessage while starting gossiping", None))
   }
 
+  def rumorStateHandler(gossipManager: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+    case Right(jsonRpcRequest: JsonRpcRequest) =>
+      jsonRpcRequest.method match
+        case MethodType.rumor_state =>
+          gossipManager ? HandleRumorState(jsonRpcRequest)
+          Right(jsonRpcRequest)
+        case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"GossipManager received a message with unexpected method :$graphMessage while waiting for RumorState", None))
+    case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"GossipManager received an unexpected message:$graphMessage while waiting for RumorState", None))
+
+  }
+
   sealed trait Event
   final case class HandleRumor(jsonRpcRequest: JsonRpcRequest)
+  final case class HandleRumorState(jsonRpcRequest: JsonRpcRequest)
   final case class ManageGossipResponse(jsonRpcResponse: JsonRpcResponse)
   final case class StartGossip(messages: Map[Channel, List[Message]])
 
