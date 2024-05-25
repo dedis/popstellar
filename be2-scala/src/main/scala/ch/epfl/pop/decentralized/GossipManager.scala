@@ -7,7 +7,7 @@ import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.decentralized.{ConnectionMediator, GossipManager}
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
+import ch.epfl.pop.model.network.method.{GreetServer, Rumor, RumorState}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey, RumorData}
 import ch.epfl.pop.pubsub.AskPatternConstants
@@ -137,7 +137,10 @@ final case class GossipManager(
       log.info(s"Actor (gossip) $self will not be able to start rumors because it has no publicKey")
   }
 
-  private def handleRumorState(jsonRpcRequest: JsonRpcRequest): Unit = ???
+  private def handleRumorState(jsonRpcRequest: JsonRpcRequest): Unit = {
+    val rumorState = jsonRpcRequest.getParams.asInstanceOf[RumorState]
+
+  }
 
   override def receive: Receive = {
     case GossipManager.HandleRumor(jsonRpcRequest: JsonRpcRequest) =>
