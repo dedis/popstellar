@@ -6,7 +6,7 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
-import ch.epfl.pop.model.network.method.Rumor
+import ch.epfl.pop.model.network.method.{Rumor, RumorState}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
@@ -423,6 +423,21 @@ final case class DbActor(
       storage.write(generateRumorDataKey(rumor.senderPk) -> rumorData.updateWith(rumor.rumorId).toJsonString)
       storage.write(generateRumorKey(rumor.senderPk, rumor.rumorId) -> rumor.toJsonString)
     }
+  }
+
+  private def generateRumorStateAns(rumorState: RumorState): List[Rumor] = {
+    rumorState.state.flatMap { (publicKey, rumorId) =>
+      val rumorData: RumorData = readRumorData(publicKey)
+      val lastDbId = rumorData.lastRumorId()
+      if (lastDbId > rumorId) {
+        val missingIds = List.range(rumorId + 1, lastDbId)
+        missingIds.map { id =>
+          readRumor((publicKey, id)).get
+        }
+      } else {
+        List.empty[Rumor]
+      }
+    }.toList
   }
 
   override def receive: Receive = LoggingReceive {
