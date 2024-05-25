@@ -281,6 +281,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
           case MethodType.catchup            => paramsJsObject.convertTo[Catchup]
           case MethodType.get_messages_by_id => paramsJsObject.convertTo[GetMessagesById]
           case MethodType.rumor              => paramsJsObject.convertTo[Rumor]
+          case MethodType.rumor_state => paramsJsObject.convertTo[RumorState]
           case _                             => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
 
