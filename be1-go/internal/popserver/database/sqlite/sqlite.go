@@ -1316,6 +1316,7 @@ func (s *SQLite) GetUnprocessedMessagesByChannel() (map[string][]message.Message
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	result := make(map[string][]message.Message)
 
@@ -1376,6 +1377,7 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
 		popstellar.Logger.Error().Msg("1")
 		return false, method.Rumor{}, err
 	}
+	defer rows.Close()
 
 	messages := make(map[string][]message.Message)
 	for rows.Next() {
@@ -1405,23 +1407,7 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
 		return false, method.Rumor{}, err
 	}
 
-	popstellar.Logger.Info().Msg(string(sender))
-
-	params := method.ParamsRumor{
-		RumorID:  rumorID,
-		SenderID: base64.URLEncoding.EncodeToString(sender),
-		Messages: messages,
-	}
-
-	rumor := method.Rumor{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: "rumor",
-		},
-		Params: params,
-	}
+	rumor := newRumor(rumorID, sender, messages)
 
 	_, err = tx.Exec(insertRumor, rumorID+1, sender)
 	if err != nil {
@@ -1434,4 +1420,22 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
 	}
 
 	return true, rumor, nil
+}
+
+func newRumor(rumorID int, sender []byte, messages map[string][]message.Message) method.Rumor {
+	params := method.ParamsRumor{
+		RumorID:  rumorID,
+		SenderID: base64.URLEncoding.EncodeToString(sender),
+		Messages: messages,
+	}
+
+	return method.Rumor{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "rumor",
+		},
+		Params: params,
+	}
 }
