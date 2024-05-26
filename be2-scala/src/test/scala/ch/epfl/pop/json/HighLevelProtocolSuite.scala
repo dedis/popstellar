@@ -2,7 +2,7 @@ package ch.epfl.pop.json
 
 import ch.epfl.pop.IOHelper
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.{GreetServer, ParamsWithChannel, ParamsWithMap, ParamsWithMessage, Rumor}
+import ch.epfl.pop.model.network.method.{GreetServer, ParamsWithChannel, ParamsWithMap, ParamsWithMessage, Rumor, RumorState}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
@@ -285,6 +285,19 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
   test("parse rumor jsonRPC fails on missing messages ") {
     val jsonRumor = IOHelper.readJsonFromPath("src/test/scala/util/examples/json/rumor/wrong_rumor_missing_messages.json")
     an[IllegalArgumentException] should be thrownBy JsonRpcRequest.buildFromJson(jsonRumor)
+  }
+
+  test("parse correctly jsonRPC to rumorState") {
+    val jsonRumorState = IOHelper.readJsonFromPath("src/test/scala/util/examples/json/rumor_state/rumor_state.json")
+    val jsonRpcRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(jsonRumorState)
+    val rumor: RumorState = jsonRpcRequest.getParams.asInstanceOf[RumorState]
+
+    rumor.state shouldBe Map(
+      PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")) -> 3,
+      PublicKey(Base64Data("RZOPi59Iy5gkpS2mkpfQJNl44HKc2jVbF0iTGm0RvfU=")) -> 5,
+      PublicKey(Base64Data("CfG2ByLhtLJH--T2BL9hZ6eGm11tpkE-5KuvysSCY0I=")) -> 1,
+      PublicKey(Base64Data("r8cG9HyJ1FGBke_5IblCdH19mvy39MvLFSArVmY3FpY=")) -> 10
+    )
   }
 
   test("parse correctly get_messages_by_id answers") {
