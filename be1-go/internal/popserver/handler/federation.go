@@ -23,6 +23,10 @@ import (
 	"time"
 )
 
+const (
+	channelPattern = "/root/%s/federation"
+)
+
 func handleChannelFederation(channelPath string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
@@ -164,7 +168,7 @@ func handleExpect(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleFederationExpect")
 	}
 
-	remoteChannel := fmt.Sprintf("/root/%s/federation", federationExpect.LaoId)
+	remoteChannel := fmt.Sprintf(channelPattern, federationExpect.LaoId)
 	_ = state.AddChannel(remoteChannel)
 
 	err = db.StoreMessageAndData(channelPath, msg)
@@ -176,6 +180,9 @@ func handleExpect(msg message.Message, channelPath string) *answer.Error {
 	return nil
 }
 
+// handleInit checks that the message is from the local organizer and that
+// it contains a valid challenge, then stores the msg,
+// connect to the server and send the embedded challenge
 func handleInit(msg message.Message, channelPath string) *answer.Error {
 	var federationInit messagedata.FederationInit
 	errAnswer := msg.UnmarshalMsgData(&federationInit)
@@ -203,7 +210,7 @@ func handleInit(msg message.Message, channelPath string) *answer.Error {
 
 	errAnswer = challenge.Verify()
 	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationExpect")
+		return errAnswer.Wrap("handleFederationInit")
 	}
 
 	db, errAnswer := database.GetFederationRepositoryInstance()
@@ -219,13 +226,11 @@ func handleInit(msg message.Message, channelPath string) *answer.Error {
 
 	remote, errAnswer := connectTo(federationInit.ServerAddress)
 	if errAnswer != nil {
-		errAnswer = answer.NewInternalServerError(
-			"failed to connect to %s: %v", federationInit.ServerAddress, err)
 		return errAnswer.Wrap("handleFederationInit")
 	}
 
 	//Force the remote server to be subscribed to /root/<remote_lao>/federation
-	remoteChannel := fmt.Sprintf("/root/%s/federation", federationInit.LaoId)
+	remoteChannel := fmt.Sprintf(channelPattern, federationInit.LaoId)
 	_ = state.AddChannel(remoteChannel)
 	errAnswer = state.Subscribe(remote, remoteChannel)
 	if errAnswer != nil {
@@ -315,8 +320,14 @@ func handleChallenge(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleFederationChallenge")
 	}
 
+	err = db.StoreMessageAndData(channelPath, resultMsg)
+	if err != nil {
+		errAnswer = answer.NewStoreDatabaseError(err.Error())
+		return errAnswer.Wrap("handleFederationChallenge")
+	}
+
 	// publish the FederationResult to the other server
-	remoteChannel := fmt.Sprintf("/root/%s/federation", federationExpect.LaoId)
+	remoteChannel := fmt.Sprintf(channelPattern, federationExpect.LaoId)
 	errAnswer = publishTo(resultMsg, remoteChannel)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleFederationChallenge")
@@ -370,6 +381,11 @@ func handleResult(msg message.Message, channelPath string) *answer.Error {
 
 	var federationChallenge messagedata.FederationChallenge
 	errAnswer = result.ChallengeMsg.UnmarshalMsgData(&federationChallenge)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleFederationResult")
+	}
+
+	errAnswer = federationChallenge.Verify()
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleFederationResult")
 	}

@@ -62,11 +62,12 @@ func InitState(log *zerolog.Logger) {
 
 // ONLY FOR TEST PURPOSE
 // SetState is only here to be used to reset the state before each test
-func SetState(subs Subscriber, peers Peerer, queries Querier) {
+func SetState(subs Subscriber, peers Peerer, queries Querier, hubParams HubParameter) {
 	instance = &state{
-		subs:    subs,
-		peers:   peers,
-		queries: queries,
+		subs:      subs,
+		peers:     peers,
+		queries:   queries,
+		hubParams: hubParams,
 	}
 }
 

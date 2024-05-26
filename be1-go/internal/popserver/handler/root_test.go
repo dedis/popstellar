@@ -38,8 +38,9 @@ func Test_handleChannelRoot(t *testing.T) {
 	subs := types.NewSubscribers()
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
-	state.SetState(subs, peers, queries)
+	state.SetState(subs, peers, queries, hubParams)
 
 	organizerBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
 	require.NoError(t, err)
