@@ -43,19 +43,4 @@ class RumorSuite extends FunSuite with Matchers {
     encodedDecoded.messages.values.zip(rumor.messages.values).foreach((arrMsg1, arrMsg2) => arrMsg1 shouldBe arrMsg2)
     encodedDecoded.messages.keys shouldBe rumor.messages.keys
   }
-
-  test("constructor from json works for RumorState") {
-    val state: Map[PublicKey, Int] = Map(
-      PublicKey(Base64Data.encode("1")) -> 1,
-      PublicKey(Base64Data.encode("2")) -> 2,
-      PublicKey(Base64Data.encode("3")) -> 3
-    )
-
-    val rumorState: RumorState = RumorState(state)
-
-    val encodedDecoded = RumorState.buildFromJson(rumorState.toJsonString)
-
-    encodedDecoded.state shouldBe state
-  }
-
 }

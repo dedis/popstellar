@@ -425,17 +425,23 @@ final case class DbActor(
     }
   }
 
+  private def getRumorState: RumorState = {
+    val allPublicKeys = storage.filterKeysByPrefix(storage.RUMOR_DATA_KEY).map(key => PublicKey(Base64Data(key)))
+    val allRumorData = allPublicKeys.flatMap {
+      publicKey =>
+        Try(readRumorData(publicKey)) match
+          case Success(rumorData: RumorData) => Some(publicKey -> rumorData.lastRumorId())
+          case Failure(ex)                   => None
+    }.toMap
+    RumorState(allRumorData)
+  }
+
   private def generateRumorStateAns(rumorState: RumorState): List[Rumor] = {
-    rumorState.state.flatMap { (publicKey, rumorId) =>
-      val rumorData: RumorData = readRumorData(publicKey)
-      val lastDbId = rumorData.lastRumorId()
-      if (lastDbId > rumorId) {
-        val missingIds = List.range(rumorId + 1, lastDbId)
-        missingIds.map { id =>
-          readRumor((publicKey, id)).get
-        }
-      } else {
-        List.empty[Rumor]
+    val localRumorState = getRumorState
+    val missingRumors = rumorState.isMissingRumorsFrom(localRumorState)
+    missingRumors.flatMap { (publicKey, rumorIdList) =>
+      rumorIdList.map { id =>
+        readRumor((publicKey, id)).get
       }
     }.toList
   }
@@ -640,6 +646,13 @@ final case class DbActor(
       Try(readRumorData(senderPk)) match {
         case Success(foundRumorIds) => sender() ! DbActorReadRumorData(foundRumorIds)
         case failure                => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case GenerateRumorStateAns(rumorState: RumorState) =>
+      log.info(s"Actor $self (db) received a GenerateRumorStateAns request")
+      Try(generateRumorStateAns(rumorState)) match {
+        case Success(rumorList) => sender() ! DbActorGenerateRumorStateAns(rumorList)
+        case failure            => sender() ! failure.recover(Status.Failure(_))
       }
 
     case m =>
@@ -878,6 +891,13 @@ object DbActor {
     */
   final case class ReadRumorData(senderPk: PublicKey) extends Event
 
+  /** Requests the db to build a list of rumors that we have that are missing to the rumorState
+    * @param rumorState
+    *   Map of last seen rumorId per Publickey that we want to complete
+    */
+
+  final case class GenerateRumorStateAns(rumorState: RumorState) extends Event
+
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
@@ -966,6 +986,10 @@ object DbActor {
   /** Response for a [[ReadRumorData]]
     */
   final case class DbActorReadRumorData(rumorIds: RumorData) extends DbActorMessage
+
+  /** Response for a [[GenerateRumorStateAns]]
+    */
+  final case class DbActorGenerateRumorStateAns(rumorList: List[Rumor]) extends DbActorMessage
 
   /** Response for a general db actor ACK
     */
