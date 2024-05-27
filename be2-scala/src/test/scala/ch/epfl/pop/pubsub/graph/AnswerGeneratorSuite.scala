@@ -46,7 +46,7 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
       override def receive: Receive = {
         case DbActor.Catchup(_) =>
           sender() ! DbActor.DbActorCatchupAck(messages)
-        case DbActor.PagedCatchup(_) =>
+        case DbActor.PagedCatchup(_, _, _) =>
           sender() ! DbActor.DbActorCatchupAck(messages)
       }
     })
@@ -67,7 +67,7 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
       override def receive: Receive = {
         case DbActor.Catchup(_) =>
           sender() ! Status.Failure(DbActorNAckException(code, description))
-        case DbActor.PagedCatchup(_) =>
+        case DbActor.PagedCatchup(_, _, _) =>
           sender() ! Status.Failure(DbActorNAckException(code, description))
       }
     })

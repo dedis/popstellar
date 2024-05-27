@@ -1,7 +1,8 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+
 import scala.util.matching.Regex
 
 object ParamsValidator extends MethodContentValidator {

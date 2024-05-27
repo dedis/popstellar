@@ -9,7 +9,6 @@ import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
 import ch.epfl.pop.model.network.method.Rumor
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
-import ch.epfl.pop.model.network.method.message.data.socialMedia.AddChirp
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL_PREFIX}
@@ -227,7 +226,7 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def pagedCatchupChannel(channel: Channel, numberOfMessages: Int, beforeMessageID: Option[String]): List[Message] = {
+  private def pagedCatchupChannel(channel: Channel, numberOfMessages: Int, beforeMessageID: Option[String] = None): List[Message] = {
 
     @scala.annotation.tailrec
     def buildPagedCatchupList(msgIds: List[Hash], acc: List[Message], channelToPage: Channel): List[Message] = {
@@ -247,91 +246,87 @@ final case class DbActor(
 
     val profilePattern: Regex = "^/root(/[^/]+)/social/profile(/[^/]+){2}$".r
 
-    chirpsPattern.findFirstMatchIn(channel.toString) match {
-      case Some(_) => {
-        val chirpsChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/chirps")
+    if (chirpsPattern.findFirstMatchIn(channel.toString).isDefined) {
+      val chirpsChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/chirps")
 
-        val channelData: ChannelData = readChannelData(chirpsChannel)
+      val channelData: ChannelData = readChannelData(chirpsChannel)
 
-        var pagedCatchupList = readCreateLao(chirpsChannel) match {
-          case Some(msg) =>
-            msg :: buildPagedCatchupList(channelData.messages, Nil, chirpsChannel)
+      var pagedCatchupList = readCreateLao(chirpsChannel) match {
+        case Some(msg) =>
+          msg :: buildPagedCatchupList(channelData.messages, Nil, chirpsChannel)
 
-          case None =>
-            if (chirpsChannel.isMainLaoChannel) {
-              log.error("Critical error encountered: no create_lao message was found in the db")
-            }
-            buildPagedCatchupList(channelData.messages, Nil, chirpsChannel)
-        }
-
-        beforeMessageID match {
-          case Some(msgID) => {
-            val indexOfMessage = pagedCatchupList.indexOf(msgID)
-            if (indexOfMessage != -1 && indexOfMessage != 0) {
-              var startingIndex = indexOfMessage - numberOfMessages
-              if (startingIndex < 0) {
-                startingIndex = 0
-              }
-              pagedCatchupList = pagedCatchupList.slice(startingIndex, indexOfMessage)
-            }
+        case None =>
+          if (chirpsChannel.isMainLaoChannel) {
+            log.error("Critical error encountered: no create_lao message was found in the db")
           }
-          case None => {
-            var startingIndex = pagedCatchupList.length - numberOfMessages
+          buildPagedCatchupList(channelData.messages, Nil, chirpsChannel)
+      }
+
+      beforeMessageID match {
+        case Some(msgID) => {
+          val indexOfMessage = pagedCatchupList.indexOf(msgID)
+          if (indexOfMessage != -1 && indexOfMessage != 0) {
+            var startingIndex = indexOfMessage - numberOfMessages
             if (startingIndex < 0) {
               startingIndex = 0
             }
-            pagedCatchupList = pagedCatchupList.slice(startingIndex, pagedCatchupList.length)
+            pagedCatchupList = pagedCatchupList.slice(startingIndex, indexOfMessage)
           }
         }
-        readGreetLao(chirpsChannel) match {
-          case Some(msg) => msg :: pagedCatchupList
-          case None      => pagedCatchupList
+        case None => {
+          var startingIndex = pagedCatchupList.length - numberOfMessages
+          if (startingIndex < 0) {
+            startingIndex = 0
+          }
+          pagedCatchupList = pagedCatchupList.slice(startingIndex, pagedCatchupList.length)
         }
       }
-    }
+      readGreetLao(chirpsChannel) match {
+        case Some(msg) => msg :: pagedCatchupList
+        case None => pagedCatchupList
+      }
+    } else if (profilePattern.findFirstMatchIn(channel.toString).isDefined) {
+      val profilePublicKey = channel.toString.split("/")(5)
+      val profileChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/${profilePublicKey}")
 
-    profilePattern.findFirstMatchIn(channel.toString) match {
-      case Some(_) => {
-        val profilePublicKey = channel.toString.split("/")(5)
-        val profileChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/${profilePublicKey}")
+      val channelData: ChannelData = readChannelData(profileChannel)
 
-        val channelData: ChannelData = readChannelData(profileChannel)
+      var pagedCatchupList = readCreateLao(profileChannel) match {
+        case Some(msg) =>
+          msg :: buildPagedCatchupList(channelData.messages, Nil, profileChannel)
 
-        var pagedCatchupList = readCreateLao(profileChannel) match {
-          case Some(msg) =>
-            msg :: buildPagedCatchupList(channelData.messages, Nil, profileChannel)
-
-          case None =>
-            if (profileChannel.isMainLaoChannel) {
-              log.error("Critical error encountered: no create_lao message was found in the db")
-            }
-            buildPagedCatchupList(channelData.messages, Nil, profileChannel)
-        }
-
-        beforeMessageID match {
-          case Some(msgID) => {
-            val indexOfMessage = pagedCatchupList.indexOf(msgID)
-            if (indexOfMessage != -1 && indexOfMessage != 0) {
-              var startingIndex = indexOfMessage - numberOfMessages
-              if (startingIndex < 0) {
-                startingIndex = 0
-              }
-              pagedCatchupList = pagedCatchupList.slice(startingIndex, indexOfMessage)
-            }
+        case None =>
+          if (profileChannel.isMainLaoChannel) {
+            log.error("Critical error encountered: no create_lao message was found in the db")
           }
-          case None => {
-            var startingIndex = pagedCatchupList.length - numberOfMessages
+          buildPagedCatchupList(channelData.messages, Nil, profileChannel)
+      }
+
+      beforeMessageID match {
+        case Some(msgID) => {
+          val indexOfMessage = pagedCatchupList.indexOf(msgID)
+          if (indexOfMessage != -1 && indexOfMessage != 0) {
+            var startingIndex = indexOfMessage - numberOfMessages
             if (startingIndex < 0) {
               startingIndex = 0
             }
-            pagedCatchupList = pagedCatchupList.slice(startingIndex, pagedCatchupList.length)
+            pagedCatchupList = pagedCatchupList.slice(startingIndex, indexOfMessage)
           }
         }
-        readGreetLao(profileChannel) match {
-          case Some(msg) => msg :: pagedCatchupList
-          case None      => pagedCatchupList
+        case None => {
+          var startingIndex = pagedCatchupList.length - numberOfMessages
+          if (startingIndex < 0) {
+            startingIndex = 0
+          }
+          pagedCatchupList = pagedCatchupList.slice(startingIndex, pagedCatchupList.length)
         }
       }
+      readGreetLao(profileChannel) match {
+        case Some(msg) => msg :: pagedCatchupList
+        case None => pagedCatchupList
+      }
+    } else {
+      List()
     }
   }
 
@@ -845,7 +840,7 @@ object DbActor {
     * @param channel
     *   the channel where the messages should be fetched
     */
-  final case class PagedCatchup(channel: Channel, numberOfMessages: Int, beforeMessageID: Option[String]) extends Event
+  final case class PagedCatchup(channel: Channel, numberOfMessages: Int, beforeMessageID: Option[String] = None) extends Event
 
   /** Request to get all locally stored channels
     */
