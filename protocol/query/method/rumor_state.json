@@ -1,17 +1,24 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/rumor.json",
-    "description": "Rumor that should be spread across the network",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/rumor_state.json",
+    "description": "Match sharing state of last rumor seen per sender",
     "type": "object",
     "additionalProperties": false,
     "properties": {
         "method": {
             "description": "[String] operation to be performed by the query",
-            "const": "rumor"
+            "const": "rumor_state"
         },
 
         "params": {
-            "$ref": "object/rumor.json"
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "state": {
+                    "$ref": "object/rumor_state.json"
+                }
+            },
+            "required": ["state"]
         },
 
         "jsonrpc": {
