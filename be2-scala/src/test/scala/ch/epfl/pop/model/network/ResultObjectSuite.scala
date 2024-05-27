@@ -15,7 +15,7 @@ class ResultObjectSuite extends FunSuite with Matchers {
   }
 
   test("List constructor works") {
-    val obj: ResultObject = new ResultObject(List.empty)
+    val obj: ResultObject = new ResultObject(ResultMessage(List.empty))
 
     obj.resultInt should equal(None)
     obj.resultMap should equal(None)
@@ -33,7 +33,7 @@ class ResultObjectSuite extends FunSuite with Matchers {
 
   test("isIntResult returns right result") {
     val obj: ResultObject = new ResultObject(1)
-    val obj2: ResultObject = new ResultObject(List.empty)
+    val obj2: ResultObject = new ResultObject(ResultMessage(List.empty))
     val obj3: ResultObject = new ResultObject(Map[Channel, Set[Message]]())
 
     obj.isIntResult should equal(true)
@@ -44,10 +44,10 @@ class ResultObjectSuite extends FunSuite with Matchers {
 
   test("equals works") {
     val obj: ResultObject = new ResultObject(1)
-    val obj2: ResultObject = new ResultObject(List.empty)
+    val obj2: ResultObject = new ResultObject(ResultMessage(List.empty))
     val obj5: ResultObject = new ResultObject(Map[Channel, Set[Message]]())
     val obj3: ResultObject = new ResultObject(1)
-    val obj4: ResultObject = new ResultObject(List.empty)
+    val obj4: ResultObject = new ResultObject(ResultMessage(List.empty))
     val obj6: ResultObject = new ResultObject(Map[Channel, Set[Message]]())
 
     obj.equals(obj3) should equal(true)
