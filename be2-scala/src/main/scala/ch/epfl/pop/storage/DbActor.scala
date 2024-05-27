@@ -253,7 +253,7 @@ final case class DbActor(
 
         val channelData: ChannelData = readChannelData(chirpsChannel)
 
-        val pagedCatchupList = readCreateLao(chirpsChannel) match {
+        var pagedCatchupList = readCreateLao(chirpsChannel) match {
           case Some(msg) =>
             msg :: buildPagedCatchupList(channelData.messages, Nil, chirpsChannel)
 
@@ -264,31 +264,28 @@ final case class DbActor(
             buildPagedCatchupList(channelData.messages, Nil, chirpsChannel)
         }
 
-        // sort from oldest to newest message
-        var sortedPagedList = pagedCatchupList.sortBy(msg => AddChirp.buildFromJson(msg.toJsonString).timestamp.toString).reverse
-
         beforeMessageID match {
           case Some(msgID) => {
-            val indexOfMessage = sortedPagedList.indexOf(msgID)
+            val indexOfMessage = pagedCatchupList.indexOf(msgID)
             if (indexOfMessage != -1 && indexOfMessage != 0) {
               var startingIndex = indexOfMessage - numberOfMessages
               if (startingIndex < 0) {
                 startingIndex = 0
               }
-              sortedPagedList = sortedPagedList.slice(startingIndex, indexOfMessage)
+              pagedCatchupList = pagedCatchupList.slice(startingIndex, indexOfMessage)
             }
           }
           case None => {
-            var startingIndex = sortedPagedList.length - numberOfMessages
+            var startingIndex = pagedCatchupList.length - numberOfMessages
             if (startingIndex < 0) {
               startingIndex = 0
             }
-            sortedPagedList = sortedPagedList.slice(startingIndex, sortedPagedList.length)
+            pagedCatchupList = pagedCatchupList.slice(startingIndex, pagedCatchupList.length)
           }
         }
         readGreetLao(chirpsChannel) match {
-          case Some(msg) => msg :: sortedPagedList
-          case None      => sortedPagedList
+          case Some(msg) => msg :: pagedCatchupList
+          case None      => pagedCatchupList
         }
       }
     }
@@ -300,7 +297,7 @@ final case class DbActor(
 
         val channelData: ChannelData = readChannelData(profileChannel)
 
-        val pagedCatchupList = readCreateLao(profileChannel) match {
+        var pagedCatchupList = readCreateLao(profileChannel) match {
           case Some(msg) =>
             msg :: buildPagedCatchupList(channelData.messages, Nil, profileChannel)
 
@@ -311,31 +308,28 @@ final case class DbActor(
             buildPagedCatchupList(channelData.messages, Nil, profileChannel)
         }
 
-        // sort from oldest to newest message
-        var sortedPagedList = pagedCatchupList.sortBy(msg => AddChirp.buildFromJson(msg.toJsonString).timestamp.toString).reverse
-
         beforeMessageID match {
           case Some(msgID) => {
-            val indexOfMessage = sortedPagedList.indexOf(msgID)
+            val indexOfMessage = pagedCatchupList.indexOf(msgID)
             if (indexOfMessage != -1 && indexOfMessage != 0) {
               var startingIndex = indexOfMessage - numberOfMessages
               if (startingIndex < 0) {
                 startingIndex = 0
               }
-              sortedPagedList = sortedPagedList.slice(startingIndex, indexOfMessage)
+              pagedCatchupList = pagedCatchupList.slice(startingIndex, indexOfMessage)
             }
           }
           case None => {
-            var startingIndex = sortedPagedList.length - numberOfMessages
+            var startingIndex = pagedCatchupList.length - numberOfMessages
             if (startingIndex < 0) {
               startingIndex = 0
             }
-            sortedPagedList = sortedPagedList.slice(startingIndex, sortedPagedList.length)
+            pagedCatchupList = pagedCatchupList.slice(startingIndex, pagedCatchupList.length)
           }
         }
         readGreetLao(profileChannel) match {
-          case Some(msg) => msg :: sortedPagedList
-          case None      => sortedPagedList
+          case Some(msg) => msg :: pagedCatchupList
+          case None      => pagedCatchupList
         }
       }
     }
