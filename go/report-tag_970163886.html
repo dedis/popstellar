@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>26 May 2024, 05:13</td>
+      <td>27 May 2024, 04:18</td>
     </tr>
   </tbody>
 </table>
@@ -127,19 +127,19 @@ $(document).ready(function() {
         <tbody>
         <tr>
           <td class="tagname">@electionEnd1</td>
+          <td      class="passed"    >7</td>
           <td >0</td>
           <td >0</td>
-          <td     class="skipped"   >7</td>
           <td >0</td>
           <td >0</td>
           <td class="total">7</td>
 
+          <td  class="passed"    >1</td>
           <td >0</td>
-          <td  class="failed"    >1</td>
           <td class="total">1</td>
 
-          <td class="duration" data-value="0">0.000</td>
-          <td class="failed">Failed</td>
+          <td class="duration" data-value="5010605041">5.010</td>
+          <td class="passed">Passed</td>
         </tr>
         </tbody>
 
@@ -182,12 +182,12 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.010</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Sending a valid election end should succeed</span>
 
@@ -198,16 +198,16 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-1" class="collapse collapsable-details  in ">
+  <div id="element-1" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-2">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-2">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -217,11 +217,11 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-2" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-2" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
-<div class="brief step-name-Given skipped">
+<div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
   <span class="name">def validElectionEnd =</span>
 
@@ -265,11 +265,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-When skipped">
+<div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validElectionEnd, election.channel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -292,11 +292,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validElectionEnd)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -319,7 +319,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">json results = organizer.getElectionResults()</span>
 
@@ -346,7 +346,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">match answer contains VALID_MESSAGE</span>
 
@@ -373,7 +373,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">match results contains ELECTION_RESULTS</span>
 
@@ -400,11 +400,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.000</span>
 
 </div>
 

@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>26 May 2024, 05:13</td>
+      <td>27 May 2024, 04:18</td>
     </tr>
   </tbody>
 </table>
@@ -127,19 +127,19 @@ $(document).ready(function() {
         <tbody>
         <tr>
           <td class="tagname">@greetServer3</td>
+          <td      class="passed"    >5</td>
           <td >0</td>
           <td >0</td>
-          <td     class="skipped"   >5</td>
           <td >0</td>
           <td >0</td>
           <td class="total">5</td>
 
+          <td  class="passed"    >1</td>
           <td >0</td>
-          <td  class="failed"    >1</td>
           <td class="total">1</td>
 
-          <td class="duration" data-value="0">0.000</td>
-          <td class="failed">Failed</td>
+          <td class="duration" data-value="5003539354">5.003</td>
+          <td class="passed">Passed</td>
         </tr>
         </tbody>
 
@@ -182,12 +182,12 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.003</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Server should not reply to a greetServer message with invalid client address (does not fit regex pattern)</span>
 
@@ -198,16 +198,16 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-1" class="collapse collapsable-details  in ">
+  <div id="element-1" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-2">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-2">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -217,11 +217,11 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-2" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-2" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
-<div class="brief step-name-Given skipped">
+<div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
   <span class="name">def invalidGreetServer =</span>
 
@@ -266,7 +266,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-When skipped">
+<div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
   <span class="name">mockBackend.send(invalidGreetServer)</span>
 
@@ -293,7 +293,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">karate.log(&quot;sending a greetServer :\n&quot;, karate.pretty(invalidGreetServer))</span>
 
@@ -309,6 +309,27 @@ $(document).ready(function() {
 
 
 
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-4">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-4" class="collapse collapsable-details">
+        <pre>04:10:03.025 sending a greetServer :
+ {
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;method&quot;: &quot;greet_server&quot;,
+  &quot;params&quot;: {
+    &quot;public_key&quot;: &quot;A6Us1cTjY42vt0XH6XT0VHhI6BoPezwe58NExXfMkZk=&quot;,
+    &quot;client_address&quot;: &quot;invalid://localhost:9000/client&quot;,
+    &quot;server_address&quot;: &quot;ws://127.0.0.1:9001/server&quot;
+  }
+}
+ 
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -320,11 +341,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def greetServers = mockBackend.getGreetServer()</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.002</span>
 
 </div>
 
@@ -347,7 +368,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-Then skipped">
+<div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
   <span class="name">assert greetServers.length == 0</span>
 

@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>26 May 2024, 05:13</td>
+      <td>27 May 2024, 04:18</td>
     </tr>
   </tbody>
 </table>
@@ -127,9 +127,9 @@ $(document).ready(function() {
         <tbody>
         <tr>
           <td class="tagname">@electionOpen2</td>
-          <td >0</td>
-          <td >0</td>
-          <td     class="skipped"   >7</td>
+          <td      class="passed"    >5</td>
+          <td      class="failed"    >1</td>
+          <td     class="skipped"   >1</td>
           <td >0</td>
           <td >0</td>
           <td class="total">7</td>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >1</td>
           <td class="total">1</td>
 
-          <td class="duration" data-value="0">0.000</td>
+          <td class="duration" data-value="4748652">0.004</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -182,7 +182,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.004</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -221,7 +221,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-Given skipped">
+<div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
   <span class="name">def newElection = organizer.generateValidElection(lao)</span>
 
@@ -248,7 +248,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def newElectionOpen = newElection.open()</span>
 
@@ -275,11 +275,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def validElectionOpen =</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -318,11 +318,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-When skipped">
+<div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validElectionOpen, newElection.channel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -345,7 +345,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validElectionOpen)</span>
 
@@ -372,7 +372,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-Then skipped">
+<div class="brief step-name-Then failed">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
@@ -385,9 +385,59 @@ $(document).ready(function() {
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-4">
+          <a>match</a>
+      </div>
+      <div id="msg-4" class="collapse collapsable-details  in ">
+        <pre>match failed: CONTAINS
+  $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1771630049,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;handleQuery: handlePublish: handleChannel: failed to query from database: channel type: sql: no rows in result set&quot;}}
+  {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
+
+    $.error | not equal | match failed for name: 'code' (MAP:MAP)
+    {&quot;code&quot;:-6,&quot;description&quot;:&quot;handleQuery: handlePublish: handleChannel: failed to query from database: channel type: sql: no rows in result set&quot;}
+    {&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}
+
+      $.error.code | not equal (NUMBER:NUMBER)
+      -6
+      -4
+
+classpath:be/features/election/electionOpen.feature:55</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-5">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-5" class="collapse collapsable-details">
+        <pre>04:14:25.384 classpath:be/features/election/electionOpen.feature:55
+Then match answer contains INVALID_MESSAGE_FIELD
+match failed: CONTAINS
+  $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1771630049,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;handleQuery: handlePublish: handleChannel: failed to query from database: channel type: sql: no rows in result set&quot;}}
+  {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
+
+    $.error | not equal | match failed for name: 'code' (MAP:MAP)
+    {&quot;code&quot;:-6,&quot;description&quot;:&quot;handleQuery: handlePublish: handleChannel: failed to query from database: channel type: sql: no rows in result set&quot;}
+    {&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}
+
+      $.error.code | not equal (NUMBER:NUMBER)
+      -6
+      -4
+
+classpath:be/features/election/electionOpen.feature:55
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 

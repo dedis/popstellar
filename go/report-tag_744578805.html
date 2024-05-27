@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>26 May 2024, 05:13</td>
+      <td>27 May 2024, 04:18</td>
     </tr>
   </tbody>
 </table>
@@ -127,9 +127,9 @@ $(document).ready(function() {
         <tbody>
         <tr>
           <td class="tagname">@heartbeat2</td>
+          <td      class="passed"    >3</td>
+          <td      class="failed"    >1</td>
           <td >0</td>
-          <td >0</td>
-          <td     class="skipped"   >4</td>
           <td >0</td>
           <td >0</td>
           <td class="total">4</td>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >1</td>
           <td class="total">1</td>
 
-          <td class="duration" data-value="0">0.000</td>
+          <td class="duration" data-value="5009641053">5.009</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -182,7 +182,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.009</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -221,7 +221,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-Given skipped">
+<div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
   <span class="name">def validCreateRollCall =</span>
 
@@ -268,11 +268,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-When skipped">
+<div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
   <span class="name">mockFrontend.publish(validCreateRollCall, lao.channel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -295,7 +295,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def message_id = mockFrontend.getPublishMessageId(validCreateRollCall)</span>
 
@@ -322,11 +322,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-Then skipped">
+<div class="brief step-name-Then failed">
   <span class="keyword indention">Then</span>
   <span class="name">assert mockBackend.receivedHeartbeatWithSubstring(message_id)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.006</span>
 
 </div>
 
@@ -335,9 +335,35 @@ $(document).ready(function() {
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-4">
+          <a>did</a>
+      </div>
+      <div id="msg-4" class="collapse collapsable-details  in ">
+        <pre>did not evaluate to 'true': mockBackend.receivedHeartbeatWithSubstring(message_id)
+classpath:be/features/decentralizedCom/heartbeat.feature:49</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-5">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-5" class="collapse collapsable-details">
+        <pre>04:11:19.216 classpath:be/features/decentralizedCom/heartbeat.feature:49
+Then assert mockBackend.receivedHeartbeatWithSubstring(message_id)
+did not evaluate to 'true': mockBackend.receivedHeartbeatWithSubstring(message_id)
+classpath:be/features/decentralizedCom/heartbeat.feature:49
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 

@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>26 May 2024, 05:13</td>
+      <td>27 May 2024, 04:18</td>
     </tr>
   </tbody>
 </table>
@@ -127,18 +127,18 @@ $(document).ready(function() {
         <tbody>
         <tr>
           <td class="tagname">be/features/digitalCash/transaction.feature</td>
-          <td      class="passed"    >15</td>
-          <td      class="failed"    >10</td>
-          <td     class="skipped"   >77</td>
+          <td      class="passed"    >106</td>
+          <td      class="failed"    >1</td>
+          <td     class="skipped"   >1</td>
           <td >0</td>
           <td >0</td>
-          <td class="total">102</td>
+          <td class="total">108</td>
 
-          <td >0</td>
-          <td  class="failed"    >5</td>
+          <td  class="passed"    >4</td>
+          <td  class="failed"    >1</td>
           <td class="total">5</td>
 
-          <td class="duration" data-value="616005730578">10:16.005</td>
+          <td class="duration" data-value="47201750362">47.201</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -191,12 +191,12 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">2:3.210</span>
+  <span class="lead-duration duration">5.410</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Background</span>
   <span class="name"></span>
 
@@ -207,16 +207,16 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-1" class="collapse collapsable-details  in ">
+  <div id="element-1" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-2">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-2">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -226,732 +226,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-2" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
-
-  <span class="lead-duration duration">0.004</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/features/utils/constants.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* failed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read(serverFeature)</span>
-
-  <span class="lead-duration duration">1:1.606</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-3">
-          <a>Failed</a>
-      </div>
-      <div id="msg-3" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/client. Failed waiting for ws://127.0.0.1:9001/server.
-classpath:be/features/utils/server.feature:97
-classpath:be/features/digitalCash/transaction.feature:6</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-4">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-4" class="collapse collapsable-details">
-        <pre>04:27:34.336 classpath:be/features/digitalCash/transaction.feature:6
-* call read(serverFeature)
-Failed waiting for ws://127.0.0.1:9000/client. Failed waiting for ws://127.0.0.1:9001/server.
-classpath:be/features/utils/server.feature:97
-classpath:be/features/digitalCash/transaction.feature:6
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/features/utils/server.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">call waitForPort</span>
-
-  <span class="lead-duration duration">1:1.598</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-5">
-          <a>Failed</a>
-      </div>
-      <div id="msg-5" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/client. Failed waiting for ws://127.0.0.1:9001/server.
-classpath:be/features/utils/server.feature:97</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read(mockClientFeature)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">def organizer = call createMockFrontend</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">def recipient = call createMockFrontend</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">def lao = organizer.generateValidLao()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">def rollCall = organizer.generateValidRollCall(lao)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read(setupCoinChannelScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-       <a href="report-tag_2503682386.html">@transaction1</a>
-</div>
-
-
-  <span class="lead-duration duration">0.000</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-6">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Valid transaction: issue 32 mini-Laos to an attendee</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-6" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-7">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-7" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given skipped">
-  <span class="keyword indention">Given</span>
-  <span class="name">def transaction = organizer.issueCoins(recipient, 32);</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def postTransaction = transaction.post()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def input = transaction.inputs[0]</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def output = transaction.outputs[0]</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def validTransaction =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-8">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-8" class="collapse collapsable-details">
-        <pre>{
-    &quot;object&quot;: &quot;coin&quot;,
-    &quot;action&quot;: &quot;post_transaction&quot;,
-    &quot;transaction_id&quot;: '#(postTransaction.transactionId)',
-    &quot;transaction&quot;: {
-      &quot;version&quot;: '#(transaction.version)',
-      &quot;inputs&quot;: [{
-        &quot;tx_out_hash&quot;: '#(input.txOutHash)',
-        &quot;tx_out_index&quot;: '#(input.txOutIndex)',
-        &quot;script&quot;: {
-          &quot;type&quot;: '#(input.script.type)',
-          &quot;pubkey&quot;: '#(input.script.pubKeyRecipient)',
-          &quot;sig&quot;: '#(input.script.sig)'
-        }
-      }],
-      &quot;outputs&quot;: [{
-        &quot;value&quot;: '#(output.value)',
-        &quot;script&quot;: {
-          &quot;type&quot;: '#(output.script.type)',
-          &quot;pubkey_hash&quot;: '#(output.script.pubKeyHash)',
-        }
-      }],
-      &quot;lock_time&quot;: '#(transaction.lockTime)',
-    }
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(validTransaction, lao.cashChannel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(validTransaction)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains VALID_MESSAGE</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-</div>
-
-
-  <span class="lead-duration duration">2:3.205</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-9">
-
-<div class="brief failed">
-  <span class="keyword indention">Background</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-9" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-10">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-10" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-2" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -1009,11 +284,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* failed">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">1:1.603</span>
+  <span class="lead-duration duration">5.261</span>
 
 </div>
 
@@ -1022,37 +297,9 @@ classpath:be/features/utils/server.feature:97</pre>
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-11">
-          <a>Failed</a>
-      </div>
-      <div id="msg-11" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/client. Failed waiting for ws://127.0.0.1:9001/server.
-classpath:be/features/utils/server.feature:97
-classpath:be/features/digitalCash/transaction.feature:6</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-12" class="collapse collapsable-details">
-        <pre>04:28:35.945 classpath:be/features/digitalCash/transaction.feature:6
-* call read(serverFeature)
-Failed waiting for ws://127.0.0.1:9000/client. Failed waiting for ws://127.0.0.1:9001/server.
-classpath:be/features/utils/server.feature:97
-classpath:be/features/digitalCash/transaction.feature:6
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -1091,49 +338,37 @@ classpath:be/features/digitalCash/transaction.feature:6
       <div class="step">
 
 
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">call waitForPort</span>
-
-  <span class="lead-duration duration">1:1.597</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-13">
-          <a>Failed</a>
-      </div>
-      <div id="msg-13" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/client. Failed waiting for ws://127.0.0.1:9001/server.
-classpath:be/features/utils/server.feature:97</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
+  <span class="lead-duration duration">0.003</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/mockClient.feature</span>
+
   <span class="lead-duration duration">0.000</span>
 
 </div>
@@ -1157,11 +392,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1184,11 +419,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">def recipient = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1211,7 +446,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">def lao = organizer.generateValidLao()</span>
 
@@ -1238,7 +473,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">def rollCall = organizer.generateValidRollCall(lao)</span>
 
@@ -1265,9 +500,36 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read(setupCoinChannelScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
+
+  <span class="lead-duration duration">0.133</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/simpleScenarios.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1281,6 +543,21 @@ classpath:be/features/utils/server.feature:97</pre>
 
 
 
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-3">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-3" class="collapse collapsable-details">
+        <pre>{
+  &quot;organizer&quot;: &quot;common.utils.MockClient@3c116f26&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@7db06c50&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@1554eaa4&quot;
+}
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -1306,18 +583,18 @@ classpath:be/features/utils/server.feature:97</pre>
 <div class="tags indention">
     <b>Tags:</b>
        <a href="report-tag_524961969.html">@env=go,scala</a>
-       <a href="report-tag_2503682387.html">@transaction2</a>
+       <a href="report-tag_2503682386.html">@transaction1</a>
 </div>
 
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.026</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-14">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-4">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Transfer valid amount should work</span>
+  <span class="name">Valid transaction: issue 32 mini-Laos to an attendee</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1326,16 +603,16 @@ classpath:be/features/utils/server.feature:97</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-14" class="collapse collapsable-details  in ">
+  <div id="element-4" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-15">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-5">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -1345,42 +622,15 @@ classpath:be/features/utils/server.feature:97</pre>
 
   </div>
 
-  <div id="steps-15" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-5" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
-<div class="brief step-name-Given skipped">
+<div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">def initialAmount = 32</span>
+  <span class="name">def transaction = organizer.issueCoins(recipient, 32);</span>
 
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">call read(validCoinIssuanceScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)', recipient: '#(recipient)', amount: '#(initialAmount)' }</span>
-
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.011</span>
 
 </div>
 
@@ -1403,34 +653,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def transaction = organizer.issueCoins(recipient, 20);</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def postTransaction = transaction.post()</span>
 
@@ -1457,9 +680,9 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">def input = transaction.inputs[1]</span>
+  <span class="name">def input = transaction.inputs[0]</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1484,9 +707,9 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">def output = transaction.outputs[1]</span>
+  <span class="name">def output = transaction.outputs[0]</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1511,11 +734,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">def validTransfer =</span>
+  <span class="name">def validTransaction =</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1529,10 +752,10 @@ classpath:be/features/utils/server.feature:97</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-16">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-6">
           <a>Doc string</a>
       </div>
-      <div id="msg-16" class="collapse collapsable-details">
+      <div id="msg-6" class="collapse collapsable-details">
         <pre>{
     &quot;object&quot;: &quot;coin&quot;,
     &quot;action&quot;: &quot;post_transaction&quot;,
@@ -1572,11 +795,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-When skipped">
+<div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(validTransfer, lao.cashChannel)</span>
+  <span class="name">organizer.publish(validTransaction, lao.cashChannel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -1599,11 +822,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(validTransfer)</span>
+  <span class="name">json answer = organizer.getBackendResponse(validTransaction)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1626,7 +849,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-Then skipped">
+<div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains VALID_MESSAGE</span>
 
@@ -1642,6 +865,867 @@ classpath:be/features/utils/server.feature:97</pre>
 
 
 
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">5.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+</div>
+
+
+  <span class="lead-duration duration">5.420</span>
+
+
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-7">
+
+<div class="brief passed">
+  <span class="keyword indention">Background</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-7" class="collapse collapsable-details ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-8">
+
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-8" class="inner-level collapse collapsable-details ">
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
+
+  <span class="lead-duration duration">0.003</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/constants.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read(serverFeature)</span>
+
+  <span class="lead-duration duration">5.259</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/server.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read(mockClientFeature)</span>
+
+  <span class="lead-duration duration">0.003</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/mockClient.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def organizer = call createMockFrontend</span>
+
+  <span class="lead-duration duration">0.003</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def recipient = call createMockFrontend</span>
+
+  <span class="lead-duration duration">0.002</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def lao = organizer.generateValidLao()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def rollCall = organizer.generateValidRollCall(lao)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read(setupCoinChannelScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
+
+  <span class="lead-duration duration">0.147</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/simpleScenarios.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-9">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-9" class="collapse collapsable-details">
+        <pre>{
+  &quot;organizer&quot;: &quot;common.utils.MockClient@b340615&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@3c6b300a&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@4247093b&quot;
+}
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+       <a href="report-tag_2503682387.html">@transaction2</a>
+</div>
+
+
+  <span class="lead-duration duration">0.164</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-10">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Transfer valid amount should work</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-10" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-11">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-11" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">def initialAmount = 32</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">call read(validCoinIssuanceScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)', recipient: '#(recipient)', amount: '#(initialAmount)' }</span>
+
+  <span class="lead-duration duration">0.153</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/simpleScenarios.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-12" class="collapse collapsable-details">
+        <pre>{
+  &quot;organizer&quot;: &quot;common.utils.MockClient@b340615&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@3c6b300a&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@4247093b&quot;,
+  &quot;recipient&quot;: &quot;common.utils.MockClient@7074da1d&quot;,
+  &quot;amount&quot;: 32
+}
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def transaction = organizer.issueCoins(recipient, 20);</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def postTransaction = transaction.post()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def input = transaction.inputs[1]</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def output = transaction.outputs[1]</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def validTransfer =</span>
+
+  <span class="lead-duration duration">0.001</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-13">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-13" class="collapse collapsable-details">
+        <pre>{
+    &quot;object&quot;: &quot;coin&quot;,
+    &quot;action&quot;: &quot;post_transaction&quot;,
+    &quot;transaction_id&quot;: '#(postTransaction.transactionId)',
+    &quot;transaction&quot;: {
+      &quot;version&quot;: '#(transaction.version)',
+      &quot;inputs&quot;: [{
+        &quot;tx_out_hash&quot;: '#(input.txOutHash)',
+        &quot;tx_out_index&quot;: '#(input.txOutIndex)',
+        &quot;script&quot;: {
+          &quot;type&quot;: '#(input.script.type)',
+          &quot;pubkey&quot;: '#(input.script.pubKeyRecipient)',
+          &quot;sig&quot;: '#(input.script.sig)'
+        }
+      }],
+      &quot;outputs&quot;: [{
+        &quot;value&quot;: '#(output.value)',
+        &quot;script&quot;: {
+          &quot;type&quot;: '#(output.script.type)',
+          &quot;pubkey_hash&quot;: '#(output.script.pubKeyHash)',
+        }
+      }],
+      &quot;lock_time&quot;: '#(transaction.lockTime)',
+    }
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">organizer.publish(validTransfer, lao.cashChannel)</span>
+
+  <span class="lead-duration duration">0.001</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = organizer.getBackendResponse(validTransfer)</span>
+
+  <span class="lead-duration duration">0.005</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then failed">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains VALID_MESSAGE</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-14">
+          <a>match</a>
+      </div>
+      <div id="msg-14" class="collapse collapsable-details  in ">
+        <pre>match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:2038951030,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;handleQuery: handlePublish: handleChannel: handleChannelCoin: verifyDataAndGetObjectAction: VerifyJSON: invalid message field: invalid json: failed to validate schema: I[#] S[#/oneOf] oneOf failed\n  I[#] S[#/oneOf/0/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCastVote.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;lao\&quot;, \&quot;election\&quot;, \&quot;created_at\&quot;, \&quot;votes\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;election\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;cast_vote\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/1/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataAuthenticateUser.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;client_id\&quot;, \&quot;nonce\&quot;, \&quot;identifier\&quot;, \&quot;identifier_proof\&quot;, \&quot;popcha_address\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;popcha\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;authenticate\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/2/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCloseRollCall.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;update_id\&quot;, \&quot;closes\&quot;, \&quot;closed_at\&quot;, \&quot;attendees\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;roll_call\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;close\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/3/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCreateLao.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;id\&quot;, \&quot;name\&quot;, \&quot;creation\&quot;, \&quot;organizer\&quot;, \&quot;witnesses\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;lao\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;create\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/4/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCreateMeeting.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;id\&quot;, \&quot;name\&quot;, \&quot;creation\&quot;, \&quot;start\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;create\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;meeting\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/5/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCreateRollCall.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;id\&quot;, \&quot;name\&quot;, \&quot;creation\&quot;, \&quot;location\&quot;, \&quot;proposed_start\&quot;, \&quot;proposed_end\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;roll_call\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;create\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/6/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataKeyElection.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;election\&quot;, \&quot;election_key\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;key\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;election\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/7/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataEndElection.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;lao\&quot;, \&quot;election\&quot;, \&quot;created_at\&quot;, \&quot;registered_votes\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;election\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;end\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/8/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataResultElection.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;questions\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;election\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;result\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/9/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataSetupElection.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;version\&quot;, \&quot;id\&quot;, \&quot;lao\&quot;, \&quot;name\&quot;, \&quot;created_at\&quot;, \&quot;start_time\&quot;, \&quot;end_time\&quot;, \&quot;questions\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;election\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;setup\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/10/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataOpenElection.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;lao\&quot;, \&quot;election\&quot;, \&quot;opened_at\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;open\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;election\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/11/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataOpenRollCall.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;update_id\&quot;, \&quot;opens\&quot;, \&quot;opened_at\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;roll_call\&quot;\n      I[#/action] S[#/properties/action/enum] value must be one of \&quot;open\&quot;, \&quot;reopen\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/12/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataStateLao.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;id\&quot;, \&quot;name\&quot;, \&quot;creation\&quot;, \&quot;last_modified\&quot;, \&quot;organizer\&quot;, \&quot;witnesses\&quot;, \&quot;modification_id\&quot;, \&quot;modification_signatures\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;state\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;lao\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/13/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataGreetLao.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;lao\&quot;, \&quot;frontend\&quot;, \&quot;address\&quot;, \&quot;peers\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;lao\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;greet\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/14/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataStateMeeting.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;id\&quot;, \&quot;name\&quot;, \&quot;creation\&quot;, \&quot;last_modified\&quot;, \&quot;start\&quot;, \&quot;modification_id\&quot;, \&quot;modification_signatures\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;state\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;meeting\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/15/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataUpdateLao.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;id\&quot;, \&quot;name\&quot;, \&quot;last_modified\&quot;, \&quot;witnesses\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;update_properties\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;lao\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/16/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationInit.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;lao_id\&quot;, \&quot;server_address\&quot;, \&quot;public_key\&quot;, \&quot;challenge\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;federation\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;init\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/17/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationExpect.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;lao_id\&quot;, \&quot;server_address\&quot;, \&quot;public_key\&quot;, \&quot;challenge\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;federation\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;expect\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/18/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationChallengeRequest.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;timestamp\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;federation\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;challenge_request\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/19/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationChallenge.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;value\&quot;, \&quot;valid_until\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;challenge\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;federation\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/20/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationResult.json#\&quot;\n    I[#] S[#/oneOf] oneOf failed\n      I[#] S[#/oneOf/0] validation failed\n        I[#] S[#/oneOf/0/required] missing properties: \&quot;status\&quot;, \&quot;reason\&quot;, \&quot;challenge\&quot;\n        I[#/object] S[#/oneOf/0/properties/object/const] value must be \&quot;federation\&quot;\n        I[#/action] S[#/oneOf/0/properties/action/const] value must be \&quot;result\&quot;\n        I[#] S[#/oneOf/0/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n      I[#] S[#/oneOf/1] validation failed\n        I[#] S[#/oneOf/1/required] missing properties: \&quot;status\&quot;, \&quot;public_key\&quot;, \&quot;challenge\&quot;\n        I[#/object] S[#/oneOf/1/properties/object/const] value must be \&quot;federation\&quot;\n        I[#/action] S[#/oneOf/1/properties/action/const] value must be \&quot;result\&quot;\n        I[#] S[#/oneOf/1/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/21/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataWitnessMessage.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;message_id\&quot;, \&quot;signature\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;witness\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;message\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/22/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataAddChirp.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;text\&quot;, \&quot;timestamp\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;chirp\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;add\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/23/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataNotifyAddChirp.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;chirp_id\&quot;, \&quot;channel\&quot;, \&quot;timestamp\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;notify_add\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;chirp\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/24/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataDeleteChirp.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;chirp_id\&quot;, \&quot;timestamp\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;chirp\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;delete\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/25/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataNotifyDeleteChirp.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;chirp_id\&quot;, \&quot;channel\&quot;, \&quot;timestamp\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;chirp\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;notify_delete\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/26/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataAddReaction.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;reaction_codepoint\&quot;, \&quot;chirp_id\&quot;, \&quot;timestamp\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;reaction\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;add\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/27/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataDeleteReaction.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;reaction_id\&quot;, \&quot;timestamp\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;reaction\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;delete\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/28/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataElect.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;instance_id\&quot;, \&quot;created_at\&quot;, \&quot;key\&quot;, \&quot;value\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;consensus\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;elect\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/29/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataElectAccept.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;instance_id\&quot;, \&quot;message_id\&quot;, \&quot;accept\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;consensus\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;elect_accept\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/30/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataPrepare.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;instance_id\&quot;, \&quot;message_id\&quot;, \&quot;created_at\&quot;, \&quot;value\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;prepare\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;consensus\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/31/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataPromise.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;instance_id\&quot;, \&quot;message_id\&quot;, \&quot;created_at\&quot;, \&quot;value\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;consensus\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;promise\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/32/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataPropose.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;instance_id\&quot;, \&quot;message_id\&quot;, \&quot;created_at\&quot;, \&quot;value\&quot;, \&quot;acceptor-signatures\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;consensus\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;propose\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/33/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataAccept.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;instance_id\&quot;, \&quot;message_id\&quot;, \&quot;created_at\&quot;, \&quot;value\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;consensus\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;accept\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/34/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataLearn.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;instance_id\&quot;, \&quot;message_id\&quot;, \&quot;created_at\&quot;, \&quot;value\&quot;, \&quot;acceptor-signatures\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;consensus\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;learn\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/35/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFailure.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;instance_id\&quot;, \&quot;message_id\&quot;, \&quot;created_at\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;consensus\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;failure\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/36/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataPostTransactionCoin.json#\&quot;\n    I[#/transaction] S[#/properties/transaction] validation failed\n      I[#/transaction/inputs/0] S[#/properties/transaction/properties/inputs/items] validation failed\n        I[#/transaction/inputs/0/tx_out_hash] S[#/properties/transaction/properties/inputs/items/properties/tx_out_hash/contentEncoding] \&quot;#(input.txOutHash)\&quot; is not base64 encoded\n        I[#/transaction/inputs/0/tx_out_index] S[#/properties/transaction/properties/inputs/items/properties/tx_out_index/type] expected integer, but got string\n        I[#/transaction/inputs/0/script] S[#/properties/transaction/properties/inputs/items/properties/script] validation failed\n          I[#/transaction/inputs/0/script/sig] S[#/properties/transaction/properties/inputs/items/properties/script/properties/sig/contentEncoding] \&quot;#(input.script.sig)\&quot; is not base64 encoded\n          I[#/transaction/inputs/0/script/pubkey] S[#/properties/transaction/properties/inputs/items/properties/script/properties/pubkey/contentEncoding] \&quot;#(input.script.pubKeyRecipient)\&quot; is not base64 encoded\n      I[#/transaction/outputs/0] S[#/properties/transaction/properties/outputs/items] validation failed\n        I[#/transaction/outputs/0/value] S[#/properties/transaction/properties/outputs/items/properties/value/type] expected integer, but got string\n        I[#/transaction/outputs/0/script/pubkey_hash] S[#/properties/transaction/properties/outputs/items/properties/script/properties/pubkey_hash/contentEncoding] \&quot;#(output.script.pubKeyHash)\&quot; is not base64 encoded&quot;}}
+  {&quot;result&quot;:0}
+
+
+classpath:be/features/digitalCash/transaction.feature:97</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-15">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-15" class="collapse collapsable-details">
+        <pre>04:11:35.408 classpath:be/features/digitalCash/transaction.feature:97
+Then match answer contains VALID_MESSAGE
+match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:2038951030,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;handleQuery: handlePublish: handleChannel: handleChannelCoin: verifyDataAndGetObjectAction: VerifyJSON: invalid message field: invalid json: failed to validate schema: I[#] S[#/oneOf] oneOf failed\n  I[#] S[#/oneOf/0/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCastVote.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;lao\&quot;, \&quot;election\&quot;, \&quot;created_at\&quot;, \&quot;votes\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;election\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;cast_vote\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/1/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataAuthenticateUser.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;client_id\&quot;, \&quot;nonce\&quot;, \&quot;identifier\&quot;, \&quot;identifier_proof\&quot;, \&quot;popcha_address\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;popcha\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;authenticate\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/2/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCloseRollCall.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;update_id\&quot;, \&quot;closes\&quot;, \&quot;closed_at\&quot;, \&quot;attendees\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;roll_call\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;close\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/3/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCreateLao.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;id\&quot;, \&quot;name\&quot;, \&quot;creation\&quot;, \&quot;organizer\&quot;, \&quot;witnesses\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;lao\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;create\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/4/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCreateMeeting.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;id\&quot;, \&quot;name\&quot;, \&quot;creation\&quot;, \&quot;start\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;create\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;meeting\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/5/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCreateRollCall.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;id\&quot;, \&quot;name\&quot;, \&quot;creation\&quot;, \&quot;location\&quot;, \&quot;proposed_start\&quot;, \&quot;proposed_end\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;roll_call\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;create\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/6/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataKeyElection.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;election\&quot;, \&quot;election_key\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;key\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;election\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/7/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataEndElection.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;lao\&quot;, \&quot;election\&quot;, \&quot;created_at\&quot;, \&quot;registered_votes\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;election\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;end\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/8/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataResultElection.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;questions\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;election\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;result\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/9/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataSetupElection.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;version\&quot;, \&quot;id\&quot;, \&quot;lao\&quot;, \&quot;name\&quot;, \&quot;created_at\&quot;, \&quot;start_time\&quot;, \&quot;end_time\&quot;, \&quot;questions\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;election\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;setup\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/10/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataOpenElection.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;lao\&quot;, \&quot;election\&quot;, \&quot;opened_at\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;open\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;election\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/11/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataOpenRollCall.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;update_id\&quot;, \&quot;opens\&quot;, \&quot;opened_at\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;roll_call\&quot;\n      I[#/action] S[#/properties/action/enum] value must be one of \&quot;open\&quot;, \&quot;reopen\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/12/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataStateLao.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;id\&quot;, \&quot;name\&quot;, \&quot;creation\&quot;, \&quot;last_modified\&quot;, \&quot;organizer\&quot;, \&quot;witnesses\&quot;, \&quot;modification_id\&quot;, \&quot;modification_signatures\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;state\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;lao\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/13/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataGreetLao.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;lao\&quot;, \&quot;frontend\&quot;, \&quot;address\&quot;, \&quot;peers\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;lao\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;greet\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/14/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataStateMeeting.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;id\&quot;, \&quot;name\&quot;, \&quot;creation\&quot;, \&quot;last_modified\&quot;, \&quot;start\&quot;, \&quot;modification_id\&quot;, \&quot;modification_signatures\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;state\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;meeting\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/15/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataUpdateLao.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;id\&quot;, \&quot;name\&quot;, \&quot;last_modified\&quot;, \&quot;witnesses\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;update_properties\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;lao\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/16/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationInit.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;lao_id\&quot;, \&quot;server_address\&quot;, \&quot;public_key\&quot;, \&quot;challenge\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;federation\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;init\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/17/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationExpect.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;lao_id\&quot;, \&quot;server_address\&quot;, \&quot;public_key\&quot;, \&quot;challenge\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;federation\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;expect\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/18/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationChallengeRequest.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;timestamp\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;federation\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;challenge_request\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/19/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationChallenge.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;value\&quot;, \&quot;valid_until\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;challenge\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;federation\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/20/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationResult.json#\&quot;\n    I[#] S[#/oneOf] oneOf failed\n      I[#] S[#/oneOf/0] validation failed\n        I[#] S[#/oneOf/0/required] missing properties: \&quot;status\&quot;, \&quot;reason\&quot;, \&quot;challenge\&quot;\n        I[#/object] S[#/oneOf/0/properties/object/const] value must be \&quot;federation\&quot;\n        I[#/action] S[#/oneOf/0/properties/action/const] value must be \&quot;result\&quot;\n        I[#] S[#/oneOf/0/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n      I[#] S[#/oneOf/1] validation failed\n        I[#] S[#/oneOf/1/required] missing properties: \&quot;status\&quot;, \&quot;public_key\&quot;, \&quot;challenge\&quot;\n        I[#/object] S[#/oneOf/1/properties/object/const] value must be \&quot;federation\&quot;\n        I[#/action] S[#/oneOf/1/properties/action/const] value must be \&quot;result\&quot;\n        I[#] S[#/oneOf/1/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/21/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataWitnessMessage.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;message_id\&quot;, \&quot;signature\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;witness\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;message\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/22/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataAddChirp.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;text\&quot;, \&quot;timestamp\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;chirp\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;add\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/23/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataNotifyAddChirp.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;chirp_id\&quot;, \&quot;channel\&quot;, \&quot;timestamp\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;notify_add\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;chirp\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/24/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataDeleteChirp.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;chirp_id\&quot;, \&quot;timestamp\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;chirp\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;delete\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/25/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataNotifyDeleteChirp.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;chirp_id\&quot;, \&quot;channel\&quot;, \&quot;timestamp\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;chirp\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;notify_delete\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/26/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataAddReaction.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;reaction_codepoint\&quot;, \&quot;chirp_id\&quot;, \&quot;timestamp\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;reaction\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;add\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/27/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataDeleteReaction.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;reaction_id\&quot;, \&quot;timestamp\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;reaction\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;delete\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/28/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataElect.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;instance_id\&quot;, \&quot;created_at\&quot;, \&quot;key\&quot;, \&quot;value\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;consensus\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;elect\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/29/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataElectAccept.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;instance_id\&quot;, \&quot;message_id\&quot;, \&quot;accept\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;consensus\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;elect_accept\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/30/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataPrepare.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;instance_id\&quot;, \&quot;message_id\&quot;, \&quot;created_at\&quot;, \&quot;value\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;prepare\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;consensus\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/31/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataPromise.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;instance_id\&quot;, \&quot;message_id\&quot;, \&quot;created_at\&quot;, \&quot;value\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;consensus\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;promise\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/32/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataPropose.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;instance_id\&quot;, \&quot;message_id\&quot;, \&quot;created_at\&quot;, \&quot;value\&quot;, \&quot;acceptor-signatures\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;consensus\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;propose\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/33/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataAccept.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;instance_id\&quot;, \&quot;message_id\&quot;, \&quot;created_at\&quot;, \&quot;value\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;consensus\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;accept\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/34/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataLearn.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;instance_id\&quot;, \&quot;message_id\&quot;, \&quot;created_at\&quot;, \&quot;value\&quot;, \&quot;acceptor-signatures\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;consensus\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;learn\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction\&quot;, \&quot;transaction_id\&quot; not allowed\n  I[#] S[#/oneOf/35/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFailure.json#\&quot;\n    I[#] S[#] validation failed\n      I[#] S[#/required] missing properties: \&quot;instance_id\&quot;, \&quot;message_id\&quot;, \&quot;created_at\&quot;\n      I[#/object] S[#/properties/object/const] value must be \&quot;consensus\&quot;\n      I[#/action] S[#/properties/action/const] value must be \&quot;failure\&quot;\n      I[#] S[#/additionalProperties] additionalProperties \&quot;transaction_id\&quot;, \&quot;transaction\&quot; not allowed\n  I[#] S[#/oneOf/36/$ref] doesn't validate with \&quot;https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataPostTransactionCoin.json#\&quot;\n    I[#/transaction] S[#/properties/transaction] validation failed\n      I[#/transaction/inputs/0] S[#/properties/transaction/properties/inputs/items] validation failed\n        I[#/transaction/inputs/0/tx_out_hash] S[#/properties/transaction/properties/inputs/items/properties/tx_out_hash/contentEncoding] \&quot;#(input.txOutHash)\&quot; is not base64 encoded\n        I[#/transaction/inputs/0/tx_out_index] S[#/properties/transaction/properties/inputs/items/properties/tx_out_index/type] expected integer, but got string\n        I[#/transaction/inputs/0/script] S[#/properties/transaction/properties/inputs/items/properties/script] validation failed\n          I[#/transaction/inputs/0/script/sig] S[#/properties/transaction/properties/inputs/items/properties/script/properties/sig/contentEncoding] \&quot;#(input.script.sig)\&quot; is not base64 encoded\n          I[#/transaction/inputs/0/script/pubkey] S[#/properties/transaction/properties/inputs/items/properties/script/properties/pubkey/contentEncoding] \&quot;#(input.script.pubKeyRecipient)\&quot; is not base64 encoded\n      I[#/transaction/outputs/0] S[#/properties/transaction/properties/outputs/items] validation failed\n        I[#/transaction/outputs/0/value] S[#/properties/transaction/properties/outputs/items/properties/value/type] expected integer, but got string\n        I[#/transaction/outputs/0/script/pubkey_hash] S[#/properties/transaction/properties/outputs/items/properties/script/properties/pubkey_hash/contentEncoding] \&quot;#(output.script.pubKeyHash)\&quot; is not base64 encoded&quot;}}
+  {&quot;result&quot;:0}
+
+
+classpath:be/features/digitalCash/transaction.feature:97
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -1695,12 +1779,12 @@ classpath:be/features/utils/server.feature:97</pre>
 </div>
 
 
-  <span class="lead-duration duration">2:3.200</span>
+  <span class="lead-duration duration">5.391</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-17">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-16">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Background</span>
   <span class="name"></span>
 
@@ -1711,16 +1795,16 @@ classpath:be/features/utils/server.feature:97</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-17" class="collapse collapsable-details  in ">
+  <div id="element-16" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-18">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-17">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -1730,7 +1814,7 @@ classpath:be/features/utils/server.feature:97</pre>
 
   </div>
 
-  <div id="steps-18" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-17" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -1738,7 +1822,7 @@ classpath:be/features/utils/server.feature:97</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1788,11 +1872,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* failed">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">1:1.601</span>
+  <span class="lead-duration duration">5.261</span>
 
 </div>
 
@@ -1801,37 +1885,9 @@ classpath:be/features/utils/server.feature:97</pre>
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-19">
-          <a>Failed</a>
-      </div>
-      <div id="msg-19" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/client. Failed waiting for ws://127.0.0.1:9001/server.
-classpath:be/features/utils/server.feature:97
-classpath:be/features/digitalCash/transaction.feature:6</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-20">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-20" class="collapse collapsable-details">
-        <pre>04:29:37.554 classpath:be/features/digitalCash/transaction.feature:6
-* call read(serverFeature)
-Failed waiting for ws://127.0.0.1:9000/client. Failed waiting for ws://127.0.0.1:9001/server.
-classpath:be/features/utils/server.feature:97
-classpath:be/features/digitalCash/transaction.feature:6
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -1870,49 +1926,37 @@ classpath:be/features/digitalCash/transaction.feature:6
       <div class="step">
 
 
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">call waitForPort</span>
-
-  <span class="lead-duration duration">1:1.595</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-21">
-          <a>Failed</a>
-      </div>
-      <div id="msg-21" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/client. Failed waiting for ws://127.0.0.1:9001/server.
-classpath:be/features/utils/server.feature:97</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
+  <span class="lead-duration duration">0.004</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/mockClient.feature</span>
+
   <span class="lead-duration duration">0.000</span>
 
 </div>
@@ -1936,11 +1980,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1963,11 +2007,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">def recipient = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -1990,7 +2034,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">def lao = organizer.generateValidLao()</span>
 
@@ -2017,7 +2061,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">def rollCall = organizer.generateValidRollCall(lao)</span>
 
@@ -2044,9 +2088,36 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read(setupCoinChannelScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
+
+  <span class="lead-duration duration">0.113</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/simpleScenarios.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2060,6 +2131,21 @@ classpath:be/features/utils/server.feature:97</pre>
 
 
 
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-18">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-18" class="collapse collapsable-details">
+        <pre>{
+  &quot;organizer&quot;: &quot;common.utils.MockClient@5bdb6ea8&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@3e55eeb9&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@44a13699&quot;
+}
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -2089,12 +2175,12 @@ classpath:be/features/utils/server.feature:97</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.006</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-22">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-19">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Post transaction with invalid transaction id should fail</span>
 
@@ -2105,16 +2191,16 @@ classpath:be/features/utils/server.feature:97</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-22" class="collapse collapsable-details  in ">
+  <div id="element-19" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-23">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-20">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -2124,11 +2210,11 @@ classpath:be/features/utils/server.feature:97</pre>
 
   </div>
 
-  <div id="steps-23" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-20" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
-<div class="brief step-name-Given skipped">
+<div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
   <span class="name">def transaction = organizer.issueCoins(recipient, 32);</span>
 
@@ -2155,7 +2241,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def postTransaction = transaction.post()</span>
 
@@ -2182,7 +2268,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def input = transaction.inputs[0]</span>
 
@@ -2209,7 +2295,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def output = transaction.outputs[0]</span>
 
@@ -2236,7 +2322,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def invalidTransaction =</span>
 
@@ -2254,10 +2340,10 @@ classpath:be/features/utils/server.feature:97</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-24">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-21">
           <a>Doc string</a>
       </div>
-      <div id="msg-24" class="collapse collapsable-details">
+      <div id="msg-21" class="collapse collapsable-details">
         <pre>{
     &quot;object&quot;: &quot;coin&quot;,
     &quot;action&quot;: &quot;post_transaction&quot;,
@@ -2297,11 +2383,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-When skipped">
+<div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidTransaction, lao.cashChannel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -2324,11 +2410,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidTransaction)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -2351,7 +2437,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-Then skipped">
+<div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
@@ -2378,11 +2464,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.000</span>
 
 </div>
 
@@ -2420,12 +2506,12 @@ classpath:be/features/utils/server.feature:97</pre>
 </div>
 
 
-  <span class="lead-duration duration">2:3.198</span>
+  <span class="lead-duration duration">5.385</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-25">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-22">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Background</span>
   <span class="name"></span>
 
@@ -2436,16 +2522,16 @@ classpath:be/features/utils/server.feature:97</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-25" class="collapse collapsable-details  in ">
+  <div id="element-22" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-26">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-23">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -2455,7 +2541,7 @@ classpath:be/features/utils/server.feature:97</pre>
 
   </div>
 
-  <div id="steps-26" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-23" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -2463,7 +2549,7 @@ classpath:be/features/utils/server.feature:97</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -2513,11 +2599,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* failed">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">1:1.599</span>
+  <span class="lead-duration duration">5.259</span>
 
 </div>
 
@@ -2526,37 +2612,9 @@ classpath:be/features/utils/server.feature:97</pre>
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-27">
-          <a>Failed</a>
-      </div>
-      <div id="msg-27" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/client. Failed waiting for ws://127.0.0.1:9001/server.
-classpath:be/features/utils/server.feature:97
-classpath:be/features/digitalCash/transaction.feature:6</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-28">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-28" class="collapse collapsable-details">
-        <pre>04:30:39.162 classpath:be/features/digitalCash/transaction.feature:6
-* call read(serverFeature)
-Failed waiting for ws://127.0.0.1:9000/client. Failed waiting for ws://127.0.0.1:9001/server.
-classpath:be/features/utils/server.feature:97
-classpath:be/features/digitalCash/transaction.feature:6
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -2595,49 +2653,37 @@ classpath:be/features/digitalCash/transaction.feature:6
       <div class="step">
 
 
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">call waitForPort</span>
-
-  <span class="lead-duration duration">1:1.593</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-29">
-          <a>Failed</a>
-      </div>
-      <div id="msg-29" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/client. Failed waiting for ws://127.0.0.1:9001/server.
-classpath:be/features/utils/server.feature:97</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
+  <span class="lead-duration duration">0.003</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/mockClient.feature</span>
+
   <span class="lead-duration duration">0.000</span>
 
 </div>
@@ -2661,11 +2707,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -2688,11 +2734,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">def recipient = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -2715,7 +2761,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">def lao = organizer.generateValidLao()</span>
 
@@ -2742,7 +2788,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">def rollCall = organizer.generateValidRollCall(lao)</span>
 
@@ -2769,9 +2815,36 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read(setupCoinChannelScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
+
+  <span class="lead-duration duration">0.113</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/simpleScenarios.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2785,6 +2858,21 @@ classpath:be/features/utils/server.feature:97</pre>
 
 
 
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-24">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-24" class="collapse collapsable-details">
+        <pre>{
+  &quot;organizer&quot;: &quot;common.utils.MockClient@1253b822&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@127d2aee&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@3cc2e3e&quot;
+}
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -2814,12 +2902,12 @@ classpath:be/features/utils/server.feature:97</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.006</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-30">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-25">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Post transaction with invalid tx_out_hash should fail</span>
 
@@ -2830,16 +2918,16 @@ classpath:be/features/utils/server.feature:97</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-30" class="collapse collapsable-details  in ">
+  <div id="element-25" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-31">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-26">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -2849,11 +2937,11 @@ classpath:be/features/utils/server.feature:97</pre>
 
   </div>
 
-  <div id="steps-31" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-26" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
-<div class="brief step-name-Given skipped">
+<div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
   <span class="name">def transaction = organizer.issueCoins(recipient, 32);</span>
 
@@ -2880,7 +2968,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def postTransaction = transaction.post()</span>
 
@@ -2907,7 +2995,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def input = transaction.inputs[0]</span>
 
@@ -2934,7 +3022,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def output = transaction.outputs[0]</span>
 
@@ -2961,7 +3049,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def invalidTransaction =</span>
 
@@ -2979,10 +3067,10 @@ classpath:be/features/utils/server.feature:97</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-32">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-27">
           <a>Doc string</a>
       </div>
-      <div id="msg-32" class="collapse collapsable-details">
+      <div id="msg-27" class="collapse collapsable-details">
         <pre>{
     &quot;object&quot;: &quot;coin&quot;,
     &quot;action&quot;: &quot;post_transaction&quot;,
@@ -3022,11 +3110,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-When skipped">
+<div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidTransaction, lao.cashChannel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -3049,11 +3137,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidTransaction)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -3076,7 +3164,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-Then skipped">
+<div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
@@ -3103,11 +3191,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.000</span>
 
 </div>
 
@@ -3145,12 +3233,12 @@ classpath:be/features/utils/server.feature:97</pre>
 </div>
 
 
-  <span class="lead-duration duration">2:3.190</span>
+  <span class="lead-duration duration">5.383</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-33">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-28">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Background</span>
   <span class="name"></span>
 
@@ -3161,16 +3249,16 @@ classpath:be/features/utils/server.feature:97</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-33" class="collapse collapsable-details  in ">
+  <div id="element-28" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-34">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-29">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -3180,7 +3268,7 @@ classpath:be/features/utils/server.feature:97</pre>
 
   </div>
 
-  <div id="steps-34" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-29" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -3238,11 +3326,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* failed">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">1:1.595</span>
+  <span class="lead-duration duration">5.259</span>
 
 </div>
 
@@ -3251,37 +3339,9 @@ classpath:be/features/utils/server.feature:97</pre>
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-35">
-          <a>Failed</a>
-      </div>
-      <div id="msg-35" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/client. Failed waiting for ws://127.0.0.1:9001/server.
-classpath:be/features/utils/server.feature:97
-classpath:be/features/digitalCash/transaction.feature:6</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-36">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-36" class="collapse collapsable-details">
-        <pre>04:31:40.763 classpath:be/features/digitalCash/transaction.feature:6
-* call read(serverFeature)
-Failed waiting for ws://127.0.0.1:9000/client. Failed waiting for ws://127.0.0.1:9001/server.
-classpath:be/features/utils/server.feature:97
-classpath:be/features/digitalCash/transaction.feature:6
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -3320,49 +3380,37 @@ classpath:be/features/digitalCash/transaction.feature:6
       <div class="step">
 
 
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">call waitForPort</span>
-
-  <span class="lead-duration duration">1:1.591</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-37">
-          <a>Failed</a>
-      </div>
-      <div id="msg-37" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/client. Failed waiting for ws://127.0.0.1:9001/server.
-classpath:be/features/utils/server.feature:97</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
+  <span class="lead-duration duration">0.003</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/mockClient.feature</span>
+
   <span class="lead-duration duration">0.000</span>
 
 </div>
@@ -3386,11 +3434,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -3413,11 +3461,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">def recipient = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -3440,7 +3488,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">def lao = organizer.generateValidLao()</span>
 
@@ -3467,7 +3515,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">def rollCall = organizer.generateValidRollCall(lao)</span>
 
@@ -3494,9 +3542,36 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read(setupCoinChannelScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
+
+  <span class="lead-duration duration">0.110</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/simpleScenarios.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -3510,6 +3585,21 @@ classpath:be/features/utils/server.feature:97</pre>
 
 
 
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-30">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-30" class="collapse collapsable-details">
+        <pre>{
+  &quot;organizer&quot;: &quot;common.utils.MockClient@4e14d520&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@4189e668&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@3a589eed&quot;
+}
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -3539,12 +3629,12 @@ classpath:be/features/utils/server.feature:97</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.006</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-38">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-31">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Post transaction with invalid output pubKey should fail</span>
 
@@ -3555,16 +3645,16 @@ classpath:be/features/utils/server.feature:97</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-38" class="collapse collapsable-details  in ">
+  <div id="element-31" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-39">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-32">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -3574,11 +3664,11 @@ classpath:be/features/utils/server.feature:97</pre>
 
   </div>
 
-  <div id="steps-39" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-32" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
-<div class="brief step-name-Given skipped">
+<div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
   <span class="name">def transaction = organizer.issueCoins(recipient, 32);</span>
 
@@ -3605,7 +3695,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def postTransaction = transaction.post()</span>
 
@@ -3632,7 +3722,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def input = transaction.inputs[0]</span>
 
@@ -3659,7 +3749,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def output = transaction.outputs[0]</span>
 
@@ -3686,7 +3776,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def invalidTransaction =</span>
 
@@ -3704,10 +3794,10 @@ classpath:be/features/utils/server.feature:97</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-40">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-33">
           <a>Doc string</a>
       </div>
-      <div id="msg-40" class="collapse collapsable-details">
+      <div id="msg-33" class="collapse collapsable-details">
         <pre>{
     &quot;object&quot;: &quot;coin&quot;,
     &quot;action&quot;: &quot;post_transaction&quot;,
@@ -3747,11 +3837,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-When skipped">
+<div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidTransaction, lao.cashChannel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -3774,11 +3864,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidTransaction)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -3801,7 +3891,7 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-Then skipped">
+<div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
@@ -3828,11 +3918,11 @@ classpath:be/features/utils/server.feature:97</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.000</span>
 
 </div>
 

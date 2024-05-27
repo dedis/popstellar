@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>26 May 2024, 05:13</td>
+      <td>27 May 2024, 04:18</td>
     </tr>
   </tbody>
 </table>
@@ -127,9 +127,9 @@ $(document).ready(function() {
         <tbody>
         <tr>
           <td class="tagname">@createRollCall3</td>
-          <td >0</td>
-          <td >0</td>
-          <td     class="skipped"   >6</td>
+          <td      class="passed"    >4</td>
+          <td      class="failed"    >1</td>
+          <td     class="skipped"   >1</td>
           <td >0</td>
           <td >0</td>
           <td class="total">6</td>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >1</td>
           <td class="total">1</td>
 
-          <td class="duration" data-value="0">0.000</td>
+          <td class="duration" data-value="10312426">0.010</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -182,7 +182,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.010</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -221,11 +221,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-Given skipped">
+<div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">def notOrganizer = call createMockClient</span>
+  <span class="name">def notOrganizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -248,7 +248,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def validCreateRollCall =</span>
 
@@ -295,7 +295,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-When skipped">
+<div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
   <span class="name">notOrganizer.publish(validCreateRollCall, lao.channel)</span>
 
@@ -322,11 +322,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = notOrganizer.getBackendResponse(validCreateRollCall)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -349,7 +349,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-Then skipped">
+<div class="brief step-name-Then failed">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
@@ -362,9 +362,45 @@ $(document).ready(function() {
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-4">
+          <a>match</a>
+      </div>
+      <div id="msg-4" class="collapse collapsable-details  in ">
+        <pre>match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1614588366,&quot;result&quot;:0}
+  {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
+
+
+classpath:be/features/rollCall/createRollCall.feature:88</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-5">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-5" class="collapse collapsable-details">
+        <pre>04:17:02.378 classpath:be/features/rollCall/createRollCall.feature:88
+Then match answer contains INVALID_MESSAGE_FIELD
+match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1614588366,&quot;result&quot;:0}
+  {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
+
+
+classpath:be/features/rollCall/createRollCall.feature:88
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
