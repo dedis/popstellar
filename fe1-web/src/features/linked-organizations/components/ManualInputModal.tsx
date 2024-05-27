@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { Text, Modal, ScrollView } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { useToast } from 'react-native-toast-notifications';
 
 import { DatePicker, Input, PoPTextButton } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
 import { Timestamp, Hash } from 'core/objects';
 import { ModalStyles, Typography } from 'core/styles';
-import { FOUR_SECONDS, DAY_IN_SECONDS } from 'resources/const';
+import { DAY_IN_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { Challenge } from '../objects/Challenge';
@@ -25,7 +24,7 @@ const ManualInputModal: React.FC<ManualInputModalProps> = ({
   isInitiatingOrganizer,
   onScanData,
 }) => {
-  const toast = useToast();
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [manualLaoId, setManualLaoID] = useState<string>('');
   const [manualPublicKey, setManualPublicKey] = useState<string>('');
   const [manualServerAddress, setManualServerAddress] = useState<string>('');
@@ -74,6 +73,7 @@ const ManualInputModal: React.FC<ManualInputModalProps> = ({
         <Text style={Typography.paragraph}>
           {STRINGS.linked_organizations_enterChallengeValidUntil}
         </Text>
+
         <DatePicker
           selected={startDate}
           onChange={(date: Date) => {
@@ -81,24 +81,45 @@ const ManualInputModal: React.FC<ManualInputModalProps> = ({
             setManualChallengeValidUntil(Timestamp.fromDate(date));
           }}
         />
+        <Text style={[Typography.paragraph, Typography.error]}>{errorMessage}</Text>
 
         <PoPTextButton
           testID="add-manually"
           onPress={() => {
-            if (
-              (isInitiatingOrganizer &&
-                (!manualLaoId ||
-                  !manualPublicKey ||
-                  !manualServerAddress ||
-                  !manualChallengeValue ||
-                  manualChallengeValidUntil <= Timestamp.EpochNow())) ||
-              (!isInitiatingOrganizer && (!manualLaoId || !manualPublicKey || !manualServerAddress))
-            ) {
-              toast.show(STRINGS.linked_organizations_manualInputModalToast, {
-                type: 'danger',
-                placement: 'bottom',
-                duration: FOUR_SECONDS,
-              });
+            setErrorMessage('');
+            const missingFields = [];
+            const errors = [];
+            if (isInitiatingOrganizer) {
+              if (!manualLaoId) missingFields.push(STRINGS.linked_organizations_placeholderLaoID);
+              if (!manualPublicKey)
+                missingFields.push(STRINGS.linked_organizations_placeholderPublicKey);
+              if (!manualServerAddress)
+                missingFields.push(STRINGS.linked_organizations_placeholderServerAddress);
+              if (!manualChallengeValue)
+                missingFields.push(STRINGS.linked_organizations_placeholderChallengeValue);
+              if (manualChallengeValidUntil <= Timestamp.EpochNow())
+                errors.push(STRINGS.linked_organizations_challengeValidUntilError);
+            }
+            if (!isInitiatingOrganizer) {
+              if (!manualLaoId) missingFields.push(STRINGS.linked_organizations_placeholderLaoID);
+              if (!manualPublicKey)
+                missingFields.push(STRINGS.linked_organizations_placeholderPublicKey);
+              if (!manualServerAddress)
+                missingFields.push(STRINGS.linked_organizations_placeholderServerAddress);
+            }
+            if (missingFields.length > 0 || errors.length > 0) {
+              setErrorMessage(
+                `${
+                  missingFields.length > 0
+                    ? STRINGS.linked_organizations_manualInputModalMissingFields +
+                      missingFields.join(', ')
+                    : ''
+                }${
+                  errors.length > 0
+                    ? (missingFields.length > 0 ? '; ' : '') + errors.join(', ')
+                    : ''
+                }`,
+              );
               return;
             }
 

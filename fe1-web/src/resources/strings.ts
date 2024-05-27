@@ -573,8 +573,9 @@ namespace STRINGS {
   export const linked_organizations_navigation_addlinkedorgModal = 'AddLinkedOrgModal';
   export const linked_organizations_addLinkedOrganizationButton = 'Add Linked Organization';
   export const linked_organizations_addLinkedOrganizationCancel = 'Cancel';
-  export const linked_organizations_manualInputModalToast =
-    'All fields are required and Valid Until has to be in the Future';
+  export const linked_organizations_challengeValidUntilError =
+    'Challenge Valid Until is in the past';
+  export const linked_organizations_manualInputModalMissingFields = 'Missing required fields: ';
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';
