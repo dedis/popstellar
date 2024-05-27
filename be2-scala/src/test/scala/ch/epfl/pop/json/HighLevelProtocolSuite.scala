@@ -2,14 +2,16 @@ package ch.epfl.pop.json
 
 import ch.epfl.pop.IOHelper
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.{GreetServer, ParamsWithChannel, ParamsWithMap, ParamsWithMessage, Rumor, RumorState, RumorStateSuite}
-import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
+import ch.epfl.pop.model.network.method.{GreetServer, ParamsWithChannel, ParamsWithMap, ParamsWithMessage, Rumor, RumorState}
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultMessage, ResultObject, ResultRumor}
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import org.scalatest.Inspectors.forEvery
 import org.scalatest.funsuite.AnyFunSuite as FunSuite
 import org.scalatest.matchers.should.Matchers
 import spray.json.*
+import util.examples.MessageExample
+import util.examples.Rumor.RumorExample
 
 import scala.collection.immutable.{HashMap, Set}
 
@@ -321,6 +323,24 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     answerFromJson.id should equal(rpcId)
     answerFromJson.result.get should equal(resultObject)
     answerFromJson.error should equal(None)
+  }
+
+  test("result object parses list of rumor correctly") {
+    val resultRumor: ResultObject = new ResultObject(ResultRumor(List(RumorExample.rumorExample)))
+    val resultRumorJsValue = HighLevelProtocol.ResultObjectFormat.write(resultRumor)
+    val resultRumorFromJson = HighLevelProtocol.ResultObjectFormat.read(resultRumorJsValue)
+
+    resultRumor shouldBe resultRumorFromJson
+
+  }
+
+  test("result object parses list of message correctly") {
+    val resultMessage: ResultObject = new ResultObject(ResultMessage(List(MessageExample.MESSAGE)))
+    val resultMessageJsValue = HighLevelProtocol.ResultObjectFormat.write(resultMessage)
+    val resultMessageFromJson = HighLevelProtocol.ResultObjectFormat.read(resultMessageJsValue)
+
+    resultMessage shouldBe resultMessageFromJson
+
   }
 
   test("Parser correctly encodes and decodes MethodType and rejects incorrect type") {

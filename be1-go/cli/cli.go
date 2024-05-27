@@ -5,8 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
-	"golang.org/x/exp/slices"
 	"net/url"
 	"os"
 	popstellar "popstellar"
@@ -23,6 +21,9 @@ import (
 	"popstellar/validation"
 	"sync"
 	"time"
+
+	"github.com/rs/zerolog"
+	"golang.org/x/exp/slices"
 
 	"github.com/rs/zerolog/log"
 	"go.dedis.ch/kyber/v3"
@@ -57,6 +58,7 @@ type ServerConfig struct {
 	ServerPort     int      `json:"server-port"`
 	AuthPort       int      `json:"auth-port"`
 	OtherServers   []string `json:"other-servers"`
+	DatabasePath   string   `json:"database-path"`
 }
 
 func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
@@ -67,12 +69,6 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 	// compute the server server address if it wasn't provided
 	if s.ServerAddress == "" {
 		s.ServerAddress = fmt.Sprintf("ws://%s:%d/server", s.PublicAddress, s.ServerPort)
-	}
-
-	path := "./database-a/" + sqlite.DefaultPath
-
-	if s.ClientPort == 9002 {
-		path = "./database-b/" + sqlite.DefaultPath
 	}
 
 	var point kyber.Point = nil
@@ -86,7 +82,7 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 		return nil, err
 	}
 
-	db, err := sqlite.NewSQLite(path, true)
+	db, err := sqlite.NewSQLite(s.DatabasePath, true)
 	if err != nil {
 		return nil, err
 	}
@@ -407,6 +403,7 @@ func startWithFlags(cliCtx *cli.Context) (ServerConfig, error) {
 		ServerPort:     serverPort,
 		AuthPort:       authPort,
 		OtherServers:   cliCtx.StringSlice("other-servers"),
+		DatabasePath:   cliCtx.String("database-path"),
 	}, nil
 }
 

@@ -53,6 +53,8 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       PARAM_MESSAGE_ID -> obj.message_id.toJson,
       PARAM_WITNESS_SIG -> obj.witness_signatures.toJson
     )
+
+    def fields: Set[String] = Set(PARAM_SENDER, PARAM_DATA, PARAM_SIGNATURE, PARAM_WITNESS_SIG, PARAM_MESSAGE_ID)
   }
 
   implicit object ParamsWithChannelFormat extends RootJsonFormat[ParamsWithChannel] {
@@ -225,7 +227,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       )
       JsObject(jsObjContent)
     }
-
+    def fields: Set[String] = Set(PARAM_SENDER_PK, PARAM_RUMOR_ID, PARAM_MESSAGES)
   }
 
   implicit object RumorStateFormat extends RootJsonFormat[RumorState] {
@@ -250,9 +252,19 @@ object HighLevelProtocol extends DefaultJsonProtocol {
   implicit object ResultObjectFormat extends RootJsonFormat[ResultObject] {
     override def read(json: JsValue): ResultObject = json match {
       case JsNumber(resultInt)  => new ResultObject(resultInt.toInt)
-      case JsArray(resultArray) => new ResultObject(resultArray.map(_.convertTo[Message]).toList)
-      case JsObject(resultMap)  => new ResultObject(resultMap.map { case (k, v) => (Channel(k), v.convertTo[Set[Message]]) })
-      case _                    => throw new IllegalArgumentException(s"Unrecognizable channel value in $json")
+      case JsArray(resultArray) =>
+        // in case of empty array, we cannot differentiate List[Rumor] and List[Message]
+        // We don't differentiate and use an EmptyList to make result available to different response handler
+        if (resultArray.isEmpty)
+          new ResultObject(ResultEmptyList())
+        resultArray.head.asJsObject.fields.keySet match
+          case keys if keys == RumorFormat.fields =>
+            new ResultObject(ResultRumor(resultArray.map(_.convertTo[Rumor]).toList))
+          case keys if keys == messageFormat.fields =>
+            new ResultObject(ResultMessage(resultArray.map(_.convertTo[Message]).toList))
+          case _ => throw new IllegalArgumentException(s"Can't parse jsArray $json to a ResultObject object")
+      case JsObject(resultMap) => new ResultObject(resultMap.map { case (k, v) => (Channel(k), v.convertTo[Set[Message]]) })
+      case _                   => throw new IllegalArgumentException(s"Unrecognizable channel value in $json")
     }
 
     override def write(obj: ResultObject): JsValue = {
@@ -260,8 +272,10 @@ object HighLevelProtocol extends DefaultJsonProtocol {
         JsNumber(obj.resultInt.getOrElse(0))
       } else if (obj.resultMap.isDefined) {
         JsObject(obj.resultMap.get.map { case (chan, set) => (chan.channel, set.toJson) })
+      } else if (obj.resultMessages.isDefined) {
+        JsArray(obj.resultMessages.get.map(m => m.toJson).toVector)
       } else {
-        JsArray(obj.resultMessages.getOrElse(Nil).map(m => m.toJson).toVector)
+        JsArray(obj.resultRumor.getOrElse(Nil).map(r => r.toJson).toVector)
       }
     }
   }
