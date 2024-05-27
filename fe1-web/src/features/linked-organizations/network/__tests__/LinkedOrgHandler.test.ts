@@ -13,7 +13,7 @@ import {
 } from 'core/objects';
 import { dispatch } from 'core/redux';
 import { Challenge } from 'features/linked-organizations/objects/Challenge';
-import { addChallenge } from 'features/linked-organizations/reducer';
+import { setChallenge } from 'features/linked-organizations/reducer';
 
 import {
   handleChallengeMessage,
@@ -21,10 +21,7 @@ import {
   handleFederationExpectMessage,
   handleFederationInitMessage,
 } from '../LinkedOrgHandler';
-import { ChallengeRequest } from '../messages';
-import { ChallengeMessage } from '../messages/ChallengeMessage';
-import { FederationExpect } from '../messages/FederationExpect';
-import { FederationInit } from '../messages/FederationInit';
+import { ChallengeRequest, ChallengeMessage, FederationExpect, FederationInit } from '../messages';
 
 jest.mock('core/network/jsonrpc/messages/Message', () => {
   return {
@@ -190,7 +187,7 @@ describe('handleChallengeMessage', () => {
     ).toBeTrue();
 
     expect(dispatch).toHaveBeenCalledWith(
-      addChallenge(
+      setChallenge(
         mockLaoId,
         new Challenge({
           value: mockChallengeMessage.value as Hash,

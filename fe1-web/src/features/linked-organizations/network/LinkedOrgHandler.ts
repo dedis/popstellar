@@ -3,11 +3,8 @@ import { dispatch } from 'core/redux';
 
 import { LinkedOrganizationsConfiguration } from '../interface';
 import { Challenge } from '../objects/Challenge';
-import { addChallenge } from '../reducer';
-import { ChallengeRequest } from './messages';
-import { ChallengeMessage } from './messages/ChallengeMessage';
-import { FederationExpect } from './messages/FederationExpect';
-import { FederationInit } from './messages/FederationInit';
+import { setChallenge } from '../reducer';
+import { ChallengeRequest, ChallengeMessage, FederationExpect, FederationInit } from './messages';
 
 /**
  * Handler for linked organization messages
@@ -40,7 +37,7 @@ export const handleChallengeMessage = () => (msg: ProcessableMessage) => {
       valid_until: challengeMessage.valid_until,
     };
     const challenge = Challenge.fromJson(jsonObj);
-    dispatch(addChallenge(msg.laoId, challenge.toState()));
+    dispatch(setChallenge(msg.laoId, challenge.toState()));
     return true;
   } catch {
     return false;

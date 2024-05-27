@@ -1,6 +1,6 @@
 import { ListItem } from '@rneui/themed';
 import React, { useMemo } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { PoPIcon } from 'core/components';
@@ -12,9 +12,9 @@ import { LinkedOrganizationsHooks } from '../hooks';
 import { makeLinkedOrganizationSelector } from '../reducer/LinkedOrganizationsReducer';
 
 const styles = StyleSheet.create({
-  flex1: {
+  flexibleView: {
     flex: 1,
-  },
+  } as ViewStyle,
 });
 
 const LinkedOrganizationsScreen = () => {
@@ -24,7 +24,7 @@ const LinkedOrganizationsScreen = () => {
   const linkedOrganizationStates = useSelector(linkedOrganizationSelector);
 
   return (
-    <View style={styles.flex1}>
+    <View style={styles.flexibleView}>
       <ScreenWrapper>
         <Text style={Typography.paragraph}>
           {isOrganizer

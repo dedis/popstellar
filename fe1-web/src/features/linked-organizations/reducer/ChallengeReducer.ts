@@ -23,7 +23,7 @@ const challengeSlice = createSlice({
   name: CHALLENGE_REDUCER_PATH,
   initialState,
   reducers: {
-    addChallenge: {
+    setChallenge: {
       prepare(laoId: Hash, challenge: ChallengeState) {
         return {
           payload: {
@@ -40,7 +40,7 @@ const challengeSlice = createSlice({
   },
 });
 
-export const { addChallenge } = challengeSlice.actions;
+export const { setChallenge } = challengeSlice.actions;
 
 export const getChallengeState = (state: any): ChallengeReducerState =>
   state[CHALLENGE_REDUCER_PATH];

@@ -7,7 +7,7 @@ import { DatePicker, Input, PoPTextButton } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
 import { Timestamp, Hash } from 'core/objects';
 import { ModalStyles, Typography } from 'core/styles';
-import { FOUR_SECONDS } from 'resources/const';
+import { FOUR_SECONDS, DAY_IN_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { Challenge } from '../objects/Challenge';
@@ -31,7 +31,7 @@ const ManualInputModal: React.FC<ManualInputModalProps> = ({
   const [manualServerAddress, setManualServerAddress] = useState<string>('');
   const [manualChallengeValue, setManualChallengeValue] = useState<string>('');
   const [manualChallengeValidUntil, setManualChallengeValidUntil] = useState<Timestamp>(
-    Timestamp.EpochNow().addSeconds(86400),
+    Timestamp.EpochNow().addSeconds(DAY_IN_SECONDS),
   );
   const [startDate, setStartDate] = useState(manualChallengeValidUntil.toDate());
 
@@ -94,7 +94,7 @@ const ManualInputModal: React.FC<ManualInputModalProps> = ({
                   manualChallengeValidUntil <= Timestamp.EpochNow())) ||
               (!isInitiatingOrganizer && (!manualLaoId || !manualPublicKey || !manualServerAddress))
             ) {
-              toast.show(`All fields are required and Valid Until has to be in the Future`, {
+              toast.show(STRINGS.linked_organizations_manualInputModalToast, {
                 type: 'danger',
                 placement: 'bottom',
                 duration: FOUR_SECONDS,

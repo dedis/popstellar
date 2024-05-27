@@ -27,20 +27,22 @@ const AddLinkedOrganizationButton = () => {
   const onPress = () => {
     showActionSheetWithOptions(
       {
-        options: ['Add Linked Organization', 'cancel'],
+        options: [
+          STRINGS.linked_organizations_addLinkedOrganizationButton,
+          STRINGS.linked_organizations_addLinkedOrganizationCancel,
+        ],
         cancelButtonIndex: 1,
       },
       (idx) => {
-        if (idx !== undefined && idx === 0) {
-          navigation.navigate(STRINGS.navigation_app_lao, {
-            screen: STRINGS.navigation_linked_organizations_title,
-            params: {
-              screen: STRINGS.linked_organizations_navigation_addlinkedorgModal,
-            },
-          });
-        } else {
-          // cancel
+        if (idx === undefined || idx === 1) {
+          return;
         }
+        navigation.navigate(STRINGS.navigation_app_lao, {
+          screen: STRINGS.navigation_linked_organizations_title,
+          params: {
+            screen: STRINGS.linked_organizations_navigation_addlinkedorgModal,
+          },
+        });
       },
     );
   };

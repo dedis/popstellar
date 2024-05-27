@@ -571,6 +571,10 @@ namespace STRINGS {
   export const linked_organizations_placeholderChallengeValidUntil = 'Challenge Valid Until';
   export const linked_organizations_LaoID = 'Lao ID:';
   export const linked_organizations_navigation_addlinkedorgModal = 'AddLinkedOrgModal';
+  export const linked_organizations_addLinkedOrganizationButton = 'Add Linked Organization';
+  export const linked_organizations_addLinkedOrganizationCancel = 'Cancel';
+  export const linked_organizations_manualInputModalToast =
+    'All fields are required and Valid Until has to be in the Future';
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';

@@ -3,10 +3,7 @@ import { Message } from 'core/network/jsonrpc/messages';
 import { getFederationChannel, Hash, PublicKey, Timestamp } from 'core/objects';
 
 import { Challenge } from '../objects/Challenge';
-import { ChallengeRequest } from './messages';
-import { ChallengeMessage } from './messages/ChallengeMessage';
-import { FederationExpect } from './messages/FederationExpect';
-import { FederationInit } from './messages/FederationInit';
+import { ChallengeRequest, ChallengeMessage, FederationExpect, FederationInit } from './messages';
 
 /**
  * Contains all functions to send social media related messages.

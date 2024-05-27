@@ -106,7 +106,7 @@ describe('makeSingleLinkedOrganizationsSelector', () => {
     ).toEqual(mockOrganizationState);
   });
 
-  it('returns undefined if the linked organization  is not in the store', () => {
+  it('returns undefined if the linked organization is not in the store', () => {
     const serializedMockLaoId2 = mockLaoId2.valueOf();
     const newState = linkedOrganizationsReduce(
       {

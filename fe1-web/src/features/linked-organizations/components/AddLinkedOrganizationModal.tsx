@@ -45,9 +45,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.x1,
   },
   infoText: {
-    textAlign: 'center',
-    fontSize: 18,
-    margin: 3,
+    margin: Spacing.x025,
     color: Color.contrast,
   },
 });
@@ -68,7 +66,7 @@ const AddLinkedOrganizationModal = () => {
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
 
   const [qrCodeData, setQRCodeData] = useState<string>('');
-  // Check if the organizer is the one thats supposed to send the initFederation message
+  // Check if the organizer is the one that is supposed to send the initFederation message
   const [isInitiatingOrganizer, setIsInitiatingOrganizer] = useState<boolean>(false);
   // this is needed as otherwise the camera may stay turned on
   const [showScanner, setShowScanner] = useState(false);
@@ -86,7 +84,7 @@ const AddLinkedOrganizationModal = () => {
       });
   }, [laoId, toast]);
 
-  const getQRCodeData = () => {
+  const requestChallengeAndDisplayQRCode = () => {
     if (!isInitiatingOrganizer) {
       onRequestChallenge();
     } else {
@@ -157,7 +155,7 @@ const AddLinkedOrganizationModal = () => {
       // Data of the Linked Organization that was just scanned
       const scannedLinkedOrganization = LinkedOrganization.fromJson(JSON.parse(qrcodeChecked));
       if (isInitiatingOrganizer) {
-        getQRCodeData();
+        requestChallengeAndDisplayQRCode();
         setShowQRCodeModal(true);
         onFederationInit(scannedLinkedOrganization);
       } else {
@@ -227,14 +225,14 @@ const AddLinkedOrganizationModal = () => {
             <PoPButton
               testID="show-qr-code"
               onPress={() => {
-                getQRCodeData();
+                requestChallengeAndDisplayQRCode();
                 setShowQRCodeModal(true);
                 setIsInitiatingOrganizer(false);
                 setShowModal(false);
               }}
               buttonStyle="primary"
               disabled={false}>
-              <Text style={styles.infoText}>
+              <Text style={{ ...styles.infoText, ...Typography.centered, ...Typography.small }}>
                 {STRINGS.linked_organizations_addlinkedorg_genQRCode}
               </Text>
             </PoPButton>
@@ -249,7 +247,7 @@ const AddLinkedOrganizationModal = () => {
               setShowModal(false);
             }}
             disabled={false}>
-            <Text style={styles.infoText}>
+            <Text style={{ ...styles.infoText, ...Typography.centered, ...Typography.small }}>
               {STRINGS.linked_organizations_addlinkedorg_scanQRCode}
             </Text>
           </PoPButton>

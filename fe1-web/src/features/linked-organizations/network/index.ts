@@ -7,10 +7,7 @@ import {
   handleFederationExpectMessage,
   handleFederationInitMessage,
 } from './LinkedOrgHandler';
-import { ChallengeRequest } from './messages';
-import { ChallengeMessage } from './messages/ChallengeMessage';
-import { FederationExpect } from './messages/FederationExpect';
-import { FederationInit } from './messages/FederationInit';
+import { ChallengeRequest, ChallengeMessage, FederationExpect, FederationInit } from './messages';
 
 export * from './LinkedOrgMessageApi';
 

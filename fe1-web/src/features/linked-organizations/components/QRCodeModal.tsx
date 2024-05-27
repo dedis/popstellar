@@ -22,9 +22,6 @@ const styles = StyleSheet.create({
   marginTopSpacingX2: {
     marginTop: Spacing.x2,
   },
-  textAlignCenter: {
-    textAlign: 'center',
-  },
 });
 
 const QRCodeModal: React.FC<QRCodeModalProps> = ({
@@ -41,7 +38,7 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({
         <ModalHeader onClose={onClose}>
           {STRINGS.linked_organizations_addlinkedorg_genQRCode}
         </ModalHeader>
-        <Text style={{ ...Typography.paragraph, ...styles.textAlignCenter }}>
+        <Text style={{ ...Typography.paragraph, ...Typography.centered }}>
           {STRINGS.linked_organizations_addlinkedorg_QRCode_info}
         </Text>
         <QRCode
@@ -54,7 +51,7 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({
             buttonStyle="primary"
             onPress={onNext}
             disabled={false}>
-            <Text style={{ color: Color.contrast, ...styles.textAlignCenter }}>
+            <Text style={{ color: Color.contrast, ...Typography.centered }}>
               {!isInitiatingOrganizer
                 ? STRINGS.linked_organizations_addlinkedorg_next
                 : STRINGS.linked_organizations_addlinkedorg_finished}
