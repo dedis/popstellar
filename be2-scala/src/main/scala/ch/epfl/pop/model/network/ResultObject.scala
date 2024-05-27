@@ -9,6 +9,7 @@ final case class ResultInt(result: Int) extends ResultType
 final case class ResultMessage(result: List[Message]) extends ResultType
 final case class ResultMap(result: Map[Channel, Set[Message]]) extends ResultType
 final case class ResultRumor(result: List[Rumor]) extends ResultType
+final case class ResultEmptyList() extends ResultType
 
 class ResultObject(val result: Option[ResultType]) {
 
@@ -26,8 +27,9 @@ class ResultObject(val result: Option[ResultType]) {
 
   def resultMessages: Option[List[Message]] = {
     result match
-      case Some(resultMessage: ResultMessage) => Some(resultMessage.result)
-      case _                                  => None
+      case Some(resultMessage: ResultMessage)     => Some(resultMessage.result)
+      case Some(resultEmptyList: ResultEmptyList) => Some(List.empty)
+      case _                                      => None
   }
 
   def resultMap: Option[Map[Channel, Set[Message]]] = {
@@ -38,8 +40,9 @@ class ResultObject(val result: Option[ResultType]) {
 
   def resultRumor: Option[List[Rumor]] = {
     result match
-      case Some(resultRumor: ResultRumor) => Some(resultRumor.result)
-      case _                              => None
+      case Some(resultRumor: ResultRumor)         => Some(resultRumor.result)
+      case Some(resultEmptyList: ResultEmptyList) => Some(List.empty)
+      case _                                      => None
   }
 
   def isIntResult: Boolean =

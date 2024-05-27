@@ -2,8 +2,9 @@ package ch.epfl.pop.model.network
 
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.Channel
-import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import org.scalatest.funsuite.AnyFunSuite as FunSuite
 import org.scalatest.matchers.should.Matchers
+import util.examples.Rumor.RumorExample
 
 class ResultObjectSuite extends FunSuite with Matchers {
   test("Int constructor works") {
@@ -19,6 +20,7 @@ class ResultObjectSuite extends FunSuite with Matchers {
 
     obj.resultInt should equal(None)
     obj.resultMap should equal(None)
+    obj.resultRumor shouldBe None
     obj.resultMessages should equal(Some(List.empty))
   }
 
@@ -28,6 +30,16 @@ class ResultObjectSuite extends FunSuite with Matchers {
     obj.resultInt should equal(None)
     obj.resultMessages should equal(None)
     obj.resultMap should equal(Some(Map.empty))
+
+  }
+
+  test("rumor list constructor works") {
+    val obj: ResultObject = new ResultObject(ResultRumor(List(RumorExample.rumorExample)))
+
+    obj.resultRumor shouldBe Some(List(RumorExample.rumorExample))
+    obj.resultInt shouldBe None
+    obj.resultMessages shouldBe None
+    obj.resultMap shouldBe None
 
   }
 
@@ -49,6 +61,8 @@ class ResultObjectSuite extends FunSuite with Matchers {
     val obj3: ResultObject = new ResultObject(1)
     val obj4: ResultObject = new ResultObject(ResultMessage(List.empty))
     val obj6: ResultObject = new ResultObject(Map[Channel, Set[Message]]())
+    val rumorResult1: ResultObject = new ResultObject(ResultRumor(List(RumorExample.rumorExample)))
+    val rumorResult2: ResultObject = new ResultObject(ResultRumor(List(RumorExample.rumorExample)))
 
     obj.equals(obj3) should equal(true)
     obj2.equals(obj4) should equal(true)
@@ -56,5 +70,7 @@ class ResultObjectSuite extends FunSuite with Matchers {
     obj5.equals(obj6) should equal(true)
     obj5.equals(obj) should equal(false)
     obj6.equals(obj2) should equal(false)
+    rumorResult1.equals(rumorResult2) shouldBe true
+    rumorResult1.equals(obj4) shouldBe false
   }
 }
