@@ -34,6 +34,49 @@ const ManualInputModal: React.FC<ManualInputModalProps> = ({
   );
   const [startDate, setStartDate] = useState(manualChallengeValidUntil.toDate());
 
+  const checkAndSetErrorMessage = () => {
+    const missingFields = [];
+    const errors = [];
+
+    const checkMissingFields = () => {
+      if (!manualLaoId) {
+        missingFields.push(STRINGS.linked_organizations_placeholderLaoID);
+      }
+      if (!manualPublicKey) {
+        missingFields.push(STRINGS.linked_organizations_placeholderPublicKey);
+      }
+      if (!manualServerAddress) {
+        missingFields.push(STRINGS.linked_organizations_placeholderServerAddress);
+      }
+    };
+
+    checkMissingFields();
+
+    if (isInitiatingOrganizer) {
+      if (!manualChallengeValue) {
+        missingFields.push(STRINGS.linked_organizations_placeholderChallengeValue);
+      }
+      if (manualChallengeValidUntil <= Timestamp.EpochNow()) {
+        errors.push(STRINGS.linked_organizations_challengeValidUntilError);
+      }
+    }
+
+    if (missingFields.length > 0 || errors.length > 0) {
+      const missingFieldsMessage =
+        missingFields.length > 0
+          ? `${STRINGS.linked_organizations_manualInputModalMissingFields} ${missingFields.join(
+              ', ',
+            )}`
+          : '';
+      const errorsMessage =
+        errors.length > 0 ? `${missingFields.length > 0 ? '; ' : ''}${errors.join(', ')}` : '';
+
+      setErrorMessage(`${missingFieldsMessage}${errorsMessage}`);
+      return false;
+    }
+    return true;
+  };
+
   return (
     <Modal testID="modal-manual-input" transparent visible={visible} onRequestClose={onClose}>
       <TouchableWithoutFeedback containerStyle={ModalStyles.modalBackground} onPress={onClose} />
@@ -87,42 +130,9 @@ const ManualInputModal: React.FC<ManualInputModalProps> = ({
           testID="add-manually"
           onPress={() => {
             setErrorMessage('');
-            const missingFields = [];
-            const errors = [];
-            if (isInitiatingOrganizer) {
-              if (!manualLaoId) missingFields.push(STRINGS.linked_organizations_placeholderLaoID);
-              if (!manualPublicKey)
-                missingFields.push(STRINGS.linked_organizations_placeholderPublicKey);
-              if (!manualServerAddress)
-                missingFields.push(STRINGS.linked_organizations_placeholderServerAddress);
-              if (!manualChallengeValue)
-                missingFields.push(STRINGS.linked_organizations_placeholderChallengeValue);
-              if (manualChallengeValidUntil <= Timestamp.EpochNow())
-                errors.push(STRINGS.linked_organizations_challengeValidUntilError);
-            }
-            if (!isInitiatingOrganizer) {
-              if (!manualLaoId) missingFields.push(STRINGS.linked_organizations_placeholderLaoID);
-              if (!manualPublicKey)
-                missingFields.push(STRINGS.linked_organizations_placeholderPublicKey);
-              if (!manualServerAddress)
-                missingFields.push(STRINGS.linked_organizations_placeholderServerAddress);
-            }
-            if (missingFields.length > 0 || errors.length > 0) {
-              setErrorMessage(
-                `${
-                  missingFields.length > 0
-                    ? STRINGS.linked_organizations_manualInputModalMissingFields +
-                      missingFields.join(', ')
-                    : ''
-                }${
-                  errors.length > 0
-                    ? (missingFields.length > 0 ? '; ' : '') + errors.join(', ')
-                    : ''
-                }`,
-              );
+            if (!checkAndSetErrorMessage()) {
               return;
             }
-
             const tmpOrg = isInitiatingOrganizer
               ? {
                   lao_id: new Hash(manualLaoId),
