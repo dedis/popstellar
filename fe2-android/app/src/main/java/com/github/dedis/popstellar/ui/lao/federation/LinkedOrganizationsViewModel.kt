@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.github.dedis.popstellar.R
+import com.github.dedis.popstellar.SingleEvent
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral
 import com.github.dedis.popstellar.model.network.method.message.data.federation.Challenge
 import com.github.dedis.popstellar.model.network.method.message.data.federation.ChallengeRequest
@@ -40,6 +41,8 @@ constructor(
   private lateinit var laoId: String
   private val connecting = AtomicBoolean(false)
   private val disposables = CompositeDisposable()
+  val isInviteScanningDone = MutableLiveData<SingleEvent<Boolean>>()
+  val isJoinScanningDone = MutableLiveData<SingleEvent<Boolean>>()
   var manager: FragmentManager? = null
   override val nbScanned = MutableLiveData<Int>()
 
@@ -162,11 +165,21 @@ constructor(
     linkedOrgRepo.setOnChallengeUpdatedCallback(function)
   }
 
+  fun deactivateInviteScanningDone() {
+    isInviteScanningDone.postValue(SingleEvent(false))
+  }
+
+  fun deactivateJoinScanningDone() {
+    isJoinScanningDone.postValue(SingleEvent(false))
+  }
+
   override fun handleData(data: String?) {
     // Don't process another data from the scanner if I'm already trying to scan
     if (connecting.get()) {
       return
     }
+    isJoinScanningDone.postValue(SingleEvent(true))
+    isInviteScanningDone.postValue(SingleEvent(true))
 
     connecting.set(true)
     val federationDetails: FederationDetails =
@@ -197,12 +210,14 @@ constructor(
                         getApplication(), TAG, error, R.string.error_sending_federation_expect)
                   },
               ))
+      // isInviteScanningDone.postValue(SingleEvent(true))
     } else {
       // The federationDetails object is sent by the one who joins the invitation
       linkedOrgRepo.otherLaoId = federationDetails.laoId
       linkedOrgRepo.otherServerAddr = federationDetails.serverAddress
       linkedOrgRepo.otherPublicKey = federationDetails.publicKey
       linkedOrgRepo.updateChallenge(federationDetails.challenge)
+      // isJoinScanningDone.postValue(SingleEvent(true))
     }
     connecting.set(false)
   }

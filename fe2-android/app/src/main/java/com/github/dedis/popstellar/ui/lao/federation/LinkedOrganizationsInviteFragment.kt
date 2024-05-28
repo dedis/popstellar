@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
+import com.github.dedis.popstellar.SingleEvent
 import com.github.dedis.popstellar.databinding.LinkedOrganizationsInviteFragmentBinding
 import com.github.dedis.popstellar.model.network.method.message.data.federation.Challenge
 import com.github.dedis.popstellar.model.qrcode.FederationDetails
@@ -56,6 +57,15 @@ class LinkedOrganizationsInviteFragment : Fragment() {
       binding.nextStepButton.setText(R.string.finish)
       binding.nextStepButton.setOnClickListener { finishButton() }
       displayQrCodeAndInfo(binding, null)
+    }
+
+    linkedOrganizationsViewModel.isInviteScanningDone.observe(viewLifecycleOwner) {
+        booleanSingleEvent: SingleEvent<Boolean> ->
+      val finished = booleanSingleEvent.contentIfNotHandled
+      if (finished == true) {
+        closeScanner()
+        linkedOrganizationsViewModel.deactivateInviteScanningDone()
+      }
     }
 
     handleBackNav()
@@ -171,6 +181,12 @@ class LinkedOrganizationsInviteFragment : Fragment() {
     linkedOrganizationsViewModel.manager = parentFragmentManager
     LaoActivity.setCurrentFragment(parentFragmentManager, R.id.fragment_qr_scanner) {
       QrScannerFragment.newInstance(ScanningAction.FEDERATION_INVITE)
+    }
+  }
+
+  private fun closeScanner() {
+    LaoActivity.setCurrentFragment(parentFragmentManager, R.id.fragment_linked_organizations_home) {
+      LinkedOrganizationsFragment.newInstance()
     }
   }
 
