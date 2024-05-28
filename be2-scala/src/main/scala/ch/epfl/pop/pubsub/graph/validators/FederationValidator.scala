@@ -4,9 +4,9 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.federation.{FederationChallenge, FederationChallengeRequest, FederationExpect, FederationInit, FederationResult}
+import ch.epfl.pop.model.network.method.message.data.federation.*
 import ch.epfl.pop.pubsub.PublishSubscribe
-import ch.epfl.pop.pubsub.graph.validators.MessageValidator.{checkChannelType, checkMsgSenderKey, checkMsgServerKey, checkOwner, extractData, runChecks}
+import ch.epfl.pop.pubsub.graph.validators.MessageValidator.{checkChallengeSenderKey, checkChannelType, checkOrganizerChallengeSender, checkOwner, checkResultChallengeSenderKey, extractData, runChecks}
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 object FederationValidator extends MessageDataContentValidator {
@@ -44,16 +44,22 @@ sealed class FederationValidator(dbActorRef: => AskableActorRef) extends Message
             federationChallenge.validUntil,
             validationError(s"stale 'valid_until' timestamp (${federationChallenge.validUntil})")
           ),
+          checkValidUntil(
+            rpcMessage,
+            federationChallenge.validUntil,
+            validationError(s"the challenge is not valid")
+          ),
           checkStringPattern(
             rpcMessage,
             federationChallenge.value.toString,
             CHALLENGE_VALUE_REGEX,
             validationError(s"challenge value should contain 64 hexadecimal characters i.e represent a 32 hexadecimal byte array")
           ),
-          checkMsgServerKey(
+          checkChallengeSenderKey(
             rpcMessage,
             senderPk,
-            validationError(s"invalid sender $senderPk")
+            dbActorRef,
+            validationError(s"the sender of the challenge should be the organizer")
           ),
           checkChannelType(
             rpcMessage,
@@ -107,14 +113,8 @@ sealed class FederationValidator(dbActorRef: => AskableActorRef) extends Message
 
       case Some(message: Message) =>
         val (federationInit, laoId, senderPk, channel) = extractData[FederationInit](rpcMessage)
-
+        val challenge = FederationChallenge.buildFromJson(federationInit.challenge.data.toString)
         runChecks(
-          checkDifferentId( // need to find a way to check exactly
-            rpcMessage,
-            laoId,
-            federationInit.laoId,
-            validationError(s"Needing a different lao to federate")
-          ),
           checkStringPattern(
             rpcMessage,
             federationInit.serverAddress,
@@ -128,11 +128,25 @@ sealed class FederationValidator(dbActorRef: => AskableActorRef) extends Message
             dbActorRef,
             validationError(s"trying to send a federation init message on a wrong type of channel $channel")
           ),
-          checkDifferentKeys( // need to find a way to check exactly
+          checkOwner(
             rpcMessage,
-            federationInit.publicKey,
             senderPk,
-            validationError(s"Needing the public key of the other organizer to federate")
+            channel,
+            dbActorRef,
+            validationError(s"Sender $senderPk of the federationInit is not the organizer")
+          ),
+          checkStringPattern(
+            rpcMessage,
+            challenge.value.toString,
+            CHALLENGE_VALUE_REGEX,
+            validationError("Invalid challenge value")
+          ),
+          checkOrganizerChallengeSender(
+            rpcMessage,
+            federationInit.challenge,
+            channel,
+            dbActorRef,
+            validationError(s"Sender of the challenge in the federationInit message is not the organizer")
           )
         )
       case _ => Left(validationErrorNoMessage(rpcMessage.id))
@@ -159,6 +173,26 @@ sealed class FederationValidator(dbActorRef: => AskableActorRef) extends Message
             channel,
             dbActorRef,
             validationError(s"trying to send a federation expect message on a wrong type of channel $channel")
+          ),
+          checkOwner(
+            rpcMessage,
+            senderPk,
+            channel,
+            dbActorRef,
+            validationError(s"Sender $senderPk of the federationExpect is not the organizer")
+          ),
+          checkOrganizerChallengeSender(
+            rpcMessage,
+            federationExpect.challenge,
+            channel,
+            dbActorRef,
+            validationError(s"Sender of the challenge in the federationExpect message is not the organizer")
+          ),
+          checkExpectChallenge(
+            rpcMessage,
+            federationExpect,
+            dbActorRef,
+            validationError(s"the challenge in the federationExpect does not match the challenge in the db")
           )
         )
       case _ => Left(validationErrorNoMessage(rpcMessage.id))
@@ -178,13 +212,26 @@ sealed class FederationValidator(dbActorRef: => AskableActorRef) extends Message
             ObjectType.federation,
             channel,
             dbActorRef,
-            validationError(s"trying to send a federation result message on a wrong type of channel $channel")
+            validationError(s"trying to send a federationResult message on a wrong type of channel $channel")
           ),
           checkStringPattern(
             rpcMessage,
             federationResult.status,
             RESULT_STATUS_REGEX,
             validationError(s"invalid result status")
+          ),
+          checkResultChallengeSenderKey(
+            rpcMessage,
+            federationResult,
+            federationResult.challenge.sender,
+            dbActorRef,
+            validationError(s"the challenge message sender in federationResult is not the organizer and/or the publicKey in federationResult is not the sender of FederationInit")
+          ),
+          checkInitChallenge(
+            rpcMessage,
+            federationResult,
+            dbActorRef,
+            validationError(s"the challenge in the federationResult does not match the challenge in federationInit")
           )
         )
       case _ => Left(validationErrorNoMessage(rpcMessage.id))

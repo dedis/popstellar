@@ -2,14 +2,15 @@ package util.examples.data.builders
 
 import ch.epfl.pop.model.network.method.ParamsWithMessage
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.election.{KeyElection, CastVoteElection, EndElection, OpenElection, SetupElection}
+import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, KeyElection, OpenElection, SetupElection}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall}
-import ch.epfl.pop.model.network.method.message.data.socialMedia._
-import ch.epfl.pop.model.network.method.message.data.coin._
+import ch.epfl.pop.model.network.method.message.data.socialMedia.*
+import ch.epfl.pop.model.network.method.message.data.coin.*
+import ch.epfl.pop.model.network.method.message.data.federation.{FederationChallenge, FederationChallengeRequest, FederationExpect, FederationInit, FederationResult}
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
-import ch.epfl.pop.model.objects._
+import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 
 /** Helper object to generate test data
@@ -188,6 +189,32 @@ object HighLevelMessageGenerator {
         // Digital cash
         case (ObjectType.coin, ActionType.post_transaction) =>
           messageData = PostTransaction.buildFromJson(payload)
+          params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+
+        // federation
+        case (ObjectType.federation, ActionType.challenge_request) =>
+          messageData = FederationChallengeRequest.buildFromJson(payload)
+          params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+
+        case (ObjectType.federation, ActionType.expect) =>
+          messageData = FederationExpect.buildFromJson(payload)
+          params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+
+        case (ObjectType.federation, ActionType.init) =>
+          messageData = FederationInit.buildFromJson(payload)
+          params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+
+        case (ObjectType.federation, ActionType.challenge) =>
+          messageData = FederationChallenge.buildFromJson(payload)
+          params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+
+        case (ObjectType.federation, ActionType.result) =>
+          messageData = FederationResult.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 

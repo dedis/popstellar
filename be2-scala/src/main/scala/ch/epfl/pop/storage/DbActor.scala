@@ -5,9 +5,10 @@ import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.json.MessageDataProtocol
-import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
+import ch.epfl.pop.json.MessageDataProtocol.*
 import ch.epfl.pop.model.network.method.Rumor
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.federation.FederationChallenge
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects.*
@@ -24,6 +25,7 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.util.{Failure, Success, Try}
+import spray.json.*
 
 final case class DbActor(
     private val mediatorRef: ActorRef,
@@ -425,6 +427,47 @@ final case class DbActor(
     }
   }
 
+  @throws[DbActorNAckException]
+  private def readFederationMessage(key: String): Option[Message] = {
+    Try(storage.read(key)) match {
+      case Success(Some(json)) =>
+        val msg = Message.buildFromJson(json)
+        val data: JsonString = msg.data.decodeToString()
+        MessageDataProtocol.parseHeader(data) match {
+          case Success((_object, action)) =>
+            val builder = registry.getBuilder(_object, action).get
+            Some(msg.copy(decodedData = Some(builder(data))))
+          case Failure(ex) =>
+            log.error(s"Unable to decode message data: $ex")
+            Some(msg)
+        }
+      case Success(None) => None
+      case Failure(ex)   => throw ex
+    }
+  }
+
+  @throws[DbActorNAckException]
+  private def writeFederationMessage(key: String, message: Message): Unit = {
+    this.synchronized {
+      Try(readFederationMessage(key)) match {
+        case Success(Some(message)) => /* Do nothing */
+        case Success(None)          => storage.write((key, message.toJsonString))
+        case Failure(ex)            => throw ex
+      }
+    }
+  }
+
+  @throws[DbActorNAckException]
+  private def deleteFederationMessage(key: String): Unit = {
+    this.synchronized {
+      Try(storage.read(key)) match {
+        case Success(Some(_)) => storage.delete(key)
+        case Success(None)    => /* Do nothing */
+        case Failure(ex)      => throw ex
+      }
+    }
+  }
+
   override def receive: Receive = LoggingReceive {
     case Write(channel, message) =>
       log.info(s"Actor $self (db) received a WRITE request on channel '$channel'")
@@ -625,6 +668,27 @@ final case class DbActor(
       Try(readRumorData(senderPk)) match {
         case Success(foundRumorIds) => sender() ! DbActorReadRumorData(foundRumorIds)
         case failure                => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case ReadFederationMessage(key) =>
+      log.info(s"Actor $self (db) received a ReadFederationMessage request")
+      Try(readFederationMessage(key)) match {
+        case Success(message) => sender() ! DbActorReadFederationMessageAck(message)
+        case failure          => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case WriteFederationMessage(key, message) =>
+      log.info(s"Actor $self (db) received a WriteFederationMessage request")
+      Try(writeFederationMessage(key, message)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case failure    => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case DeleteFederationMessage(key) =>
+      log.info(s"Actor $self (db) received a DeleteFederationMessage request")
+      Try(deleteFederationMessage(key)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
     case m =>
@@ -863,6 +927,26 @@ object DbActor {
     */
   final case class ReadRumorData(senderPk: PublicKey) extends Event
 
+  /** Requests the Db for the message corresponding to a given key
+    * @param key
+    *   The key associated to the message we request for
+    */
+  final case class ReadFederationMessage(key: String) extends Event
+
+  /** Requests the Db to write the given message associated with its key
+    * @param key
+    *   The key corresponding to the message
+    * @param message
+    *   The message to write in the Db
+    */
+  final case class WriteFederationMessage(key: String, message: Message) extends Event
+
+  /** Requests the Db to delete the message associated with its key
+    * @param key
+    *   The key of the message to delete
+    */
+  final case class DeleteFederationMessage(key: String) extends Event
+
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
@@ -951,6 +1035,12 @@ object DbActor {
   /** Response for a [[ReadRumorData]]
     */
   final case class DbActorReadRumorData(rumorIds: RumorData) extends DbActorMessage
+
+  /** Response for a [[ReadFederationMessage]] db request
+    * @param message
+    *   requested message
+    */
+  final case class DbActorReadFederationMessageAck(message: Option[Message]) extends DbActorMessage
 
   /** Response for a general db actor ACK
     */
