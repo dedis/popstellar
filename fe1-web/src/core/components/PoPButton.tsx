@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
+import { popBlue } from 'core/styles/color';
+
 import { Border, Color, Spacing } from '../styles';
 import PoPTouchableOpacity from './PoPTouchableOpacity';
 
@@ -41,6 +43,12 @@ const PoPButton = (props: IPropTypes) => {
     viewStyles.push(styles.outline);
   }
 
+  // tertiary button style changes background color to popBlue
+  // necessary for Modal in LinkedOrganization
+  if (buttonStyle === 'tertiary') {
+    viewStyles.push({ backgroundColor: popBlue, borderColor: popBlue });
+  }
+
   return (
     <PoPTouchableOpacity
       containerStyle={toolbar ? styles.toolbar : styles.containerMargin}
@@ -55,7 +63,11 @@ const propTypes = {
   onPress: PropTypes.func.isRequired,
   // primary: colored background, negative text
   // secondary: outlined button
-  buttonStyle: PropTypes.oneOf<'primary' | 'secondary'>(['primary', 'secondary']),
+  buttonStyle: PropTypes.oneOf<'primary' | 'secondary' | 'tertiary'>([
+    'primary',
+    'secondary',
+    'tertiary',
+  ]),
   // changes background color / border color to be gray
   disabled: PropTypes.bool,
   // makes the button placement work in the toolbar
