@@ -49,6 +49,16 @@ object ProcessMessagesHandler extends AskPatternConstants {
     case value @ _ => value
   }
 
+  def rumorStateAnsHandler(messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+    case msg @ Right(JsonRpcResponse(_, Some(resultObject), None, _)) =>
+      resultObject.resultRumor match
+        case Some(rumorList) =>
+          rumorList.foreach(rumorHandler(messageRegistry, _))
+          msg
+        case _ => msg
+    case graphMessage @ _ => graphMessage
+  }
+
   def rumorHandler(messageRegistry: MessageRegistry, rumor: Rumor)(implicit system: ActorSystem): Boolean = {
     val msgMap = rumor.messages.map((chan, list) => (chan, list.toSet))
     processMsgMap(msgMap, messageRegistry)
