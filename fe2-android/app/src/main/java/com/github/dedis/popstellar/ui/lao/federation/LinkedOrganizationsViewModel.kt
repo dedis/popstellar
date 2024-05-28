@@ -43,10 +43,8 @@ constructor(
   var manager: FragmentManager? = null
   override val nbScanned = MutableLiveData<Int>()
 
-  fun setLaoId(laoId: String?) {
-    if (laoId != null) {
-      this.laoId = laoId
-    }
+  fun setLaoId(laoId: String) {
+    this.laoId = laoId
   }
 
   /**
@@ -130,8 +128,30 @@ constructor(
     )
   }
 
-  fun getRepository(): LinkedOrganizationsRepository {
-    return linkedOrgRepo
+  fun getChallenge(): Challenge? {
+    return linkedOrgRepo.getChallenge()
+  }
+
+  fun getOtherLao(): String? {
+    return linkedOrgRepo.otherLaoId
+  }
+
+  fun getOtherServerAddress(): String? {
+    return linkedOrgRepo.otherServerAddr
+  }
+
+  fun getOtherPublicKey(): String? {
+    return linkedOrgRepo.otherPublicKey
+  }
+
+  fun isRepositoryValid(): Boolean {
+    return linkedOrgRepo.otherLaoId != null &&
+        linkedOrgRepo.otherServerAddr != null &&
+        linkedOrgRepo.otherPublicKey != null
+  }
+
+  fun flushRepository() {
+    linkedOrgRepo.flush()
   }
 
   private fun getMessageGeneralFromChallenge(challenge: Challenge): MessageGeneral {

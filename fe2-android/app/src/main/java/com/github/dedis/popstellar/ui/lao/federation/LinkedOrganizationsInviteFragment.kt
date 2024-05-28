@@ -47,28 +47,9 @@ class LinkedOrganizationsInviteFragment : Fragment() {
     linkedOrganizationsViewModel =
         obtainLinkedOrganizationsViewModel(requireActivity(), laoViewModel.laoId)
 
-    if (CREATES_INVITATION) {
+    if (createdInvitation) {
       // When the user creates the invitation
-      binding.nextStepButton.setText(R.string.next_step)
-      binding.nextStepButton.visibility = View.GONE
-      binding.nextStepButton.setOnClickListener { openScanner() }
-      binding.scanQrText.visibility = View.GONE
-      binding.loadingText.visibility = View.VISIBLE
-      binding.linkedOrganizationsNameTitle.visibility = View.GONE
-      binding.linkedOrganizationsServerTitle.visibility = View.GONE
-      laoViewModel.addDisposable(
-          linkedOrganizationsViewModel
-              .sendChallengeRequest(Instant.now().epochSecond)
-              .subscribe(
-                  { binding.nextStepButton.visibility = View.VISIBLE },
-                  { error: Throwable ->
-                    logAndShow(
-                        requireContext(), TAG, error, R.string.error_sending_challenge_request)
-                  },
-              ))
-      linkedOrganizationsViewModel.doWhenChallengeIsReceived { challenge ->
-        displayQrCodeAndInfo(binding, challenge)
-      }
+      createInvitationSetup(binding)
     } else {
       // When the user joins an invitation
       binding.loadingText.visibility = View.GONE
@@ -84,11 +65,9 @@ class LinkedOrganizationsInviteFragment : Fragment() {
 
   override fun onResume() {
     super.onResume()
-    if (CREATES_INVITATION) {
-      laoViewModel.setPageTitle(R.string.invite_other_organization)
-    } else {
-      laoViewModel.setPageTitle(R.string.join_other_organization_invitation)
-    }
+    laoViewModel.setPageTitle(
+        if (createdInvitation) R.string.invite_other_organization
+        else R.string.join_other_organization_invitation)
     laoViewModel.setIsTab(false)
   }
 
@@ -124,6 +103,28 @@ class LinkedOrganizationsInviteFragment : Fragment() {
     }
   }
 
+  private fun createInvitationSetup(binding: LinkedOrganizationsInviteFragmentBinding) {
+    binding.nextStepButton.setText(R.string.next_step)
+    binding.nextStepButton.visibility = View.GONE
+    binding.nextStepButton.setOnClickListener { openScanner() }
+    binding.scanQrText.visibility = View.GONE
+    binding.loadingText.visibility = View.VISIBLE
+    binding.linkedOrganizationsNameTitle.visibility = View.GONE
+    binding.linkedOrganizationsServerTitle.visibility = View.GONE
+    laoViewModel.addDisposable(
+        linkedOrganizationsViewModel
+            .sendChallengeRequest(Instant.now().epochSecond)
+            .subscribe(
+                { binding.nextStepButton.visibility = View.VISIBLE },
+                { error: Throwable ->
+                  logAndShow(requireContext(), TAG, error, R.string.error_sending_challenge_request)
+                },
+            ))
+    linkedOrganizationsViewModel.doWhenChallengeIsReceived { challenge ->
+      displayQrCodeAndInfo(binding, challenge)
+    }
+  }
+
   private fun handleBackNav() {
     val activity = requireActivity()
     LaoActivity.addBackNavigationCallback(
@@ -141,20 +142,17 @@ class LinkedOrganizationsInviteFragment : Fragment() {
   }
 
   private fun finishButton() {
-    val repo = linkedOrganizationsViewModel.getRepository()
-    if (repo.otherLaoId == null ||
-        repo.otherServerAddr == null ||
-        repo.otherPublicKey == null ||
-        repo.getChallenge() == null) {
+    if (!linkedOrganizationsViewModel.isRepositoryValid() ||
+        linkedOrganizationsViewModel.getChallenge() == null) {
       logAndShow(requireContext(), TAG, R.string.error_invalid_federation_info)
     } else {
       laoViewModel.addDisposable(
           linkedOrganizationsViewModel
               .sendFederationInit(
-                  repo.otherLaoId!!,
-                  repo.otherServerAddr!!,
-                  repo.otherPublicKey!!,
-                  repo.getChallenge()!!,
+                  linkedOrganizationsViewModel.getOtherLao()!!,
+                  linkedOrganizationsViewModel.getOtherServerAddress()!!,
+                  linkedOrganizationsViewModel.getOtherPublicKey()!!,
+                  linkedOrganizationsViewModel.getChallenge()!!,
               )
               .subscribe(
                   { logAndShow(requireContext(), TAG, R.string.init_sent) },
@@ -179,11 +177,11 @@ class LinkedOrganizationsInviteFragment : Fragment() {
   companion object {
     private val TAG: String = LinkedOrganizationsInviteFragment::class.java.simpleName
     private const val QR_SIDE = 800
-    private var CREATES_INVITATION = false
+    private var createdInvitation = false
 
     @JvmStatic
     fun newInstance(createsInvitation: Boolean): LinkedOrganizationsInviteFragment {
-      CREATES_INVITATION = createsInvitation
+      createdInvitation = createsInvitation
       return LinkedOrganizationsInviteFragment()
     }
   }

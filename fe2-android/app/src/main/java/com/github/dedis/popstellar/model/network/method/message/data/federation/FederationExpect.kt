@@ -7,26 +7,21 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects
 import com.google.gson.annotations.SerializedName
 
 /** Federation Expect message */
-class FederationExpect : Data {
-  @SerializedName("lao_id") val laoId: String
-  @SerializedName("server_address") val serverAddress: String
-  @SerializedName("public_key") val publicKey: String
-  val challenge: MessageGeneral
-
-  /**
-   * Constructor for a data Federation Expect
-   *
-   * @param laoId ID of the remote LAO
-   * @param serverAddress public address of the remote organizer server
-   * @param publicKey public key of the remote organizer
-   * @param challenge challenge for the server
-   */
-  constructor(laoId: String, serverAddress: String, publicKey: String, challenge: MessageGeneral) {
-    this.laoId = laoId
-    this.serverAddress = serverAddress
-    this.publicKey = publicKey
-    this.challenge = challenge
-  }
+class FederationExpect
+/**
+ * Constructor for a data Federation Expect
+ *
+ * @param laoId ID of the remote LAO
+ * @param serverAddress public address of the remote organizer server
+ * @param publicKey public key of the remote organizer
+ * @param challenge challenge for the server
+ */
+(
+    @SerializedName("lao_id") val laoId: String,
+    @SerializedName("server_address") val serverAddress: String,
+    @SerializedName("public_key") val publicKey: String,
+    val challenge: MessageGeneral
+) : Data {
 
   override val `object`: String
     get() = Objects.FEDERATION.`object`

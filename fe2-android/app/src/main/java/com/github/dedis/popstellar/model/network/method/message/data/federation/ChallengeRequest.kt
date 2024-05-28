@@ -7,17 +7,13 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects
 
 /** Data sent to get a challenge */
 @Immutable
-class ChallengeRequest : Data {
-  val timestamp: Long
-
-  /**
-   * Constructor for a data Challenge Request
-   *
-   * @param timestamp time of the Challenge Request
-   */
-  constructor(timestamp: Long) {
-    this.timestamp = timestamp
-  }
+class ChallengeRequest
+/**
+ * Constructor for a data Challenge Request
+ *
+ * @param timestamp time of the Challenge Request
+ */
+(val timestamp: Long) : Data {
 
   override val `object`: String
     get() = Objects.FEDERATION.`object`

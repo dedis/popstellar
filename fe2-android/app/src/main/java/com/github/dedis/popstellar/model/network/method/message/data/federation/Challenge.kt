@@ -4,25 +4,21 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action
 import com.github.dedis.popstellar.model.network.method.message.data.Data
 import com.github.dedis.popstellar.model.network.method.message.data.Objects
 import com.google.gson.annotations.SerializedName
+import kotlin.math.max
 
 /** Challenge sent by the server */
-class Challenge : Data {
-  val value: String
+class Challenge
+/**
+ * Constructor for a data Challenge
+ *
+ * @param value value of the Challenge (A 32 bytes array encoded in hexadecimal)
+ * @param validUntil expiration time of the Challenge
+ */
+(val value: String, validUntil: Long) : Data {
   @SerializedName("valid_until") val validUntil: Long
 
-  /**
-   * Constructor for a data Challenge
-   *
-   * @param value value of the Challenge (A 32 bytes array encoded in hexadecimal)
-   * @param validUntil expiration time of the Challenge
-   */
-  constructor(value: String, validUntil: Long) {
-    this.value = value
-    if (validUntil < 0L) {
-      this.validUntil = 0L
-    } else {
-      this.validUntil = validUntil
-    }
+  init {
+    this.validUntil = max(0L, validUntil)
   }
 
   override val `object`: String

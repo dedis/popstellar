@@ -42,7 +42,7 @@ class LinkedOrganizationsFragment : Fragment() {
         obtainLinkedOrganizationsViewModel(requireActivity(), laoViewModel.laoId)
 
     // Starts from a clean repository
-    linkedOrganizationsViewModel.getRepository().flush()
+    linkedOrganizationsViewModel.flushRepository()
 
     // Sets the text and the button depending on the user's role
     laoViewModel.role.observe(viewLifecycleOwner) { role: Role ->

@@ -442,7 +442,9 @@ class LaoActivity : AppCompatActivity() {
     ): LinkedOrganizationsViewModel {
       val linkedOrganizationsViewModel =
           ViewModelProvider(activity)[LinkedOrganizationsViewModel::class.java]
-      linkedOrganizationsViewModel.setLaoId(laoId)
+      if (laoId != null) {
+        linkedOrganizationsViewModel.setLaoId(laoId)
+      }
       return linkedOrganizationsViewModel
     }
 
