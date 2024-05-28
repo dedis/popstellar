@@ -426,7 +426,7 @@ final case class DbActor(
   }
 
   private def getRumorState: RumorState = {
-    val allPublicKeys = storage.filterKeysByPrefix(storage.RUMOR_DATA_KEY).map(key => PublicKey(Base64Data(key)))
+    val allPublicKeys = storage.filterKeysByPrefix(storage.RUMOR_DATA_KEY).map(key => PublicKey(Base64Data(key.replaceFirst(storage.RUMOR_DATA_KEY, ""))))
     val allRumorData = allPublicKeys.flatMap {
       publicKey =>
         Try(readRumorData(publicKey)) match
