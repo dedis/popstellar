@@ -26,6 +26,7 @@ object RuntimeEnvironment {
   private val configParam = "scala.config"
   private val securityParam = "scala.security"
   private val dbPathParam = "scala.db"
+  private val peerListParam = "scala.peerlist"
   private val dbFolder = "database"
   private val testParam = "test"
 
@@ -47,12 +48,7 @@ object RuntimeEnvironment {
 
   // Needed for unit tests
   lazy val isTestMode: Boolean = testMode(testParam)
-  lazy val serverPeersListPath: String =
-    if (isTestMode) {
-      confDir + File.separator + "server-peers-list-mock.conf"
-    } else {
-      confDir + File.separator + "server-peers-list.conf"
-    }
+  lazy val serverPeersListPath: String = getPeerListPath()
 
   def readServerPeers(): List[String] = {
     val source =
@@ -101,6 +97,17 @@ object RuntimeEnvironment {
       path.trim
     } else {
       throw new RuntimeException(s"-D$param was not provided.")
+    }
+  }
+
+  private def getPeerListPath(): String = {
+    val path = sp(peerListParam)
+    if (path != null && path.trim.nonEmpty) {
+      path.trim
+    } else if (isTestMode) {
+      confDir + File.separator + "server-peers-list-mock.conf"
+    } else {
+      confDir + File.separator + "server-peers-list.conf"
     }
   }
 

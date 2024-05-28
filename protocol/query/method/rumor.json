@@ -11,25 +11,7 @@
         },
 
         "params": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "sender_id": {
-                    "description": "[String] publish key of the sender's server",
-                    "type": "string",
-                    "contentEncoding": "base64"
-                },
-                "rumor_id": {
-                    "description": "[Integer] ID of the rumor",
-                    "type": "integer"
-                },
-                "messages": {
-                    "description": "Key-value of channels and messages per channel",
-                    "type": "object",
-                    "$ref": "../../answer/result/messages_by_channel.json"
-                }
-            },
-            "required": ["sender_id", "rumor_id", "messages"]
+            "$ref": "object/rumor.json"
         },
 
         "jsonrpc": {

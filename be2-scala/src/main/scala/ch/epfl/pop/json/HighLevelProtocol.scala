@@ -117,6 +117,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
         case paramsWithMap: ParamsWithMap         => paramsWithMap.toJson
         case greetServer: GreetServer             => greetServer.toJson(GreetServerFormat)
         case rumor: Rumor                         => rumor.toJson(RumorFormat)
+        case rumorState: RumorState               => rumorState.toJson(RumorStateFormat)
       }
 
   }
@@ -227,6 +228,23 @@ object HighLevelProtocol extends DefaultJsonProtocol {
 
   }
 
+  implicit object RumorStateFormat extends RootJsonFormat[RumorState] {
+
+    final private val PARAM_STATE = "state"
+
+    override def read(json: JsValue): RumorState = {
+      json.asJsObject.getFields(PARAM_STATE) match
+        case Seq(stateObject @ JsObject(_)) =>
+          val state: Map[PublicKey, Int] = stateObject.fields.map((pk, rumorId) => (PublicKey(Base64Data(pk)), rumorId.convertTo[Int]))
+          RumorState(state)
+        case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a RumorState object")
+    }
+    override def write(rumorState: RumorState): JsValue = {
+      val rumorStateObject = JsObject(rumorState.state.map((pk, rumorId) => pk.base64Data.data -> rumorId.toJson))
+      JsObject(PARAM_STATE -> rumorStateObject)
+    }
+  }
+
   implicit val errorObjectFormat: JsonFormat[ErrorObject] = jsonFormat2(ErrorObject.apply)
 
   implicit object ResultObjectFormat extends RootJsonFormat[ResultObject] {
@@ -264,6 +282,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
           case MethodType.catchup            => paramsJsObject.convertTo[Catchup]
           case MethodType.get_messages_by_id => paramsJsObject.convertTo[GetMessagesById]
           case MethodType.rumor              => paramsJsObject.convertTo[Rumor]
+          case MethodType.rumor_state        => paramsJsObject.convertTo[RumorState]
           case _                             => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
 

@@ -39,7 +39,7 @@ Feature: Close a Roll Call
 
   @closeRollCall2
   Scenario: Non-organizer closing a roll call should fail
-    Given def notOrganizer = call createMockClient
+    Given def notOrganizer = call createMockFrontend
     And def validCloseRollCall =
       """
         {
