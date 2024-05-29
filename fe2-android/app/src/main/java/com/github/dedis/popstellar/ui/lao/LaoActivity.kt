@@ -29,6 +29,7 @@ import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListFragment
 import com.github.dedis.popstellar.ui.lao.event.meeting.MeetingViewModel
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallViewModel
 import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsFragment
+import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsViewModel
 import com.github.dedis.popstellar.ui.lao.popcha.PoPCHAHomeFragment
 import com.github.dedis.popstellar.ui.lao.popcha.PoPCHAViewModel
 import com.github.dedis.popstellar.ui.lao.socialmedia.SocialMediaHomeFragment
@@ -432,6 +433,19 @@ class LaoActivity : AppCompatActivity() {
       val popCHAViewModel = ViewModelProvider(activity)[PoPCHAViewModel::class.java]
       popCHAViewModel.laoId = laoId
       return popCHAViewModel
+    }
+
+    @JvmStatic
+    fun obtainLinkedOrganizationsViewModel(
+        activity: FragmentActivity,
+        laoId: String?
+    ): LinkedOrganizationsViewModel {
+      val linkedOrganizationsViewModel =
+          ViewModelProvider(activity)[LinkedOrganizationsViewModel::class.java]
+      if (laoId != null) {
+        linkedOrganizationsViewModel.setLaoId(laoId)
+      }
+      return linkedOrganizationsViewModel
     }
 
     /**

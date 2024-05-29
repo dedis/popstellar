@@ -2,6 +2,7 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import jsonRPC from 'protocol/jsonRPC.json';
 import connectToLaoSchema from 'protocol/qrcode/connect_to_lao.json';
+import federationExchangeSchema from 'protocol/qrcode/federation_exchange.json';
 import mainPublicKeySchema from 'protocol/qrcode/main_public_key.json';
 import popTokenSchema from 'protocol/qrcode/pop_token.json';
 
@@ -19,6 +20,7 @@ ajv.addSchema([
   connectToLaoSchema,
   mainPublicKeySchema,
   popTokenSchema,
+  federationExchangeSchema,
   ...answerSchema,
   ...dataSchema,
   ...messageSchema,
@@ -72,6 +74,12 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
   [ObjectType.POPCHA]: {
     [ActionType.AUTH]: 'dataAuthenticateUser',
   },
+  [ObjectType.FEDERATION]: {
+    [ActionType.CHALLENGE_REQUEST]: 'dataFederationChallengeRequest',
+    [ActionType.CHALLENGE]: 'dataFederationChallenge',
+    [ActionType.FEDERATION_INIT]: 'dataFederationInit',
+    [ActionType.FEDERATION_EXPECT]: 'dataFederationExpect',
+  },
 };
 
 function getSchema(obj: ObjectType, action: ActionType): string | null {
@@ -121,4 +129,8 @@ export function validateScannableMainPublicKey(obj: any): ValidationResult {
 }
 export function validateScannablePopToken(obj: any): ValidationResult {
   return validate(`${schemaPrefix}/qrcode/pop_token.json`, obj);
+}
+
+export function validateFederationExchange(obj: any): ValidationResult {
+  return validate(`${schemaPrefix}/qrcode/federation_exchange.json`, obj);
 }
