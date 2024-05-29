@@ -542,7 +542,6 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 		return err
 	}
 
-	defer tx.Rollback()
 	return nil
 }
 
@@ -1278,7 +1277,7 @@ func (s *SQLite) CheckRumor(senderID string, rumorID int) (bool, error) {
 		}
 		return false, nil
 	}
-	
+
 	err := s.database.QueryRow(selectLastRumor, senderID).Scan(&id)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return false, err
@@ -1455,4 +1454,140 @@ func newRumor(rumorID int, sender []byte, messages map[string][]message.Message)
 		},
 		Params: params,
 	}
+}
+
+//======================================================================================================================
+// FederationRepository interface implementation
+//======================================================================================================================
+
+func (s *SQLite) IsChallengeValid(senderPk string, challenge messagedata.FederationChallenge, channelPath string) error {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	var federationChallengeBytes []byte
+	err := s.database.QueryRow(selectValidFederationChallenges, channelPath,
+		senderPk, messagedata.FederationObject,
+		messagedata.FederationActionChallenge, challenge.Value,
+		challenge.ValidUntil).Scan(&federationChallengeBytes)
+	if err != nil {
+		return err
+	}
+
+	var federationChallenge messagedata.FederationChallenge
+	err = json.Unmarshal(federationChallengeBytes, &federationChallenge)
+	if err != nil {
+		return err
+	}
+
+	if federationChallenge != challenge {
+		return xerrors.New("the federation challenge doesn't match")
+	}
+
+	return nil
+}
+
+func (s *SQLite) RemoveChallenge(challenge messagedata.FederationChallenge) error {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	result, err := s.database.Exec(deleteFederationChallenge,
+		messagedata.FederationObject,
+		messagedata.FederationActionChallenge, challenge.Value,
+		challenge.ValidUntil)
+	if err != nil {
+		return err
+	}
+
+	nb, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if nb != 1 {
+		return xerrors.New("unexpected number of rows affected")
+	}
+
+	return nil
+}
+
+func (s *SQLite) GetFederationExpect(senderPk string, remotePk string, challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationExpect, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	rows, err := s.database.Query(selectFederationExpects, channelPath,
+		senderPk, messagedata.FederationObject,
+		messagedata.FederationActionExpect, remotePk)
+	if err != nil {
+		return messagedata.FederationExpect{}, err
+	}
+	defer rows.Close()
+
+	// iterate over all FederationExpect sent from the given sender pk,
+	// and search the one matching the given FederationChallenge
+	for rows.Next() {
+		var federationExpectBytes []byte
+		err = rows.Scan(&federationExpectBytes)
+		if err != nil {
+			continue
+		}
+
+		var federationExpect messagedata.FederationExpect
+		err = json.Unmarshal(federationExpectBytes, &federationExpect)
+		if err != nil {
+			continue
+		}
+
+		var federationChallenge messagedata.FederationChallenge
+		errAnswer := federationExpect.ChallengeMsg.UnmarshalMsgData(&federationChallenge)
+		if errAnswer != nil {
+			return messagedata.FederationExpect{}, errAnswer
+		}
+
+		if federationChallenge == challenge {
+			return federationExpect, nil
+		}
+	}
+
+	return messagedata.FederationExpect{}, sql.ErrNoRows
+}
+
+func (s *SQLite) GetFederationInit(senderPk string, remotePk string, challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationInit, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	rows, err := s.database.Query(selectFederationExpects, channelPath,
+		senderPk, messagedata.FederationObject,
+		messagedata.FederationActionInit, remotePk)
+	if err != nil {
+		return messagedata.FederationInit{}, err
+	}
+	defer rows.Close()
+
+	// iterate over all FederationInit sent from the given sender pk,
+	// and search the one matching the given FederationChallenge
+	for rows.Next() {
+		var federationInitBytes []byte
+		err = rows.Scan(&federationInitBytes)
+		if err != nil {
+			continue
+		}
+
+		var federationInit messagedata.FederationInit
+		err = json.Unmarshal(federationInitBytes, &federationInit)
+		if err != nil {
+			continue
+		}
+
+		var federationChallenge messagedata.FederationChallenge
+		errAnswer := federationInit.ChallengeMsg.UnmarshalMsgData(&federationChallenge)
+		if errAnswer != nil {
+			return messagedata.FederationInit{}, errAnswer
+		}
+
+		if federationChallenge == challenge {
+			return federationInit, nil
+		}
+	}
+
+	return messagedata.FederationInit{}, sql.ErrNoRows
 }

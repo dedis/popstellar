@@ -16,6 +16,7 @@ const (
 	AuthType         = "auth"
 	PopChaType       = "popcha"
 	GeneralChirpType = "generalChirp"
+	FederationType   = "federation"
 )
 
 var channelTypeToID = map[string]string{
@@ -29,6 +30,7 @@ var channelTypeToID = map[string]string{
 	CoinType:         "8",
 	AuthType:         "9",
 	GeneralChirpType: "10",
+	FederationType:   "11",
 }
 
 var channelTypes = []string{
@@ -42,6 +44,7 @@ var channelTypes = []string{
 	CoinType,
 	AuthType,
 	GeneralChirpType,
+	FederationType,
 }
 
 const (
@@ -355,6 +358,46 @@ const (
 
 	selectMyRumorInfos = `SELECT max(ID), sender FROM rumor WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?)`
 	selectLastRumor    = `SELECT max(ID) FROM rumor WHERE sender = ?`
+
+	selectValidFederationChallenges = `
+	SELECT messageData
+	FROM (
+	    SELECT *
+		FROM message
+		JOIN channelMessage ON message.messageID = channelMessage.messageID
+	)
+	WHERE channelPath = ?
+		AND json_extract(message, '$.sender') = ?
+		AND json_extract(messageData, '$.object') = ?
+		AND json_extract(messageData, '$.action') = ?
+		AND json_extract(messageData, '$.value') = ?
+		AND json_extract(messageData, '$.valid_until') = ?
+	ORDER BY storedTime DESC
+	`
+
+	deleteFederationChallenge = `
+	DELETE
+	FROM message
+	WHERE json_extract(messageData, '$.object') = ?
+		AND json_extract(messageData, '$.action') = ?
+		AND json_extract(messageData, '$.value') = ?
+		AND json_extract(messageData, '$.valid_until') = ?
+	`
+
+	selectFederationExpects = `
+	SELECT messageData
+	FROM (
+	    SELECT *
+		FROM message
+		JOIN channelMessage ON message.messageID = channelMessage.messageID
+	)
+	WHERE channelPath = ?
+	    AND json_extract(message, '$.sender') = ?
+		AND json_extract(messageData, '$.object') = ?
+		AND json_extract(messageData, '$.action') = ?
+		AND json_extract(messageData, '$.public_key') = ?
+	ORDER BY storedTime DESC
+	`
 )
 
 const (

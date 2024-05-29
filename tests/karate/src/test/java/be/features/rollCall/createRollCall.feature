@@ -67,7 +67,7 @@ Feature: Create a Roll Call
   # a non-organizer should result in an error message being sent by the backend.
   @createRollCall3
   Scenario: Roll Call Creation with non-organizer as sender should return an error
-    Given def notOrganizer = call createMockClient
+    Given def notOrganizer = call createMockFrontend
     And def validCreateRollCall =
       """
         {

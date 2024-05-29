@@ -4,6 +4,7 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/query/method"
+	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
 
@@ -18,6 +19,7 @@ type Repository interface {
 	CoinRepository
 	ReactionRepository
 	RumorSenderRepository
+	FederationRepository
 
 	// StoreServerKeys stores the keys of the server
 	StoreServerKeys(electionPubKey kyber.Point, electionSecretKey kyber.Scalar) error
@@ -198,6 +200,31 @@ type ReactionRepository interface {
 
 	// GetReactionSender returns a reaction sender
 	GetReactionSender(messageID string) (string, error)
+
+	// StoreMessageAndData stores a message with an object and an action inside the database.
+	StoreMessageAndData(channelID string, msg message.Message) error
+}
+
+type FederationRepository interface {
+	// GetOrganizerPubKey returns the organizer public key of a LAO.
+	GetOrganizerPubKey(laoID string) (kyber.Point, error)
+
+	// IsChallengeValid returns true if the challenge is valid and not used yet
+	IsChallengeValid(senderPk string, challenge messagedata.FederationChallenge, channelPath string) error
+
+	// RemoveChallenge removes the challenge from the database to avoid reuse
+	RemoveChallenge(challenge messagedata.FederationChallenge) error
+
+	// GetFederationExpect return a FederationExpect where the organizer is
+	// the given public keys
+	GetFederationExpect(senderPk string, remotePk string, Challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationExpect, error)
+
+	// GetFederationInit return a FederationExpect where the organizer is
+	// the given public keys
+	GetFederationInit(senderPk string, remotePk string, Challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationInit, error)
+
+	// GetServerKeys get the keys of the server
+	GetServerKeys() (kyber.Point, kyber.Scalar, error)
 
 	// StoreMessageAndData stores a message with an object and an action inside the database.
 	StoreMessageAndData(channelID string, msg message.Message) error

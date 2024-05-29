@@ -33,7 +33,7 @@ object PublishSubscribe {
       messageRegistry: MessageRegistry,
       monitorRef: ActorRef,
       connectionMediatorRefT: ActorRef,
-      gossipManager: AskableActorRef,
+      gossipManagerT: AskableActorRef,
       isServer: Boolean,
       initGreetServer: Boolean = false
   )(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
@@ -46,6 +46,7 @@ object PublishSubscribe {
         connectionMediatorRef = connectionMediatorRefT
         mediatorActorRef = mediatorActorRefT
         securityModuleActorRef = securityModuleActorRefT
+        gossipManager = gossipManagerT
 
         /* partitioner port numbers */
         val portPipelineError = 0
@@ -154,6 +155,7 @@ object PublishSubscribe {
           val greetServerPartition = builder.add(ParamsHandler.greetServerHandler(clientActorRef))
           val rumorPartition = builder.add(ParamsHandler.rumorHandler(dbActorRef, messageRegistry))
           val gossipManagerPartition = builder.add(GossipManager.gossipHandler(gossipManager))
+          val gossipStartPartition = builder.add(GossipManager.startGossip(gossipManager, clientActorRef))
 
           val merger = builder.add(Merge[GraphMessage](totalPorts))
 
@@ -161,7 +163,7 @@ object PublishSubscribe {
           input ~> jsonRpcContentValidator ~> methodPartitioner
 
           methodPartitioner.out(portPipelineError) ~> merger
-          methodPartitioner.out(portParamsWithMessage) ~> hasMessagePartition ~> merger
+          methodPartitioner.out(portParamsWithMessage) ~> gossipStartPartition ~> hasMessagePartition ~> merger
           methodPartitioner.out(portSubscribe) ~> subscribePartition ~> merger
           methodPartitioner.out(portUnsubscribe) ~> unsubscribePartition ~> merger
           methodPartitioner.out(portCatchup) ~> catchupPartition ~> merger
