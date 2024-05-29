@@ -38,7 +38,6 @@ class GetMessagesByIdResponseHandlerSuite extends TestKitBase with AnyFunSuiteLi
   val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(testSecurityDirectory)))
 
   override def beforeAll(): Unit = {
-    println("beforeAll GetMessage")
     // Inject dbActor above
     PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, isServer = false)
 
@@ -73,7 +72,6 @@ class GetMessagesByIdResponseHandlerSuite extends TestKitBase with AnyFunSuiteLi
 
   override def afterAll(): Unit = {
     // Stops the testKit
-    println("afterAll GetMsg")
     TestKit.shutdownActorSystem(system)
   }
 

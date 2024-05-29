@@ -42,7 +42,6 @@ class RumorHandlerSuite extends TestKitBase with AnyFunSuiteLike with AskPattern
   private val rumorHandler: Flow[GraphMessage, GraphMessage, NotUsed] = ParamsHandler.rumorHandler(dbActorRef, messageRegistry)
 
   override def beforeAll(): Unit = {
-    println("beforeAll Rumor")
     // Inject dbActor above
     PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, isServer = false)
 
@@ -73,7 +72,6 @@ class RumorHandlerSuite extends TestKitBase with AnyFunSuiteLike with AskPattern
   }
 
   override def afterAll(): Unit = {
-    println("afterAll rumor")
     // Stops the testKit
     TestKit.shutdownActorSystem(system)
   }

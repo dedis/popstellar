@@ -635,10 +635,7 @@ final case class DbActor(
 
 object DbActor {
 
-  final lazy val INSTANCE: AskableActorRef = {
-    println(s"new DbActor ${PublishSubscribe.getDbActorRef.actorRef}")
-    PublishSubscribe.getDbActorRef
-  }
+  final lazy val INSTANCE: AskableActorRef = PublishSubscribe.getDbActorRef
 
   def getInstance: AskableActorRef = INSTANCE
 

@@ -40,7 +40,6 @@ object PublishSubscribe {
     implicit builder: GraphDSL.Builder[NotUsed] =>
       {
         import GraphDSL.Implicits._
-        println(s"order dbActor ${dbActorRefT.actorRef}")
 
         val clientActorRef: ActorRef = system.actorOf(ClientActor.props(mediatorActorRefT, connectionMediatorRefT, isServer, initGreetServer))
         dbActorRef = dbActorRefT
