@@ -1414,6 +1414,8 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
 			popstellar.Logger.Error().Msg("3")
 			return false, method.Rumor{}, err
 		}
+		popstellar.Logger.Warn().Msg(channelPath)
+		popstellar.Logger.Warn().Msg(string(msgBytes))
 		var msg message.Message
 		if err = json.Unmarshal(msgBytes, &msg); err != nil {
 			popstellar.Logger.Error().Msg("4")
