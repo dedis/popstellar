@@ -256,6 +256,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
             else
               Left(error)
           case "failure" => checkMsgSenderKey(rpcMessage, expectedKey, msgSenderKey, error)
+          case _ => Left(PipelineError(ErrorCodes.INVALID_ACTION.id, s"invalid status", rpcMessage.getId))
         }
       case Success(DbActor.DbActorReadFederationMessageAck(None)) => Left(PipelineError(ErrorCodes.INVALID_ACTION.id, s"didn't receive federationInit before", rpcMessage.getId))
       case _                                                      => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Unexpected server behavior", rpcMessage.getId))

@@ -42,7 +42,6 @@ class FederationValidatorSuite extends TestKit(ActorSystem("FederationValidatorT
     directory.deleteRecursively()
   }
 
-  // this one is of the challenge_request and expect and init, idk if it's the same of the other msgs or not, need to check before using it everywhere
   private final val SENDER: PublicKey = PublicKey(Base64Data("VHfxTlbM3nTnLQuKnKfs1fGP2cwVT8KJkc-sRGs_2KM="))
 
   private final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
@@ -79,6 +78,12 @@ class FederationValidatorSuite extends TestKit(ActorSystem("FederationValidatorT
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
+        case DbActor.ReadFederationMessage("challenge") =>
+          sender() ! DbActorReadFederationMessageAck(Some(CHALLENGE))
+        case DbActor.ReadFederationMessage("expect") =>
+          sender() ! DbActorReadFederationMessageAck(Some(EXPECT_MESSAGE))
+        case DbActor.ReadFederationMessage("init") =>
+          sender() ! DbActorReadFederationMessageAck(Some(INIT_MESSAGE))  
       }
     })
     system.actorOf(dbActorMock)

@@ -6,12 +6,14 @@ import ch.epfl.pop.model.network.method.message.data.federation.FederationChalle
 import ch.epfl.pop.model.objects.{Base16Data, Base64Data, Hash, PublicKey, Signature, Timestamp}
 import spray.json.*
 
+import java.time.Instant
+
 object FederationChallengeExample {
 
   final val VALUE: Base16Data = Base16Data("82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4")
   final val WRONG_VALUE: Base16Data = Base16Data("72ecfdd1a4ba832518b90bb93a8480ee9be16a92ec11da03e5")
 
-  final val VALID_UNTIL: Timestamp = Timestamp(1712854874)
+  final val VALID_UNTIL: Timestamp = Timestamp(Instant.now().getEpochSecond + 56574467)
   final val WRONG_TIMESTAMP: Timestamp = Timestamp(57689)
 
   final val CHALLENGE: FederationChallenge = FederationChallenge(VALUE, VALID_UNTIL)

@@ -45,7 +45,7 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
   def mockDbWithNAck: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActor.WriteAndPropagate(_, _) => // TODO go back to it to see what to include
+        case DbActor.WriteAndPropagate(_, _) => 
           system.log.info("Received a message ")
           system.log.info("Responding with a Nack")
 
@@ -203,14 +203,8 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
 
     system.stop(mockedDB.actorRef)
   }
-
-  /** test("FederationChallenge should succeed if we succeed to delete the challenge and expect messages previously stored in the database") { val mockedDB = val rc = new FederationHandler(mockedDB, mockMed) val request = FederationChallengeMessages.federationChallenge
-    *
-    * rc.handleFederationChallenge(request) should equal(Right(request))
-    *
-    * system.stop(mockedDB.actorRef) }
-    */
-
+  
+  
   test("FederationChallengeRequest should fail if we fail to retrieve the server public and private keys") {
     val mockedDB = mockDbWithNAck
     val rc = new FederationHandler(mockedDB, mockMed)

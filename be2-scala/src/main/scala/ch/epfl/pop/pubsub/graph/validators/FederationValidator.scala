@@ -29,7 +29,7 @@ sealed class FederationValidator(dbActorRef: => AskableActorRef) extends Message
 
   private val CHALLENGE_VALUE_REGEX = "^[0-9a-fA-F]{64}$".r
   private val SERVER_ADDRESS_REGEX = "^(ws|wss)://.*(:\\\\d{0,5})?/.*$".r
-  private val RESULT_STATUS_REGEX = "^(failure|success)$".r
+  private val RESULT_STATUS_REGEX = "^failure|success$".r
 
   def validateFederationChallenge(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "FederationChallenge", rpcMessage.id)
@@ -113,7 +113,7 @@ sealed class FederationValidator(dbActorRef: => AskableActorRef) extends Message
 
       case Some(message: Message) =>
         val (federationInit, laoId, senderPk, channel) = extractData[FederationInit](rpcMessage)
-        val challenge = FederationChallenge.buildFromJson(federationInit.challenge.data.toString)
+        val challenge = FederationChallenge.buildFromJson(federationInit.challenge.data.decodeToString())
         runChecks(
           checkStringPattern(
             rpcMessage,

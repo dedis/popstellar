@@ -258,7 +258,7 @@ object MessageRegistry {
       createSchemaVerifier("dataFederationChallengeRequest.json"),
       FederationChallengeRequest.buildFromJson,
       FederationValidator.validateFederationChallengeRequest,
-      FederationHandler.handleFederationRequestChallenge
+      FederationHandler.handleFederationChallengeRequest
     )
 
     register.add(

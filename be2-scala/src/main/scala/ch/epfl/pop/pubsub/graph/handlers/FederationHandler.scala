@@ -24,7 +24,7 @@ object FederationHandler extends MessageHandler {
 
   def handleFederationChallenge(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleFederationChallenge(rpcMessage)
 
-  def handleFederationRequestChallenge(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleFederationChallengeRequest(rpcMessage)
+  def handleFederationChallengeRequest(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleFederationChallengeRequest(rpcMessage)
 
   def handleFederationInit(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleFederationInit(rpcMessage)
 
@@ -51,9 +51,9 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
     val ask = dbActor ? DbActor.ReadFederationMessage(keys._1)
     Await.ready(ask, duration).value match {
       case Some(Success(DbActor.DbActorReadFederationMessageAck(Some(message)))) =>
-        val expect: FederationExpect = FederationExpect.buildFromJson(message.data.toString)
+        val expect: FederationExpect = FederationExpect.buildFromJson(message.data.decodeToString())
         val challengeMessage: Message = expect.challenge
-        val expectedChallenge: FederationChallenge = FederationChallenge.buildFromJson(challengeMessage.data.toString)
+        val expectedChallenge: FederationChallenge = FederationChallenge.buildFromJson(challengeMessage.data.decodeToString())
 
         val ask = for {
           case (_, message, Some(data)) <- extractParameters[FederationChallenge](rpcMessage, serverUnexpectedAnswer)
