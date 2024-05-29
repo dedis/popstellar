@@ -30,13 +30,13 @@ func handleRumor(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return &rumor.ID, errAnswer.Wrap("handleRumor")
 	}
 
-	alreadyExists, err := db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID)
+	ok, err := db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID)
 	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("if rumor exists: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("if rumor is not valid: %v", err)
 		return &rumor.ID, errAnswer.Wrap("handleRumor")
 	}
-	if alreadyExists {
-		errAnswer := answer.NewInvalidResourceError("rumor %s-%v is not valid",
+	if !ok {
+		errAnswer := answer.NewInvalidResourceError("rumor %s: %v is not valid",
 			rumor.Params.SenderID, rumor.Params.RumorID)
 		return &rumor.ID, errAnswer
 	}
