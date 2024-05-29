@@ -37,18 +37,13 @@ class IncorrectNumberOfArgsToFormat extends SemanticRule("IncorrectNumberOfArgsT
       case t @ Term.Apply.After_4_6_0(Term.Select(qual, Term.Name("format")), Term.ArgClause(args, _)) =>
         qual match {
           case Term.Name("String") =>
-          args match {
-            case Lit.String(format) :: rest => rule(format, rest, t)
-            case (head @ Term.Name(_)) :: rest =>
-              val format = findDefinition(doc.tree, head)
-              format match {
-                case Lit.String(value) => rule(value, rest, t)
-              }
-            case _ => Patch.empty
-          }
-            val format = findDefinition(doc.tree,args.head)
-            format match {
-              case Lit.String(value) => rule(value, args.tail, t)
+            args match {
+              case Lit.String(format) :: rest => rule(format, rest, t)
+              case (head @ Term.Name(_)) :: rest =>
+                val format = findDefinition(doc.tree, head)
+                format match {
+                  case Lit.String(value) => rule(value, rest, t)
+                }
               case _ => Patch.empty
             }
           case strName @ Term.Name(_) => val str = findDefinition(doc.tree, strName)
@@ -59,6 +54,7 @@ class IncorrectNumberOfArgsToFormat extends SemanticRule("IncorrectNumberOfArgsT
           case Lit.String(value) => rule(value, args, t)
 
         }
+      case _ => Patch.empty
     }.asPatch
   }
 
