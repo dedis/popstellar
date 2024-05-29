@@ -337,7 +337,7 @@ const (
     FROM message 
     WHERE messageID = ?`
 
-	selectRumor = `SELECT ID FROM rumor WHERE ID = ? AND sender = ?`
+	selectAnyRumor = `SELECT ID FROM rumor WHERE sender = ?`
 
 	selectAllUnprocessedMessages = `SELECT channelPath, message FROM unprocessedMessage`
 

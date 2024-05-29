@@ -1269,12 +1269,21 @@ func (s *SQLite) CheckRumor(senderID string, rumorID int) (bool, error) {
 	defer dbLock.Unlock()
 
 	var id int
+	if rumorID == 0 {
+		err := s.database.QueryRow(selectAnyRumor, senderID).Scan(&id)
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
+			return false, err
+		} else if errors.Is(err, sql.ErrNoRows) {
+			return true, nil
+		}
+		return false, nil
+	}
+	
 	err := s.database.QueryRow(selectLastRumor, senderID).Scan(&id)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return false, err
-	}
-	if err != nil && errors.Is(err, sql.ErrNoRows) && rumorID == 0 {
-		return true, nil
+	} else if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
 	}
 	return id == rumorID-1, nil
 }
