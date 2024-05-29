@@ -42,18 +42,18 @@ class IncorrectNumberOfArgsToFormat extends SemanticRule("IncorrectNumberOfArgsT
             case (head @ Term.Name(_)) :: rest =>
               val format = findDefinition(doc.tree, head)
               format match {
-                case value: String => rule(value, rest, t)
+                case Lit.String(value) => rule(value, rest, t)
               }
             case _ => Patch.empty
           }
             val format = findDefinition(doc.tree,args.head)
             format match {
-              case value: String => rule(value, args.tail, t)
+              case Lit.String(value) => rule(value, args.tail, t)
               case _ => Patch.empty
             }
           case strName @ Term.Name(_) => val str = findDefinition(doc.tree, strName)
             str match {
-              case value: String => rule(value, args, t)
+              case Lit.String(value) => rule(value, args, t)
               case _ => Patch.empty
             }
           case Lit.String(value) => rule(value, args, t)

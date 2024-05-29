@@ -58,7 +58,7 @@ class IllegalFormatString extends SemanticRule("IllegalFormatString") {
             // myStr.format("world")
             val str = findDefinition(doc.tree, strName)
             str match {
-              case value: String => rule(t, value, getMappedArgs(args))
+              case Lit.String(value) => rule(t, value, getMappedArgs(args))
               case _ => Patch.empty
             }
           case Lit.String(value) =>

@@ -17,7 +17,7 @@ object Util {
 
   def findDefinition(tree: Tree, name: Term): Any = {
     tree.collect {
-      case Defn.Val(_, List(Pat.Var(varName)), _, Lit(value))
+      case Defn.Val(_, List(Pat.Var(varName)), _, value)
         if varName.value.equals(name.toString) => value
       case Defn.Var.After_4_7_2(_, List(Pat.Var(varName)), _, value)
         if varName == name => value
