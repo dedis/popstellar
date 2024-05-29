@@ -120,6 +120,7 @@
   <string name="qrcode_scanning_add_witness">Scan personal QR code of the witness to add</string>
   <string name="qrcode_scanning_add_popcha">Scan the PoPCHA QR code to log in</string>
   <string name="qrcode_scanning_connect_lao">Scan the invite QR code to join the LAO</string>
+  <string name="qrcode_scanning_federation">Scan the other organizer QR code to link the LAOs</string>
   <string name="event_description">Event Description</string>
   <string name="rc_location_title">Location*</string>
   <string name="qrcode_scanning_add_attendee">Scan each participant’s Roll-call QR code</string>
@@ -129,6 +130,7 @@
   <string name="no_camera">No Camera ? -  </string>
   <string name="scanned_tokens">Scanned tokens: </string>
   <string name="scanned_witness">Scanned witnesses: </string>
+  <string name="scanned_organizer">Scanned organizer: </string>
   <string name="attendee_already_scanned_warning">Attendee was already scanned</string>
   <string name="witness_already_scanned_warning">"This key already belongs to a witness"</string>
   <string name="attendee_scan_success">Attendee successfully scanned</string>
@@ -149,6 +151,13 @@
 
   <string name="manual_add_popcha_title">Manually Enter PoPCHA URL</string>
   <string name="manual_add_popcha_hint">PoPCHA URL</string>
+
+  <string name="manual_add_organization_title">Invite an organization</string>
+  <string name="manual_add_organization_lao_id_hint">Other LAO\'s ID</string>
+  <string name="manual_add_organization_server_url_hint">Other LAO\'s Server URL</string>
+  <string name="manual_add_organization_organizer_public_key_hint">Other Organizer\'s Public Key</string>
+  <string name="manual_add_organization_challenge_hint">Other Organizer\'s Challenge</string>
+
 
   <!--  Witnessing-->
   <string name="messages">Messages</string>
@@ -319,6 +328,10 @@
   <string name="scan_qr_code">Scan the QR code with the other organizers device</string>
   <string name="next_step">Next step</string>
   <string name="finish">Finish</string>
+  <string name="other_organisation_add_title">Link with another Organization</string>
+  <string name="loading_text">Loading…</string>
+  <string name="expect_sent">Federation expect sent successfully</string>
+  <string name="init_sent">Federation init sent successfully</string>
 
   <!--  Storage-->
   <string name="nothing_stored">No stored data found</string>
@@ -379,11 +392,16 @@
   <string name="error_storage_wallet">An error occurred during the storage of the wallet seed</string>
   <string name="qr_code_not_pop_token">Error, this QR code is not a pop token or the key format is invalid</string>
   <string name="qr_code_not_main_pk">Error, this QR code is not a main public key or the key format is invalid</string>
+  <string name="qr_code_not_federation_details">Error, this QR code does not represent federation details or the format is invalid</string>
   <string name="error_event_observed">Error, could not update events</string>
   <string name="error_importing_key">"Error importing key : %1$s\nTry again</string>
   <string name="error_election_duplicate_question_name">Two different questions can\'t have the same name</string>
   <string name="error_election_duplicate_ballot_name">Two different ballot options can\'t have the same name</string>
   <string name="error_settings_url_server">Invalid URL! Please insert a valid one (http, https, ws, wss are supported)</string>
+  <string name="error_sending_challenge_request">Could not send the challenge request</string>
+  <string name="error_sending_federation_expect">Could not send the federation expect message</string>
+  <string name="error_sending_federation_init">Could not send the federation init message</string>
+  <string name="error_invalid_federation_info">Invalid federation information</string>
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>

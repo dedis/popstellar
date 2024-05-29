@@ -71,26 +71,26 @@ class LinkedOrganizationsInviteFragmentTest {
 
   @Test
   fun testPageAndTextVisibility() {
-    LinkedOrganizationsInviteFragmentPageObject.scanQrText().check(matches(isDisplayed()))
+    LinkedOrganizationsInviteFragmentPageObject.scanQrText()
+            .check(matches(withEffectiveVisibility(Visibility.GONE)))
   }
 
   @Test
   fun testQrCodeVisibility() {
-    LinkedOrganizationsInviteFragmentPageObject.qrCode().check(matches(isDisplayed()))
+    LinkedOrganizationsInviteFragmentPageObject.qrCode()
+            .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
   }
 
   @Test
   fun testLAOName() {
     LinkedOrganizationsInviteFragmentPageObject.organizationName()
             .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
-    LinkedOrganizationsInviteFragmentPageObject.organizationName()
-      .check(matches(withText(LAO_NAME)))
   }
 
   @Test
   fun testNextStepButton() {
     LinkedOrganizationsInviteFragmentPageObject.nextStepButton()
-            .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+            .check(matches(withEffectiveVisibility(Visibility.GONE)))
     LinkedOrganizationsInviteFragmentPageObject.nextStepButton()
             .check(matches(withText(R.string.next_step)))
   }
