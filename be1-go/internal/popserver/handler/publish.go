@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-const thresholdMessagesByRumor = 3
+const thresholdMessagesByRumor = 1
 
 func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	var publish method.Publish
