@@ -1,7 +1,7 @@
 {
     "public-key"                           : "",
-    "server-address"                       : "ws://127.0.0.1:9004/server",
-    "client-address"                       : "ws://127.0.0.1:9005/client",
+    "server-address"                       : "ws://127.0.0.1:9005/server",
+    "client-address"                       : "ws://127.0.0.1:9004/client",
     "server-public-address"                : "localhost",
     "server-listen-address"                : "localhost",
     "auth-server-address"                  : "localhost",
