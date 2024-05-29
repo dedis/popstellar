@@ -13,9 +13,17 @@ var once sync.Once
 var instance *state
 
 type state struct {
-	subs    Subscriber
-	peers   Peerer
-	queries Querier
+	subs      Subscriber
+	peers     Peerer
+	queries   Querier
+	hubParams HubParameter
+}
+
+type HubParameter interface {
+	GetWaitGroup() *sync.WaitGroup
+	GetMessageChan() chan socket.IncomingMessage
+	GetStopChan() chan struct{}
+	GetClosedSockets() chan string
 }
 
 type Subscriber interface {
@@ -44,20 +52,22 @@ type Querier interface {
 func InitState(log *zerolog.Logger) {
 	once.Do(func() {
 		instance = &state{
-			subs:    types.NewSubscribers(),
-			peers:   types.NewPeers(),
-			queries: types.NewQueries(log),
+			subs:      types.NewSubscribers(),
+			peers:     types.NewPeers(),
+			queries:   types.NewQueries(log),
+			hubParams: types.NewHubParams(),
 		}
 	})
 }
 
 // ONLY FOR TEST PURPOSE
 // SetState is only here to be used to reset the state before each test
-func SetState(subs Subscriber, peers Peerer, queries Querier) {
+func SetState(subs Subscriber, peers Peerer, queries Querier, hubParams HubParameter) {
 	instance = &state{
-		subs:    subs,
-		peers:   peers,
-		queries: queries,
+		subs:      subs,
+		peers:     peers,
+		queries:   queries,
+		hubParams: hubParams,
 	}
 }
 
@@ -218,4 +228,48 @@ func AddQuery(ID int, query method.GetMessagesById) *answer.Error {
 	queries.AddQuery(ID, query)
 
 	return nil
+}
+
+func getHubParams() (HubParameter, *answer.Error) {
+	if instance == nil || instance.hubParams == nil {
+		return nil, answer.NewInternalServerError("hubparams was not instantiated")
+	}
+
+	return instance.hubParams, nil
+}
+
+func GetWaitGroup() (*sync.WaitGroup, *answer.Error) {
+	hubParams, errAnswer := getHubParams()
+	if errAnswer != nil {
+		return nil, errAnswer
+	}
+
+	return hubParams.GetWaitGroup(), nil
+}
+
+func GetMessageChan() (chan socket.IncomingMessage, *answer.Error) {
+	hubParams, errAnswer := getHubParams()
+	if errAnswer != nil {
+		return nil, errAnswer
+	}
+
+	return hubParams.GetMessageChan(), nil
+}
+
+func GetStopChan() (chan struct{}, *answer.Error) {
+	hubParams, errAnswer := getHubParams()
+	if errAnswer != nil {
+		return nil, errAnswer
+	}
+
+	return hubParams.GetStopChan(), nil
+}
+
+func GetClosedSockets() (chan string, *answer.Error) {
+	hubParams, errAnswer := getHubParams()
+	if errAnswer != nil {
+		return nil, errAnswer
+	}
+
+	return hubParams.GetClosedSockets(), nil
 }
