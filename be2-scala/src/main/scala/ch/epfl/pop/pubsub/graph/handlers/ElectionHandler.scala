@@ -19,7 +19,7 @@ import scala.util.{Failure, Right, Success}
 /** ElectionHandler object uses the db instance from the MessageHandler
   */
 object ElectionHandler extends MessageHandler {
-  
+
   private val serverUnexpectedAnswer: String = "The server is doing something unexpected"
 
   def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
@@ -105,12 +105,12 @@ object ElectionHandler extends MessageHandler {
   }
 
   /** Helper function to create the list of ElectionQuestionResult
-   *
-   * @param electionChannel
-   *   : the Channel in which we read the data
-   * @return
-   *   the list of ElectionQuestionResult wrapped in a [[scala.concurrent.Future]]
-   */
+    *
+    * @param electionChannel
+    *   : the Channel in which we read the data
+    * @return
+    *   the list of ElectionQuestionResult wrapped in a [[scala.concurrent.Future]]
+    */
   private def createElectionQuestionResults(electionChannel: Channel, laoId: Hash): Future[List[ElectionQuestionResult]] = {
     for {
       // get the last votes of the CastVotes messages
@@ -148,4 +148,3 @@ object ElectionHandler extends MessageHandler {
     }
   }
 }
-

@@ -96,7 +96,6 @@ class WitnessHandlerTest extends TestKit(ActorSystem("Witness-DB-System")) with 
 
   private def injectDb(dbRef: AskableActorRef) = PublishSubscribe.buildGraph(Actor.noSender, dbRef, Actor.noSender, MessageRegistry(), Actor.noSender, Actor.noSender, Actor.noSender, false)
 
-
   test("WitnessMessage fails if the database fails storing the message") {
     val mockedDB = mockDbWithNack
     injectDb(mockedDB)

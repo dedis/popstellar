@@ -144,7 +144,6 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   private def injectDb(dbRef: AskableActorRef) = PublishSubscribe.buildGraph(mockMed, dbRef, Actor.noSender, MessageRegistry(), Actor.noSender, Actor.noSender, Actor.noSender, false)
 
-
   test("AddReaction fails if the database fails storing the message") {
     val mockedDB = mockDbWithNack
     injectDb(mockedDB)

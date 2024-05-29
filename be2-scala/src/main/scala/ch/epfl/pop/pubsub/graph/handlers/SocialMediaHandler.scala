@@ -38,16 +38,16 @@ object SocialMediaHandler extends MessageHandler {
         )
 
       case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(
-        ex.code,
-        s"handleAddChirp failed : ${ex.message}",
-        rpcMessage.getId
-      ))
+          ex.code,
+          s"handleAddChirp failed : ${ex.message}",
+          rpcMessage.getId
+        ))
 
       case _ => Left(PipelineError(
-        ErrorCodes.SERVER_ERROR.id,
-        unknownAnswerDatabase,
-        rpcMessage.getId
-      ))
+          ErrorCodes.SERVER_ERROR.id,
+          unknownAnswerDatabase,
+          rpcMessage.getId
+        ))
     }
   }
 
@@ -70,16 +70,16 @@ object SocialMediaHandler extends MessageHandler {
         )
 
       case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(
-        ex.code,
-        s"handleDeleteChirp failed : ${ex.message}",
-        rpcMessage.getId
-      ))
+          ex.code,
+          s"handleDeleteChirp failed : ${ex.message}",
+          rpcMessage.getId
+        ))
 
       case _ => Left(PipelineError(
-        ErrorCodes.SERVER_ERROR.id,
-        unknownAnswerDatabase,
-        rpcMessage.getId
-      ))
+          ErrorCodes.SERVER_ERROR.id,
+          unknownAnswerDatabase,
+          rpcMessage.getId
+        ))
     }
   }
 
@@ -104,12 +104,12 @@ object SocialMediaHandler extends MessageHandler {
   }
 
   /** Helper function that extracts the useful parameters from the message
-   *
-   * @param rpcMessage
-   *   : message from which we extract the parameters
-   * @return
-   *   the id of the chirp, the channel, the decoded data and the channel in which we broadcast
-   */
+    *
+    * @param rpcMessage
+    *   : message from which we extract the parameters
+    * @return
+    *   the id of the chirp, the channel, the decoded data and the channel in which we broadcast
+    */
   private def parametersToBroadcast[T](rpcMessage: JsonRpcRequest): (Hash, Channel, T, Channel) = {
     val channelChirp: Channel = rpcMessage.getParamsChannel
     val laoId: Hash = channelChirp.decodeChannelLaoId.get
@@ -121,4 +121,3 @@ object SocialMediaHandler extends MessageHandler {
     (chirpId, channelChirp, data, broadcastChannel)
   }
 }
-

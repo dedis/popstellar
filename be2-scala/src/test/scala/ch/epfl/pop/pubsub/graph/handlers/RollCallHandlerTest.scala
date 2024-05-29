@@ -92,7 +92,6 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
 
   private def injectDb(dbRef: AskableActorRef) = PublishSubscribe.buildGraph(Actor.noSender, dbRef, Actor.noSender, MessageRegistry(), Actor.noSender, Actor.noSender, Actor.noSender, false)
 
-
   test("CreateRollCall should fail if the database fails storing the message") {
     val mockedDB = mockDbWithNack
     injectDb(mockedDB)

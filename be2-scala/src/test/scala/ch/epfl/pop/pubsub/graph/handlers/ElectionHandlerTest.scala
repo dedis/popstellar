@@ -217,7 +217,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     })
     system.actorOf(dbActorMock)
   }
-  
+
   private def injectDb(dbRef: AskableActorRef) = PublishSubscribe.buildGraph(Actor.noSender, dbRef, Actor.noSender, MessageRegistry(), Actor.noSender, Actor.noSender, Actor.noSender, false)
 
   test("SetupElection should fail if the database fails storing the message") {
