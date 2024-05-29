@@ -123,7 +123,7 @@ enum class ScanningAction(
   FEDERATION_INVITE(
       R.string.qrcode_scanning_federation,
       R.string.scanned_organizer,
-      R.string.other_organisation_add_title,
+      R.string.invite_other_organization,
       R.string.manual_add_organization_title,
       arrayOf(
           InputFieldConfig(R.string.manual_add_organization_lao_id_hint, true),
@@ -145,7 +145,7 @@ enum class ScanningAction(
   FEDERATION_JOIN(
       R.string.qrcode_scanning_federation,
       R.string.scanned_organizer,
-      R.string.other_organisation_add_title,
+      R.string.join_other_organization_invitation,
       R.string.manual_add_organization_title,
       arrayOf(
           InputFieldConfig(R.string.manual_add_organization_lao_id_hint, true),

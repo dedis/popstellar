@@ -16,6 +16,10 @@ import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.QrScannerFragmentBinding
 import com.github.dedis.popstellar.ui.PopViewModel
+import com.github.dedis.popstellar.ui.lao.LaoActivity
+import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsFragment
+import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsInviteFragment
+import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsViewModel
 import com.github.dedis.popstellar.utility.UIUtils
 import com.github.dedis.popstellar.utility.UIUtils.hideKeyboard
 import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
@@ -176,7 +180,11 @@ class QrScannerFragment : Fragment() {
     scanningViewModel.handleData(data)
 
     // Special case for federation
-    /*val linkedOrganisationsViewModel = scanningViewModel
+    /*
+     * WARNING : this code is not ideal as it should be treated by the LinkedOrganizationFragment
+     * and by the LinkedOrganizationInviteFragment instead of the QrScannerFragment
+     */
+    val linkedOrganisationsViewModel = scanningViewModel
     if (linkedOrganisationsViewModel is LinkedOrganizationsViewModel) {
       if (scanningAction == ScanningAction.FEDERATION_INVITE) {
         LaoActivity.setCurrentFragment(
@@ -193,7 +201,7 @@ class QrScannerFragment : Fragment() {
           LinkedOrganizationsInviteFragment.newInstance(false)
         }
       }
-    }*/
+    }
   }
 
   private fun setupManualAdd() {

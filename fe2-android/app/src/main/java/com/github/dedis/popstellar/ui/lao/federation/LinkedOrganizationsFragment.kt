@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
-import com.github.dedis.popstellar.SingleEvent
 import com.github.dedis.popstellar.databinding.LinkedOrganizationsFragmentBinding
 import com.github.dedis.popstellar.model.Role
 import com.github.dedis.popstellar.ui.lao.LaoActivity
@@ -60,15 +59,6 @@ class LinkedOrganizationsFragment : Fragment() {
     binding.inviteOtherOrganization.setOnClickListener(invitationPage)
     binding.joinOtherOrganizationInvitation.setOnClickListener(joinButton)
 
-    linkedOrganizationsViewModel.isJoinScanningDone.observe(viewLifecycleOwner) {
-        booleanSingleEvent: SingleEvent<Boolean> ->
-      val finished = booleanSingleEvent.contentIfNotHandled
-      if (finished == true) {
-        closeScanner()
-        linkedOrganizationsViewModel.deactivateJoinScanningDone()
-      }
-    }
-
     handleBackNav()
 
     return binding.root
@@ -113,13 +103,6 @@ class LinkedOrganizationsFragment : Fragment() {
           QrScannerFragment.newInstance(ScanningAction.FEDERATION_JOIN)
         }
       }
-
-  private fun closeScanner() {
-    LaoActivity.setCurrentFragment(
-        parentFragmentManager, R.id.fragment_linked_organizations_invite) {
-          LinkedOrganizationsInviteFragment.newInstance(false)
-        }
-  }
 
   private fun handleBackNav() {
     LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), viewLifecycleOwner, TAG)

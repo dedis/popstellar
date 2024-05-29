@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
-import com.github.dedis.popstellar.SingleEvent
 import com.github.dedis.popstellar.databinding.LinkedOrganizationsInviteFragmentBinding
 import com.github.dedis.popstellar.model.network.method.message.data.federation.Challenge
 import com.github.dedis.popstellar.model.qrcode.FederationDetails
@@ -31,7 +30,9 @@ import kotlinx.coroutines.launch
 import net.glxn.qrgen.android.QRCode
 
 @AndroidEntryPoint
-class LinkedOrganizationsInviteFragment : Fragment() {
+class LinkedOrganizationsInviteFragment(createsInvitation: Boolean) : Fragment() {
+  private val createdInvitation = createsInvitation
+
   @Inject lateinit var gson: Gson
   @Inject lateinit var networkManager: GlobalNetworkManager
 
@@ -57,15 +58,6 @@ class LinkedOrganizationsInviteFragment : Fragment() {
       binding.nextStepButton.setText(R.string.finish)
       binding.nextStepButton.setOnClickListener { finishButton() }
       displayQrCodeAndInfo(binding, null)
-    }
-
-    linkedOrganizationsViewModel.isInviteScanningDone.observe(viewLifecycleOwner) {
-        booleanSingleEvent: SingleEvent<Boolean> ->
-      val finished = booleanSingleEvent.contentIfNotHandled
-      if (finished == true) {
-        closeScanner()
-        linkedOrganizationsViewModel.deactivateInviteScanningDone()
-      }
     }
 
     handleBackNav()
@@ -158,12 +150,7 @@ class LinkedOrganizationsInviteFragment : Fragment() {
     } else {
       laoViewModel.addDisposable(
           linkedOrganizationsViewModel
-              .sendFederationInit(
-                  linkedOrganizationsViewModel.getOtherLao()!!,
-                  linkedOrganizationsViewModel.getOtherServerAddress()!!,
-                  linkedOrganizationsViewModel.getOtherPublicKey()!!,
-                  linkedOrganizationsViewModel.getChallenge()!!,
-              )
+              .sendFederationInitFromRepository()
               .subscribe(
                   { logAndShow(requireContext(), TAG, R.string.init_sent) },
                   { error: Throwable ->
@@ -184,21 +171,13 @@ class LinkedOrganizationsInviteFragment : Fragment() {
     }
   }
 
-  private fun closeScanner() {
-    LaoActivity.setCurrentFragment(parentFragmentManager, R.id.fragment_linked_organizations_home) {
-      LinkedOrganizationsFragment.newInstance()
-    }
-  }
-
   companion object {
     private val TAG: String = LinkedOrganizationsInviteFragment::class.java.simpleName
     private const val QR_SIDE = 800
-    private var createdInvitation = false
 
     @JvmStatic
     fun newInstance(createsInvitation: Boolean): LinkedOrganizationsInviteFragment {
-      createdInvitation = createsInvitation
-      return LinkedOrganizationsInviteFragment()
+      return LinkedOrganizationsInviteFragment(createsInvitation)
     }
   }
 }
