@@ -9,3 +9,5 @@ fix.IncorrectlyNamedExceptions
 fix.LonelySealedTrait
 fix.MapGetAndGetOrElse
 fix.NanComparison
+fix.OptionGet
+fix.OptionSize
