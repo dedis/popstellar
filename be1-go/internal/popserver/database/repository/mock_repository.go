@@ -102,6 +102,34 @@ func (_m *MockRepository) CheckPrevOpenOrReopenID(channel string, nextID string)
 	return r0, r1
 }
 
+// CheckRumor provides a mock function with given fields: senderID, rumorID
+func (_m *MockRepository) CheckRumor(senderID string, rumorID int) (bool, error) {
+	ret := _m.Called(senderID, rumorID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CheckRumor")
+	}
+
+	var r0 bool
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string, int) (bool, error)); ok {
+		return rf(senderID, rumorID)
+	}
+	if rf, ok := ret.Get(0).(func(string, int) bool); ok {
+		r0 = rf(senderID, rumorID)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	if rf, ok := ret.Get(1).(func(string, int) error); ok {
+		r1 = rf(senderID, rumorID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetAllMessagesFromChannel provides a mock function with given fields: channelID
 func (_m *MockRepository) GetAllMessagesFromChannel(channelID string) ([]message.Message, error) {
 	ret := _m.Called(channelID)
@@ -783,34 +811,6 @@ func (_m *MockRepository) HasMessage(messageID string) (bool, error) {
 
 	if rf, ok := ret.Get(1).(func(string) error); ok {
 		r1 = rf(messageID)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// HasRumor provides a mock function with given fields: senderID, rumorID
-func (_m *MockRepository) HasRumor(senderID string, rumorID int) (bool, error) {
-	ret := _m.Called(senderID, rumorID)
-
-	if len(ret) == 0 {
-		panic("no return value specified for HasRumor")
-	}
-
-	var r0 bool
-	var r1 error
-	if rf, ok := ret.Get(0).(func(string, int) (bool, error)); ok {
-		return rf(senderID, rumorID)
-	}
-	if rf, ok := ret.Get(0).(func(string, int) bool); ok {
-		r0 = rf(senderID, rumorID)
-	} else {
-		r0 = ret.Get(0).(bool)
-	}
-
-	if rf, ok := ret.Get(1).(func(string, int) error); ok {
-		r1 = rf(senderID, rumorID)
 	} else {
 		r1 = ret.Error(1)
 	}

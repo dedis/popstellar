@@ -56,8 +56,8 @@ type QueryRepository interface {
 
 	GetParamsHeartbeat() (map[string][]string, error)
 
-	// HasRumor returns true if the rumor already exists
-	HasRumor(senderID string, rumorID int) (bool, error)
+	// CheckRumor returns true if the rumor already exists
+	CheckRumor(senderID string, rumorID int) (bool, error)
 
 	// StoreRumor stores the new rumor with its processed and unprocessed messages
 	StoreRumor(rumorID int, sender string, unprocessed map[string][]message.Message, processed []string) error

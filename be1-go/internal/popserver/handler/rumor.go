@@ -30,7 +30,7 @@ func handleRumor(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return &rumor.ID, errAnswer.Wrap("handleRumor")
 	}
 
-	alreadyExists, err := db.HasRumor(rumor.Params.SenderID, rumor.Params.RumorID)
+	alreadyExists, err := db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("if rumor exists: %v", err)
 		return &rumor.ID, errAnswer.Wrap("handleRumor")

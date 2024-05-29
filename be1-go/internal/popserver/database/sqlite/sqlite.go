@@ -1257,18 +1257,38 @@ func (s *SQLite) GetReactionSender(messageID string) (string, error) {
 	return sender, nil
 }
 
-func (s *SQLite) HasRumor(senderID string, rumorID int) (bool, error) {
+func (s *SQLite) CheckRumor(senderID string, rumorID int) (bool, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
-	var id int
-	err := s.database.QueryRow(selectRumor, rumorID, senderID).Scan(&id)
-	if err != nil && errors.Is(err, sql.ErrNoRows) {
-		return false, nil
-	} else if err != nil {
+	rows, err := s.database.Query(selectRumor, rumorID, rumorID-1, senderID)
+	if err != nil {
 		return false, err
 	}
-	return true, nil
+	defer rows.Close()
+
+	count := 0
+
+	for rows.Next() {
+		var id int
+		err = rows.Scan(&id)
+		if err != nil {
+			return false, err
+		}
+		count++
+	}
+
+	if rows.Err() != nil {
+		return false, err
+	}
+
+	if rumorID == 0 {
+		return count == 0, nil
+	} else if rumorID == 1 {
+		return count == 1, nil
+	} else {
+		return count == 2, nil
+	}
 }
 
 func (s *SQLite) StoreRumor(rumorID int, sender string, unprocessed map[string][]message.Message, processed []string) error {
