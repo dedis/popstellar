@@ -128,6 +128,7 @@ object MessageRegistry {
     )
 
     // data election
+    println("add election")
     register.add(
       (ObjectType.election, ActionType.setup),
       createSchemaVerifier("dataSetupElection.json"),

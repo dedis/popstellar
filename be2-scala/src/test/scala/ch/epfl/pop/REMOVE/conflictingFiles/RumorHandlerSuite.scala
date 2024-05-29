@@ -32,17 +32,25 @@ class RumorHandlerSuite extends TestKitBase with AnyFunSuiteLike with AskPattern
   implicit val system: ActorSystem = ActorSystem("RumorActorSuiteActorSystem")
   val MAX_TIME: FiniteDuration = duration.mul(2)
 
-  private val inMemoryStorage: InMemoryStorage = InMemoryStorage()
-  private val messageRegistry: MessageRegistry = MessageRegistry()
-  private val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "pubSubRumor")
-  private val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)), "dbRumor")
-  private val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(RuntimeEnvironment.securityPath)), "securityRumor")
-  private val monitorRef: ActorRef = system.actorOf(Monitor.props(dbActorRef), "monitorRumor")
-  private var connectionMediatorRef: AskableActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry), "connMediatorRumor")
-  private val rumorHandler: Flow[GraphMessage, GraphMessage, NotUsed] = ParamsHandler.rumorHandler(dbActorRef, messageRegistry)
+  private var inMemoryStorage: InMemoryStorage = _
+  private var messageRegistry: MessageRegistry = _
+  private var pubSubMediatorRef: ActorRef = _
+  private var dbActorRef: AskableActorRef = _
+  private var securityModuleActorRef: AskableActorRef = _
+  private var monitorRef: ActorRef = _
+  private var connectionMediatorRef: AskableActorRef = _
+  private var rumorHandler: Flow[GraphMessage, GraphMessage, NotUsed] = _
 
   override def beforeAll(): Unit = {
     println("beforeAll Rumor")
+    inMemoryStorage = InMemoryStorage()
+    messageRegistry = MessageRegistry()
+    pubSubMediatorRef = system.actorOf(PubSubMediator.props)
+    dbActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)), "DbActorRumor")
+    securityModuleActorRef = system.actorOf(Props(SecurityModuleActor(RuntimeEnvironment.securityPath)))
+    monitorRef = system.actorOf(Monitor.props(dbActorRef))
+    connectionMediatorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
+    rumorHandler = ParamsHandler.rumorHandler(dbActorRef, messageRegistry)
     // Inject dbActor above
     PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, isServer = false)
 

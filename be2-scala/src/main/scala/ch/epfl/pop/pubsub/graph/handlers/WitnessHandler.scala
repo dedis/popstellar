@@ -16,8 +16,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /** WitnessHandler object uses the db instance from the MessageHandler
   */
 object WitnessHandler {
-  final lazy val handlerInstance = {
-    println(s"new WitnessHandler ${DbActor.getInstance.actorRef}")
+  lazy val handlerInstance: WitnessHandler = {
+    println(s"new HandlerWitness ${DbActor.getInstance.actorRef}")
     new WitnessHandler(DbActor.getInstance)
   }
 

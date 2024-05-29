@@ -15,8 +15,8 @@ import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
 
 object SocialMediaHandler extends MessageHandler {
-  final lazy val handlerInstance = {
-    println(s"new SocialMediaHandler ${super.dbActor.actorRef}")
+  lazy val handlerInstance: SocialMediaHandler = {
+    println(s"new HandlerSocialMedia ${super.dbActor.actorRef}")
     new SocialMediaHandler(super.dbActor, super.mediator)
   }
 

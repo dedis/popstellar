@@ -18,7 +18,10 @@ trait MessageHandler extends AskPatternConstants {
 
   /** May be overridden by the reference of the used DbActor
     */
-  def dbActor: AskableActorRef = PublishSubscribe.getDbActorRef
+  def dbActor: AskableActorRef = {
+    println(s"new DbRefMessageHandler : ${PublishSubscribe.getDbActorRef.actorRef}")
+    PublishSubscribe.getDbActorRef
+  }
   def securityModuleActor: AskableActorRef = PublishSubscribe.getSecurityModuleActorRef
   def connectionMediator: AskableActorRef = PublishSubscribe.getConnectionMediatorRef
   def mediator: AskableActorRef = PublishSubscribe.getMediatorActorRef
@@ -70,10 +73,11 @@ trait MessageHandler extends AskPatternConstants {
   def dbAskWritePropagate(rpcRequest: JsonRpcRequest): Future[GraphMessage] = {
     rpcRequest.getParamsMessage match
       case Some(m) =>
+        println(s"dbActorWriteAndPropagate : ${dbActor.actorRef}")
         val askWritePropagate = dbActor ? DbActor.WriteAndPropagate(rpcRequest.getParamsChannel, m)
         askWritePropagate.transformWith {
           case Success(_) => Future(Right(rpcRequest))
-          case _          => Future(Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : could not write & propagate message $m", rpcRequest.id)))
+          case err          => Future(Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : could not write & propagate message $m, err : $err", rpcRequest.id)))
         }
 
       case _ => Future {

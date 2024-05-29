@@ -1,4 +1,4 @@
-package ch.epfl.pop.REMOVE.conflictingFiles
+package ch.epfl.pop.REMOVE
 
 import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props}
 import akka.pattern.ask
@@ -11,8 +11,8 @@ import ch.epfl.pop.decentralized.{ConnectionMediator, FailingToyDbActor, Monitor
 import ch.epfl.pop.model.network.method.{Heartbeat, ParamsWithMap, Publish}
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash}
-import ch.epfl.pop.pubsub.{MessageRegistry, PublishSubscribe}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
+import ch.epfl.pop.pubsub.{MessageRegistry, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike

@@ -1,4 +1,4 @@
-package ch.epfl.pop.REMOVE.conflictingFiles
+package ch.epfl.pop.REMOVE
 
 import akka.NotUsed
 import akka.actor.{ActorRef, ActorSystem, Props}
@@ -16,9 +16,9 @@ import ch.epfl.pop.pubsub.graph.GraphMessage
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.{DbActor, InMemoryStorage, SecurityModuleActor}
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatest.funsuite.{AnyFunSuite, AnyFunSuiteLike}
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 
 import scala.concurrent.Await
 
