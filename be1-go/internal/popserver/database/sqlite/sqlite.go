@@ -104,7 +104,7 @@ func addPendingSignatures(tx *sql.Tx, msg *message.Message) error {
 	if err != nil {
 		return err
 	}
-
+	defer rows.Close()
 	for rows.Next() {
 		var witness string
 		var signature string
@@ -146,6 +146,7 @@ func (s *SQLite) GetMessagesByID(IDs []string) (map[string]message.Message, erro
 	} else if errors.Is(err, sql.ErrNoRows) {
 		return make(map[string]message.Message), nil
 	}
+	defer rows.Close()
 
 	messagesByID := make(map[string]message.Message, len(IDs))
 	for rows.Next() {
@@ -239,6 +240,7 @@ func (s *SQLite) GetAllChannels() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	var channels []string
 	for rows.Next() {
@@ -279,6 +281,7 @@ func (s *SQLite) GetAllMessagesFromChannel(channelPath string) ([]message.Messag
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	messages := make([]message.Message, 0)
 	for rows.Next() {
@@ -324,6 +327,7 @@ func (s *SQLite) GetResultForGetMessagesByID(params map[string][]string) (map[st
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	result := make(map[string][]message.Message)
 	for rows.Next() {
@@ -354,6 +358,7 @@ func (s *SQLite) GetParamsHeartbeat() (map[string][]string, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	result := make(map[string][]string)
 	for rows.Next() {
@@ -399,6 +404,7 @@ func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[str
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	result := make(map[string]struct{})
 	for rows.Next() {
@@ -1040,6 +1046,7 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		var voteBytes []byte
