@@ -28,4 +28,8 @@ public class LinkedOrganizationsInviteFragmentPageObject {
     public static ViewInteraction nextStepButton() {
         return onView(withId(R.id.next_step_button));
     }
+
+    public static ViewInteraction nextHomeFragment() {
+        return onView(withId(R.id.fragment_linked_organizations_home));
+    }
 }
