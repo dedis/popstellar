@@ -1271,7 +1271,7 @@ func (s *SQLite) CheckRumor(senderID string, rumorID int) (bool, error) {
 	var id int
 	err := s.database.QueryRow(selectLastRumor, senderID).Scan(&id)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return false, nil
+		return false, err
 	}
 	if err != nil && errors.Is(err, sql.ErrNoRows) && rumorID == 0 {
 		return true, nil
