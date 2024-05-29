@@ -36,7 +36,7 @@ func handleRumor(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return &rumor.ID, errAnswer.Wrap("handleRumor")
 	}
 	if alreadyExists {
-		errAnswer := answer.NewInvalidResourceError("rumor %s-%v already exists",
+		errAnswer := answer.NewInvalidResourceError("rumor %s-%v is not valid",
 			rumor.Params.SenderID, rumor.Params.RumorID)
 		return &rumor.ID, errAnswer
 	}

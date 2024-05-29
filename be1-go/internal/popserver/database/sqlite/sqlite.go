@@ -1268,34 +1268,31 @@ func (s *SQLite) CheckRumor(senderID string, rumorID int) (bool, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
-	rows, err := s.database.Query(selectRumor, rumorID, rumorID-1, senderID)
+	tx, err := s.database.Begin()
 	if err != nil {
 		return false, err
 	}
-	defer rows.Close()
 
-	count := 0
-
-	for rows.Next() {
-		var id int
-		err = rows.Scan(&id)
-		if err != nil {
-			return false, err
-		}
-		count++
+	var id1 int
+	err = tx.QueryRow(selectRumor, rumorID, senderID).Scan(&id1)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return false, err
+	} else if err == nil {
+		return false, nil
 	}
 
-	if rows.Err() != nil {
+	var id2 int
+	err = tx.QueryRow(selectRumor, rumorID-1, senderID).Scan(&id2)
+	if err != nil {
 		return false, err
 	}
 
-	if rumorID == 0 {
-		return count == 0, nil
-	} else if rumorID == 1 {
-		return count == 1, nil
-	} else {
-		return count == 2, nil
+	err = tx.Commit()
+	if err != nil {
+		return false, err
 	}
+
+	return true, nil
 }
 
 func (s *SQLite) StoreRumor(rumorID int, sender string, unprocessed map[string][]message.Message, processed []string) error {
