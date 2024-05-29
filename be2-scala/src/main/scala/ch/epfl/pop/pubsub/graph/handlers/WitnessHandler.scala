@@ -15,21 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 /** WitnessHandler object uses the db instance from the MessageHandler
   */
-object WitnessHandler {
-  lazy val handlerInstance: WitnessHandler = {
-    println(s"new HandlerWitness ${DbActor.getInstance.actorRef}")
-    new WitnessHandler(DbActor.getInstance)
-  }
-
-  def handleWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleWitnessMessage(rpcMessage)
-}
-
-class WitnessHandler(dbRef: => AskableActorRef) extends MessageHandler {
-
-  /** Overrides default DbActor with provided parameter
-    */
-  override final val dbActor: AskableActorRef = dbRef
-
+object WitnessHandler extends MessageHandler {
   def handleWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = {
     val combined =
       for {
@@ -38,17 +24,17 @@ class WitnessHandler(dbRef: => AskableActorRef) extends MessageHandler {
         signature: Signature = decodedData.get.signature
         channel: Channel = rpcMessage.getParamsChannel
         // add new witness signature to existing ones
-        case DbActorAddWitnessSignatureAck(witnessMessage) <- dbRef ? DbActor.AddWitnessSignature(channel, messageId, signature)
+        case DbActorAddWitnessSignatureAck(witnessMessage) <- dbActor ? DbActor.AddWitnessSignature(channel, messageId, signature)
         // overwrites the message containing now the witness signature in the db
-        _ <- dbRef ? DbActor.Write(channel, witnessMessage)
+        _ <- dbActor ? DbActor.Write(channel, witnessMessage)
         // propagate signature message only
-        _ <- dbRef ? DbActor.WriteAndPropagate(channel, rpcMessage.getParamsMessage.get)
+        _ <- dbActor ? DbActor.WriteAndPropagate(channel, rpcMessage.getParamsMessage.get)
       } yield ()
 
     Await.ready(combined, duration).value.get match {
-      case Success(_)                        => Right(rpcMessage)
+      case Success(_) => Right(rpcMessage)
       case Failure(ex: DbActorNAckException) => Left(PipelineError(ex.code, s"handleWitnessMessage failed : ${ex.message}", rpcMessage.getId))
-      case reply                             => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleWitnessMessage failed : unknown DbActor reply $reply", rpcMessage.getId))
+      case reply => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleWitnessMessage failed : unknown DbActor reply $reply", rpcMessage.getId))
     }
   }
 }

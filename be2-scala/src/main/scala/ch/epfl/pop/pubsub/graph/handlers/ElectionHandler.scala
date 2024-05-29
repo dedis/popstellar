@@ -4,9 +4,9 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.json.MessageDataProtocol.{KeyElectionFormat, resultElectionFormat}
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.election.VersionType
-import ch.epfl.pop.model.network.method.message.data.election._
-import ch.epfl.pop.model.objects.ElectionChannel._
-import ch.epfl.pop.model.objects._
+import ch.epfl.pop.model.network.method.message.data.election.*
+import ch.epfl.pop.model.objects.ElectionChannel.*
+import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.DbActorReadElectionDataAck
@@ -14,40 +14,12 @@ import ch.epfl.pop.storage.DbActor.DbActorReadElectionDataAck
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Right, Success}
 
 /** ElectionHandler object uses the db instance from the MessageHandler
   */
 object ElectionHandler extends MessageHandler {
-
-  var handlerInstance: ElectionHandler = {
-    println(s"new HandlerElection ${super.dbActor.actorRef}")
-    new ElectionHandler(super.dbActor)
-  }
-
-  if (super.dbActor != handlerInstance.dbActor) {
-    println(s"new HandlerElection dbref changed${super.dbActor.actorRef}")
-    handlerInstance = new ElectionHandler(super.dbActor)
-  }
-
-  def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleSetupElection(rpcMessage)
-
-  def handleOpenElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleOpenElection(rpcMessage)
-
-  def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleCastVoteElection(rpcMessage)
-
-  def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleResultElection(rpcMessage)
-
-  def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleEndElection(rpcMessage)
-
-  def handleKeyElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleKeyElection(rpcMessage)
-}
-
-class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
-
-  /** Overrides default DbActor with provided parameter
-    */
-  override final val dbActor: AskableActorRef = dbRef
+  
   private val serverUnexpectedAnswer: String = "The server is doing something unexpected"
 
   def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
@@ -59,8 +31,8 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       electionId: Hash = data.id
       electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
       keyPair = KeyPair()
-      _ <- dbRef ? DbActor.WriteSetupElectionMessage(electionChannel, message)
-      _ <- dbRef ? DbActor.CreateElectionData(rpcMessage.extractLaoId, electionId, keyPair)
+      _ <- dbActor ? DbActor.WriteSetupElectionMessage(electionChannel, message)
+      _ <- dbActor ? DbActor.CreateElectionData(rpcMessage.extractLaoId, electionId, keyPair)
     } yield (data, electionId, keyPair, electionChannel)
 
     Await.ready(combined, duration).value match {
@@ -89,7 +61,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleOpenElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     // checks first if the election is created (i.e. if the channel election exists)
     val combined = for {
-      _ <- dbRef ? DbActor.ChannelExists(rpcMessage.getParamsChannel)
+      _ <- dbActor ? DbActor.ChannelExists(rpcMessage.getParamsChannel)
       _ <- dbAskWritePropagate(rpcMessage)
     } yield ()
     Await.ready(combined, duration).value.get match {
@@ -133,21 +105,21 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
   }
 
   /** Helper function to create the list of ElectionQuestionResult
-    *
-    * @param electionChannel
-    *   : the Channel in which we read the data
-    * @return
-    *   the list of ElectionQuestionResult wrapped in a [[scala.concurrent.Future]]
-    */
+   *
+   * @param electionChannel
+   *   : the Channel in which we read the data
+   * @return
+   *   the list of ElectionQuestionResult wrapped in a [[scala.concurrent.Future]]
+   */
   private def createElectionQuestionResults(electionChannel: Channel, laoId: Hash): Future[List[ElectionQuestionResult]] = {
     for {
       // get the last votes of the CastVotes messages
-      castsVotesElections <- electionChannel.getLastVotes(dbRef)
+      castsVotesElections <- electionChannel.getLastVotes(dbActor)
       // get the setupElection message of the channel
-      setupMessage <- electionChannel.getSetupMessage(dbRef)
+      setupMessage <- electionChannel.getSetupMessage(dbActor)
       // associate the questions ids to their ballots
       questionToBallots = setupMessage.questions.map(question => question.id -> question.ballot_options).toMap
-      case DbActorReadElectionDataAck(electionData) <- dbRef ? DbActor.ReadElectionData(laoId, setupMessage.id)
+      case DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(laoId, setupMessage.id)
     } yield {
       // set up the table of results
       val resultsTable = mutable.HashMap.from(for {
@@ -176,3 +148,4 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     }
   }
 }
+

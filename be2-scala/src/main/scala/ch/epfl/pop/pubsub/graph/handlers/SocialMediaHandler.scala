@@ -15,31 +15,6 @@ import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
 
 object SocialMediaHandler extends MessageHandler {
-  lazy val handlerInstance: SocialMediaHandler = {
-    println(s"new HandlerSocialMedia ${super.dbActor.actorRef}")
-    new SocialMediaHandler(super.dbActor, super.mediator)
-  }
-
-  def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleAddChirp(rpcMessage)
-
-  def handleDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleDeleteChirp(rpcMessage)
-
-  def handleNotifyAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleNotifyAddChirp(rpcMessage)
-
-  def handleNotifyDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleNotifyDeleteChirp(rpcMessage)
-
-  def handleAddReaction(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleAddReaction(rpcMessage)
-
-  def handleDeleteReaction(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleDeleteReaction(rpcMessage)
-}
-
-class SocialMediaHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorRef) extends MessageHandler {
-
-  /** Overrides default DbActor with provided parameter
-    */
-  override final val dbActor: AskableActorRef = dbRef
-  override final val mediator: AskableActorRef = mediatorRef
-
   private final val unknownAnswerDatabase: String = "Database actor returned an unknown answer"
 
   private def generateSocialChannel(laoId: Hash): Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + laoId + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
@@ -49,7 +24,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActor
       for {
         _ <- extractLaoChannel(rpcMessage, "Server failed to extract LAO id for the broadcast")
         _ <- extractParameters[AddChirp](rpcMessage, "Server failed to extract chirp id for the broadcast")
-        _ <- dbRef ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, rpcMessage.getParamsMessage.get)
+        _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, rpcMessage.getParamsMessage.get)
       } yield ()
 
     Await.ready(ask, duration).value match {
@@ -63,16 +38,16 @@ class SocialMediaHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActor
         )
 
       case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(
-          ex.code,
-          s"handleAddChirp failed : ${ex.message}",
-          rpcMessage.getId
-        ))
+        ex.code,
+        s"handleAddChirp failed : ${ex.message}",
+        rpcMessage.getId
+      ))
 
       case _ => Left(PipelineError(
-          ErrorCodes.SERVER_ERROR.id,
-          unknownAnswerDatabase,
-          rpcMessage.getId
-        ))
+        ErrorCodes.SERVER_ERROR.id,
+        unknownAnswerDatabase,
+        rpcMessage.getId
+      ))
     }
   }
 
@@ -81,7 +56,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActor
       for {
         _ <- extractLaoChannel(rpcMessage, "Server failed to extract LAO id for the broadcast")
         _ <- extractParameters(rpcMessage, "Server failed to extract chirp id for the broadcast")
-        _ <- dbRef ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, rpcMessage.getParamsMessage.get)
+        _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, rpcMessage.getParamsMessage.get)
       } yield ()
 
     Await.ready(ask, duration).value match {
@@ -95,16 +70,16 @@ class SocialMediaHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActor
         )
 
       case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(
-          ex.code,
-          s"handleDeleteChirp failed : ${ex.message}",
-          rpcMessage.getId
-        ))
+        ex.code,
+        s"handleDeleteChirp failed : ${ex.message}",
+        rpcMessage.getId
+      ))
 
       case _ => Left(PipelineError(
-          ErrorCodes.SERVER_ERROR.id,
-          unknownAnswerDatabase,
-          rpcMessage.getId
-        ))
+        ErrorCodes.SERVER_ERROR.id,
+        unknownAnswerDatabase,
+        rpcMessage.getId
+      ))
     }
   }
 
@@ -129,12 +104,12 @@ class SocialMediaHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActor
   }
 
   /** Helper function that extracts the useful parameters from the message
-    *
-    * @param rpcMessage
-    *   : message from which we extract the parameters
-    * @return
-    *   the id of the chirp, the channel, the decoded data and the channel in which we broadcast
-    */
+   *
+   * @param rpcMessage
+   *   : message from which we extract the parameters
+   * @return
+   *   the id of the chirp, the channel, the decoded data and the channel in which we broadcast
+   */
   private def parametersToBroadcast[T](rpcMessage: JsonRpcRequest): (Hash, Channel, T, Channel) = {
     val channelChirp: Channel = rpcMessage.getParamsChannel
     val laoId: Hash = channelChirp.decodeChannelLaoId.get
@@ -146,3 +121,4 @@ class SocialMediaHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActor
     (chirpId, channelChirp, data, broadcastChannel)
   }
 }
+

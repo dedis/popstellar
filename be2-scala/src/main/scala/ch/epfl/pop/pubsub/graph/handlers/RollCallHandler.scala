@@ -16,31 +16,6 @@ import scala.util.{Failure, Success}
 /** RollCallHandler object uses the db instance from the MessageHandler (i.e PublishSubscribe)
   */
 object RollCallHandler extends MessageHandler {
-  lazy val handlerInstance: RollCallHandler = {
-    println(s"new HandlerRollCall ${super.dbActor.actorRef}")
-    new RollCallHandler(super.dbActor)
-  }
-
-  def handleCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleCreateRollCall(rpcMessage)
-
-  def handleOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleOpenRollCall(rpcMessage)
-
-  def handleReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleReopenRollCall(rpcMessage)
-
-  def handleCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleCloseRollCall(rpcMessage)
-}
-
-/** Implementation of the RollCallHandler that provides a testable interface
-  *
-  * @param dbRef
-  *   reference of the db actor
-  */
-class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
-
-  /** Overrides default DbActor with provided parameter
-    */
-  override final val dbActor: AskableActorRef = dbRef
-
   private val serverUnexpectedAnswer: String = "The server is doing something unexpected"
 
   def handleCreateRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
@@ -50,12 +25,12 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
         data: CreateRollCall = somedata.get
         rollCallChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
         laoId: Hash = rpcRequest.extractLaoId
-        _ <- dbRef ? DbActor.AssertChannelMissing(rollCallChannel)
+        _ <- dbActor ? DbActor.AssertChannelMissing(rollCallChannel)
         // we create a new channel to write uniquely the RollCall, this ensures then if the RollCall already exists or not
         // otherwise, we never write in this channel
-        _ <- dbRef ? DbActor.CreateChannel(rollCallChannel, ObjectType.roll_call)
+        _ <- dbActor ? DbActor.CreateChannel(rollCallChannel, ObjectType.roll_call)
         _ <- dbAskWritePropagate(rpcRequest)
-        _ <- dbRef ? DbActor.WriteRollCallData(laoId, message)
+        _ <- dbActor ? DbActor.WriteRollCallData(laoId, message)
       } yield ()
 
     Await.ready(ask, duration).value match {
@@ -72,10 +47,10 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
         channel: Channel = rpcRequest.getParamsChannel
         laoId: Hash = rpcRequest.extractLaoId
         // check if the roll call already exists to open it
-        _ <- dbRef ? DbActor.ChannelExists(channel)
+        _ <- dbActor ? DbActor.ChannelExists(channel)
         _ <- dbAskWritePropagate(rpcRequest)
         // creates a RollCallData
-        _ <- dbRef ? DbActor.WriteRollCallData(laoId, message)
+        _ <- dbActor ? DbActor.WriteRollCallData(laoId, message)
       } yield ()
 
     Await.ready(ask, duration).value match {
@@ -90,7 +65,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
       (_, message, _) <- extractParameters[ReopenRollCall](rpcRequest, serverUnexpectedAnswer)
       laoId: Hash = rpcRequest.extractLaoId
       _ <- dbAskWritePropagate(rpcRequest)
-      _ <- dbRef ? DbActor.WriteRollCallData(laoId, message)
+      _ <- dbActor ? DbActor.WriteRollCallData(laoId, message)
     } yield ()
 
     Await.ready(ask, duration).value match {
@@ -105,8 +80,8 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
       (_, laoChannel) <- extractLaoChannel(rpcRequest, s"There is an issue with the data of the LAO")
       _ <- dbAskWritePropagate(rpcRequest)
       (_, message, _) <- extractParameters[CloseRollCall](rpcRequest, serverUnexpectedAnswer)
-      _ <- dbRef ? DbActor.WriteLaoData(rpcRequest.getParamsChannel, message, None)
-      _ <- dbRef ? DbActor.WriteRollCallData(laoChannel.get, message)
+      _ <- dbActor ? DbActor.WriteLaoData(rpcRequest.getParamsChannel, message, None)
+      _ <- dbActor ? DbActor.WriteRollCallData(laoChannel.get, message)
     } yield ()
 
     Await.ready(combined, duration).value match {
@@ -133,7 +108,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
         }
     }
 
-    val askCreateChannels = dbRef ? DbActor.CreateChannelsFromList(listAttendeeChannels)
+    val askCreateChannels = dbActor ? DbActor.CreateChannelsFromList(listAttendeeChannels)
 
     Await.ready(askCreateChannels, duration).value match {
       case Some(Success(_))                        => Right(rpcRequest)

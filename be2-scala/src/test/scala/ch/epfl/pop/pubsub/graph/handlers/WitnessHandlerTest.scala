@@ -6,11 +6,12 @@ import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.{Base64Data, DbActorNAckException, Hash, Signature, WitnessSignaturePair}
+import ch.epfl.pop.pubsub.{MessageRegistry, PublishSubscribe}
 import ch.epfl.pop.pubsub.graph.PipelineError
 import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.DbActorAddWitnessSignatureAck
 import org.scalatest.BeforeAndAfterAll
-import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
+import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike
 import org.scalatest.matchers.should.Matchers
 import util.examples.data.WitnessMessages
 import util.examples.Lao.CreateLaoExamples.{SENDER, createLao}
@@ -93,32 +94,35 @@ class WitnessHandlerTest extends TestKit(ActorSystem("Witness-DB-System")) with 
     system.actorOf(dbActorMock)
   }
 
+  private def injectDb(dbRef: AskableActorRef) = PublishSubscribe.buildGraph(Actor.noSender, dbRef, Actor.noSender, MessageRegistry(), Actor.noSender, Actor.noSender, Actor.noSender, false)
+
+
   test("WitnessMessage fails if the database fails storing the message") {
     val mockedDB = mockDbWithNack
-    val rc = new WitnessHandler(mockedDB)
+    injectDb(mockedDB)
     val request = WitnessMessages.witnessMessage
 
-    rc.handleWitnessMessage(request) shouldBe an[Left[PipelineError, _]]
+    WitnessHandler.handleWitnessMessage(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
 
   test("WitnessMessage succeeds if the database succeeds storing the message") {
     val mockedDB = mockDbWithAck
-    val rc = new WitnessHandler(mockedDB)
+    injectDb(mockedDB)
     val request = WitnessMessages.witnessMessage
 
-    rc.handleWitnessMessage(request) should equal(Right(request))
+    WitnessHandler.handleWitnessMessage(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }
 
   test("WitnessMessage fails if the database fails adding a witness signature") {
     val mockedDB = mockDbWithNackAddWitnessSignature
-    val rc = new WitnessHandler(mockedDB)
+    injectDb(mockedDB)
     val request = WitnessMessages.witnessMessage
 
-    rc.handleWitnessMessage(request) shouldBe an[Left[PipelineError, _]]
+    WitnessHandler.handleWitnessMessage(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }

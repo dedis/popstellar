@@ -1,23 +1,27 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
+import akka.NotUsed
 import akka.actor.{Actor, ActorSystem, Props, Status}
+import akka.http.scaladsl.model.ws
 import akka.pattern.{AskableActorRef, ask}
+import akka.stream.scaladsl.Flow
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.objects._
+import ch.epfl.pop.model.objects.*
+import ch.epfl.pop.pubsub.{MessageRegistry, PublishSubscribe}
 import ch.epfl.pop.pubsub.graph.PipelineError
 import ch.epfl.pop.storage.DbActor
 import org.scalatest.BeforeAndAfterAll
-import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
+import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike
 import org.scalatest.matchers.should.Matchers
-import util.examples.Election.CastVoteElectionExamples._
-import util.examples.Election.EndElectionExamples._
-import util.examples.Election.OpenElectionExamples._
-import util.examples.Election.SetupElectionExamples._
-import util.examples.Election._
-import util.examples.data._
+import util.examples.Election.CastVoteElectionExamples.*
+import util.examples.Election.EndElectionExamples.*
+import util.examples.Election.OpenElectionExamples.*
+import util.examples.Election.SetupElectionExamples.*
+import util.examples.Election.*
+import util.examples.data.*
 import util.examples.LaoDataExample
 
 import scala.concurrent.duration.FiniteDuration
@@ -213,143 +217,145 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     })
     system.actorOf(dbActorMock)
   }
+  
+  private def injectDb(dbRef: AskableActorRef) = PublishSubscribe.buildGraph(Actor.noSender, dbRef, Actor.noSender, MessageRegistry(), Actor.noSender, Actor.noSender, Actor.noSender, false)
 
   test("SetupElection should fail if the database fails storing the message") {
     val mockedDB = mockDbWithNack
-    val rc = new ElectionHandler(mockedDB)
+    injectDb(mockedDB)
     val request = SetupElectionMessages.setupElection
 
-    rc.handleSetupElection(request) shouldBe an[Left[PipelineError, _]]
+    ElectionHandler.handleSetupElection(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
 
   test("SetupElection should succeed if the election doesn't already exists in database") {
     val mockedDB = mockDbElectionNotSetUp
-    val rc = new ElectionHandler(mockedDB)
+    injectDb(mockedDB)
     val request = SetupElectionMessages.setupElection
 
-    rc.handleSetupElection(request) should equal(Right(request))
+    ElectionHandler.handleSetupElection(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }
 
   test("SetupElection with secret ballot should succeed if it is stored correctly in the database") {
     val mockedDB = mockDbWithAck
-    val rc = new ElectionHandler(mockedDB)
+    injectDb(mockedDB)
     val request = SetupElectionMessages.setupElectionSecretBallot
 
-    rc.handleSetupElection(request) should equal(Right(request))
+    ElectionHandler.handleSetupElection(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }
 
   test("SetupElection with secret ballot should fail if the election cannot read in the lao data") {
     val mockedDB = mockDbElectionSecretBallotReadFailed
-    val rc = new ElectionHandler(mockedDB)
+    injectDb(mockedDB)
     val request = SetupElectionMessages.setupElectionSecretBallot
 
-    rc.handleSetupElection(request) shouldBe an[Left[PipelineError, _]]
+    ElectionHandler.handleSetupElection(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
 
   test("OpenElection should succeed if the election already exists") {
     val mockedDB = mockDbWithAck
-    val rc = new ElectionHandler(mockedDB)
+    injectDb(mockedDB)
     val request = OpenElectionMessages.openElection
 
-    rc.handleOpenElection(request) should equal(Right(request))
+    ElectionHandler.handleOpenElection(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }
 
   test("OpenElection should fail if the election does not exist") {
     val mockedDB = mockDbElectionNotSetUp
-    val rc = new ElectionHandler(mockedDB)
+    injectDb(mockedDB)
     val request = OpenElectionMessages.openElection
 
-    rc.handleOpenElection(request) shouldBe an[Left[PipelineError, _]]
+    ElectionHandler.handleOpenElection(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
 
   test("OpenElection should fail if the database fails storing the message") {
     val mockedDB = mockDbWithNack
-    val rc = new ElectionHandler(mockedDB)
+    injectDb(mockedDB)
     val request = OpenElectionMessages.openElection
 
-    rc.handleOpenElection(request) shouldBe an[Left[PipelineError, _]]
+    ElectionHandler.handleOpenElection(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
 
   test("CastVoteElection should succeed if the election already exists") {
     val mockedDB = mockDbWithAck
-    val rc = new ElectionHandler(mockedDB)
+    injectDb(mockedDB)
     val request = CastVoteElectionMessages.castVoteElection
 
-    rc.handleCastVoteElection(request) should equal(Right(request))
+    ElectionHandler.handleCastVoteElection(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }
 
   test("CastVoteElection should fail if the database fails storing the message") {
     val mockedDB = mockDbWithNack
-    val rc = new ElectionHandler(mockedDB)
+    injectDb(mockedDB)
     val request = CastVoteElectionMessages.castVoteElection
 
-    rc.handleCastVoteElection(request) shouldBe an[Left[PipelineError, _]]
+    ElectionHandler.handleCastVoteElection(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
 
   /*test("EndElection should succeed if the election already exists") {
     val mockedDB = mockDbWithAckEndElection
-    val rc = new ElectionHandler(mockedDB)
+    injectDb(mockedDB)
     val request = EndElectionMessages.endElection
 
-    rc.handleEndElection(request) should equal(Right(request))
+    ElectionHandler.handleEndElection(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }*/
 
   test("EndElection should fail if the election does not exist") {
     val mockedDB = mockDbElectionNotSetUp
-    val rc = new ElectionHandler(mockedDB)
+    injectDb(mockedDB)
     val request = EndElectionMessages.endElection
 
-    rc.handleOpenElection(request) shouldBe an[Left[PipelineError, _]]
+    ElectionHandler.handleOpenElection(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
 
   test("EndElection should fail if the database fails storing the message") {
     val mockedDB = mockDbWithNAckEndElection
-    val rc = new ElectionHandler(mockedDB)
+    injectDb(mockedDB)
     val request = EndElectionMessages.endElection
 
-    rc.handleEndElection(request) shouldBe an[Left[PipelineError, _]]
+    ElectionHandler.handleEndElection(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
 
   test("KeyElection should succeed if the election already exists") {
     val mockedDB = mockDbWithAck
-    val rc = new ElectionHandler(mockedDB)
+    injectDb(mockedDB)
     val request = KeyElectionMessages.keyElection
 
-    rc.handleKeyElection(request) should equal(Right(request))
+    ElectionHandler.handleKeyElection(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }
 
   test("keyElection should fail if the database fails storing the message") {
     val mockedDB = mockDbWithNack
-    val rc = new ElectionHandler(mockedDB)
+    injectDb(mockedDB)
     val request = KeyElectionMessages.keyElection
 
-    rc.handleKeyElection(request) shouldBe an[Left[PipelineError, _]]
+    ElectionHandler.handleKeyElection(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
