@@ -77,7 +77,7 @@ final case class ConnectionMediator(
           Right(JsonRpcRequest(
             RpcValidator.JSON_RPC_VERSION,
             MethodType.heartbeat,
-            new ParamsWithMap(map),
+            new ParamsWithMap(Map.empty),
             None
           ))
         )
