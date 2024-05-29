@@ -24,12 +24,23 @@ func (s *SQLite) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
-	var serverPubBuf []byte
-	var serverSecBuf []byte
-	err := s.database.QueryRow(selectKeys, serverKeysPath).Scan(&serverPubBuf, &serverSecBuf)
+	var serverPubBuf64 string
+	var serverSecBuf64 string
+	err := s.database.QueryRow(selectKeys, serverKeysPath).Scan(&serverPubBuf64, &serverSecBuf64)
 	if err != nil {
 		return nil, nil, err
 	}
+
+	serverPubBuf, err := base64.URLEncoding.DecodeString(serverPubBuf64)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	serverSecBuf, err := base64.URLEncoding.DecodeString(serverSecBuf64)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	serverPubKey := crypto.Suite.Point()
 	err = serverPubKey.UnmarshalBinary(serverPubBuf)
 	if err != nil {
@@ -1416,7 +1427,7 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
 	}
 
 	var rumorID int
-	var sender []byte
+	var sender string
 	err = tx.QueryRow(selectMyRumorInfos, serverKeysPath).Scan(&rumorID, &sender)
 	if err != nil {
 		popstellar.Logger.Error().Msg("5")
@@ -1438,10 +1449,10 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
 	return true, rumor, nil
 }
 
-func newRumor(rumorID int, sender []byte, messages map[string][]message.Message) method.Rumor {
+func newRumor(rumorID int, sender string, messages map[string][]message.Message) method.Rumor {
 	params := method.ParamsRumor{
 		RumorID:  rumorID,
-		SenderID: base64.URLEncoding.EncodeToString(sender),
+		SenderID: sender,
 		Messages: messages,
 	}
 

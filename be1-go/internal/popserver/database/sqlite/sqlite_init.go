@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"go.dedis.ch/kyber/v3"
 	database2 "popstellar/internal/popserver/database/repository"
 	"sync"
@@ -139,7 +140,7 @@ func (s *SQLite) Close() error {
 	return s.database.Close()
 }
 
-func (s *SQLite) StoreServerKeys(electionPubKey kyber.Point, electionSecretKey kyber.Scalar) error {
+func (s *SQLite) StoreServerKeys(serverPubKey kyber.Point, serverSecretKey kyber.Scalar) error {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
@@ -149,16 +150,17 @@ func (s *SQLite) StoreServerKeys(electionPubKey kyber.Point, electionSecretKey k
 	}
 	defer tx.Rollback()
 
-	electionPubBuf, err := electionPubKey.MarshalBinary()
+	serverPubBuf, err := serverPubKey.MarshalBinary()
 	if err != nil {
 		return err
 	}
-	electionSecBuf, err := electionSecretKey.MarshalBinary()
+	serverSecBuf, err := serverSecretKey.MarshalBinary()
 	if err != nil {
 		return err
 	}
 
-	_, err = tx.Exec(insertKeys, serverKeysPath, electionPubBuf, electionSecBuf)
+	_, err = tx.Exec(insertKeys, serverKeysPath, base64.URLEncoding.EncodeToString(serverPubBuf),
+		base64.URLEncoding.EncodeToString(serverSecBuf))
 	if err != nil {
 		return err
 	}
