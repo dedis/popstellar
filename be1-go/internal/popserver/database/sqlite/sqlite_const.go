@@ -353,7 +353,7 @@ const (
 		AND message.messageID IN 
 		      (SELECT messageID 
 		       FROM messageRumor 
-		       WHERE rumorID = (SELECT max(ID) FROM rumor 
+		       WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?) AND rumorID = (SELECT max(ID) FROM rumor 
 		                                       WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?)))`
 
 	selectMyRumorInfos = `SELECT max(ID), sender FROM rumor WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?)`

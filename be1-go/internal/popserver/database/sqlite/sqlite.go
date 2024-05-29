@@ -8,7 +8,6 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
 	_ "modernc.org/sqlite"
-	"popstellar"
 	"popstellar/crypto"
 	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
@@ -707,6 +706,11 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg messa
 	if err != nil {
 		return err
 	}
+
+	if len(channels) == 0 {
+		return tx.Commit()
+	}
+
 	for _, channel := range channels {
 		_, err = tx.Exec(insertChannel, channel, channelTypeToID[ChirpType], laoPath)
 		if err != nil {
@@ -1399,9 +1403,8 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
 	}
 	defer tx.Rollback()
 
-	rows, err := s.database.Query(selectMyRumorMessages, true, serverKeysPath)
+	rows, err := s.database.Query(selectMyRumorMessages, true, serverKeysPath, serverKeysPath)
 	if err != nil {
-		popstellar.Logger.Error().Msg("1")
 		return false, method.Rumor{}, err
 	}
 	defer rows.Close()
@@ -1411,16 +1414,14 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
 		var msgBytes []byte
 		var channelPath string
 		if err = rows.Scan(&msgBytes, &channelPath); err != nil {
-			popstellar.Logger.Error().Msg("3")
 			return false, method.Rumor{}, err
 		}
-		popstellar.Logger.Warn().Msg(channelPath)
-		popstellar.Logger.Warn().Msg(string(msgBytes))
+
 		var msg message.Message
 		if err = json.Unmarshal(msgBytes, &msg); err != nil {
-			popstellar.Logger.Error().Msg("4")
 			return false, method.Rumor{}, err
 		}
+
 		messages[channelPath] = append(messages[channelPath], msg)
 	}
 
@@ -1432,7 +1433,6 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
 	var sender string
 	err = tx.QueryRow(selectMyRumorInfos, serverKeysPath).Scan(&rumorID, &sender)
 	if err != nil {
-		popstellar.Logger.Error().Msg("5")
 		return false, method.Rumor{}, err
 	}
 
