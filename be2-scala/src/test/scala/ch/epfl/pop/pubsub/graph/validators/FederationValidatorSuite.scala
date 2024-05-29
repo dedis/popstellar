@@ -83,7 +83,7 @@ class FederationValidatorSuite extends TestKit(ActorSystem("FederationValidatorT
         case DbActor.ReadFederationMessage("expect") =>
           sender() ! DbActorReadFederationMessageAck(Some(EXPECT_MESSAGE))
         case DbActor.ReadFederationMessage("init") =>
-          sender() ! DbActorReadFederationMessageAck(Some(INIT_MESSAGE))  
+          sender() ! DbActorReadFederationMessageAck(Some(INIT_MESSAGE))
       }
     })
     system.actorOf(dbActorMock)

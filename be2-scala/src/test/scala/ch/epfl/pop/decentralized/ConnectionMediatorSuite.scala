@@ -8,9 +8,10 @@ import ch.epfl.pop.model.objects.{Base64Data, PublicKey}
 import ch.epfl.pop.pubsub.ClientActor.ClientActorMessage
 import ch.epfl.pop.pubsub.MessageRegistry
 import org.scalatest.BeforeAndAfterAll
-import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
+import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike
 import org.scalatest.matchers.should.Matchers
 
+import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSuiteActorSystem")) with FunSuiteLike with Matchers with BeforeAndAfterAll {
@@ -98,4 +99,28 @@ class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSui
 
     testProbe.expectMsg(timeout, ConnectionMediator.ReadPeersClientAddressAck(List.empty))
   }
+
+  test("Connection Mediator returns the federation server when asked to") {
+    val mockMonitor = TestProbe()
+    val testProbe = TestProbe()
+    val server1 = TestProbe()
+    val server2 = TestProbe()
+    val server3 = TestProbe()
+
+    val connectionMediatorRef = system.actorOf(
+      ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, MessageRegistry())
+    )
+
+    mockMonitor.expectMsg(timeout, ConnectionMediator.Ping())
+
+    // Register servers
+    connectionMediatorRef ! ConnectionMediator.NewServerConnected(server1.ref, GreetServer(PublicKey(Base64Data("")), "", "wss://epfl.ch:9000/server"))
+    connectionMediatorRef ! ConnectionMediator.NewServerConnected(server2.ref, GreetServer(PublicKey(Base64Data("")), "", "wss://ethz.ch:9000/server"))
+    connectionMediatorRef ! ConnectionMediator.NewServerConnected(server3.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+
+    testProbe.send(connectionMediatorRef, ConnectionMediator.GetFederationServer("wss://ethz.ch:9000/server"))
+    testProbe.expectMsg(timeout, ConnectionMediator.GetFederationServerAck(server2.ref))
+
+  }
+
 }

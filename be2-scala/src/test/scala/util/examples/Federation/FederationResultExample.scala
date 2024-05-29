@@ -4,7 +4,7 @@ import ch.epfl.pop.json.MessageDataProtocol.*
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.federation.{FederationChallenge, FederationResult}
 import ch.epfl.pop.model.objects.{Base64Data, Hash, PublicKey, Signature}
-import util.examples.Federation.FederationExpectExample.{CHALLENGE, CHALLENGE_WRONG_DATA, CHALLENGE_WRONG_SENDER}
+import util.examples.Federation.FederationExpectExample.{CHALLENGE, CHALLENGE_1, CHALLENGE_WRONG_DATA, CHALLENGE_WRONG_SENDER}
 import spray.json.*
 
 object FederationResultExample {
@@ -14,6 +14,7 @@ object FederationResultExample {
 
   final val REASON: String = "Unexpected behavior"
   final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("VHfxTlbM3nTnLQuKnKfs1fGP2cwVT8KJkc-sRGs_2KM="))
+  final val PUBLIC_KEY_1: PublicKey = PublicKey(Base64Data("UvViTxoKsB3XVP_ctkmOKCJpMWb7fCzrcb1XDmhNe7Q="))
   final val WRONG_PUBLIC_KEY: PublicKey = PublicKey(Base64Data.encode("wrongPublicKey"))
 
   final val SENDER: PublicKey = PublicKey(Base64Data("zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4="))
@@ -22,6 +23,8 @@ object FederationResultExample {
 
   final val RESULT_1: FederationResult = FederationResult(STATUS_1, PUBLIC_KEY, CHALLENGE)
   final val RESULT_2: FederationResult = FederationResult(STATUS_2, REASON, CHALLENGE)
+  final val RESULT_1_1: FederationResult = FederationResult(STATUS_1, PUBLIC_KEY_1, CHALLENGE_1)
+  final val RESULT_2_2: FederationResult = FederationResult(STATUS_2, REASON, CHALLENGE_1)
   final val RESULT_WRONG_STATUS: FederationResult = FederationResult(WRONG_STATUS, PUBLIC_KEY, CHALLENGE)
   final val RESULT_WRONG_CHALLENGE: FederationResult = FederationResult(STATUS_1, PUBLIC_KEY, CHALLENGE_WRONG_DATA)
   final val RESULT_WRONG_CHALLENGE_SENDER: FederationResult = FederationResult(STATUS_1, PUBLIC_KEY, CHALLENGE_WRONG_SENDER)

@@ -430,7 +430,7 @@ final case class DbActor(
   @throws[DbActorNAckException]
   private def readFederationMessage(key: String): Option[Message] = {
     Try(storage.read(key)) match {
-      case Success(Some(json)) => Some(Message.buildFromJson(json))
+      case Success(Some(json)) =>
         val msg = Message.buildFromJson(json)
         val data: JsonString = msg.data.decodeToString()
         MessageDataProtocol.parseHeader(data) match {

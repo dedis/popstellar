@@ -1,12 +1,24 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
+import akka.Done
+import akka.actor.{ActorRef, ActorSystem}
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.ws.WebSocketRequest
 import akka.pattern.AskableActorRef
+import akka.stream.{ActorMaterializer, Materializer}
+import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
+import ch.epfl.pop.decentralized.ConnectionMediator
+import ch.epfl.pop.decentralized.ConnectionMediator.GetFederationServer
 import ch.epfl.pop.json.MessageDataProtocol.*
 import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.MethodType.publish
+import ch.epfl.pop.model.network.method.ParamsWithMessage
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.federation.{FederationChallenge, FederationExpect, FederationInit, FederationResult}
 import ch.epfl.pop.model.objects.*
+import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.PubSubMediator
+import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.{DbActorReadServerPrivateKeyAck, DbActorReadServerPublicKeyAck}
@@ -15,12 +27,12 @@ import spray.json.*
 import java.security.SecureRandom
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success, Try}
 
 object FederationHandler extends MessageHandler {
-  final lazy val handlerInstance = new FederationHandler(super.dbActor, super.mediator)
+  final lazy val handlerInstance = new FederationHandler(super.dbActor, super.mediator, super.connectionMediator)
 
   def handleFederationChallenge(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleFederationChallenge(rpcMessage)
 
@@ -34,11 +46,12 @@ object FederationHandler extends MessageHandler {
 
 }
 
-class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorRef) extends MessageHandler {
+class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorRef, connectionMediatorRef: => AskableActorRef) extends MessageHandler {
 
-  // TODO: CHANGE THE DESCRIPTION OF THE ERROR IN THE PIPELINE FOR EACH CASE TO BE EASY TO DEBUG
   override final val dbActor: AskableActorRef = dbRef
   override final val mediator: AskableActorRef = mediatorRef
+  override final val connectionMediator: AskableActorRef = connectionMediatorRef
+
   private final val CHALLENGE_NB_BYTES: Int = 32
   private val serverUnexpectedAnswer: String = "The server is doing something unexpected"
   private final val status: (String, String) = ("success", "failure")
@@ -54,6 +67,8 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
         val expect: FederationExpect = FederationExpect.buildFromJson(message.data.decodeToString())
         val challengeMessage: Message = expect.challenge
         val expectedChallenge: FederationChallenge = FederationChallenge.buildFromJson(challengeMessage.data.decodeToString())
+        val serverAddress = expect.serverAddress
+        val remoteFederationChannel = generateFederationChannel(expect.laoId)
 
         val ask = for {
           case (_, message, Some(data)) <- extractParameters[FederationChallenge](rpcMessage, serverUnexpectedAnswer)
@@ -66,16 +81,34 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
             else
               federationResult = FederationResult(status._2, reason, challengeMessage)
 
-            // TODO SEND THE RESULT TO THE OTHER SERVER
+            val serverKeys = retrieveServerKeys(dbActor)
+            serverKeys match {
+              case Some((publicKey: PublicKey, privateKey: PrivateKey)) =>
+                val resultMessage: Message = constructMessage(federationResult.toJson.toString, privateKey, publicKey)
 
-            // after sending the result, we delete both the challenge and expect messages from the db
-            val combined = for {
-              _ <- dbActor ? DbActor.DeleteFederationMessage(keys._3)
-              _ <- dbActor ? DbActor.DeleteFederationMessage(keys._1)
-            } yield ()
-            Await.ready(combined, duration).value match {
-              case Some(Success(_)) => Right(rpcMessage)
-              case _                => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Couldn't delete both federationChallenge and federationExpect messages", rpcMessage.getId))
+                val getServer = connectionMediator ? GetFederationServer(serverAddress)
+                Await.result(getServer, duration) match {
+                  case ConnectionMediator.GetFederationServerAck(federationServerRef) =>
+                    constructAndSendRpc(remoteFederationChannel, resultMessage, federationServerRef)
+
+                    // after sending the result, we delete both the challenge and expect messages from the db
+                    val combined = for {
+                      _ <- dbActor ? DbActor.DeleteFederationMessage(keys._3)
+                      _ <- dbActor ? DbActor.DeleteFederationMessage(keys._1)
+                    } yield ()
+                    Await.ready(combined, duration).value match {
+                      case Some(Success(_)) => Right(rpcMessage)
+                      case _                => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Couldn't delete both federationChallenge and federationExpect messages", rpcMessage.getId))
+                    }
+
+                  case ConnectionMediator.NoPeer() => Left(PipelineError(
+                      ErrorCodes.SERVER_ERROR.id,
+                      s"No server to send the result to",
+                      rpcMessage.getId
+                    ))
+                }
+
+              case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"failed to retrieve server keys", rpcMessage.getId))
             }
 
           case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Couldn't extract federationChallenge parameters", rpcMessage.getId))
@@ -110,12 +143,8 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
     serverKeys match {
       case Some((publicKey: PublicKey, privateKey: PrivateKey)) =>
         val federationChannel: Channel = rpcMessage.getParamsChannel
-        val challengeData: Base64Data = Base64Data.encode(challenge.toJson.toString)
-        val challengeSignature: Signature = privateKey.signData(challengeData)
-        val Id: Hash = Hash.fromStrings(challengeData.toString, challengeSignature.toString)
-        val challengeMessage: Message = Message(challengeData, publicKey, challengeSignature, Id, List.empty)
+        val challengeMessage: Message = constructMessage(challenge.toJson.toString, privateKey, publicKey)
 
-        val challengeKey: String = challengeValue + timestamp.toString
         val combined = for {
           _ <- dbActor ? DbActor.WriteFederationMessage(keys._3, challengeMessage)
           _ <- mediator ? PubSubMediator.Propagate(federationChannel, challengeMessage)
@@ -128,12 +157,6 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
       case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"failed to retrieve server keys", rpcMessage.getId))
     }
 
-    // Right(rpcMessage)
-    // the implementation of broadcast sends the whole message already not only the jsValue
-    // Await.result(
-    // broadcast(rpcMessage, federationChannel, challenge.toJson, federationChannel),
-    // duration
-
   }
   def handleFederationInit(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask = for {
@@ -143,10 +166,24 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
     Await.ready(ask, duration).value match {
       case Some(Success(message, data)) =>
         val challengeMessage: Message = data.challenge // already signed by Alice
+        val serverAddress = data.serverAddress
+        val remoteFederationChannel = generateFederationChannel(data.laoId)
+
         val askWrite = dbActor ? DbActor.WriteFederationMessage(keys._2, message)
         Await.ready(askWrite, duration).value match {
-          case Some(Success(_)) => // TODO: send the challengeMessage to the other server, how
-            Right(rpcMessage)
+          case Some(Success(_)) =>
+            val getServer = connectionMediator ? GetFederationServer(serverAddress)
+            Await.result(getServer, duration) match {
+              case ConnectionMediator.GetFederationServerAck(federationServerRef) =>
+                constructAndSendRpc(remoteFederationChannel, challengeMessage, federationServerRef)
+                Right(rpcMessage)
+
+              case ConnectionMediator.NoPeer() => Left(PipelineError(
+                  ErrorCodes.SERVER_ERROR.id,
+                  s"No server to send the challenge to",
+                  rpcMessage.getId
+                ))
+            }
 
           case _ => Left(PipelineError(
               ErrorCodes.SERVER_ERROR.id,
@@ -154,10 +191,6 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
               rpcMessage.getId
             ))
         }
-      // val remoteFederationChannel = generateFederationChannel(data.laoId)
-      // val remoteServer = data.serverAddress
-
-      // broadcast(rpcMessage, rpcMessage.getParamsChannel,FederationChallengeFormat.write(challenge), remoteFederationChannel )
 
       case _ => Left(PipelineError(
           ErrorCodes.SERVER_ERROR.id,
@@ -172,7 +205,6 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
       case (_, message, Some(data)) <- extractParameters[FederationExpect](rpcMessage, serverUnexpectedAnswer)
     } yield (message, data)
 
-    // TODO: CHECK IF THE CHALLENGE IN THE EXPECT MSG IS ONE OF THE CHALLENGES GENERATED BY THE SERVER OR NOT IN THE VALIDATOR
     Await.ready(ask, duration).value match {
       case Some(Success(message, data)) =>
         val ask = dbActor ? DbActor.WriteFederationMessage(keys._1, message)
@@ -230,10 +262,11 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
     }
   }
 
-  private def generateFederationChannel(laoId: Hash): Channel =
+  private def generateFederationChannel(laoId: Hash): Channel = {
     Channel(Channel.ROOT_CHANNEL_PREFIX + laoId + Channel.FEDERATION_CHANNEL_PREFIX)
+  }
 
-  private def retrieveServerKeys(dbActor: AskableActorRef): Option[(PublicKey, PrivateKey)] =
+  private def retrieveServerKeys(dbActor: AskableActorRef): Option[(PublicKey, PrivateKey)] = {
     val ask =
       for {
         publicKey <- dbActor ? DbActor.ReadServerPublicKey()
@@ -245,4 +278,20 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
       case _                                                                                                             => None
     }
     serverKeys
+  }
+
+  private def constructMessage(data: String, privateKey: PrivateKey, publicKey: PublicKey): Message = {
+    val messageData: Base64Data = Base64Data.encode(data)
+    val signature: Signature = privateKey.signData(messageData)
+    val messageId: Hash = Hash.fromStrings(messageData.toString, signature.toString)
+    val message: Message = Message(messageData, publicKey, signature, messageId, List.empty)
+    message
+  }
+
+  private def constructAndSendRpc(channel: Channel, message: Message, serverRef: ActorRef): Unit = {
+    val messageParams: ParamsWithMessage = new ParamsWithMessage(channel, message)
+    val challengeRpc: JsonRpcRequest = JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, publish, messageParams, None)
+    serverRef ! ClientAnswer(Right(challengeRpc))
+
+  }
 }

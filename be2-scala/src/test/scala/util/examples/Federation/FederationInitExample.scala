@@ -12,11 +12,14 @@ object FederationInitExample {
   final val WRONG_SERVER_ADDRESS: String = "w:/epfl.ch:9000/server"
 
   final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("VHfxTlbM3nTnLQuKnKfs1fGP2cwVT8KJkc-sRGs_2KM="))
+  final val PUBLIC_KEY_1: PublicKey = PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="))
 
   final val DATA: Base64Data = Base64Data("eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiY2hhbGxlbmdlIiwidmFsdWUiOiJlYmEzZTI0ZWZjZDBiNTNmYTY5OTA4YmFkNWQxY2I2OTlkNzk4MGQ5MzEwOWRhMGIyYmZkNTAzN2MyYzg5ZWUwIiwidmFsaWRfdW50aWwiOjE3MTMzODU1Njh9")
+  final val DATA_1: Base64Data = Base64Data("eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiY2hhbGxlbmdlIiwidmFsdWUiOiJlYmEzZTI0ZWZjZDBiNTNmYTY5OTA4YmFkNWQxY2I2OTlkNzk4MGQ5MzEwOWRhMGIyYmZkNTAzN2MyYzg5ZWUwIiwidGltZXN0YW1wIjoxNzEzMzg1NTY4fQ==")
   final val WRONG_DATA: Base64Data = Base64Data("eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiY2hhbGxlbmdlIiwidmFsdWUiOiJlYmEzZTI0ZWZjZDBiNTNmYTY5OTA4YmFkYTBiMmJmZDUwMzdjMmM4OWVlMCIsInZhbGlkX3VudGlsIjotNjU3NDh9")
 
   final val SENDER: PublicKey = PublicKey(Base64Data("VHfxTlbM3nTnLQuKnKfs1fGP2cwVT8KJkc-sRGs_2KM="))
+  final val SENDER_1: PublicKey = PublicKey(Base64Data("zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4="))
   final val WRONG_SENDER: PublicKey = PublicKey(Base64Data.encode("wrongSender"))
 
   final val SIGNATURE: Signature = Signature(Base64Data("BILYwYkT5tOBL4rCD7yvhBkhAYqRXOI3ajQ2uJ1gAk-g6nRc38vMMnlHShuNCQ3dQFXYZPn37cCFelhWGjY8Bg=="))
@@ -24,10 +27,13 @@ object FederationInitExample {
   final val WITNESS_SIGNATURES: List[WitnessSignaturePair] = Nil
 
   final val CHALLENGE: Message = Message(DATA, SENDER, SIGNATURE, MESSAGE_ID, WITNESS_SIGNATURES)
+  final val CHALLENGE_1: Message = Message(DATA_1, SENDER_1, SIGNATURE, MESSAGE_ID, WITNESS_SIGNATURES)
+
   final val CHALLENGE_WRONG_SENDER: Message = Message(DATA, WRONG_SENDER, SIGNATURE, MESSAGE_ID, WITNESS_SIGNATURES)
   final val CHALLENGE_WRONG_DATA: Message = Message(WRONG_DATA, SENDER, SIGNATURE, MESSAGE_ID, WITNESS_SIGNATURES)
 
   final val INIT: FederationInit = FederationInit(LAO_ID, SERVER_ADDRESS, PUBLIC_KEY, CHALLENGE)
+  final val INIT_1: FederationInit = FederationInit(LAO_ID, SERVER_ADDRESS, PUBLIC_KEY_1, CHALLENGE_1)
   final val INIT_WRONG_SERVER_ADDRESS: FederationInit = FederationInit(LAO_ID, WRONG_SERVER_ADDRESS, PUBLIC_KEY, CHALLENGE)
   final val INIT_WRONG_CHALLENGE_SENDER: FederationInit = FederationInit(LAO_ID, SERVER_ADDRESS, PUBLIC_KEY, CHALLENGE_WRONG_SENDER)
   final val INIT_WRONG_CHALLENGE: FederationInit = FederationInit(LAO_ID, SERVER_ADDRESS, PUBLIC_KEY, CHALLENGE_WRONG_DATA)

@@ -14,9 +14,11 @@ object FederationChallengeExample {
   final val WRONG_VALUE: Base16Data = Base16Data("72ecfdd1a4ba832518b90bb93a8480ee9be16a92ec11da03e5")
 
   final val VALID_UNTIL: Timestamp = Timestamp(Instant.now().getEpochSecond + 56574467)
+  final val VALID_UNTIL_1: Timestamp = Timestamp(1712854874)
   final val WRONG_TIMESTAMP: Timestamp = Timestamp(57689)
 
   final val CHALLENGE: FederationChallenge = FederationChallenge(VALUE, VALID_UNTIL)
+  final val CHALLENGE_1: FederationChallenge = FederationChallenge(VALUE, VALID_UNTIL_1)
   final val WRONG_VALUE_CHALLENGE: FederationChallenge = FederationChallenge(WRONG_VALUE, VALID_UNTIL)
   final val WRONG_TIMESTAMP_CHALLENGE: FederationChallenge = FederationChallenge(VALUE, WRONG_TIMESTAMP)
 

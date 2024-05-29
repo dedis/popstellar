@@ -992,7 +992,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     Await.result(read, duration) shouldBe DbActorReadRumor(None)
   }
 
-  test("writeFederationMessage successfully add the message to the db"){
+  test("writeFederationMessage successfully add the message to the db") {
     val initialStorage = InMemoryStorage()
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
     val keyExpect = "expect"
@@ -1004,7 +1004,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     writeAnswer shouldBe a[DbActor.DbActorAck]
   }
 
-  test("readFederationMessage returns Some(message) if message exists in the db, None otherwise"){
+  test("readFederationMessage returns Some(message) if message exists in the db, None otherwise") {
     val keyInit = "init"
     val keyExpect = "expect"
     val initialStorage = InMemoryStorage()
@@ -1033,7 +1033,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
   }
 
-  test("can WriteFederationMessage and then ReadFederationMessage correctly"){
+  test("can WriteFederationMessage and then ReadFederationMessage correctly") {
     val initialStorage = InMemoryStorage()
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
     val keyInit = "init"
@@ -1054,7 +1054,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
   }
 
-  test("deleteFederationMessage successfully deletes the message from the db"){
+  test("deleteFederationMessage successfully deletes the message from the db") {
     val initialStorage = InMemoryStorage()
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
     val keyInit = "init"
@@ -1077,10 +1077,6 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val message: Option[Message] = answer.asInstanceOf[DbActor.DbActorReadFederationMessageAck].message
 
     message should equal(None)
-
-
-
-
 
   }
 }
