@@ -354,6 +354,7 @@ const (
 		                                       WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?)))`
 
 	selectMyRumorInfos = `SELECT max(ID), sender FROM rumor WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?)`
+	selectLastRumor    = `SELECT max(ID) FROM rumor WHERE sender = ?`
 )
 
 const (
