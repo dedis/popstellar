@@ -53,7 +53,8 @@ object ProcessMessagesHandler extends AskPatternConstants {
     case msg @ Right(JsonRpcResponse(_, Some(resultObject), None, _)) =>
       resultObject.resultRumor match
         case Some(rumorList) =>
-          rumorList.foreach(rumorHandler(messageRegistry, _))
+          val mergedMsg = rumorList.flatMap(rumor => rumor.messages).toMap.map((channel, msgList) => (channel,msgList.toSet))
+          processMsgMap(mergedMsg, messageRegistry)
           msg
         case _ => msg
     case graphMessage @ _ => graphMessage
