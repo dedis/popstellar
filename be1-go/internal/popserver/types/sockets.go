@@ -45,11 +45,6 @@ func (s *Sockets) newRumorState(socket socket.Socket) rumorState {
 	}
 }
 
-// Len returns the number of Sockets.
-func (s *Sockets) Len() int {
-	return len(s.store)
-}
-
 // SendToAll sends a message to all Sockets.
 func (s *Sockets) SendToAll(buf []byte) {
 	s.RLock()

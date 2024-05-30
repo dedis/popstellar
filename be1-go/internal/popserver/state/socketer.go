@@ -6,7 +6,6 @@ import (
 )
 
 type Socketer interface {
-	Len() int
 	SendToAll(buf []byte)
 	SendRumor(socket socket.Socket, senderID string, rumorID int, buf []byte)
 	Upsert(socket socket.Socket)
@@ -19,15 +18,6 @@ func getSockets() (Socketer, *answer.Error) {
 	}
 
 	return instance.sockets, nil
-}
-
-func Len() (int, *answer.Error) {
-	sockets, errAnswer := getSockets()
-	if errAnswer != nil {
-		return -1, errAnswer
-	}
-
-	return sockets.Len(), nil
 }
 
 func SendToAllServer(buf []byte) *answer.Error {

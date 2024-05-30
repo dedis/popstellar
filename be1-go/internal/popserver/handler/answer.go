@@ -12,7 +12,7 @@ import (
 
 const (
 	maxRetry          = 10
-	ContinueMongering = 0.5
+	continueMongering = 0.5
 )
 
 func handleAnswer(msg []byte) *answer.Error {
@@ -72,7 +72,7 @@ func handleRumorAnswer(msg answer.Answer) *answer.Error {
 			return nil
 		}
 
-		stop := rand.Float64() < ContinueMongering
+		stop := rand.Float64() < continueMongering
 
 		if stop {
 			popstellar.Logger.Debug().Msgf("stop mongering rumor query %d", *msg.ID)
