@@ -81,35 +81,7 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
             else
               federationResult = FederationResult(status._2, reason, challengeMessage)
 
-            val serverKeys = retrieveServerKeys(dbActor)
-            serverKeys match {
-              case Some((publicKey: PublicKey, privateKey: PrivateKey)) =>
-                val resultMessage: Message = constructMessage(federationResult.toJson.toString, privateKey, publicKey)
-
-                val getServer = connectionMediator ? GetFederationServer(serverAddress)
-                Await.result(getServer, duration) match {
-                  case ConnectionMediator.GetFederationServerAck(federationServerRef) =>
-                    constructAndSendRpc(remoteFederationChannel, resultMessage, federationServerRef)
-
-                    // after sending the result, we delete both the challenge and expect messages from the db
-                    val combined = for {
-                      _ <- dbActor ? DbActor.DeleteFederationMessage(keys._3)
-                      _ <- dbActor ? DbActor.DeleteFederationMessage(keys._1)
-                    } yield ()
-                    Await.ready(combined, duration).value match {
-                      case Some(Success(_)) => Right(rpcMessage)
-                      case _                => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Couldn't delete both federationChallenge and federationExpect messages", rpcMessage.getId))
-                    }
-
-                  case ConnectionMediator.NoPeer() => Left(PipelineError(
-                      ErrorCodes.SERVER_ERROR.id,
-                      s"No server to send the result to",
-                      rpcMessage.getId
-                    ))
-                }
-
-              case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"failed to retrieve server keys", rpcMessage.getId))
-            }
+            constructAndSendResult(rpcMessage, federationResult, serverAddress, remoteFederationChannel)
 
           case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Couldn't extract federationChallenge parameters", rpcMessage.getId))
         }
@@ -293,5 +265,37 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
     val challengeRpc: JsonRpcRequest = JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, publish, messageParams, None)
     serverRef ! ClientAnswer(Right(challengeRpc))
 
+  }
+
+  private def constructAndSendResult(rpcMessage: JsonRpcRequest, federationResult: FederationResult, serverAddress: String, remoteFederationChannel: Channel): GraphMessage = {
+    val serverKeys = retrieveServerKeys(dbActor)
+    serverKeys match {
+      case Some((publicKey: PublicKey, privateKey: PrivateKey)) =>
+        val resultMessage: Message = constructMessage(federationResult.toJson.toString, privateKey, publicKey)
+
+        val getServer = connectionMediator ? GetFederationServer(serverAddress)
+        Await.result(getServer, duration) match {
+          case ConnectionMediator.GetFederationServerAck(federationServerRef) =>
+            constructAndSendRpc(remoteFederationChannel, resultMessage, federationServerRef)
+
+            // after sending the result, we delete both the challenge and expect messages from the db
+            val combined = for {
+              _ <- dbActor ? DbActor.DeleteFederationMessage(keys._3)
+              _ <- dbActor ? DbActor.DeleteFederationMessage(keys._1)
+            } yield ()
+            Await.ready(combined, duration).value match {
+              case Some(Success(_)) => Right(rpcMessage)
+              case _                => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Couldn't delete both federationChallenge and federationExpect messages", rpcMessage.getId))
+            }
+
+          case ConnectionMediator.NoPeer() => Left(PipelineError(
+              ErrorCodes.SERVER_ERROR.id,
+              s"No server to send the result to",
+              rpcMessage.getId
+            ))
+        }
+
+      case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"failed to retrieve server keys", rpcMessage.getId))
+    }
   }
 }
