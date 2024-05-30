@@ -655,6 +655,12 @@ final case class DbActor(
         case failure            => sender() ! failure.recover(Status.Failure(_))
       }
 
+    case GetRumorState() =>
+      log.info(s"Actor $self (db) received a GetRumorState request")
+      Try(getRumorState) match
+        case Success(rumorState) => sender() ! DbActorGetRumorStateAck(rumorState)
+        case failure             => sender() ! failure.recover(Status.Failure(_))
+
     case m =>
       log.info(s"Actor $self (db) received an unknown message")
       sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"database actor received a message '$m' that it could not recognize"))
@@ -898,6 +904,10 @@ object DbActor {
 
   final case class GenerateRumorStateAns(rumorState: RumorState) extends Event
 
+  /** Requests the db to build out rumorState
+    */
+  final case class GetRumorState() extends Event
+
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
@@ -990,6 +1000,10 @@ object DbActor {
   /** Response for a [[GenerateRumorStateAns]]
     */
   final case class DbActorGenerateRumorStateAns(rumorList: List[Rumor]) extends DbActorMessage
+
+  /** Response for a [[GetRumorState]]
+    */
+  final case class DbActorGetRumorStateAck(rumorState: RumorState) extends DbActorMessage
 
   /** Response for a general db actor ACK
     */

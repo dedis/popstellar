@@ -30,12 +30,14 @@ import scala.util.Success
 final case class Monitor(
     dbActorRef: AskableActorRef,
     heartbeatRate: FiniteDuration,
+    pullRate: FiniteDuration,
     messageDelay: FiniteDuration
 ) extends Actor with ActorLogging with Timers with AskPatternConstants() {
 
   // These keys are used to keep track of the timers states
   private val periodicHbKey = 0
   private val singleHbKey = 1
+  private val periodicRumorStateKey = 2
 
   // State of connected servers
   private var someServerConnected = false
@@ -110,8 +112,8 @@ final case class Monitor(
 }
 
 object Monitor {
-  def props(dbActorRef: AskableActorRef, heartbeatRate: FiniteDuration = 15.seconds, messageDelay: FiniteDuration = 1.seconds): Props =
-    Props(new Monitor(dbActorRef, heartbeatRate, messageDelay))
+  def props(dbActorRef: AskableActorRef, heartbeatRate: FiniteDuration = 15.seconds, pullRate: FiniteDuration = 10.seconds, messageDelay: FiniteDuration = 1.seconds): Props =
+    Props(new Monitor(dbActorRef, heartbeatRate, pullRate, messageDelay))
 
   def sink(monitorRef: ActorRef): Sink[GraphMessage, NotUsed] = {
     Sink.actorRef(
