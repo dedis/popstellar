@@ -38,7 +38,7 @@ Feature: Roll Call Open
 
   @openRollCall2
   Scenario: Opening a Roll Call with non-organizer as sender should fail
-    Given def notOrganizer = call createMockClient
+    Given def notOrganizer = call createMockFrontend
     And def validOpenRollCall =
       """
         {

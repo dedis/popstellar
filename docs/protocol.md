@@ -17,10 +17,12 @@
     - [Publishing a message on a channel](#publishing-a-message-on-a-channel)
     - [Propagating a message on a channel](#propagating-a-message-on-a-channel)
     - [Catching up on past messages on a channel](#catching-up-on-past-messages-on-a-channel)
+    - [Catching up on past messages on a channel using paging](#catching-up-on-past-messages-on-a-channel-using-paging)
     - [Sending a heartbeat message to servers](#sending-a-heartbeat-message-to-servers)
     - [Retrieving messages from server using ids ](#retrieving-messages-from-server-using-ids-)
     - [Spreading a Rumor](#spreading-a-rumor)
-    - [Catching up on past messages on a channel using paging](#catching-up-on-past-messages-on-a-channel-using-paging)
+    - [Sharing rumor state](#sharing-rumor-state)
+    
   - [Answer](#answer)
     - [RPC answer error](#rpc-answer-error)
 - [Mid-level (message) communication](#mid-level-message-communication)
@@ -192,6 +194,9 @@ and its arguments (`params`).
         },
         {
             "$ref": "method/rumor.json"
+        },
+        {
+            "$ref": "method/rumor_state.json"
         }
     ],
 
@@ -212,6 +217,8 @@ Here are the different methods that can be called:
 * Publish
 * Heartbeat
 * GetMessagesById
+* Rumor
+* RumorState
 
 ### Greeting a server
 🧭 **RPC Message** > **Query** > **Greet Server**
@@ -1028,25 +1035,7 @@ RPC
         },
 
         "params": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "sender_id": {
-                    "description": "[String] publish key of the sender's server",
-                    "type": "string",
-                    "contentEncoding": "base64"
-                },
-                "rumor_id": {
-                    "description": "[Integer] ID of the rumor",
-                    "type": "integer"
-                },
-                "messages": {
-                    "description": "Key-value of channels and messages per channel",
-                    "type": "object",
-                    "$ref": "../../answer/result/messages_by_channel.json"
-                }
-            },
-            "required": ["sender_id", "rumor_id", "messages"]
+            "$ref": "object/rumor.json"
         },
 
         "jsonrpc": {
@@ -1062,6 +1051,168 @@ RPC
 }
 
 ```
+
+```json5
+// ../protocol/query/method/object/rumor.json
+
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/object/rumor.json",
+  "title": "State of received rumors",
+  "description": "An object containing key-value pairs where each key is a server public key and each value is the last rumor_id it received from this server",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "sender_id": {
+      "description": "[String] publish key of the sender's server",
+      "type": "string",
+      "contentEncoding": "base64"
+    },
+    "rumor_id": {
+      "description": "[Integer] ID of the rumor",
+      "type": "integer"
+    },
+    "messages": {
+      "description": "Key-value of channels and messages per channel",
+      "type": "object",
+      "$ref": "../../../answer/result/messages_by_channel.json"
+    }
+  },
+  "required": [
+    "sender_id",
+    "rumor_id",
+    "messages"
+  ]
+}
+
+```
+</details>
+
+### Sharing rumor state
+
+🧭 **RPC Message** > **Query** > **Rumor state**
+
+The purpose of this RPC is to share to other servers a snapshot of the last rumor ID received from each neighbor. 
+
+Upon reception of this state, the receiver will send back missing rumors to the querier, which will then propagate new rumors accross the network.
+
+```json5
+// ../protocol/examples/query/rumor_state/rumor_state.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 4,
+    "method": "rumor_state",
+    "params": {
+        "state": {
+            "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=": 3,
+            "RZOPi59Iy5gkpS2mkpfQJNl44HKc2jVbF0iTGm0RvfU=": 5,
+            "CfG2ByLhtLJH--T2BL9hZ6eGm11tpkE-5KuvysSCY0I=": 1,
+            "r8cG9HyJ1FGBke_5IblCdH19mvy39MvLFSArVmY3FpY=": 10
+        }
+    }
+}
+
+```
+
+Response in case of success 
+
+```json5
+// ../protocol/examples/answer/rumor_state_ans.json
+
+{
+  "jsonrpc": "2.0",
+  "id": 6,
+  "result": [
+    {
+      "sender_id": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+      "rumor_id": 1,
+      "messages": {
+        "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=": [
+          {
+            "data": "eyJvYmplY3QiOiJyb2xsX2NhbGwiLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiUm9sbCBDYWxsIiwiY3JlYXRpb24iOjE2MzMwMzYxMjAsInByb3Bvc2VkX3N0YXJ0IjoxNjMzMDM2Mzg4LCJwcm9wb3NlZF9lbmQiOjE2MzMwMzk2ODgsImxvY2F0aW9uIjoiRVBGTCIsImlkIjoial9kSmhZYnpubXZNYnVMc0ZNQ2dzYlB5YjJ6Nm1vZ2VtSmFON1NWaHVVTT0ifQ==",
+            "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+            "signature": "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
+            "message_id": "DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI=",
+            "witness_signatures": []
+          }
+        ]
+      }
+    },
+    {
+      "sender_id": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+      "rumor_id": 2,
+      "messages": {
+        "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=": [
+          {
+            "data": "eyJvYmplY3QiOiJyb2xsX2NhbGwiLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiUm9sbCBDYWxsIiwiY3JlYXRpb24iOjE2MzMwMzYxMjAsInByb3Bvc2VkX3N0YXJ0IjoxNjMzMDM2Mzg4LCJwcm9wb3NlZF9lbmQiOjE2MzMwMzk2ODgsImxvY2F0aW9uIjoiRVBGTCIsImlkIjoial9kSmhZYnpubXZNYnVMc0ZNQ2dzYlB5YjJ6Nm1vZ2VtSmFON1NWaHVVTT0ifQ==",
+            "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+            "signature": "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
+            "message_id": "z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=",
+            "witness_signatures": []
+          },
+          {
+            "data": "eyJvYmplY3QiOiJyb2xsX2NhbGwiLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiUm9sbCBDYWxsIiwiY3JlYXRpb24iOjE2MzMwMzYxMjAsInByb3Bvc2VkX3N0YXJ0IjoxNjMzMDM2Mzg4LCJwcm9wb3NlZF9lbmQiOjE2MzMwMzk2ODgsImxvY2F0aW9uIjoiRVBGTCIsImlkIjoial9kSmhZYnpubXZNYnVMc0ZNQ2dzYlB5YjJ6Nm1vZ2VtSmFON1NWaHVVTT0ifQ==",
+            "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+            "signature": "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
+            "message_id": "txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg=",
+            "witness_signatures": []
+          }
+        ]
+      }
+    }
+  ]
+}
+
+```
+
+<details>
+<summary>
+💡 See the full specification
+</summary>
+
+```json5
+// ../protocol/query/method/object/rumor_state.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/object/rumor_state.json",
+    "title": "State of received rumors",
+    "description": "An object containing key-value pairs where each key is a server public key and each value is the last rumor_id it received from this server",
+    "type": "object",
+    "additionalProperties": false,
+    "patternProperties": {
+        "^(?:[a-zA-Z0-9-_]{4})*(?:|[a-zA-Z0-9-_]{3}=|[a-zA-Z0-9+-_]{2}==|[a-zA-Z0-9+-_]===)$": {
+            "description": "[Integer] ID of the rumor",
+            "type": "integer",
+            "minimum": 0
+        }
+    }
+}
+
+```
+
+```json5
+// ../protocol/query/method/object/rumor_state.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/object/rumor_state.json",
+    "title": "State of received rumors",
+    "description": "An object containing key-value pairs where each key is a server public key and each value is the last rumor_id it received from this server",
+    "type": "object",
+    "additionalProperties": false,
+    "patternProperties": {
+        "^(?:[a-zA-Z0-9-_]{4})*(?:|[a-zA-Z0-9-_]{3}=|[a-zA-Z0-9+-_]{2}==|[a-zA-Z0-9+-_]===)$": {
+            "description": "[Integer] ID of the rumor",
+            "type": "integer",
+            "minimum": 0
+        }
+    }
+}
+
+```
+
 </details>
 
 ### Catching up on past messages on a channel using paging
@@ -1264,7 +1415,7 @@ See the full specification
     "properties": {
         "result": {
             "description": "In case of positive answer, result of the client query",
-            "oneOf": [
+            "anyOf": [
                 {
                     "type": "integer",
                     "const": 0,
@@ -1281,6 +1432,14 @@ See the full specification
                 {
                     "$ref": "result/messages_by_channel.json",
                     "$comment": "Return value for a `get_messages_by_id` request"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "$ref": "../query/method/object/rumor.json"
+                    },
+                    "minItems": 0,
+                    "$comment": "Return value for a `rumor_state` request"
                 }
             ],
             "$comment": "Note: this field is absent if there is an error"

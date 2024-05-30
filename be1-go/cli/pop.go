@@ -93,6 +93,11 @@ func run(ctx context.Context, args []string) {
 		Aliases: []string{"cf"},
 		Usage:   "path to the config file which will override other flags if present",
 	}
+	databasePathFlag := &cli.StringFlag{
+		Name:    "database-path",
+		Aliases: []string{"dbp"},
+		Usage:   "path to the database file",
+	}
 
 	app := &cli.App{
 		Name:  "pop",
@@ -119,6 +124,7 @@ func run(ctx context.Context, args []string) {
 							authServerPortFlag,
 							otherServersFlag,
 							configFileFlag,
+							databasePathFlag,
 						},
 						Action: func(c *cli.Context) error {
 							err := Serve(c)

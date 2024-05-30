@@ -2,12 +2,13 @@ package ch.epfl.pop.pubsub.graph
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.model.network.method._
+import ch.epfl.pop.model.network.method.*
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
+import ch.epfl.pop.model.objects.RumorData
 import ch.epfl.pop.pubsub.MessageRegistry
-import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
-import ch.epfl.pop.pubsub.graph.validators.ParamsValidator._
-import ch.epfl.pop.pubsub.graph.validators.RpcValidator._
+import ch.epfl.pop.pubsub.graph.validators.MessageValidator.*
+import ch.epfl.pop.pubsub.graph.validators.ParamsValidator.*
+import ch.epfl.pop.pubsub.graph.validators.RpcValidator.*
 
 object Validator {
 
@@ -36,7 +37,8 @@ object Validator {
         case _: Heartbeat       => graphMessage // No check necessary
         case _: GetMessagesById => graphMessage // No check necessary
         case _: GreetServer     => graphMessage // No check necessary
-        case _: Rumor           => graphMessage
+        case _: Rumor           => graphMessage // No check necessary
+        case _: RumorState      => graphMessage // No check necessary
         case _                  => Left(validationError(jsonRpcRequest.id))
       }
 
@@ -54,6 +56,7 @@ object Validator {
         case _: GetMessagesById => graphMessage
         case _: GreetServer     => graphMessage
         case _: Rumor           => graphMessage
+        case _: RumorState      => graphMessage
         case _                  => Left(validationError(jsonRpcRequest.id))
       }
     case graphMessage @ _ => graphMessage
