@@ -34,7 +34,10 @@ class NanComparison extends SemanticRule("NanComparison") {
     doc.tree.collect {
       case t @ Term.ApplyInfix.After_4_6_0(lhs, Term.Name("=="), _, Term.ArgClause(List(rhs), _)) =>
         (lhs,rhs) match {
-          case (Term.Name(_), Term.Name(_)) => matcher(Util.findDefinition(doc.tree, lhs), Util.findDefinition(doc.tree, rhs), t)
+          case (Term.Name(_), Term.Name(_)) => Util.findDefinitions(doc.tree, Set(lhs, rhs)) match {
+              case List((_, ld), (_, rd)) => matcher(ld, rd, t)
+              case _ => Patch.empty
+            }
           // Extract definitions and match in the case both are variables
           case _ => matcher(lhs, rhs, t)
         }

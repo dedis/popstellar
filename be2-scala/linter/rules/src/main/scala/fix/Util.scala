@@ -26,7 +26,7 @@ object Util {
 
   def findDefinitions(tree: Tree, nameSet: Set[Term]): List[(Term, Any)] = {
     tree.collect {
-      case Defn.Val(_, List(Pat.Var(varName)), _, Lit(value)) if nameSet.exists(_.toString().equals(varName.value)) => nameSet.find(_.toString().equals(varName.value)).get -> value
+      case Defn.Val(_, List(Pat.Var(varName)), _, value) if nameSet.exists(_.toString().equals(varName.value)) => nameSet.find(_.toString().equals(varName.value)).get -> value
       case Defn.Var.After_4_7_2(_, List(Pat.Var(varName)), _, value) if nameSet.exists(_.toString().equals(varName.value)) => nameSet.find(_.toString().equals(varName.value)).get -> value
     }
   }

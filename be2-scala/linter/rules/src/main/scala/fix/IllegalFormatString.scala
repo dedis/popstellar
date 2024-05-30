@@ -35,7 +35,7 @@ class IllegalFormatString extends SemanticRule("IllegalFormatString") {
   override def fix(implicit doc: SemanticDocument): Patch = {
 
     def getMappedArgs(args: List[Term]): List[Any] = {
-      findDefinitionsOrdered(doc.tree, args) ++ args.collect { case Lit(value) => value }
+      (findDefinitionsOrdered(doc.tree, args) ++ args).collect { case Lit(value) => value }
     }
 
     doc.tree.collect {
