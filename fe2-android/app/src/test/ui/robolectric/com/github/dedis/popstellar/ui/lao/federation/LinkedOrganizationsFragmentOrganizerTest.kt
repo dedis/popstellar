@@ -91,20 +91,6 @@ class LinkedOrganizationsFragmentOrganizerTest {
                 .check(matches(isDisplayed()))
     }
 
-    @Test
-    fun testInviteButton() {
-        LinkedOrganizationsFragmentPageObject.createLinkButton().perform(ViewActions.click())
-        LinkedOrganizationsFragmentPageObject.inviteButton().perform(ViewActions.click())
-        LinkedOrganizationsFragmentPageObject.nextInvitationFragment().check(matches(isDisplayed()))
-    }
-
-    @Test
-    fun testJoinButton() {
-        LinkedOrganizationsFragmentPageObject.createLinkButton().perform(ViewActions.click())
-        LinkedOrganizationsFragmentPageObject.joinInvitationButton().perform(ViewActions.click())
-        LinkedOrganizationsFragmentPageObject.nextQrScannerFragment().check(matches(isDisplayed()))
-    }
-
     companion object {
         private val KEY_PAIR = Base64DataUtils.generateKeyPair()
         private const val LAO_NAME = "LAO"

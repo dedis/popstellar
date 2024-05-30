@@ -7,7 +7,6 @@ import com.github.dedis.popstellar.repository.ConsensusRepository
 import com.github.dedis.popstellar.repository.DigitalCashRepository
 import com.github.dedis.popstellar.repository.ElectionRepository
 import com.github.dedis.popstellar.repository.LAORepository
-import com.github.dedis.popstellar.repository.LinkedOrganizationsRepository
 import com.github.dedis.popstellar.repository.MeetingRepository
 import com.github.dedis.popstellar.repository.MessageRepository
 import com.github.dedis.popstellar.repository.RollCallRepository
@@ -18,7 +17,6 @@ import com.github.dedis.popstellar.utility.handler.data.ChirpHandler
 import com.github.dedis.popstellar.utility.handler.data.ConsensusHandler
 import com.github.dedis.popstellar.utility.handler.data.ElectionHandler
 import com.github.dedis.popstellar.utility.handler.data.LaoHandler
-import com.github.dedis.popstellar.utility.handler.data.LinkedOrganizationsHandler
 import com.github.dedis.popstellar.utility.handler.data.MeetingHandler
 import com.github.dedis.popstellar.utility.handler.data.ReactionHandler
 import com.github.dedis.popstellar.utility.handler.data.RollCallHandler
@@ -63,8 +61,7 @@ object DataRegistryModuleHelper {
       MessageRepository(appDatabase, application),
       keyManager,
       ServerRepository(),
-      consensusRepository,
-      LinkedOrganizationsRepository()
+      consensusRepository
     )
   }
 
@@ -85,8 +82,7 @@ object DataRegistryModuleHelper {
       MessageRepository(appDatabase, application),
       keyManager,
       ServerRepository(),
-      ConsensusRepository(),
-      LinkedOrganizationsRepository()
+      ConsensusRepository()
     )
   }
 
@@ -108,8 +104,7 @@ object DataRegistryModuleHelper {
       MessageRepository(appDatabase, application),
       keyManager,
       ServerRepository(),
-      ConsensusRepository(),
-      LinkedOrganizationsRepository()
+      ConsensusRepository()
     )
   }
 
@@ -131,8 +126,7 @@ object DataRegistryModuleHelper {
       MessageRepository(appDatabase, application),
       keyManager,
       ServerRepository(),
-      ConsensusRepository(),
-      LinkedOrganizationsRepository()
+      ConsensusRepository()
     )
   }
 
@@ -162,8 +156,7 @@ object DataRegistryModuleHelper {
       MessageRepository(appDatabase, application),
       keyManager,
       ServerRepository(),
-      ConsensusRepository(),
-      LinkedOrganizationsRepository()
+      ConsensusRepository()
     )
   }
 
@@ -186,8 +179,7 @@ object DataRegistryModuleHelper {
       messageRepo,
       keyManager,
       ServerRepository(),
-      ConsensusRepository(),
-      LinkedOrganizationsRepository()
+      ConsensusRepository()
     )
   }
 
@@ -218,8 +210,7 @@ object DataRegistryModuleHelper {
       MessageRepository(appDatabase, application),
       keyManager,
       ServerRepository(),
-      ConsensusRepository(),
-      LinkedOrganizationsRepository()
+      ConsensusRepository()
     )
   }
 
@@ -242,8 +233,7 @@ object DataRegistryModuleHelper {
       msgRepo,
       keyManager,
       serverRepo,
-      ConsensusRepository(),
-      LinkedOrganizationsRepository()
+      ConsensusRepository()
     )
   }
 
@@ -270,8 +260,7 @@ object DataRegistryModuleHelper {
       MessageRepository(appDatabase, application),
       keyManager,
       ServerRepository(),
-      ConsensusRepository(),
-      LinkedOrganizationsRepository()
+      ConsensusRepository()
     )
   }
 
@@ -286,8 +275,7 @@ object DataRegistryModuleHelper {
     msgRepo: MessageRepository,
     keyManager: KeyManager,
     serverRepo: ServerRepository,
-    consensusRepo: ConsensusRepository,
-    linkedOrgRepo: LinkedOrganizationsRepository
+    consensusRepo: ConsensusRepository
   ): DataRegistry {
     val laoHandler =
       LaoHandler(keyManager, msgRepo, laoRepo, serverRepo, witnessingRepo, consensusRepo)
@@ -299,7 +287,6 @@ object DataRegistryModuleHelper {
     val reactionHandler = ReactionHandler(laoRepo, socialMediaRepo)
     val transactionCoinHandler = TransactionCoinHandler(digitalCashRepo)
     val witnessingHandler = WitnessingHandler(laoRepo, witnessingRepo)
-    val linkedOrganizationsHandler = LinkedOrganizationsHandler(laoRepo, linkedOrgRepo)
     return DataRegistryModule.provideDataRegistry(
       laoHandler,
       rollCallHandler,
@@ -309,8 +296,7 @@ object DataRegistryModuleHelper {
       chirpHandler,
       reactionHandler,
       transactionCoinHandler,
-      witnessingHandler,
-      linkedOrganizationsHandler
+      witnessingHandler
     )
   }
 }

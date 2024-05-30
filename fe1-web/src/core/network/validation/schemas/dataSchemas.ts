@@ -30,12 +30,6 @@ import dataAddReaction from 'protocol/query/method/message/data/dataAddReaction.
 import dataDeleteReaction from 'protocol/query/method/message/data/dataDeleteReaction.json';
 
 import dataAuthenticateUser from 'protocol/query/method/message/data/dataAuthenticateUser.json';
-
-import dataFederationChallenge from 'protocol/query/method/message/data/dataFederationChallenge.json';
-import dataFederationChallengeRequest from 'protocol/query/method/message/data/dataFederationChallengeRequest.json';
-import dataFederationExpect from 'protocol/query/method/message/data/dataFederationExpect.json';
-import dataFederationInit from 'protocol/query/method/message/data/dataFederationInit.json';
-import dataFederationResult from 'protocol/query/method/message/data/dataFederationResult.json';
 /* eslint-enable import/order */
 
 const dataSchemas = [
@@ -69,12 +63,6 @@ const dataSchemas = [
   dataDeleteReaction,
 
   dataAuthenticateUser,
-
-  dataFederationChallenge,
-  dataFederationChallengeRequest,
-  dataFederationExpect,
-  dataFederationInit,
-  dataFederationResult,
 ];
 
 export default dataSchemas;

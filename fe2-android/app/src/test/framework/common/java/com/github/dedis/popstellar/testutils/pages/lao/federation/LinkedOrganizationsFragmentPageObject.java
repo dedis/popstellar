@@ -24,12 +24,4 @@ public class LinkedOrganizationsFragmentPageObject {
     public static ViewInteraction joinInvitationButton() {
         return onView(withId(R.id.join_other_organization_invitation));
     }
-
-    public static ViewInteraction nextInvitationFragment() {
-        return onView(withId(R.id.fragment_linked_organizations_invite));
-    }
-
-    public static ViewInteraction nextQrScannerFragment() {
-        return onView(withId(R.id.fragment_qr_scanner));
-    }
 }

@@ -53,21 +53,7 @@ export const mockLaoState: LaoState = {
   last_roll_call_id: undefined,
   last_tokenized_roll_call_id: undefined,
 };
-
-export const mockLaoStateServerAddress: LaoState = {
-  id: serializedMockLaoId,
-  name: mockLaoName,
-  creation: mockLaoCreationTime.valueOf(),
-  last_modified: mockLaoCreationTime.valueOf(),
-  organizer: org.valueOf(),
-  witnesses: [],
-  server_addresses: ['ws://127.0.0.1:9000/client'],
-  subscribed_channels: [channelFromIds(mockLaoId)],
-  last_roll_call_id: undefined,
-  last_tokenized_roll_call_id: undefined,
-};
 export const mockLao = Lao.fromState(mockLaoState);
-export const mockLaoServerAddress = Lao.fromState(mockLaoStateServerAddress);
 
 export const defaultMessageDataFields = ['object', 'action'];
 

@@ -35,15 +35,15 @@ exports[`QrCode  looks good with long text and an overlay 1`] = `
           "alignItems": "center",
           "backgroundColor": "#3742fa",
           "borderRadius": 100,
-          "bottom": "32.4%",
+          "bottom": "27.9%",
           "display": "flex",
           "justifyContent": "center",
-          "left": "32.4%",
+          "left": "27.9%",
           "overflow": "hidden",
           "padding": "4",
           "position": "absolute",
-          "right": "32.4%",
-          "top": "32.4%",
+          "right": "27.9%",
+          "top": "27.9%",
         }
       }
     >
@@ -51,8 +51,10 @@ exports[`QrCode  looks good with long text and an overlay 1`] = `
         style={
           [
             {
-              "fontSize": 16,
-              "lineHeight": 20,
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "textAlign": "left",
             },
             {
               "textAlign": "center",
@@ -69,6 +71,7 @@ exports[`QrCode  looks good with long text and an overlay 1`] = `
   </View>
 </View>
 `;
+
 
 exports[`QrCode  looks good with short text and no overlay 1`] = `
 <View

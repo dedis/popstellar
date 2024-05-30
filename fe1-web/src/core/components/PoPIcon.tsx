@@ -63,10 +63,6 @@ const iconNameMap = {
      * combination of name and family
      */
   } as IonIcon,
-  business: {
-    iconName: 'business',
-    IconFamily: Ionicons,
-  } as IonIcon,
   cameraReverse: {
     iconName: 'ios-camera-reverse',
     IconFamily: Ionicons,
@@ -125,10 +121,6 @@ const iconNameMap = {
   } as IonIcon,
   invite: {
     iconName: 'adduser',
-    IconFamily: AntDesign,
-  } as AntDesignIcon,
-  link: {
-    iconName: 'link',
     IconFamily: AntDesign,
   } as AntDesignIcon,
   list: {
@@ -207,10 +199,6 @@ const iconNameMap = {
     iconName: 'vpn-key',
     IconFamily: MaterialIcons,
   } as MaterialIcon,
-  addLinkedOrg: {
-    iconName: 'ios-add-circle',
-    IconFamily: Ionicons,
-  } as IonIcon,
 };
 
 export type PopIconName = keyof typeof iconNameMap;

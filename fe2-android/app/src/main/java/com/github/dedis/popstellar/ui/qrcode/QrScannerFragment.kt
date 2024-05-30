@@ -16,10 +16,6 @@ import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.QrScannerFragmentBinding
 import com.github.dedis.popstellar.ui.PopViewModel
-import com.github.dedis.popstellar.ui.lao.LaoActivity
-import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsFragment
-import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsInviteFragment
-import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsViewModel
 import com.github.dedis.popstellar.utility.UIUtils
 import com.github.dedis.popstellar.utility.UIUtils.hideKeyboard
 import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
@@ -39,7 +35,7 @@ class QrScannerFragment : Fragment() {
   override fun onCreateView(
       inflater: LayoutInflater,
       container: ViewGroup?,
-      savedInstanceState: Bundle?,
+      savedInstanceState: Bundle?
   ): View {
     binding = QrScannerFragmentBinding.inflate(inflater, container, false)
 
@@ -116,10 +112,9 @@ class QrScannerFragment : Fragment() {
     val requestPermissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission(),
-            requireActivity().activityResultRegistry,
-        ) { _: Boolean? ->
-          applyPermissionToView()
-        } // This is the callback of the permission granter
+            requireActivity().activityResultRegistry) { _: Boolean? ->
+              applyPermissionToView()
+            } // This is the callback of the permission granter
 
     // The button launch the build launcher when is it clicked
     binding.allowCameraButton.setOnClickListener { _: View? ->
@@ -155,15 +150,13 @@ class QrScannerFragment : Fragment() {
         MlKitAnalyzer(
             barcodeScanner?.let { listOf(it) } ?: emptyList(),
             CameraController.COORDINATE_SYSTEM_VIEW_REFERENCED,
-            executor,
-        ) { result: MlKitAnalyzer.Result ->
-          val barcodes = barcodeScanner?.let { result.getValue(it) }
-          if (!barcodes.isNullOrEmpty()) {
-            Timber.tag(TAG).d("barcode raw value : %s", barcodes[0].rawValue)
-            onResult(barcodes[0])
-          }
-        },
-    )
+            executor) { result: MlKitAnalyzer.Result ->
+              val barcodes = barcodeScanner?.let { result.getValue(it) }
+              if (!barcodes.isNullOrEmpty()) {
+                Timber.tag(TAG).d("barcode raw value : %s", barcodes[0].rawValue)
+                onResult(barcodes[0])
+              }
+            })
     binding.scannerCamera.controller = cameraController
   }
 
@@ -178,30 +171,6 @@ class QrScannerFragment : Fragment() {
 
   private fun onResult(data: String?) {
     scanningViewModel.handleData(data)
-
-    // Special case for federation
-    /*
-     * WARNING : this code is not ideal as it should be treated by the LinkedOrganizationFragment
-     * and by the LinkedOrganizationInviteFragment instead of the QrScannerFragment
-     */
-    val linkedOrganisationsViewModel = scanningViewModel
-    if (linkedOrganisationsViewModel is LinkedOrganizationsViewModel) {
-      if (scanningAction == ScanningAction.FEDERATION_INVITE) {
-        LaoActivity.setCurrentFragment(
-            linkedOrganisationsViewModel.manager!!,
-            R.id.fragment_linked_organizations_home,
-        ) {
-          LinkedOrganizationsFragment.newInstance()
-        }
-      } else if (scanningAction == ScanningAction.FEDERATION_JOIN) {
-        LaoActivity.setCurrentFragment(
-            linkedOrganisationsViewModel.manager!!,
-            R.id.fragment_linked_organizations_invite,
-        ) {
-          LinkedOrganizationsInviteFragment.newInstance(false)
-        }
-      }
-    }
   }
 
   private fun setupManualAdd() {

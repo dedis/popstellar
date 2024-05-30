@@ -9,7 +9,7 @@ import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
-import { Channel, getFederationChannel, getLaoIdFromChannel } from 'core/objects';
+import { Channel, getLaoIdFromChannel } from 'core/objects';
 import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
@@ -61,7 +61,6 @@ const Launch = () => {
 
       // subscribe to the just created lao channel
       await subscribeToChannel(laoId, dispatch, channel);
-      await subscribeToChannel(laoId, dispatch, getFederationChannel(laoId));
 
       // navigate to the newly created LAO
       navigation.navigate(STRINGS.navigation_app_lao, {

@@ -63,8 +63,6 @@ func HandleChannel(channelPath string, msg message.Message, fromRumor bool) *ans
 		errAnswer = handleChannelReaction(channelPath, msg)
 	case sqlite.CoinType:
 		errAnswer = handleChannelCoin(channelPath, msg)
-	case sqlite.FederationType:
-		errAnswer = handleChannelFederation(channelPath, msg)
 	default:
 		errAnswer = answer.NewInvalidResourceError("unknown channelPath type for %s", channelPath)
 	}

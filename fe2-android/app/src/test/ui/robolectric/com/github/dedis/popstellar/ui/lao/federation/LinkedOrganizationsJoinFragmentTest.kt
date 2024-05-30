@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.federation
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -77,14 +76,15 @@ class LinkedOrganizationsJoinFragmentTest {
 
   @Test
   fun testQrCodeVisibility() {
-    LinkedOrganizationsInviteFragmentPageObject.qrCode()
-            .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+    LinkedOrganizationsInviteFragmentPageObject.qrCode().check(matches(isDisplayed()))
   }
 
   @Test
   fun testLAOName() {
     LinkedOrganizationsInviteFragmentPageObject.organizationName()
             .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+    LinkedOrganizationsInviteFragmentPageObject.organizationName()
+      .check(matches(withText(LAO_NAME)))
   }
 
   @Test
@@ -93,8 +93,6 @@ class LinkedOrganizationsJoinFragmentTest {
             .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
     LinkedOrganizationsInviteFragmentPageObject.nextStepButton()
             .check(matches(withText(R.string.finish)))
-    LinkedOrganizationsInviteFragmentPageObject.nextStepButton().perform(ViewActions.click())
-    LinkedOrganizationsInviteFragmentPageObject.nextHomeFragment().check(matches(isDisplayed()))
   }
 
   companion object {
