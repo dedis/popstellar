@@ -61,7 +61,3 @@ func GetElectionRepositoryInstance() (repository.ElectionRepository, *answer.Err
 func GetReactionRepositoryInstance() (repository.ReactionRepository, *answer.Error) {
 	return getInstance()
 }
-
-func GetFederationRepositoryInstance() (repository.FederationRepository, *answer.Error) {
-	return getInstance()
-}

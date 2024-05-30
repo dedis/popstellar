@@ -27,7 +27,6 @@ func Test_handleChannelElection(t *testing.T) {
 	subs := types.NewSubscribers()
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
-	hubParams := types.NewHubParams()
 
 	ownerPubBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
 	require.NoError(t, err)
@@ -41,7 +40,7 @@ func Test_handleChannelElection(t *testing.T) {
 
 	config.SetConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
-	state.SetState(subs, peers, queries, hubParams)
+	state.SetState(subs, peers, queries)
 
 	laoID := base64.URLEncoding.EncodeToString([]byte("laoID"))
 	electionID := base64.URLEncoding.EncodeToString([]byte("electionID"))

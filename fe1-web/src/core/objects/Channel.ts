@@ -45,15 +45,6 @@ export function getCoinChannel(laoIdHash: Hash): Channel {
 }
 
 /**
- * Returns the federation channel
- *
- * @param laoIdHash - The hash containing the laoID of the currently opened LAO
- */
-export function getFederationChannel(laoIdHash: Hash): Channel {
-  return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/federation`;
-}
-
-/**
  * Returns the general channel of chirps.
  *
  * @param laoIdHash - The hash containing the laoID of the currently opened LAO

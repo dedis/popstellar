@@ -3,12 +3,10 @@
 package repository
 
 import (
-	messagedata "popstellar/message/messagedata"
 	message "popstellar/message/query/method/message"
 
-	kyber "go.dedis.ch/kyber/v3"
-
 	mock "github.com/stretchr/testify/mock"
+	kyber "go.dedis.ch/kyber/v3"
 
 	types "popstellar/internal/popserver/types"
 )
@@ -301,62 +299,6 @@ func (_m *MockRepository) GetElectionType(electionID string) (string, error) {
 
 	if rf, ok := ret.Get(1).(func(string) error); ok {
 		r1 = rf(electionID)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// GetFederationExpect provides a mock function with given fields: senderPk, remotePk, Challenge, channelPath
-func (_m *MockRepository) GetFederationExpect(senderPk string, remotePk string, Challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationExpect, error) {
-	ret := _m.Called(senderPk, remotePk, Challenge, channelPath)
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetFederationExpect")
-	}
-
-	var r0 messagedata.FederationExpect
-	var r1 error
-	if rf, ok := ret.Get(0).(func(string, string, messagedata.FederationChallenge, string) (messagedata.FederationExpect, error)); ok {
-		return rf(senderPk, remotePk, Challenge, channelPath)
-	}
-	if rf, ok := ret.Get(0).(func(string, string, messagedata.FederationChallenge, string) messagedata.FederationExpect); ok {
-		r0 = rf(senderPk, remotePk, Challenge, channelPath)
-	} else {
-		r0 = ret.Get(0).(messagedata.FederationExpect)
-	}
-
-	if rf, ok := ret.Get(1).(func(string, string, messagedata.FederationChallenge, string) error); ok {
-		r1 = rf(senderPk, remotePk, Challenge, channelPath)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// GetFederationInit provides a mock function with given fields: senderPk, remotePk, Challenge, channelPath
-func (_m *MockRepository) GetFederationInit(senderPk string, remotePk string, Challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationInit, error) {
-	ret := _m.Called(senderPk, remotePk, Challenge, channelPath)
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetFederationInit")
-	}
-
-	var r0 messagedata.FederationInit
-	var r1 error
-	if rf, ok := ret.Get(0).(func(string, string, messagedata.FederationChallenge, string) (messagedata.FederationInit, error)); ok {
-		return rf(senderPk, remotePk, Challenge, channelPath)
-	}
-	if rf, ok := ret.Get(0).(func(string, string, messagedata.FederationChallenge, string) messagedata.FederationInit); ok {
-		r0 = rf(senderPk, remotePk, Challenge, channelPath)
-	} else {
-		r0 = ret.Get(0).(messagedata.FederationInit)
-	}
-
-	if rf, ok := ret.Get(1).(func(string, string, messagedata.FederationChallenge, string) error); ok {
-		r1 = rf(senderPk, remotePk, Challenge, channelPath)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -781,24 +723,6 @@ func (_m *MockRepository) IsAttendee(laoPath string, poptoken string) (bool, err
 	return r0, r1
 }
 
-// IsChallengeValid provides a mock function with given fields: senderPk, challenge, channelPath
-func (_m *MockRepository) IsChallengeValid(senderPk string, challenge messagedata.FederationChallenge, channelPath string) error {
-	ret := _m.Called(senderPk, challenge, channelPath)
-
-	if len(ret) == 0 {
-		panic("no return value specified for IsChallengeValid")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string, messagedata.FederationChallenge, string) error); ok {
-		r0 = rf(senderPk, challenge, channelPath)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // IsElectionEnded provides a mock function with given fields: electionID
 func (_m *MockRepository) IsElectionEnded(electionID string) (bool, error) {
 	ret := _m.Called(electionID)
@@ -881,24 +805,6 @@ func (_m *MockRepository) IsElectionStartedOrEnded(electionID string) (bool, err
 	}
 
 	return r0, r1
-}
-
-// RemoveChallenge provides a mock function with given fields: challenge
-func (_m *MockRepository) RemoveChallenge(challenge messagedata.FederationChallenge) error {
-	ret := _m.Called(challenge)
-
-	if len(ret) == 0 {
-		panic("no return value specified for RemoveChallenge")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(messagedata.FederationChallenge) error); ok {
-		r0 = rf(challenge)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
 }
 
 // StoreChirpMessages provides a mock function with given fields: channel, generalChannel, msg, generalMsg

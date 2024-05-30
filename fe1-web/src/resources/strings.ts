@@ -71,7 +71,6 @@ namespace STRINGS {
   export const navigation_lao_digital_cash = 'Digital Cash';
   export const navigation_lao_digital_cash_title = 'Digital Cash';
   export const navigation_lao_popcha = 'PoPCHA';
-  export const navigation_lao_linked_organizations = 'Linked Organizations';
 
   export const navigation_lao_disconnect_title = 'Disconnect';
 
@@ -103,11 +102,6 @@ namespace STRINGS {
   export const navigation_digital_cash_send_receive = 'Send & Receive';
   export const navigation_digital_cash_send_receive_title = 'Your Account';
   export const navigation_digital_cash_wallet_scanner = 'Digital Cash Scanner';
-
-  /* --- Linked Organizations Navigation Strings --- */
-  export const navigation_linked_organizations =
-    'LinkedOrganizationsNavigation LinkedOrganizations';
-  export const navigation_linked_organizations_title = 'Linked Organizations';
 
   /* --- Social Media Navigation Strings --- */
 
@@ -311,7 +305,7 @@ namespace STRINGS {
     'The Roll Call is currently open and you as the organizer should start adding attendees by scanning their PoP tokens.';
   export const roll_call_open_attendee =
     'The Roll Call is currently open and you as an attendee should let the organizer scan your PoP token encoded in the QR Code below.';
-  export const roll_call_qrcode_text = 'Scan to\nadd\nattendee';
+  export const roll_call_qrcode_text = 'Scan to add attendee';
 
   export const roll_call_error_open_roll_call = 'Unable to send roll call open request';
   export const roll_call_error_scanning_no_alias =
@@ -542,41 +536,6 @@ namespace STRINGS {
   export const popcha_manual_add_title = 'Enter url';
   export const popcha_manual_add_description = 'Enter the url you want to use to login';
   export const popcha_url_type_input = 'Url';
-
-  /* --- Linked Organizations Strings --- */
-  export const linked_organizations_description_organizer =
-    'Here you can find all linked organizations, and add new ones.';
-  export const linked_organizations_description = 'Here you can find all linked organizations.';
-  export const linked_organizations_addlinkedorg_title = 'Add Linked Organization';
-  export const linked_organizations_addlinkedorg_info =
-    'To link two organizations, one organizer has to first join the other organization by generating a QR Code (Join Organization), which other one links to his organization by scanning the QR Code (Link Organization). Subsequent to scanning the first QR Code, the other QR Code will appear. After the first QR Code was scanned, the other scanner for the second QR Code can be opened by clicking the “Next” button.';
-  export const linked_organizations_addlinkedorg_genQRCode = 'Join Organization';
-  export const linked_organizations_addlinkedorg_scanQRCode = 'Link Organization';
-  export const linked_organizations_addlinkedorg_Scanner_info =
-    'Scan the QR Code from the other organizers device.';
-  export const linked_organizations_addlinkedorg_QRCode_info =
-    'Scan the QR Code with the other organizers device.';
-  export const linked_organizations_addlinkedorg_QRCode_overlay = 'Scan to exchange info';
-  export const linked_organizations_addlinkedorg_finished = 'Finish';
-  export const linked_organizations_addlinkedorg_next = 'Next';
-  export const linked_organizations_addmanually_title = 'Add a Linked Organization';
-  export const linked_organizations_enterLaoId = 'Enter Lao ID';
-  export const linked_organizations_enterPublicKey = 'Enter Public Key';
-  export const linked_organizations_enterServerAddress = 'Enter Server Address';
-  export const linked_organizations_enterChallengeValue = 'Enter Challenge Value';
-  export const linked_organizations_enterChallengeValidUntil = 'Enter Challenge Valid Until';
-  export const linked_organizations_placeholderLaoID = 'Lao ID';
-  export const linked_organizations_placeholderPublicKey = 'Public Key';
-  export const linked_organizations_placeholderServerAddress = 'Server Address';
-  export const linked_organizations_placeholderChallengeValue = 'Challenge Value';
-  export const linked_organizations_placeholderChallengeValidUntil = 'Challenge Valid Until';
-  export const linked_organizations_LaoID = 'Lao ID:';
-  export const linked_organizations_navigation_addlinkedorgModal = 'AddLinkedOrgModal';
-  export const linked_organizations_addLinkedOrganizationButton = 'Add Linked Organization';
-  export const linked_organizations_addLinkedOrganizationCancel = 'Cancel';
-  export const linked_organizations_challengeValidUntilError =
-    'Challenge Valid Until is in the past';
-  export const linked_organizations_manualInputModalMissingFields = 'Missing required fields: ';
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';

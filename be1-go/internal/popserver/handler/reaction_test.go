@@ -20,9 +20,8 @@ func Test_handleChannelReaction(t *testing.T) {
 	subs := types.NewSubscribers()
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
-	hubParams := types.NewHubParams()
 
-	state.SetState(subs, peers, queries, hubParams)
+	state.SetState(subs, peers, queries)
 
 	organizerBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
 	require.NoError(t, err)

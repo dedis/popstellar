@@ -9,14 +9,11 @@ import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.LinkedOrganizationsFragmentBinding
 import com.github.dedis.popstellar.model.Role
 import com.github.dedis.popstellar.ui.lao.LaoActivity
-import com.github.dedis.popstellar.ui.lao.LaoActivity.Companion.obtainLinkedOrganizationsViewModel
 import com.github.dedis.popstellar.ui.lao.LaoActivity.Companion.obtainViewModel
 import com.github.dedis.popstellar.ui.lao.LaoViewModel
 import com.github.dedis.popstellar.ui.lao.event.LaoDetailAnimation.rotateFab
 import com.github.dedis.popstellar.ui.lao.event.LaoDetailAnimation.showIn
 import com.github.dedis.popstellar.ui.lao.event.LaoDetailAnimation.showOut
-import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment
-import com.github.dedis.popstellar.ui.qrcode.ScanningAction
 
 /**
  * A simple [Fragment] subclass. Use the [LinkedOrganizationsFragment.newInstance] factory method to
@@ -26,7 +23,6 @@ class LinkedOrganizationsFragment : Fragment() {
 
   private lateinit var binding: LinkedOrganizationsFragmentBinding
   private lateinit var laoViewModel: LaoViewModel
-  private lateinit var linkedOrganizationsViewModel: LinkedOrganizationsViewModel
 
   private var buttonClicked = false
 
@@ -38,11 +34,6 @@ class LinkedOrganizationsFragment : Fragment() {
     // Inflate the layout for this fragment
     binding = LinkedOrganizationsFragmentBinding.inflate(inflater, container, false)
     laoViewModel = obtainViewModel(requireActivity())
-    linkedOrganizationsViewModel =
-        obtainLinkedOrganizationsViewModel(requireActivity(), laoViewModel.laoId)
-
-    // Starts from a clean repository
-    linkedOrganizationsViewModel.flushRepository()
 
     // Sets the text and the button depending on the user's role
     laoViewModel.role.observe(viewLifecycleOwner) { role: Role ->
@@ -57,7 +48,6 @@ class LinkedOrganizationsFragment : Fragment() {
 
     binding.addLinkedOrganization.setOnClickListener(observeButton)
     binding.inviteOtherOrganization.setOnClickListener(invitationPage)
-    binding.joinOtherOrganizationInvitation.setOnClickListener(joinButton)
 
     handleBackNav()
 
@@ -93,15 +83,6 @@ class LinkedOrganizationsFragment : Fragment() {
             parentFragmentManager, R.id.fragment_linked_organizations_invite) {
               LinkedOrganizationsInviteFragment.newInstance(true)
             }
-      }
-
-  private var joinButton =
-      View.OnClickListener {
-        laoViewModel.setIsTab(false)
-        linkedOrganizationsViewModel.manager = parentFragmentManager
-        LaoActivity.setCurrentFragment(parentFragmentManager, R.id.fragment_qr_scanner) {
-          QrScannerFragment.newInstance(ScanningAction.FEDERATION_JOIN)
-        }
       }
 
   private fun handleBackNav() {

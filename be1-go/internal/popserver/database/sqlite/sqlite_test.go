@@ -1,10 +1,8 @@
 package sqlite
 
 import (
-	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
@@ -15,7 +13,6 @@ import (
 	"popstellar/message/query/method/message"
 	"sort"
 	"testing"
-	"time"
 )
 
 //======================================================================================================================
@@ -828,137 +825,4 @@ func Test_SQLite_GetReactionSender(t *testing.T) {
 	sender, err = lite.GetReactionSender(reactionAddMsg.MessageID)
 	require.NoError(t, err)
 	require.Equal(t, "sender1", sender)
-}
-
-func Test_SQLite_IsChallengeValid(t *testing.T) {
-	lite, dir, err := newFakeSQLite(t)
-	require.NoError(t, err)
-	defer lite.Close()
-	defer os.RemoveAll(dir)
-
-	sender := "qlDMnnFv_W4zovvD0pp4FFjCfJ78z_O7LqxBXGdO0lA="
-	notSender := "7_9A6K6dbfN04GUwEaLCDNLcdnaTjmBVw1qWH_C9M3s="
-	fedPath := "/root/lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA=/federation"
-	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
-	validUntil := time.Now().Add(5 * time.Minute).Unix()
-
-	challenge := messagedata.FederationChallenge{
-		Object:     messagedata.FederationObject,
-		Action:     messagedata.FederationActionChallenge,
-		Value:      value,
-		ValidUntil: validUntil,
-	}
-
-	challengeMsg := generatortest.NewFederationChallenge(t, sender, value,
-		validUntil, nil)
-
-	err = lite.StoreMessageAndData(fedPath, challengeMsg)
-	require.NoError(t, err)
-
-	err = lite.IsChallengeValid(sender, challenge, fedPath)
-	require.NoError(t, err)
-
-	err = lite.IsChallengeValid(notSender, challenge, fedPath)
-	require.ErrorIs(t, err, sql.ErrNoRows)
-
-	challenge.Value = "12345678"
-	err = lite.IsChallengeValid(sender, challenge, fedPath)
-	require.ErrorIs(t, err, sql.ErrNoRows)
-
-	challenge.Value = value
-	challenge.ValidUntil = validUntil + 1
-	err = lite.IsChallengeValid(sender, challenge, fedPath)
-	require.ErrorIs(t, err, sql.ErrNoRows)
-}
-
-func Test_SQLite_GetFederationExpect(t *testing.T) {
-	lite, dir, err := newFakeSQLite(t)
-	require.NoError(t, err)
-	defer lite.Close()
-	defer os.RemoveAll(dir)
-
-	organizer := "qlDMnnFv_W4zovvD0pp4FFjCfJ78z_O7LqxBXGdO0lA="
-	organizer2 := "NzfRC3bUGHLy-I_iUbDXq9CAXcnnDdue9P2hqJHF6bk="
-
-	laoId := "lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA="
-	fedPath := fmt.Sprintf("/root/%s/federation", laoId)
-
-	serverAddressA := "ws://localhost:9801/client"
-	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
-	validUntil := time.Now().Add(5 * time.Minute).Unix()
-
-	challenge := messagedata.FederationChallenge{
-		Object:     messagedata.FederationObject,
-		Action:     messagedata.FederationActionChallenge,
-		Value:      value,
-		ValidUntil: validUntil,
-	}
-
-	challengeMsg := generatortest.NewFederationChallenge(t, organizer, value,
-		validUntil, nil)
-
-	expectMsg := generatortest.NewFederationExpect(t, organizer, laoId,
-		serverAddressA, organizer2, challengeMsg, nil)
-
-	_, err = lite.GetFederationExpect(organizer, organizer2, challenge, fedPath)
-	require.ErrorIs(t, err, sql.ErrNoRows)
-
-	err = lite.StoreMessageAndData(fedPath, expectMsg)
-	require.NoError(t, err)
-
-	expect, err := lite.GetFederationExpect(organizer, organizer2, challenge, fedPath)
-	require.NoError(t, err)
-	require.Equal(t, challengeMsg, expect.ChallengeMsg)
-	require.Equal(t, organizer2, expect.PublicKey)
-	require.Equal(t, serverAddressA, expect.ServerAddress)
-	require.Equal(t, laoId, expect.LaoId)
-
-	_, err = lite.GetFederationExpect(organizer2, organizer, challenge, fedPath)
-	require.ErrorIs(t, err, sql.ErrNoRows)
-}
-
-func Test_SQLite_GetFederationInit(t *testing.T) {
-	lite, dir, err := newFakeSQLite(t)
-	require.NoError(t, err)
-	defer lite.Close()
-	defer os.RemoveAll(dir)
-
-	organizer := "qlDMnnFv_W4zovvD0pp4FFjCfJ78z_O7LqxBXGdO0lA="
-	organizer2 := "NzfRC3bUGHLy-I_iUbDXq9CAXcnnDdue9P2hqJHF6bk="
-
-	laoId := "lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA="
-	fedPath := fmt.Sprintf("/root/%s/federation", laoId)
-
-	serverAddressA := "ws://localhost:9801/client"
-	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
-	validUntil := time.Now().Add(5 * time.Minute).Unix()
-
-	challenge := messagedata.FederationChallenge{
-		Object:     messagedata.FederationObject,
-		Action:     messagedata.FederationActionChallenge,
-		Value:      value,
-		ValidUntil: validUntil,
-	}
-
-	challengeMsg := generatortest.NewFederationChallenge(t, organizer, value,
-		validUntil, nil)
-
-	expectMsg := generatortest.NewFederationInit(t, organizer, laoId,
-		serverAddressA, organizer2, challengeMsg, nil)
-
-	_, err = lite.GetFederationInit(organizer, organizer2, challenge, fedPath)
-	require.ErrorIs(t, err, sql.ErrNoRows)
-
-	err = lite.StoreMessageAndData(fedPath, expectMsg)
-	require.NoError(t, err)
-
-	expect, err := lite.GetFederationInit(organizer, organizer2, challenge, fedPath)
-	require.NoError(t, err)
-	require.Equal(t, challengeMsg, expect.ChallengeMsg)
-	require.Equal(t, organizer2, expect.PublicKey)
-	require.Equal(t, serverAddressA, expect.ServerAddress)
-	require.Equal(t, laoId, expect.LaoId)
-
-	_, err = lite.GetFederationInit(organizer2, organizer, challenge, fedPath)
-	require.ErrorIs(t, err, sql.ErrNoRows)
 }

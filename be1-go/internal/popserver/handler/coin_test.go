@@ -31,9 +31,8 @@ func Test_handleChannelCoin(t *testing.T) {
 	subs := types.NewSubscribers()
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
-	hubParams := types.NewHubParams()
 
-	state.SetState(subs, peers, queries, hubParams)
+	state.SetState(subs, peers, queries)
 
 	mockRepository := repository.NewMockRepository(t)
 	database.SetDatabase(mockRepository)
