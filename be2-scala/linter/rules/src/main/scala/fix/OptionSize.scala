@@ -21,13 +21,7 @@ class OptionSize extends SemanticRule("OptionSize") {
 
   override def fix(implicit doc: SemanticDocument): Patch = {
     doc.tree.collect {
-      case t @ Term.Select(Term.Apply.After_4_6_0(Term.Name("Option"), _), Term.Name("size")) => Patch.lint(OptionSizeDiag(t))
-      case t @ Term.Select(qual, Term.Name("size")) =>
-        val qualType = Util.getType(qual)
-        if (qualType != null && SymbolMatcher.exact("scala/Option#").matches(qualType)) {
-          Patch.lint(OptionSizeDiag(t))
-        }
-        else Patch.empty
+      case t @ Term.Select(qual, Term.Name("size")) if Util.matchType(qual, "scala/Option") => Patch.lint(OptionSizeDiag(t))
       case _ => Patch.empty
     }.asPatch
   }

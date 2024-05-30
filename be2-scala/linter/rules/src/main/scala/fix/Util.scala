@@ -15,6 +15,13 @@ object Util {
     }
   }
 
+  def matchType(term: Term, symbols: String*)(implicit doc: SemanticDocument): Boolean = {
+    val symbolMatcher = SymbolMatcher.normalized(symbols: _*)
+    symbolMatcher.matches(term.symbol) || Option(getType(term)).exists(symbolMatcher.matches)
+    // Checks the term symbol matches that of the symbol (i.e. when we use the type directly),
+    // or if the type of the variable matches. We use an option as getType is not null safe.
+  }
+
   def findDefinition(tree: Tree, name: Term): Any = {
     tree.collect {
       case Defn.Val(_, List(Pat.Var(varName)), _, value)

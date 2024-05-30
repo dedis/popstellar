@@ -21,13 +21,7 @@ class OptionGet extends SemanticRule("OptionGet") {
 
   override def fix(implicit doc: SemanticDocument): Patch = {
     doc.tree.collect {
-      case t @ Term.Select(Term.Apply.After_4_6_0(Term.Name("Option"), _), Term.Name("get")) => Patch.lint(OptionGetDiag(t))
-      case t @ Term.Select(qual, Term.Name("get")) =>
-        val qualType = Util.getType(qual)
-        if (qualType != null && SymbolMatcher.exact("scala/Option#").matches(qualType)) {
-          Patch.lint(OptionGetDiag(t))
-        }
-        else Patch.empty
+      case t @ Term.Select(qual, Term.Name("get")) if Util.matchType(qual, "scala/Option") => Patch.lint(OptionGetDiag(t))
       case _ => Patch.empty
     }.asPatch
   }

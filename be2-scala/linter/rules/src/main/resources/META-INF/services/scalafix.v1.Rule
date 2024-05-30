@@ -12,3 +12,4 @@ fix.NanComparison
 fix.OptionGet
 fix.OptionSize
 fix.StripMarginOnRegex
+fix.TryGet
