@@ -167,15 +167,15 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 }
 
 func createLaoGreet(organizerBuf []byte, laoID string) (message.Message, *answer.Error) {
-	//peersInfo, errAnswer := state.GetAllPeersInfo()
-	//if errAnswer != nil {
-	//	return message.Message{}, errAnswer.Wrap("createAndSendLaoGreet")
-	//}
-	//
-	//knownPeers := make([]messagedata.Peer, 0, len(peersInfo))
-	//for _, info := range peersInfo {
-	//	knownPeers = append(knownPeers, messagedata.Peer{Address: info.ClientAddress})
-	//}
+	peersInfo, errAnswer := state.GetAllPeersInfo()
+	if errAnswer != nil {
+		return message.Message{}, errAnswer.Wrap("createAndSendLaoGreet")
+	}
+
+	knownPeers := make([]messagedata.Peer, 0, len(peersInfo))
+	for _, info := range peersInfo {
+		knownPeers = append(knownPeers, messagedata.Peer{Address: info.ClientAddress})
+	}
 
 	_, clientServerAddress, _, errAnswer := config.GetServerInfo()
 	if errAnswer != nil {
@@ -188,8 +188,7 @@ func createLaoGreet(organizerBuf []byte, laoID string) (message.Message, *answer
 		LaoID:    laoID,
 		Frontend: base64.URLEncoding.EncodeToString(organizerBuf),
 		Address:  clientServerAddress,
-		//Peers:    knownPeers,
-		Peers: make([]messagedata.Peer, 0),
+		Peers:    knownPeers,
 	}
 
 	// Marshall the message data
