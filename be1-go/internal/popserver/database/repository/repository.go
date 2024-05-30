@@ -3,8 +3,8 @@ package repository
 import (
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/popserver/types"
-	"popstellar/message/query/method"
 	"popstellar/message/messagedata"
+	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 )
 
