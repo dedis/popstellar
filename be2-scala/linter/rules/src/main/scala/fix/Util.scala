@@ -9,17 +9,17 @@ object Util {
     term.symbol.info match {
       case Some(symInfo) => symInfo.signature match {
         case ValueSignature(TypeRef(_, symbol, _)) => symbol
-        case _ => null
+        case _ => Symbol.None
       }
-      case _ => null
+      case _ => Symbol.None
     }
   }
 
   def matchType(term: Term, symbols: String*)(implicit doc: SemanticDocument): Boolean = {
     val symbolMatcher = SymbolMatcher.normalized(symbols: _*)
-    symbolMatcher.matches(term.symbol) || Option(getType(term)).exists(symbolMatcher.matches)
+    symbolMatcher.matches(term.symbol) || symbolMatcher.matches(getType(term))
     // Checks the term symbol matches that of the symbol (i.e. when we use the type directly),
-    // or if the type of the variable matches. We use an option as getType is not null safe.
+    // or if the type of the variable matches.
   }
 
   def findDefinition(tree: Tree, name: Term): Any = {
