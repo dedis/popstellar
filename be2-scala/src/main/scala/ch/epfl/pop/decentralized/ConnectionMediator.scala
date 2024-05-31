@@ -30,6 +30,7 @@ final case class ConnectionMediator(
   // Ping Monitor to inform it of our ActorRef
   monitorRef ! ConnectionMediator.Ping()
   gossipManagerRef ! ConnectionMediator.Ping()
+  log.info(s"Connection Mediator ping gossip")
 
   override def receive: Receive = {
 
@@ -67,6 +68,7 @@ final case class ConnectionMediator(
         sender() ! ConnectionMediator.ReadPeersClientAddressAck(serverMap.values.map(gr => gr.clientAddress).toList)
 
     case ConnectionMediator.NewServerConnected(serverRef, greetServer) =>
+      log.info(s"new server connected")
       if (serverMap.isEmpty) {
         monitorRef ! Monitor.AtLeastOneServerConnected
       }

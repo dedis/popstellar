@@ -11,7 +11,7 @@ import akka.pattern.ask
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import ch.epfl.pop.IOHelper.readJsonFromPath
 import ch.epfl.pop.config.RuntimeEnvironment
-import ch.epfl.pop.decentralized.{ConnectionMediator, Monitor}
+import ch.epfl.pop.decentralized.{ConnectionMediator, GossipManager, Monitor}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
@@ -37,7 +37,8 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
   private val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)), "dbRumor")
   private val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(RuntimeEnvironment.securityPath)), "securityRumor")
   private val monitorRef: ActorRef = system.actorOf(Monitor.props(dbActorRef), "monitorRumor")
-  private var connectionMediatorRef: AskableActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry), "connMediatorRumor")
+  private val gossipRef : ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef))
+  private var connectionMediatorRef: AskableActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipRef, messageRegistry), "connMediatorRumor")
   private val rumorHandler: Flow[GraphMessage, GraphMessage, NotUsed] = ParamsHandler.rumorHandler(dbActorRef, messageRegistry)
   // Inject dbActor above
   PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, isServer = false)

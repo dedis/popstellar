@@ -157,6 +157,7 @@ final case class GossipManager(
   private def startGossip(messages: Map[Channel, List[Message]], clientActorRef: ActorRef): Unit = {
     if (publicKey.isDefined)
       incrementMap(publicKey.get)
+      println(s"rumorMap : $rumorMap")
       val rumor: Rumor = Rumor(publicKey.get, rumorMap(publicKey.get), messages)
       val jsonRpcRequest = prepareRumor(rumor)
       val writeRumor = dbActorRef ? DbActor.WriteRumor(rumor)
@@ -169,15 +170,19 @@ final case class GossipManager(
 
   override def receive: Receive = {
     case GossipManager.HandleRumor(jsonRpcRequest: JsonRpcRequest, clientActorRef: ActorRef) =>
+      log.info("recvHandle")
       handleRumor(jsonRpcRequest, clientActorRef)
 
     case GossipManager.ManageGossipResponse(jsonRpcResponse, clientActorRef) =>
+      log.info("recvManage")
       processResponse(jsonRpcResponse, clientActorRef)
 
     case GossipManager.StartGossip(messages, clientActorRef) =>
+      log.info(s"recvStart ${clientActorRef.actorRef}, ${messages}")
       startGossip(messages, clientActorRef)
 
     case ConnectionMediator.Ping() =>
+      log.info(s"Actor $self received a ping from Connection Mediator")
       connectionMediatorRef = sender()
 
     case _ =>
