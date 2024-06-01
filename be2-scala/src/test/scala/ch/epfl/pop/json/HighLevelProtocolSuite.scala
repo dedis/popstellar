@@ -216,6 +216,21 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     catchupFromJson.id should equal(id)
   }
 
+  test("parse correctly catchup for top chirps") {
+
+    val chan1 = Channel("/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/top_chirps")
+    val id = Some(5)
+
+    val catchupJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.catchup, new ParamsWithChannel(chan1), id))
+    val catchupFromJson = JsonRpcRequest.buildFromJson(catchupJsValue.prettyPrint)
+
+    // Test
+    catchupFromJson.jsonrpc should equal(RpcValidator.JSON_RPC_VERSION)
+    catchupFromJson.method should equal(MethodType.catchup)
+    catchupFromJson.getParams.asInstanceOf[ParamsWithChannel].channel should equal(chan1)
+    catchupFromJson.id should equal(id)
+  }
+
   test("parse correctly broadcast") {
 
     // Setup
