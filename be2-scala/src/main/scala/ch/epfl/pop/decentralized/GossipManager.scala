@@ -90,13 +90,11 @@ final case class GossipManager(
     // checks the peers to which we already forwarded the message
     val activeGossip: Set[ServerInfos] = getPeersForRumor(rumorRpc)
     // selects a random peer from remaining peers
-    println(s"connmedref ${connectionMediatorRef.actorRef}")
     val randomPeer = connectionMediatorRef ? ConnectionMediator.GetRandomPeer(activeGossip.map(_._1) + clientActorRef)
     Await.result(randomPeer, duration) match {
       // updates the list based on response
       // if some peers are available we send
       case ConnectionMediator.GetRandomPeerAck(serverRef, greetServer) =>
-        println("foundpeer")
         val alreadySent: Set[ServerInfos] = activeGossip + (serverRef -> greetServer)
         activeGossipProtocol += (rumorRpc -> alreadySent)
         log.info(s"rumorSent > dest : ${greetServer.clientAddress}, rumor : $rumorRpc")
@@ -157,7 +155,6 @@ final case class GossipManager(
   private def startGossip(messages: Map[Channel, List[Message]], clientActorRef: ActorRef): Unit = {
     if (publicKey.isDefined)
       incrementMap(publicKey.get)
-      println(s"rumorMap : $rumorMap")
       val rumor: Rumor = Rumor(publicKey.get, rumorMap(publicKey.get), messages)
       val jsonRpcRequest = prepareRumor(rumor)
       val writeRumor = dbActorRef ? DbActor.WriteRumor(rumor)
@@ -170,15 +167,12 @@ final case class GossipManager(
 
   override def receive: Receive = {
     case GossipManager.HandleRumor(jsonRpcRequest: JsonRpcRequest, clientActorRef: ActorRef) =>
-      log.info("recvHandle")
       handleRumor(jsonRpcRequest, clientActorRef)
 
     case GossipManager.ManageGossipResponse(jsonRpcResponse, clientActorRef) =>
-      log.info("recvManage")
       processResponse(jsonRpcResponse, clientActorRef)
 
     case GossipManager.StartGossip(messages, clientActorRef) =>
-      log.info(s"recvStart ${clientActorRef.actorRef}, ${messages}")
       startGossip(messages, clientActorRef)
 
     case ConnectionMediator.Ping() =>
