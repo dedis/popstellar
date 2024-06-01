@@ -45,6 +45,15 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
   }
 
+  def checkPeersWritten(connectionMediatorRef: AskableActorRef): Unit = {
+    var countDown = 2
+    while {
+      val readPeers = connectionMediatorRef ? ConnectionMediator.ReadPeersClientAddress()
+      Await.result(readPeers, duration) match
+        case ConnectionMediator.ReadPeersClientAddressAck(list) => list.isEmpty && countDown > 0
+    } do countDown -= 1
+  }
+
   val pathCorrectRumor: String = "src/test/scala/util/examples/json/rumor/rumor.json"
   val pathCorrectCastVote: String = "src/test/scala/util/examples/json/election/cast_vote1.json"
 
@@ -63,6 +72,9 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
     // registers a new server
     connectionMediatorRef ? ConnectionMediator.NewServerConnected(server.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+
+    checkPeersWritten(connectionMediatorRef)
+
     // emulates receiving a castVote and processes it
     val outputCreateRumor = Source.single(Right(castVoteRequest)).via(gossip).runWith(Sink.head)
     Await.result(outputCreateRumor, duration)
@@ -94,10 +106,12 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     val peerServer = TestProbe()
     // registers a new server
     connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+    checkPeersWritten(connectionMediatorRef)
 
     // emulates receiving a castVote and processes it
     for (id <- 0 to 4) {
       // emulates receiving a castVote and processes it
+      println("castVote")
       val outputCreateRumor = Source.single(Right(castVoteRequest)).via(gossip).runWith(Sink.head)
       Await.result(outputCreateRumor, duration)
       // checks that created a correct rumor from that message and was received by other server
@@ -120,6 +134,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
     val peerServer = TestProbe()
     connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+    checkPeersWritten(connectionMediatorRef)
 
     for (id <- 0 to 4) {
       // emulates receiving a castVote and processes it
@@ -152,6 +167,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
     // registers a new server
     connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer.ref, GreetServer(PublicKey(Base64Data.encode("publicKey")), "", ""))
+    checkPeersWritten(connectionMediatorRef)
 
     // emulates receiving a castVote and processes it
     val outputCreateRumor = Source.single(Right(castVoteRequest)).via(gossip).runWith(Sink.head)
@@ -187,6 +203,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
     // registers a new server
     connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer.ref, GreetServer(PublicKey(Base64Data.encode("publicKey")), "", ""))
+    checkPeersWritten(connectionMediatorRef)
 
     // emulates receiving a castVote and processes it
     val outputCreateRumor = Source.single(Right(castVoteRequest)).via(gossip).runWith(Sink.head)
@@ -219,6 +236,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
     // register server
     connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+    checkPeersWritten(connectionMediatorRef)
 
     val output = Source.single(Right(rumorRequest)).via(gossipHandler).runWith(Sink.head)
 
@@ -249,6 +267,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     for (peer <- peers) {
       connectionMediatorRef ? ConnectionMediator.NewServerConnected(peer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
     }
+    checkPeersWritten(connectionMediatorRef)
 
     val output = Source.single(Right(rumorRequest)).via(gossipHandler).runWith(Sink.head)
 
@@ -279,6 +298,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
       connectionMediatorRef ? ConnectionMediator.NewServerConnected(peer.ref, GreetServer(PublicKey(Base64Data.encode(s"$n")), "", ""))
       n += 1
     }
+    checkPeersWritten(connectionMediatorRef)
 
     // processes the rumor => sends to random peer
     val outputRumor = Source.single(Right(rumorRequest)).via(gossipHandler).runWith(Sink.head)
