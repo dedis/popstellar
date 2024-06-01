@@ -10,6 +10,7 @@ import ch.epfl.pop.model.network.method.Rumor
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
+import ch.epfl.pop.model.network.method.message.data.socialMedia.AddReaction
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.pubsub.graph.AnswerGenerator.timout
@@ -193,35 +194,109 @@ final case class DbActor(
   private def catchupChannel(channel: Channel): List[Message] = {
 
     @scala.annotation.tailrec
-    def buildCatchupList(msgIds: List[Hash], acc: List[Message]): List[Message] = {
+    def buildCatchupList(msgIds: List[Hash], acc: List[Message], fromChannel: Channel): List[Message] = {
       msgIds match {
         case Nil => acc
         case head :: tail =>
-          Try(read(channel, head)).recover(_ => None) match {
-            case Success(Some(msg)) => buildCatchupList(tail, msg :: acc)
+          Try(read(fromChannel, head)).recover(_ => None) match {
+            case Success(Some(msg)) => buildCatchupList(tail, msg :: acc, fromChannel)
             case _ =>
-              log.error(s"/!\\ Critical error encountered: message_id '$head' is listed in channel '$channel' but not stored in db")
-              buildCatchupList(tail, acc)
+              log.error(s"/!\\ Critical error encountered: message_id '$head' is listed in channel '$fromChannel' but not stored in db")
+              buildCatchupList(tail, acc, fromChannel)
           }
       }
     }
 
-    val channelData: ChannelData = readChannelData(channel)
+    val topChirpsPattern: Regex = "^/root(/[^/]+)/social/top_chirps$".r
 
-    val catchupList = readCreateLao(channel) match {
-      case Some(msg) =>
-        msg :: buildCatchupList(channelData.messages, Nil)
+    if (topChirpsPattern.findFirstMatchIn(channel.toString).isDefined) {
+      val reactionsChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/reactions")
 
-      case None =>
-        if (channel.isMainLaoChannel) {
-          log.error("Critical error encountered: no create_lao message was found in the db")
-        }
-        buildCatchupList(channelData.messages, Nil)
-    }
+      val channelData: ChannelData = readChannelData(reactionsChannel)
 
-    readGreetLao(channel) match {
-      case Some(msg) => msg :: catchupList
-      case None      => catchupList
+      val reactionsList = readCreateLao(reactionsChannel) match {
+        case Some(msg) =>
+          msg :: buildCatchupList(channelData.messages, Nil, reactionsChannel)
+
+        case None =>
+          if (reactionsChannel.isMainLaoChannel) {
+            log.error("Critical error encountered: no create_lao message was found in the db")
+          }
+          buildCatchupList(channelData.messages, Nil, reactionsChannel)
+      }
+
+      val chirpScores = collection.mutable.Map[Hash, Int]()
+
+      for reaction <- reactionsList
+        do
+          val reactionObj = AddReaction.buildFromJson(reaction.toJsonString)
+          if reactionObj.action.toString == "add" then
+            if reactionObj.reaction_codepoint == "👍" then
+              chirpScores(reactionObj.chirp_id) += 1
+            else if reactionObj.reaction_codepoint == "👎" then
+              chirpScores(reactionObj.chirp_id) -= 1
+            else if reactionObj.reaction_codepoint == "❤️" then
+              chirpScores(reactionObj.chirp_id) += 1
+
+      var first = new Hash(Base64Data(""))
+      var second = new Hash(Base64Data(""))
+      var third = new Hash(Base64Data(""))
+      var temp = new Hash(Base64Data(""))
+      for (chirpId, score) <- chirpScores
+        do
+          if first.base64Data.toString == "" then
+            first = chirpId
+          else if score > chirpScores(first) then
+            temp = first
+            first = chirpId
+            third = second
+            second = temp
+          else if second.base64Data.toString == "" then
+              second = chirpId
+          else if score > chirpScores(second) then
+            temp = second
+            second = chirpId
+            third = temp
+          else if third.base64Data.toString == "" then
+            third = chirpId
+          else if score > chirpScores(third) then
+            third = chirpId
+
+      val chirpsChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/chirps")
+      val topThreeChirps: List[Hash] = List(first, second, third)
+      val catchupList = readCreateLao(chirpsChannel) match {
+        case Some(msg) =>
+          msg :: buildCatchupList(topThreeChirps, Nil, chirpsChannel)
+
+        case None =>
+          if (chirpsChannel.isMainLaoChannel) {
+            log.error("Critical error encountered: no create_lao message was found in the db")
+          }
+          buildCatchupList(topThreeChirps, Nil, chirpsChannel)
+      }
+
+      readGreetLao(chirpsChannel) match {
+        case Some(msg) => msg :: catchupList
+        case None => catchupList
+      }
+    } else {
+      val channelData: ChannelData = readChannelData(channel)
+
+      val catchupList = readCreateLao(channel) match {
+        case Some(msg) =>
+          msg :: buildCatchupList(channelData.messages, Nil, channel)
+
+        case None =>
+          if (channel.isMainLaoChannel) {
+            log.error("Critical error encountered: no create_lao message was found in the db")
+          }
+          buildCatchupList(channelData.messages, Nil, channel)
+      }
+
+      readGreetLao(channel) match {
+        case Some(msg) => msg :: catchupList
+        case None => catchupList
+      }
     }
   }
 
