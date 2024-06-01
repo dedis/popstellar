@@ -161,9 +161,6 @@ func handleRollCallClose(msg message.Message, channelPath string) *answer.Error 
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleRollCallClose")
 	}
-	if len(newChannels) == 0 {
-		return nil
-	}
 
 	err = db.StoreRollCallClose(newChannels, channelPath, msg)
 	if err != nil {

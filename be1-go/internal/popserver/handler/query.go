@@ -40,6 +40,8 @@ func handleQuery(socket socket.Socket, msg []byte) *answer.Error {
 		id, errAnswer = handleSubscribe(socket, msg)
 	case query.MethodUnsubscribe:
 		id, errAnswer = handleUnsubscribe(socket, msg)
+	case query.MethodRumor:
+		id, errAnswer = handleRumor(socket, msg)
 	default:
 		errAnswer = answer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
 	}
@@ -158,25 +160,6 @@ func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	socket.SendResult(unsubscribe.ID, nil, nil)
 
 	return &unsubscribe.ID, nil
-}
-
-func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
-	var publish method.Publish
-
-	err := json.Unmarshal(msg, &publish)
-	if err != nil {
-		errAnswer := answer.NewJsonUnmarshalError(err.Error())
-		return nil, errAnswer.Wrap("handlePublish")
-	}
-
-	errAnswer := handleChannel(publish.Params.Channel, publish.Params.Message)
-	if errAnswer != nil {
-		return &publish.ID, errAnswer.Wrap("handlePublish")
-	}
-
-	socket.SendResult(publish.ID, nil, nil)
-
-	return &publish.ID, nil
 }
 
 func handleCatchUp(socket socket.Socket, msg []byte) (*int, *answer.Error) {

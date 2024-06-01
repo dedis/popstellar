@@ -4,6 +4,7 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
+	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 )
 
@@ -17,6 +18,7 @@ type Repository interface {
 	ChirpRepository
 	CoinRepository
 	ReactionRepository
+	RumorSenderRepository
 	FederationRepository
 
 	// StoreServerKeys stores the keys of the server
@@ -35,6 +37,14 @@ type Repository interface {
 	GetMessageByID(ID string) (message.Message, error)
 }
 
+type RumorSenderRepository interface {
+	// AddMessageToMyRumor adds the message to the last rumor of the server and returns the current number of message inside the last rumor
+	AddMessageToMyRumor(messageID string) (int, error)
+
+	// GetAndIncrementMyRumor return false if the last rumor is empty otherwise returns the new rumor to send and create the next rumor
+	GetAndIncrementMyRumor() (bool, method.Rumor, error)
+}
+
 // ======================= Query ==========================
 
 type QueryRepository interface {
@@ -47,6 +57,15 @@ type QueryRepository interface {
 	GetAllMessagesFromChannel(channelID string) ([]message.Message, error)
 
 	GetParamsHeartbeat() (map[string][]string, error)
+
+	// CheckRumor returns true if the rumor already exists
+	CheckRumor(senderID string, rumorID int) (bool, error)
+
+	// StoreRumor stores the new rumor with its processed and unprocessed messages
+	StoreRumor(rumorID int, sender string, unprocessed map[string][]message.Message, processed []string) error
+
+	// GetUnprocessedMessagesByChannel returns all the unprocessed messages by channel
+	GetUnprocessedMessagesByChannel() (map[string][]message.Message, error)
 }
 
 // ======================= Answer ==========================

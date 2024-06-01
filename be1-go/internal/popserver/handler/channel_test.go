@@ -169,7 +169,7 @@ func Test_handleChannel(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := handleChannel(arg.channel, arg.message)
+			errAnswer := handleChannel(arg.channel, arg.message, false)
 			require.NotNil(t, errAnswer)
 			require.Contains(t, errAnswer.Error(), arg.contains)
 		})
