@@ -35,15 +35,15 @@ for their use.
 The project is organized into different modules as follows
 
 ```
-├── cli                       # command line interface
+├── cli                         # command line interface
 ├── docs
 └── internal
     ├── crypto                  # defines the cryptographic suite
     ├── docsutils               # utils use for the documentation
     ├── handler                 # handle the incoming messages
-    │   ├── answer          # handler for the answers
-    │   ├── channel         # handler for the channel
-    │   └── query           # handler for the queries
+    │   ├── answer              # handler for the answers
+    │   ├── channel             # handler for the channel
+    │   └── query               # handler for the queries
     ├── hub                     # entry point of the messages received by the sockets
     ├── logger                  # logger use inside the implementation
     ├── message                 # message types and marshaling/unmarshaling logic
