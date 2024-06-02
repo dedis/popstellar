@@ -1,8 +1,0 @@
-modname: popstellar
-overwrite: true
-outfile: graph.dot
-includes:
-  - popstellar/internal/popserver/*
-  - popstellar/network/socket
-excludes:
-interfaces:
