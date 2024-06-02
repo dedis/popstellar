@@ -35,10 +35,10 @@ vet: protocol
 check: test test-cov lint vet
 
 protocol:
-	cp -r ../protocol ./validation 
+	cp -r ../protocol ./internal/validation
 
 clean:
-	rm -rf validation/protocol
+	rm -rf ./internal/validation/protocol
 
 fmt:
 	gofmt -s -w ./
