@@ -1,4 +1,4 @@
-package low
+package query
 
 import (
 	"github.com/stretchr/testify/require"
@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func Test_handleUnsubscribe(t *testing.T) {
+func Test_handleSubscribe(t *testing.T) {
 	subs := types.NewSubscribers()
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
@@ -29,7 +29,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 
 	args := make([]input, 0)
 
-	// Test 1: successfully unsubscribe from a subscribed channel
+	// Test 1: successfully subscribe to a channel
 
 	fakeSocket := mocks.FakeSocket{Id: "1"}
 	ID := 1
@@ -38,84 +38,61 @@ func Test_handleUnsubscribe(t *testing.T) {
 	errAnswer := subs.AddChannel(channel)
 	require.Nil(t, errAnswer)
 
-	errAnswer = subs.Subscribe(channel, &fakeSocket)
-	require.Nil(t, errAnswer)
-
 	args = append(args, input{
 		name:    "Test 1",
 		socket:  fakeSocket,
 		ID:      ID,
 		channel: channel,
-		message: generator.NewUnsubscribeQuery(t, ID, channel),
+		message: generator.NewSubscribeQuery(t, ID, channel),
 		isError: false,
 	})
 
-	// Test 2: failed to unsubscribe because not subscribed to channel
+	// Test 2: failed to subscribe to an unknown channel
 
 	fakeSocket = mocks.FakeSocket{Id: "2"}
 	ID = 2
 	channel = "/root/lao2"
-
-	errAnswer = subs.AddChannel(channel)
-	require.Nil(t, errAnswer)
 
 	args = append(args, input{
 		name:     "Test 2",
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
-		message:  generator.NewUnsubscribeQuery(t, ID, channel),
+		message:  generator.NewSubscribeQuery(t, ID, channel),
 		isError:  true,
-		contains: "cannot Unsubscribe from a channel not subscribed",
+		contains: "cannot Subscribe to unknown channel",
 	})
 
-	// Test 3: failed to unsubscribe because unknown channel
+	// cannot Subscribe to root
 
 	fakeSocket = mocks.FakeSocket{Id: "3"}
 	ID = 3
-	channel = "/root/lao3"
+	channel = "/root"
 
 	args = append(args, input{
 		name:     "Test 3",
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
-		message:  generator.NewUnsubscribeQuery(t, ID, channel),
+		message:  generator.NewSubscribeQuery(t, ID, channel),
 		isError:  true,
-		contains: "cannot Unsubscribe from unknown channel",
-	})
-
-	// Test 3: failed to unsubscribe because cannot unsubscribe from root channel
-
-	fakeSocket = mocks.FakeSocket{Id: "4"}
-	ID = 4
-	channel = "/root"
-
-	args = append(args, input{
-		name:     "Test 4",
-		socket:   fakeSocket,
-		ID:       ID,
-		channel:  channel,
-		message:  generator.NewUnsubscribeQuery(t, ID, channel),
-		isError:  true,
-		contains: "cannot Unsubscribe from root channel",
+		contains: "cannot Subscribe to root channel",
 	})
 
 	// run all tests
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			id, errAnswer := handleUnsubscribe(&arg.socket, arg.message)
+			id, errAnswer := handleSubscribe(&arg.socket, arg.message)
 			if arg.isError {
 				require.NotNil(t, errAnswer)
 				require.Contains(t, errAnswer.Error(), arg.contains)
 				require.Equal(t, arg.ID, *id)
 			} else {
 				require.Nil(t, errAnswer)
-
-				isSubscribe, err := subs.IsSubscribed(arg.channel, &arg.socket)
+				isSubscribed, err := subs.IsSubscribed(arg.channel, &arg.socket)
 				require.NoError(t, err)
-				require.False(t, isSubscribe)
+				require.True(t, isSubscribed)
 			}
 		})
 	}

@@ -1,4 +1,4 @@
-package low
+package query
 
 import (
 	"encoding/json"

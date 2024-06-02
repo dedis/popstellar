@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"golang.org/x/xerrors"
 	"popstellar/internal/handler/low"
+	query2 "popstellar/internal/handler/low/query"
 	"popstellar/internal/logger"
 	jsonrpc "popstellar/internal/message"
 	"popstellar/internal/message/query"
@@ -229,5 +230,5 @@ func (h *Hub) tryToSendRumor() {
 		return
 	}
 
-	low.SendRumor(nil, rumor)
+	query2.SendRumor(nil, rumor)
 }

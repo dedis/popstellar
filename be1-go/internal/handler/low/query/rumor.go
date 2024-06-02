@@ -1,4 +1,4 @@
-package low
+package query
 
 import (
 	"encoding/json"
@@ -9,10 +9,12 @@ import (
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/singleton/database"
-	state2 "popstellar/internal/singleton/state"
+	"popstellar/internal/singleton/state"
 	"popstellar/internal/singleton/utils"
 	"sort"
 )
+
+const maxRetry = 10
 
 func handleRumor(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	var rumor method.Rumor
@@ -131,7 +133,7 @@ func sortChannels(msgsByChannel map[string][]message.Message) []string {
 }
 
 func SendRumor(socket socket.Socket, rumor method.Rumor) {
-	id, errAnswer := state2.GetNextID()
+	id, errAnswer := state.GetNextID()
 	if errAnswer != nil {
 		logger.Logger.Error().Err(errAnswer)
 		return
@@ -139,7 +141,7 @@ func SendRumor(socket socket.Socket, rumor method.Rumor) {
 
 	rumor.ID = id
 
-	errAnswer = state2.AddRumorQuery(id, rumor)
+	errAnswer = state.AddRumorQuery(id, rumor)
 	if errAnswer != nil {
 		logger.Logger.Error().Err(errAnswer)
 		return
@@ -152,7 +154,7 @@ func SendRumor(socket socket.Socket, rumor method.Rumor) {
 	}
 
 	logger.Logger.Debug().Msgf("sending rumor %s-%d query %d", rumor.Params.SenderID, rumor.Params.RumorID, rumor.ID)
-	errAnswer = state2.SendRumor(socket, rumor.Params.SenderID, rumor.Params.RumorID, buf)
+	errAnswer = state.SendRumor(socket, rumor.Params.SenderID, rumor.Params.RumorID, buf)
 	if errAnswer != nil {
 		logger.Logger.Err(errAnswer)
 	}

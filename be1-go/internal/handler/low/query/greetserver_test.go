@@ -1,4 +1,4 @@
-package low
+package query
 
 import (
 	"github.com/stretchr/testify/require"

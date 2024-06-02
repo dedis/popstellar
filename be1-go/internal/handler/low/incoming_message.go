@@ -1,6 +1,8 @@
 package low
 
 import (
+	jsonrpc "popstellar/internal/handler/low/answer"
+	"popstellar/internal/handler/low/query"
 	"popstellar/internal/message"
 	"popstellar/internal/message/answer"
 	"popstellar/internal/network/socket"
@@ -25,9 +27,9 @@ func HandleIncomingMessage(socket socket.Socket, msg []byte) error {
 
 	switch rpcType {
 	case message.RPCTypeQuery:
-		errAnswer = handleQuery(socket, msg)
+		errAnswer = query.HandleQuery(socket, msg)
 	case message.RPCTypeAnswer:
-		errAnswer = handleAnswer(msg)
+		errAnswer = jsonrpc.HandleAnswer(msg)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("jsonRPC is of unknown type")
 	}

@@ -1,20 +1,41 @@
-package low
+package answer
 
 import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"io"
+	"os"
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/mocks"
 	"popstellar/internal/mocks/generator"
 	"popstellar/internal/singleton/database"
+	"popstellar/internal/singleton/utils"
+	"popstellar/internal/validation"
 	"testing"
 	"time"
 )
+
+var noLog = zerolog.New(io.Discard)
+
+func TestMain(m *testing.M) {
+	schemaValidator, err := validation.NewSchemaValidator()
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
+	utils.InitUtils(&noLog, schemaValidator)
+
+	exitVal := m.Run()
+
+	os.Exit(exitVal)
+}
 
 func Test_handleMessagesByChannel(t *testing.T) {
 	mockRepository := mocks.NewRepository(t)

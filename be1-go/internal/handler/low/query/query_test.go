@@ -1,11 +1,33 @@
-package low
+package query
 
 import (
+	"fmt"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
+	"io"
+	"os"
 	"popstellar/internal/mocks"
 	"popstellar/internal/mocks/generator"
+	"popstellar/internal/singleton/utils"
+	"popstellar/internal/validation"
 	"testing"
 )
+
+var noLog = zerolog.New(io.Discard)
+
+func TestMain(m *testing.M) {
+	schemaValidator, err := validation.NewSchemaValidator()
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
+	utils.InitUtils(&noLog, schemaValidator)
+
+	exitVal := m.Run()
+
+	os.Exit(exitVal)
+}
 
 func Test_handleQuery(t *testing.T) {
 	type input struct {
@@ -31,7 +53,7 @@ func Test_handleQuery(t *testing.T) {
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
 			fakeSocket := mocks.FakeSocket{Id: "fakesocket"}
-			errAnswer := handleQuery(&fakeSocket, arg.message)
+			errAnswer := HandleQuery(&fakeSocket, arg.message)
 			require.NotNil(t, errAnswer)
 			require.Contains(t, errAnswer.Error(), arg.contains)
 		})

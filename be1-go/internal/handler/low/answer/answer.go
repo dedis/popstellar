@@ -1,9 +1,10 @@
-package low
+package answer
 
 import (
 	"encoding/json"
 	"math/rand"
 	"popstellar/internal/handler/high"
+	"popstellar/internal/handler/low/query"
 	"popstellar/internal/logger"
 	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query/method/message"
@@ -16,7 +17,7 @@ const (
 	continueMongering = 0.5
 )
 
-func handleAnswer(msg []byte) *answer.Error {
+func HandleAnswer(msg []byte) *answer.Error {
 	var answerMsg answer.Answer
 
 	err := json.Unmarshal(msg, &answerMsg)
@@ -92,7 +93,7 @@ func handleRumorAnswer(msg answer.Answer) *answer.Error {
 		return answer.NewInternalServerError("rumor query %d doesn't exist", *msg.ID)
 	}
 
-	SendRumor(nil, rumor)
+	query.SendRumor(nil, rumor)
 
 	return nil
 }
