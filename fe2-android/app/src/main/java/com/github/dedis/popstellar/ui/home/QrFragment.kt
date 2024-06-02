@@ -53,8 +53,7 @@ class QrFragment : Fragment() {
   }
 
   private fun setupCopyButton() {
-    clipboardManager.setupCopyButton(
-      binding.copyServerButton, binding.pkText, "Public Key")
+    clipboardManager.setupCopyButton(binding.copyPublicKeyButton, binding.pkText, "Public Key")
   }
 
   override fun onResume() {

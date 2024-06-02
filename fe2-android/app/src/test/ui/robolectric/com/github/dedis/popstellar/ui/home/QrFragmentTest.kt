@@ -1,14 +1,20 @@
 package com.github.dedis.popstellar.ui.home
 
+import android.content.ClipboardManager
+import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper.buildRegistry
 import com.github.dedis.popstellar.di.JsonModule.provideGson
 import com.github.dedis.popstellar.testutils.Base64DataUtils
+import com.github.dedis.popstellar.testutils.BundleBuilder
+import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule
 import com.github.dedis.popstellar.testutils.pages.home.HomePageObject
 import com.github.dedis.popstellar.testutils.pages.home.QrPageObject
 import com.github.dedis.popstellar.utility.security.KeyManager
@@ -16,6 +22,7 @@ import com.google.gson.Gson
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import junit.framework.TestCase
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -72,6 +79,18 @@ class QrFragmentTest {
   fun publicKeyIsCorrectTest() {
     QrPageObject.privateKey()
       .check(ViewAssertions.matches(ViewMatchers.withText(keyManager.mainPublicKey.encoded)))
+  }
+
+  @Test
+  fun copyPublicKeyButton_CopiesCorrectText() {
+   QrPageObject.copyPublicKeyButton().perform(ViewActions.click())
+    val clipboard = InstrumentationRegistry.getInstrumentation().targetContext.getSystemService(
+      Context.CLIPBOARD_SERVICE) as ClipboardManager
+    TestCase.assertTrue(clipboard.hasPrimaryClip())
+    val clipData = clipboard.primaryClip
+    TestCase.assertNotNull(clipData)
+    val copiedText = clipData!!.getItemAt(0).text.toString()
+    QrPageObject.privateKey().check(ViewAssertions.matches(ViewMatchers.withText(copiedText)))
   }
 
   companion object {
