@@ -1,4 +1,4 @@
-package handler
+package low
 
 import (
 	"encoding/base64"
@@ -10,6 +10,7 @@ import (
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/mocks"
+	"popstellar/internal/mocks/generator"
 	"popstellar/internal/singleton/database"
 	"testing"
 	"time"
@@ -25,7 +26,7 @@ func Test_handleMessagesByChannel(t *testing.T) {
 		expected map[string]map[string]message.Message
 	}
 
-	keypair := GenerateKeyPair(t)
+	keypair := generator.GenerateKeyPair(t)
 	now := time.Now().Unix()
 	name := "LAO X"
 

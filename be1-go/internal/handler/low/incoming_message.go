@@ -1,4 +1,4 @@
-package handler
+package low
 
 import (
 	"popstellar/internal/message"

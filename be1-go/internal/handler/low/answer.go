@@ -1,8 +1,9 @@
-package handler
+package low
 
 import (
 	"encoding/json"
 	"math/rand"
+	"popstellar/internal/handler/high"
 	"popstellar/internal/logger"
 	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query/method/message"
@@ -144,7 +145,7 @@ func tryToHandleMessages(msgsByChannel map[string]map[string]message.Message, so
 	for _, channelID := range sortedChannelIDs {
 		msgs := msgsByChannel[channelID]
 		for msgID, msg := range msgs {
-			errAnswer := handleChannel(channelID, msg, false)
+			errAnswer := high.HandleChannel(channelID, msg, false)
 			if errAnswer == nil {
 				delete(msgsByChannel[channelID], msgID)
 				continue

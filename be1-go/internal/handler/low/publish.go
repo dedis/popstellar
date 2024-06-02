@@ -1,7 +1,8 @@
-package handler
+package low
 
 import (
 	"encoding/json"
+	"popstellar/internal/handler/high"
 	"popstellar/internal/logger"
 	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query/method"
@@ -22,7 +23,7 @@ func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return nil, errAnswer.Wrap("handlePublish")
 	}
 
-	errAnswer := handleChannel(publish.Params.Channel, publish.Params.Message, false)
+	errAnswer := high.HandleChannel(publish.Params.Channel, publish.Params.Message, false)
 	if errAnswer != nil {
 		return &publish.ID, errAnswer.Wrap("handlePublish")
 	}

@@ -1,4 +1,4 @@
-package handler
+package high
 
 import (
 	"encoding/base64"
@@ -16,7 +16,7 @@ import (
 	"testing"
 )
 
-const coinPath string = "../validation/protocol/examples/messageData/coin"
+const coinPath string = "../../validation/protocol/examples/messageData/coin"
 
 type inputTestHandleChannelCoin struct {
 	name      string

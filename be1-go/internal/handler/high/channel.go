@@ -1,4 +1,4 @@
-package handler
+package high
 
 import (
 	"encoding/base64"
@@ -20,34 +20,34 @@ import (
 	"popstellar/internal/validation"
 )
 
-func handleChannel(channelPath string, msg message.Message, fromRumor bool) *answer.Error {
+func HandleChannel(channelPath string, msg message.Message, fromRumor bool) *answer.Error {
 	errAnswer := verifyMessage(msg)
 	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannel")
+		return errAnswer.Wrap("HandleChannel")
 	}
 
 	db, errAnswer := database.GetChannelRepositoryInstance()
 	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannel")
+		return errAnswer.Wrap("HandleChannel")
 	}
 
 	msgAlreadyExists, err := db.HasMessage(msg.MessageID)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("if message exists: %v", err)
-		return errAnswer.Wrap("handleChannel")
+		return errAnswer.Wrap("HandleChannel")
 	}
 	if msgAlreadyExists && fromRumor {
 		return nil
 	}
 	if msgAlreadyExists {
 		errAnswer := answer.NewInvalidActionError("message %s was already received", msg.MessageID)
-		return errAnswer.Wrap("handleChannel")
+		return errAnswer.Wrap("HandleChannel")
 	}
 
 	channelType, err := db.GetChannelType(channelPath)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("channel type: %v", err)
-		return errAnswer.Wrap("handleChannel")
+		return errAnswer.Wrap("HandleChannel")
 	}
 
 	switch channelType {
@@ -70,7 +70,7 @@ func handleChannel(channelPath string, msg message.Message, fromRumor bool) *ans
 	}
 
 	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannel")
+		return errAnswer.Wrap("HandleChannel")
 	}
 
 	return nil
