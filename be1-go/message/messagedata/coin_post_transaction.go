@@ -5,9 +5,9 @@ import (
 	"encoding/base64"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
-	"popstellar/channel/coin/uint53"
 	"popstellar/crypto"
 	"popstellar/message/answer"
+	"popstellar/uint53"
 	"strconv"
 )
 

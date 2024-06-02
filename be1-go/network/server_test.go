@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"popstellar/crypto"
-	"popstellar/hub"
-	"popstellar/hub/standard_hub"
+	"popstellar/old/hub"
+	"popstellar/old/hub/standard_hub"
 	"testing"
 
 	"github.com/rs/zerolog"

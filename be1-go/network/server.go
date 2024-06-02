@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"popstellar"
-	"popstellar/hub"
 	"popstellar/network/socket"
+	"popstellar/old/hub"
 	"sync"
 	"time"
 
