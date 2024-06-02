@@ -1,8 +1,8 @@
-package low
+package handler
 
 import (
-	jsonrpc "popstellar/internal/handler/low/answer"
-	"popstellar/internal/handler/low/query"
+	jsonrpc "popstellar/internal/handler/answer"
+	"popstellar/internal/handler/query"
 	"popstellar/internal/message"
 	"popstellar/internal/message/answer"
 	"popstellar/internal/network/socket"

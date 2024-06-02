@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"math/rand"
 	"popstellar/internal/handler/high"
-	"popstellar/internal/handler/low/query"
+	"popstellar/internal/handler/query"
 	"popstellar/internal/logger"
 	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query/method/message"

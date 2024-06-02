@@ -3,8 +3,8 @@ package hub
 import (
 	"encoding/json"
 	"golang.org/x/xerrors"
-	"popstellar/internal/handler/low"
-	query2 "popstellar/internal/handler/low/query"
+	"popstellar/internal/handler"
+	query2 "popstellar/internal/handler/query"
 	"popstellar/internal/logger"
 	jsonrpc "popstellar/internal/message"
 	"popstellar/internal/message/query"
@@ -124,7 +124,7 @@ func (h *Hub) Start() {
 			select {
 			case incomingMessage := <-h.messageChan:
 				utils.LogInfo("start handling a message")
-				err := low.HandleIncomingMessage(incomingMessage.Socket, incomingMessage.Message)
+				err := handler.HandleIncomingMessage(incomingMessage.Socket, incomingMessage.Message)
 				if err != nil {
 					utils.LogError(err)
 				} else {
