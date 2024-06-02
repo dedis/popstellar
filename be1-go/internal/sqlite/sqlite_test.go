@@ -11,7 +11,7 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/mocks/generator"
+	"popstellar/internal/mock/generator"
 	"popstellar/internal/types"
 	"sort"
 	"testing"

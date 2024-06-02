@@ -5,8 +5,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/mocks"
-	"popstellar/internal/mocks/generator"
+	"popstellar/internal/mock"
+	"popstellar/internal/mock/generator"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
 	state2 "popstellar/internal/singleton/state"
@@ -36,7 +36,7 @@ func Test_handleChannelReaction(t *testing.T) {
 
 	config.SetConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
-	mockRepository := mocks.NewRepository(t)
+	mockRepository := mock.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
 	sender := "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
@@ -222,7 +222,7 @@ func Test_handleChannelReaction(t *testing.T) {
 }
 
 func newReactionAddMsg(t *testing.T, channelID string, sender string, reactionCodePoint, chirpID string, timestamp int64,
-	mockRepository *mocks.Repository, hasInvalidField, isNotAttendee bool) message.Message {
+	mockRepository *mock.Repository, hasInvalidField, isNotAttendee bool) message.Message {
 
 	msg := generator.NewReactionAddMsg(t, sender, nil, reactionCodePoint, chirpID, timestamp)
 
@@ -244,7 +244,7 @@ func newReactionAddMsg(t *testing.T, channelID string, sender string, reactionCo
 }
 
 func newReactionDeleteMsg(t *testing.T, channelID string, sender string, reactionID string, timestamp int64,
-	mockRepository *mocks.Repository, hasInvalidField, hasNotReaction, isNotOwner, isNotAttendee bool) message.Message {
+	mockRepository *mock.Repository, hasInvalidField, hasNotReaction, isNotOwner, isNotAttendee bool) message.Message {
 
 	msg := generator.NewReactionDeleteMsg(t, sender, nil, reactionID, timestamp)
 

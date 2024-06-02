@@ -4,8 +4,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/mocks"
-	"popstellar/internal/mocks/generator"
+	"popstellar/internal/mock"
+	"popstellar/internal/mock/generator"
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/state"
 	"popstellar/internal/types"
@@ -20,12 +20,12 @@ func Test_handleGetMessagesByID(t *testing.T) {
 
 	state.SetState(subs, peers, queries, hubParams)
 
-	mockRepository := mocks.NewRepository(t)
+	mockRepository := mock.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
 	type input struct {
 		name     string
-		socket   mocks.FakeSocket
+		socket   mock.FakeSocket
 		ID       int
 		message  []byte
 		expected map[string][]message.Message
@@ -37,7 +37,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 
 	// Test 1: successfully handled getMessagesByID and sent the result
 
-	fakeSocket := mocks.FakeSocket{Id: "1"}
+	fakeSocket := mock.FakeSocket{Id: "1"}
 	ID := 1
 
 	expected1 := make(map[string][]message.Message)
@@ -73,7 +73,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 
 	// Test 2: failed to handled getMessagesByID because DB is disconnected
 
-	fakeSocket = mocks.FakeSocket{Id: "2"}
+	fakeSocket = mock.FakeSocket{Id: "2"}
 	ID = 2
 
 	paramsGetMessagesByID2 := make(map[string][]string)

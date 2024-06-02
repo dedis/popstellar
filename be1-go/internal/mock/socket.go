@@ -1,4 +1,4 @@
-package mocks
+package mock
 
 import (
 	"popstellar/internal/message/query/method/message"

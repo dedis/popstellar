@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"io"
 	"os"
-	"popstellar/internal/mocks"
-	"popstellar/internal/mocks/generator"
+	"popstellar/internal/mock"
+	"popstellar/internal/mock/generator"
 	"popstellar/internal/singleton/utils"
 	"popstellar/internal/validation"
 	"testing"
@@ -52,7 +52,7 @@ func Test_handleQuery(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			fakeSocket := mocks.FakeSocket{Id: "fakesocket"}
+			fakeSocket := mock.FakeSocket{Id: "fakesocket"}
 			errAnswer := HandleQuery(&fakeSocket, arg.message)
 			require.NotNil(t, errAnswer)
 			require.Contains(t, errAnswer.Error(), arg.contains)

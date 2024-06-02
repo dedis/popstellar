@@ -4,8 +4,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/mocks"
-	"popstellar/internal/mocks/generator"
+	"popstellar/internal/mock"
+	"popstellar/internal/mock/generator"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/state"
 	"popstellar/internal/types"
@@ -27,7 +27,7 @@ func Test_handleGreetServer(t *testing.T) {
 
 	type input struct {
 		name      string
-		socket    mocks.FakeSocket
+		socket    mock.FakeSocket
 		message   []byte
 		needGreet bool
 		isError   bool
@@ -40,7 +40,7 @@ func Test_handleGreetServer(t *testing.T) {
 
 	// Test 1: reply with greet server when receiving a greet server from a new server
 
-	fakeSocket := mocks.FakeSocket{Id: "1"}
+	fakeSocket := mock.FakeSocket{Id: "1"}
 
 	args = append(args, input{
 		name:      "Test 1",
@@ -52,7 +52,7 @@ func Test_handleGreetServer(t *testing.T) {
 
 	// Test 2: doesn't reply with greet server when already greeted the server
 
-	fakeSocket = mocks.FakeSocket{Id: "2"}
+	fakeSocket = mock.FakeSocket{Id: "2"}
 
 	peers.AddPeerGreeted(fakeSocket.Id)
 
@@ -66,7 +66,7 @@ func Test_handleGreetServer(t *testing.T) {
 
 	// Test 3: return an error if the socket ID is already used by another server
 
-	fakeSocket = mocks.FakeSocket{Id: "3"}
+	fakeSocket = mock.FakeSocket{Id: "3"}
 
 	err := peers.AddPeerInfo(fakeSocket.Id, method.GreetServerParams{})
 	require.NoError(t, err)

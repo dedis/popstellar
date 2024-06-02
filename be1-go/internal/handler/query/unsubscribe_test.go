@@ -2,8 +2,8 @@ package query
 
 import (
 	"github.com/stretchr/testify/require"
-	"popstellar/internal/mocks"
-	"popstellar/internal/mocks/generator"
+	"popstellar/internal/mock"
+	"popstellar/internal/mock/generator"
 	"popstellar/internal/singleton/state"
 	"popstellar/internal/types"
 	"testing"
@@ -19,7 +19,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 
 	type input struct {
 		name     string
-		socket   mocks.FakeSocket
+		socket   mock.FakeSocket
 		ID       int
 		channel  string
 		message  []byte
@@ -31,7 +31,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 
 	// Test 1: successfully unsubscribe from a subscribed channel
 
-	fakeSocket := mocks.FakeSocket{Id: "1"}
+	fakeSocket := mock.FakeSocket{Id: "1"}
 	ID := 1
 	channel := "/root/lao1"
 
@@ -52,7 +52,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 
 	// Test 2: failed to unsubscribe because not subscribed to channel
 
-	fakeSocket = mocks.FakeSocket{Id: "2"}
+	fakeSocket = mock.FakeSocket{Id: "2"}
 	ID = 2
 	channel = "/root/lao2"
 
@@ -71,7 +71,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 
 	// Test 3: failed to unsubscribe because unknown channel
 
-	fakeSocket = mocks.FakeSocket{Id: "3"}
+	fakeSocket = mock.FakeSocket{Id: "3"}
 	ID = 3
 	channel = "/root/lao3"
 
@@ -87,7 +87,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 
 	// Test 3: failed to unsubscribe because cannot unsubscribe from root channel
 
-	fakeSocket = mocks.FakeSocket{Id: "4"}
+	fakeSocket = mock.FakeSocket{Id: "4"}
 	ID = 4
 	channel = "/root"
 

@@ -5,8 +5,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/mocks"
-	"popstellar/internal/mocks/generator"
+	"popstellar/internal/mock"
+	"popstellar/internal/mock/generator"
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/state"
 	"popstellar/internal/types"
@@ -21,12 +21,12 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	state.SetState(subs, peers, queries, hubParams)
 
-	mockRepository := mocks.NewRepository(t)
+	mockRepository := mock.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
 	type input struct {
 		name     string
-		socket   mocks.FakeSocket
+		socket   mock.FakeSocket
 		message  []byte
 		expected map[string][]string
 		isError  bool
@@ -39,7 +39,7 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	// Test 1: successfully handled heartbeat with some messages to catching up
 
-	fakeSocket := mocks.FakeSocket{Id: "1"}
+	fakeSocket := mock.FakeSocket{Id: "1"}
 
 	heartbeatMsgIDs1 := make(map[string][]string)
 	heartbeatMsgIDs1["/root"] = []string{
@@ -77,7 +77,7 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	// Test 2: successfully handled heartbeat with nothing to catching up
 
-	fakeSocket = mocks.FakeSocket{Id: "2"}
+	fakeSocket = mock.FakeSocket{Id: "2"}
 
 	heartbeatMsgIDs2 := make(map[string][]string)
 	heartbeatMsgIDs2["/root"] = []string{
@@ -97,7 +97,7 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	// Test 3: failed to handled heartbeat because DB is disconnected
 
-	fakeSocket = mocks.FakeSocket{Id: "3"}
+	fakeSocket = mock.FakeSocket{Id: "3"}
 
 	heartbeatMsgIDs3 := make(map[string][]string)
 	heartbeatMsgIDs3["/root"] = []string{

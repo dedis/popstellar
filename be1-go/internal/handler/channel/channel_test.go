@@ -9,8 +9,8 @@ import (
 	"io"
 	"os"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/mocks"
-	"popstellar/internal/mocks/generator"
+	"popstellar/internal/mock"
+	"popstellar/internal/mock/generator"
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/utils"
 	"popstellar/internal/validation"
@@ -38,7 +38,7 @@ func TestMain(m *testing.M) {
 }
 
 func Test_handleChannel(t *testing.T) {
-	mockRepository := mocks.NewRepository(t)
+	mockRepository := mock.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
 	keypair := generator.GenerateKeyPair(t)

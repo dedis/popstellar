@@ -2,8 +2,8 @@ package query
 
 import (
 	"github.com/stretchr/testify/require"
-	"popstellar/internal/mocks"
-	"popstellar/internal/mocks/generator"
+	"popstellar/internal/mock"
+	"popstellar/internal/mock/generator"
 	"popstellar/internal/singleton/state"
 	"popstellar/internal/types"
 	"testing"
@@ -19,7 +19,7 @@ func Test_handleSubscribe(t *testing.T) {
 
 	type input struct {
 		name     string
-		socket   mocks.FakeSocket
+		socket   mock.FakeSocket
 		ID       int
 		channel  string
 		message  []byte
@@ -31,7 +31,7 @@ func Test_handleSubscribe(t *testing.T) {
 
 	// Test 1: successfully subscribe to a channel
 
-	fakeSocket := mocks.FakeSocket{Id: "1"}
+	fakeSocket := mock.FakeSocket{Id: "1"}
 	ID := 1
 	channel := "/root/lao1"
 
@@ -49,7 +49,7 @@ func Test_handleSubscribe(t *testing.T) {
 
 	// Test 2: failed to subscribe to an unknown channel
 
-	fakeSocket = mocks.FakeSocket{Id: "2"}
+	fakeSocket = mock.FakeSocket{Id: "2"}
 	ID = 2
 	channel = "/root/lao2"
 
@@ -65,7 +65,7 @@ func Test_handleSubscribe(t *testing.T) {
 
 	// cannot Subscribe to root
 
-	fakeSocket = mocks.FakeSocket{Id: "3"}
+	fakeSocket = mock.FakeSocket{Id: "3"}
 	ID = 3
 	channel = "/root"
 

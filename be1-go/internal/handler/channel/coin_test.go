@@ -9,7 +9,7 @@ import (
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/mocks"
+	"popstellar/internal/mock"
 	"popstellar/internal/singleton/database"
 	state2 "popstellar/internal/singleton/state"
 	"popstellar/internal/types"
@@ -23,7 +23,7 @@ type inputTestHandleChannelCoin struct {
 	channelID string
 	message   message.Message
 	hasError  bool
-	sockets   []*mocks.FakeSocket
+	sockets   []*mock.FakeSocket
 }
 
 func Test_handleChannelCoin(t *testing.T) {
@@ -34,7 +34,7 @@ func Test_handleChannelCoin(t *testing.T) {
 
 	state2.SetState(subs, peers, queries, hubParams)
 
-	mockRepository := mocks.NewRepository(t)
+	mockRepository := mock.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
 	inputs := make([]inputTestHandleChannelCoin, 0)
@@ -116,7 +116,7 @@ func Test_handleChannelCoin(t *testing.T) {
 
 }
 
-func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string, mockRepository *mocks.Repository) inputTestHandleChannelCoin {
+func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string, mockRepository *mock.Repository) inputTestHandleChannelCoin {
 	laoID := messagedata.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
@@ -137,7 +137,7 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 
 	mockRepository.On("StoreMessageAndData", channelID, m).Return(nil)
 
-	sockets := []*mocks.FakeSocket{
+	sockets := []*mock.FakeSocket{
 		{Id: laoID + "0"},
 		{Id: laoID + "1"},
 		{Id: laoID + "2"},
