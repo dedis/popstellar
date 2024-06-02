@@ -11,6 +11,7 @@ import com.github.dedis.popstellar.model.objects.Wallet
 import com.github.dedis.popstellar.model.objects.security.PoPToken
 import com.github.dedis.popstellar.model.objects.security.PublicKey
 import com.github.dedis.popstellar.model.objects.view.LaoView
+import com.github.dedis.popstellar.repository.ConnectivityRepository
 import com.github.dedis.popstellar.repository.LAORepository
 import com.github.dedis.popstellar.repository.RollCallRepository
 import com.github.dedis.popstellar.repository.WitnessingRepository
@@ -32,6 +33,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import javax.inject.Inject
+import kotlinx.coroutines.flow.observeOn
 import timber.log.Timber
 
 @HiltViewModel
@@ -46,6 +48,7 @@ constructor(
     private val laoRepo: LAORepository,
     private val rollCallRepo: RollCallRepository,
     private val witnessingRepo: WitnessingRepository,
+    private val connectivityRepository: ConnectivityRepository,
     private val networkManager: GlobalNetworkManager,
     private val keyManager: KeyManager,
     private val wallet: Wallet,
@@ -64,6 +67,8 @@ constructor(
   val isWitness = MutableLiveData(java.lang.Boolean.FALSE)
   val isAttendee = MutableLiveData(java.lang.Boolean.FALSE)
   val role = MutableLiveData(Role.MEMBER)
+
+  val isInternetConnected = MutableLiveData(java.lang.Boolean.TRUE)
 
   private val disposables = CompositeDisposable()
   private val subscriptionsDao: SubscriptionsDao = appDatabase.subscriptionsDao()
@@ -217,6 +222,16 @@ constructor(
                 { error: Throwable ->
                   logAndShow(getApplication(), TAG, error, R.string.unknown_roll_call_exception)
                 }))
+  }
+
+  fun observeInternetConnection() {
+    addDisposable(
+        connectivityRepository
+            .observeConnectivity()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { isConnected -> isInternetConnected.value = isConnected },
+                { error: Throwable -> Timber.tag(TAG).e(error, "error connection status") }))
   }
 
   private fun isRollCallAttended(rollcall: RollCall, laoId: String): Boolean {

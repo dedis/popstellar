@@ -375,4 +375,6 @@
   <string name="invalid_qrcode_lao_data">Invalid QRCode laoData</string>
   <string name="invalid_qrcode_popcha_data">Invalid URL</string>
 
+  <string name="network_status_connection_fail">No internet connection</string>
+
 </resources>

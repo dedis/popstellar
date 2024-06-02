@@ -69,6 +69,7 @@ class LaoActivity : AppCompatActivity() {
     laoViewModel.laoId = laoId
     laoViewModel.observeLao(laoId)
     laoViewModel.observeRollCalls(laoId)
+    laoViewModel.observeInternetConnection()
 
     witnessingViewModel = obtainWitnessingViewModel(this, laoId)
 
@@ -78,6 +79,7 @@ class LaoActivity : AppCompatActivity() {
 
     observeRoles()
     observeToolBar()
+    observeInternetConnection()
     observeDrawer()
     setupDrawerHeader()
     observeWitnessPopup()
@@ -108,6 +110,12 @@ class LaoActivity : AppCompatActivity() {
 
     // Update the user's role in the drawer header when it changes
     laoViewModel.role.observe(this) { role: Role -> setupHeaderRole(role) }
+  }
+
+  private fun observeInternetConnection() {
+    laoViewModel.isInternetConnected.observe(this) {
+      binding.networkStatusView.setIsNetworkConnected(it)
+    }
   }
 
   private fun observeToolBar() {
