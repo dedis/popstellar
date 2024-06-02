@@ -9,13 +9,13 @@ import (
 	"os"
 	"popstellar/internal/crypto"
 	hub2 "popstellar/internal/hub"
-	popstellar "popstellar/internal/logger"
-	network2 "popstellar/internal/network"
+	"popstellar/internal/logger"
+	"popstellar/internal/network"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/hub"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
-	state2 "popstellar/internal/singleton/state"
+	"popstellar/internal/singleton/state"
 	"popstellar/internal/singleton/utils"
 	"popstellar/internal/sqlite"
 	"popstellar/internal/validation"
@@ -107,7 +107,7 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 
 	utils.InitUtils(l, schemaValidator)
 
-	state2.InitState(l)
+	state.InitState(l)
 
 	config.InitConfig(point, serverPublicKey, serverSecretKey, s.ClientAddress, s.ServerAddress)
 
@@ -117,7 +117,7 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 	}
 
 	for _, channel := range channels {
-		alreadyExist, errAnswer := state2.HasChannel(channel)
+		alreadyExist, errAnswer := state.HasChannel(channel)
 		if errAnswer != nil {
 			return nil, errAnswer
 		}
@@ -125,7 +125,7 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 			continue
 		}
 
-		errAnswer = state2.AddChannel(channel)
+		errAnswer = state.AddChannel(channel)
 		if errAnswer != nil {
 			return nil, errAnswer
 		}
@@ -137,7 +137,7 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
 // the server
 func Serve(cliCtx *cli.Context) error {
-	poplog := popstellar.Logger
+	poplog := logger.Logger
 
 	configFilePath := cliCtx.String("config-file")
 	var serverConfig ServerConfig
@@ -169,12 +169,12 @@ func Serve(cliCtx *cli.Context) error {
 	h.Start()
 
 	// Start websocket server for clients
-	clientSrv := network2.NewServer(h, serverConfig.PrivateAddress, serverConfig.ClientPort, socket.ClientSocketType,
+	clientSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ClientPort, socket.ClientSocketType,
 		poplog.With().Str("role", "client websocket").Logger())
 	clientSrv.Start()
 
 	// Start a websocket server for remote servers
-	serverSrv := network2.NewServer(h, serverConfig.PrivateAddress, serverConfig.ServerPort, socket.ServerSocketType,
+	serverSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ServerPort, socket.ServerSocketType,
 		poplog.With().Str("role", "server websocket").Logger())
 	serverSrv.Start()
 
@@ -213,7 +213,7 @@ func Serve(cliCtx *cli.Context) error {
 	go serverConnectionLoop(h, wg, done, serverConfig.OtherServers, updatedServersChan, &connectedServers)
 
 	// Wait for a Ctrl-C
-	err = network2.WaitAndShutdownServers(cliCtx.Context, nil, clientSrv, serverSrv)
+	err = network.WaitAndShutdownServers(cliCtx.Context, nil, clientSrv, serverSrv)
 	if err != nil {
 		return err
 	}
@@ -303,7 +303,7 @@ func connectToServers(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, servers
 func connectToSocket(address string, h hub.Hub,
 	wg *sync.WaitGroup, done chan struct{}) error {
 
-	poplog := popstellar.Logger
+	poplog := logger.Logger
 
 	urlString := fmt.Sprintf("ws://%s/server", address)
 	u, err := url.Parse(urlString)
