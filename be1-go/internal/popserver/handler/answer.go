@@ -2,14 +2,18 @@ package handler
 
 import (
 	"encoding/json"
+	"math/rand"
+	"popstellar"
 	"popstellar/internal/popserver/state"
-	"popstellar/internal/popserver/utils"
 	"popstellar/message/answer"
 	"popstellar/message/query/method/message"
 	"sort"
 )
 
-const maxRetry = 10
+const (
+	maxRetry          = 10
+	continueMongering = 0.5
+)
 
 func handleAnswer(msg []byte) *answer.Error {
 	var answerMsg answer.Answer
@@ -20,18 +24,27 @@ func handleAnswer(msg []byte) *answer.Error {
 		return errAnswer.Wrap("handleAnswer")
 	}
 
+	isRumor, errAnswer := state.IsRumorQuery(*answerMsg.ID)
+	if errAnswer != nil {
+		return errAnswer
+	}
+	if isRumor {
+		return handleRumorAnswer(answerMsg)
+	}
+
 	if answerMsg.Result == nil {
-		utils.LogInfo("received an error, nothing to handle")
+		popstellar.Logger.Info().Msg("received an error, nothing to handle")
 		// don't send any error to avoid infinite error loop as a server will
 		// send an error to another server that will create another error
 		return nil
 	}
+
 	if answerMsg.Result.IsEmpty() {
-		utils.LogInfo("expected isn't an answer to a popquery, nothing to handle")
+		popstellar.Logger.Info().Msg("expected isn't an answer to a popquery, nothing to handle")
 		return nil
 	}
 
-	errAnswer := state.SetQueryReceived(*answerMsg.ID)
+	errAnswer = state.SetQueryReceived(*answerMsg.ID)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleAnswer")
 	}
@@ -40,6 +53,45 @@ func handleAnswer(msg []byte) *answer.Error {
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleAnswer")
 	}
+
+	return nil
+}
+
+func handleRumorAnswer(msg answer.Answer) *answer.Error {
+	errAnswer := state.SetQueryReceived(*msg.ID)
+	if errAnswer != nil {
+		return errAnswer
+	}
+
+	popstellar.Logger.Debug().Msgf("received an answer to rumor query %d", *msg.ID)
+
+	if msg.Error != nil {
+		popstellar.Logger.Debug().Msgf("received an answer error to rumor query %d", *msg.ID)
+		if msg.Error.Code != answer.DuplicateResourceErrorCode {
+			popstellar.Logger.Debug().Msgf("invalid error code to rumor query %d", *msg.ID)
+			return nil
+		}
+
+		stop := rand.Float64() < continueMongering
+
+		if stop {
+			popstellar.Logger.Debug().Msgf("stop mongering rumor query %d", *msg.ID)
+			return nil
+		}
+
+		popstellar.Logger.Debug().Msgf("continue mongering rumor query %d", *msg.ID)
+	}
+
+	popstellar.Logger.Debug().Msgf("sender rumor need to continue sending query %d", *msg.ID)
+	rumor, ok, errAnswer := state.GetRumorFromPastQuery(*msg.ID)
+	if errAnswer != nil {
+		return errAnswer
+	}
+	if !ok {
+		return answer.NewInternalServerError("rumor query %d doesn't exist", *msg.ID)
+	}
+
+	SendRumor(nil, rumor)
 
 	return nil
 }
@@ -60,7 +112,7 @@ func handleGetMessagesByIDAnswer(msg answer.Answer) *answer.Error {
 			}
 
 			errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err)
-			utils.LogError(errAnswer.Wrap("handleGetMessagesByIDAnswer"))
+			popstellar.Logger.Error().Err(errAnswer)
 		}
 
 		if len(msgsByChan[channelID]) == 0 {
@@ -92,7 +144,7 @@ func tryToHandleMessages(msgsByChannel map[string]map[string]message.Message, so
 	for _, channelID := range sortedChannelIDs {
 		msgs := msgsByChannel[channelID]
 		for msgID, msg := range msgs {
-			errAnswer := handleChannel(channelID, msg)
+			errAnswer := handleChannel(channelID, msg, false)
 			if errAnswer == nil {
 				delete(msgsByChannel[channelID], msgID)
 				continue
@@ -103,7 +155,7 @@ func tryToHandleMessages(msgsByChannel map[string]map[string]message.Message, so
 			}
 
 			errAnswer = errAnswer.Wrap(msgID).Wrap("tryToHandleMessages")
-			utils.LogError(errAnswer)
+			popstellar.Logger.Error().Err(errAnswer)
 		}
 
 		if len(msgsByChannel[channelID]) == 0 {

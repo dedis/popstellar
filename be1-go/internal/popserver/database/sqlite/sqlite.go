@@ -10,49 +10,36 @@ import (
 	_ "modernc.org/sqlite"
 	"popstellar/crypto"
 	"popstellar/internal/popserver/types"
+	jsonrpc "popstellar/message"
 	"popstellar/message/messagedata"
+	"popstellar/message/query"
+	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"strings"
 	"time"
 )
 
-func (s *SQLite) StoreServerKeys(electionPubKey kyber.Point, electionSecretKey kyber.Scalar) error {
+func (s *SQLite) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
-	tx, err := s.database.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	electionPubBuf, err := electionPubKey.MarshalBinary()
-	if err != nil {
-		return err
-	}
-	electionSecBuf, err := electionSecretKey.MarshalBinary()
-	if err != nil {
-		return err
-	}
-
-	_, err = tx.Exec(insertKeys, serverKeysPath, electionPubBuf, electionSecBuf)
-	if err != nil {
-		return err
-	}
-
-	return tx.Commit()
-}
-
-func (s *SQLite) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
-
-	var serverPubBuf []byte
-	var serverSecBuf []byte
-	err := s.database.QueryRow(selectKeys, serverKeysPath).Scan(&serverPubBuf, &serverSecBuf)
+	var serverPubBuf64 string
+	var serverSecBuf64 string
+	err := s.database.QueryRow(selectKeys, serverKeysPath).Scan(&serverPubBuf64, &serverSecBuf64)
 	if err != nil {
 		return nil, nil, err
 	}
+
+	serverPubBuf, err := base64.URLEncoding.DecodeString(serverPubBuf64)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	serverSecBuf, err := base64.URLEncoding.DecodeString(serverSecBuf64)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	serverPubKey := crypto.Suite.Point()
 	err = serverPubKey.UnmarshalBinary(serverPubBuf)
 	if err != nil {
@@ -65,6 +52,24 @@ func (s *SQLite) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
 	}
 
 	return serverPubKey, serverSecKey, nil
+}
+
+func (s *SQLite) insertMessageHelper(tx *sql.Tx, messageID string, msg, messageData []byte, storedTime int64) error {
+	_, err := tx.Exec(insertMessage, messageID, msg, messageData, storedTime)
+	if err != nil {
+		return err
+
+	}
+	_, err = tx.Exec(tranferUnprocessedMessageRumor, messageID)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(deleteUnprocessedMessageRumor, messageID)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(deleteUnprocessedMessage, messageID)
+	return err
 }
 
 func (s *SQLite) StoreMessageAndData(channelPath string, msg message.Message) error {
@@ -90,16 +95,17 @@ func (s *SQLite) StoreMessageAndData(channelPath string, msg message.Message) er
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(insertMessage, msg.MessageID, msgByte, messageData, time.Now().UnixNano())
+	err = s.insertMessageHelper(tx, msg.MessageID, msgByte, messageData, time.Now().UnixNano())
 	if err != nil {
 		return err
-
 	}
+
 	_, err = tx.Exec(insertChannelMessage, channelPath, msg.MessageID, true)
 	if err != nil {
 		return err
 
 	}
+
 	return tx.Commit()
 }
 
@@ -108,7 +114,7 @@ func addPendingSignatures(tx *sql.Tx, msg *message.Message) error {
 	if err != nil {
 		return err
 	}
-
+	defer rows.Close()
 	for rows.Next() {
 		var witness string
 		var signature string
@@ -131,8 +137,8 @@ func addPendingSignatures(tx *sql.Tx, msg *message.Message) error {
 
 // GetMessagesByID returns a set of messages by their IDs.
 func (s *SQLite) GetMessagesByID(IDs []string) (map[string]message.Message, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	if len(IDs) == 0 {
 		return make(map[string]message.Message), nil
@@ -150,6 +156,7 @@ func (s *SQLite) GetMessagesByID(IDs []string) (map[string]message.Message, erro
 	} else if errors.Is(err, sql.ErrNoRows) {
 		return make(map[string]message.Message), nil
 	}
+	defer rows.Close()
 
 	messagesByID := make(map[string]message.Message, len(IDs))
 	for rows.Next() {
@@ -174,8 +181,8 @@ func (s *SQLite) GetMessagesByID(IDs []string) (map[string]message.Message, erro
 
 // GetMessageByID returns a message by its ID.
 func (s *SQLite) GetMessageByID(ID string) (message.Message, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var messageByte []byte
 	err := s.database.QueryRow(selectMessage, ID).Scan(&messageByte)
@@ -236,13 +243,14 @@ func (s *SQLite) StoreChannel(channelPath, channelType, laoPath string) error {
 }
 
 func (s *SQLite) GetAllChannels() ([]string, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	rows, err := s.database.Query(selectAllChannels)
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	var channels []string
 	for rows.Next() {
@@ -266,8 +274,8 @@ func (s *SQLite) GetAllChannels() ([]string, error) {
 
 // GetChannelType returns the type of the channelPath.
 func (s *SQLite) GetChannelType(channelPath string) (string, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var channelType string
 	err := s.database.QueryRow(selectChannelType, channelPath).Scan(&channelType)
@@ -276,13 +284,14 @@ func (s *SQLite) GetChannelType(channelPath string) (string, error) {
 
 // GetAllMessagesFromChannel returns all the messages received + sent on a channel sorted by stored time.
 func (s *SQLite) GetAllMessagesFromChannel(channelPath string) ([]message.Message, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	rows, err := s.database.Query(selectAllMessagesFromChannel, channelPath)
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	messages := make([]message.Message, 0)
 	for rows.Next() {
@@ -305,8 +314,8 @@ func (s *SQLite) GetAllMessagesFromChannel(channelPath string) ([]message.Messag
 }
 
 func (s *SQLite) GetResultForGetMessagesByID(params map[string][]string) (map[string][]message.Message, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var interfaces []interface{}
 	// isBaseChannel must be true
@@ -328,6 +337,7 @@ func (s *SQLite) GetResultForGetMessagesByID(params map[string][]string) (map[st
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	result := make(map[string][]message.Message)
 	for rows.Next() {
@@ -351,13 +361,14 @@ func (s *SQLite) GetResultForGetMessagesByID(params map[string][]string) (map[st
 }
 
 func (s *SQLite) GetParamsHeartbeat() (map[string][]string, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	rows, err := s.database.Query(selectBaseChannelMessages, true)
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	result := make(map[string][]string)
 	for rows.Next() {
@@ -380,8 +391,8 @@ func (s *SQLite) GetParamsHeartbeat() (map[string][]string, error) {
 }
 
 func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[string][]string, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var interfaces []interface{}
 	// isBaseChannel must be true
@@ -403,6 +414,7 @@ func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[str
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	result := make(map[string]struct{})
 	for rows.Next() {
@@ -434,8 +446,8 @@ func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[str
 //======================================================================================================================
 
 func (s *SQLite) HasChannel(channelPath string) (bool, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var c string
 	err := s.database.QueryRow(selectChannelPath, channelPath).Scan(&c)
@@ -449,8 +461,8 @@ func (s *SQLite) HasChannel(channelPath string) (bool, error) {
 }
 
 func (s *SQLite) HasMessage(messageID string) (bool, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var msgID string
 	err := s.database.QueryRow(selectMessageID, messageID).Scan(&msgID)
@@ -508,7 +520,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 		}
 	}
 
-	_, err = tx.Exec(insertMessage, msg.MessageID, msgByte, messageData, storedTime)
+	err = s.insertMessageHelper(tx, msg.MessageID, msgByte, messageData, storedTime)
 	if err != nil {
 		return err
 	}
@@ -540,7 +552,6 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 		return err
 	}
 
-	defer tx.Rollback()
 	return nil
 }
 
@@ -549,8 +560,8 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 //======================================================================================================================
 
 func (s *SQLite) GetOrganizerPubKey(laoPath string) (kyber.Point, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var organizerPubBuf []byte
 	err := s.database.QueryRow(selectPublicKey, laoPath).Scan(&organizerPubBuf)
@@ -566,8 +577,8 @@ func (s *SQLite) GetOrganizerPubKey(laoPath string) (kyber.Point, error) {
 }
 
 func (s *SQLite) GetRollCallState(channelPath string) (string, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var state string
 	err := s.database.QueryRow(selectLastRollCallMessage, messagedata.RollCallObject, channelPath).Scan(&state)
@@ -578,8 +589,8 @@ func (s *SQLite) GetRollCallState(channelPath string) (string, error) {
 }
 
 func (s *SQLite) CheckPrevOpenOrReopenID(channel, nextID string) (bool, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var lastMsg []byte
 	var lastAction string
@@ -614,8 +625,8 @@ func (s *SQLite) CheckPrevOpenOrReopenID(channel, nextID string) (bool, error) {
 }
 
 func (s *SQLite) CheckPrevCreateOrCloseID(channel, nextID string) (bool, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var lastMsg []byte
 	var lastAction string
@@ -650,8 +661,8 @@ func (s *SQLite) CheckPrevCreateOrCloseID(channel, nextID string) (bool, error) 
 }
 
 func (s *SQLite) GetLaoWitnesses(laoPath string) (map[string]struct{}, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var witnesses []string
 	err := s.database.QueryRow(selectLaoWitnesses, laoPath, messagedata.LAOObject, messagedata.LAOActionCreate).Scan(&witnesses)
@@ -687,7 +698,7 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg messa
 		return err
 	}
 
-	_, err = tx.Exec(insertMessage, msg.MessageID, msgBytes, messageData, time.Now().UnixNano())
+	err = s.insertMessageHelper(tx, msg.MessageID, msgBytes, messageData, time.Now().UnixNano())
 	if err != nil {
 		return err
 	}
@@ -695,6 +706,11 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg messa
 	if err != nil {
 		return err
 	}
+
+	if len(channels) == 0 {
+		return tx.Commit()
+	}
+
 	for _, channel := range channels {
 		_, err = tx.Exec(insertChannel, channel, channelTypeToID[ChirpType], laoPath)
 		if err != nil {
@@ -735,7 +751,7 @@ func (s *SQLite) storeElectionHelper(
 		return err
 	}
 
-	_, err = tx.Exec(insertMessage, msg.MessageID, msgBytes, messageData, storedTime)
+	err = s.insertMessageHelper(tx, msg.MessageID, msgBytes, messageData, storedTime)
 	if err != nil {
 		return err
 	}
@@ -832,8 +848,8 @@ func (s *SQLite) StoreElectionWithElectionKey(
 //======================================================================================================================
 
 func (s *SQLite) GetLAOOrganizerPubKey(electionPath string) (kyber.Point, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	tx, err := s.database.Begin()
 	if err != nil {
@@ -861,8 +877,8 @@ func (s *SQLite) GetLAOOrganizerPubKey(electionPath string) (kyber.Point, error)
 }
 
 func (s *SQLite) GetElectionSecretKey(electionPath string) (kyber.Scalar, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var electionSecretBuf []byte
 	err := s.database.QueryRow(selectSecretKey, electionPath).Scan(&electionSecretBuf)
@@ -879,8 +895,6 @@ func (s *SQLite) GetElectionSecretKey(electionPath string) (kyber.Scalar, error)
 }
 
 func (s *SQLite) getElectionState(electionPath string) (string, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
 
 	var state string
 	err := s.database.QueryRow(selectLastElectionMessage, electionPath, messagedata.ElectionObject, messagedata.VoteActionCastVote).Scan(&state)
@@ -891,8 +905,8 @@ func (s *SQLite) getElectionState(electionPath string) (string, error) {
 }
 
 func (s *SQLite) IsElectionStartedOrEnded(electionPath string) (bool, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	state, err := s.getElectionState(electionPath)
 	if err != nil {
@@ -903,8 +917,8 @@ func (s *SQLite) IsElectionStartedOrEnded(electionPath string) (bool, error) {
 }
 
 func (s *SQLite) IsElectionStarted(electionPath string) (bool, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	state, err := s.getElectionState(electionPath)
 	if err != nil {
@@ -914,8 +928,8 @@ func (s *SQLite) IsElectionStarted(electionPath string) (bool, error) {
 }
 
 func (s *SQLite) IsElectionEnded(electionPath string) (bool, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	state, err := s.getElectionState(electionPath)
 	if err != nil {
@@ -925,8 +939,8 @@ func (s *SQLite) IsElectionEnded(electionPath string) (bool, error) {
 }
 
 func (s *SQLite) GetElectionCreationTime(electionPath string) (int64, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var creationTime int64
 	err := s.database.QueryRow(selectElectionCreationTime, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&creationTime)
@@ -937,8 +951,8 @@ func (s *SQLite) GetElectionCreationTime(electionPath string) (int64, error) {
 }
 
 func (s *SQLite) GetElectionType(electionPath string) (string, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var electionType string
 	err := s.database.QueryRow(selectElectionType, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&electionType)
@@ -949,8 +963,8 @@ func (s *SQLite) GetElectionType(electionPath string) (string, error) {
 }
 
 func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{}, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var rollCallCloseBytes []byte
 	err := s.database.QueryRow(selectElectionAttendees,
@@ -978,8 +992,6 @@ func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{},
 }
 
 func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (messagedata.ElectionSetup, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
 
 	var electionSetupBytes []byte
 	err := tx.QueryRow(selectElectionSetup, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&electionSetupBytes)
@@ -997,8 +1009,8 @@ func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (messagedata.
 }
 
 func (s *SQLite) GetElectionQuestions(electionPath string) (map[string]types.Question, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	tx, err := s.database.Begin()
 	if err != nil {
@@ -1026,8 +1038,8 @@ func (s *SQLite) GetElectionQuestions(electionPath string) (map[string]types.Que
 }
 
 func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[string]types.Question, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	tx, err := s.database.Begin()
 	if err != nil {
@@ -1048,6 +1060,7 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		var voteBytes []byte
@@ -1142,9 +1155,10 @@ func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionRes
 	}
 	storedTime := time.Now().UnixNano()
 
-	_, err = tx.Exec(insertMessage, msg.MessageID, msgBytes, messageData, storedTime)
+	err = s.insertMessageHelper(tx, msg.MessageID, msgBytes, messageData, storedTime)
 	if err != nil {
 		return err
+
 	}
 	_, err = tx.Exec(insertChannelMessage, channelPath, msg.MessageID, true)
 	if err != nil {
@@ -1194,7 +1208,7 @@ func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, general
 	}
 	storedTime := time.Now().UnixNano()
 
-	_, err = tx.Exec(insertMessage, msg.MessageID, msgBytes, messageData, storedTime)
+	err = s.insertMessageHelper(tx, msg.MessageID, msgBytes, messageData, storedTime)
 	if err != nil {
 		return err
 	}
@@ -1219,8 +1233,8 @@ func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, general
 //======================================================================================================================
 
 func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var rollCallCloseBytes []byte
 	err := s.database.QueryRow(selectLastRollCallClose, laoPath, messagedata.RollCallObject, messagedata.RollCallActionClose).Scan(&rollCallCloseBytes)
@@ -1244,8 +1258,8 @@ func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {
 }
 
 func (s *SQLite) GetReactionSender(messageID string) (string, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var sender string
 	var object string
@@ -1262,4 +1276,331 @@ func (s *SQLite) GetReactionSender(messageID string) (string, error) {
 		return "", xerrors.New("unexpected object or action")
 	}
 	return sender, nil
+}
+
+func (s *SQLite) CheckRumor(senderID string, rumorID int) (bool, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	var id int
+	if rumorID == 0 {
+		err := s.database.QueryRow(selectAnyRumor, senderID).Scan(&id)
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
+			return false, err
+		} else if errors.Is(err, sql.ErrNoRows) {
+			return true, nil
+		}
+		return false, nil
+	}
+
+	err := s.database.QueryRow(selectLastRumor, senderID).Scan(&id)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return false, err
+	} else if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	}
+	return id == rumorID-1, nil
+}
+
+func (s *SQLite) StoreRumor(rumorID int, sender string, unprocessed map[string][]message.Message, processed []string) error {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	tx, err := s.database.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(insertRumor, rumorID, sender)
+	if err != nil {
+		return err
+	}
+
+	for channelPath, messages := range unprocessed {
+		for _, msg := range messages {
+			_, err = tx.Exec(insertUnprocessedMessage, msg.MessageID, channelPath, msg)
+			if err != nil {
+				return err
+			}
+			_, err = tx.Exec(insertUnprocessedMessageRumor, msg.MessageID, rumorID, sender)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	for _, msgID := range processed {
+		_, err = tx.Exec(insertMessageRumor, msgID, rumorID, sender)
+		if err != nil {
+			return err
+		}
+	}
+
+	return tx.Commit()
+}
+
+func (s *SQLite) GetUnprocessedMessagesByChannel() (map[string][]message.Message, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	rows, err := s.database.Query(selectAllUnprocessedMessages)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make(map[string][]message.Message)
+
+	for rows.Next() {
+		var channelPath string
+		var messageByte []byte
+		if err = rows.Scan(&channelPath, &messageByte); err != nil {
+			return nil, err
+		}
+		var msg message.Message
+		if err = json.Unmarshal(messageByte, &msg); err != nil {
+			return nil, err
+		}
+		result[channelPath] = append(result[channelPath], msg)
+	}
+	return result, nil
+}
+
+func (s *SQLite) AddMessageToMyRumor(messageID string) (int, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	tx, err := s.database.Begin()
+	if err != nil {
+		return -1, err
+	}
+	defer tx.Rollback()
+
+	_, err = s.database.Exec(insertMessageToMyRumor, messageID, serverKeysPath)
+	if err != nil {
+		return -1, err
+	}
+	var count int
+	err = s.database.QueryRow(selectCountMyRumor, serverKeysPath).Scan(&count)
+	if err != nil {
+		return -1, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return -1, err
+	}
+	return count, nil
+}
+
+func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	tx, err := s.database.Begin()
+	if err != nil {
+		return false, method.Rumor{}, err
+	}
+	defer tx.Rollback()
+
+	rows, err := s.database.Query(selectMyRumorMessages, true, serverKeysPath, serverKeysPath)
+	if err != nil {
+		return false, method.Rumor{}, err
+	}
+	defer rows.Close()
+
+	messages := make(map[string][]message.Message)
+	for rows.Next() {
+		var msgBytes []byte
+		var channelPath string
+		if err = rows.Scan(&msgBytes, &channelPath); err != nil {
+			return false, method.Rumor{}, err
+		}
+
+		var msg message.Message
+		if err = json.Unmarshal(msgBytes, &msg); err != nil {
+			return false, method.Rumor{}, err
+		}
+
+		messages[channelPath] = append(messages[channelPath], msg)
+	}
+
+	if len(messages) == 0 {
+		return false, method.Rumor{}, nil
+	}
+
+	var rumorID int
+	var sender string
+	err = tx.QueryRow(selectMyRumorInfos, serverKeysPath).Scan(&rumorID, &sender)
+	if err != nil {
+		return false, method.Rumor{}, err
+	}
+
+	rumor := newRumor(rumorID, sender, messages)
+
+	_, err = tx.Exec(insertRumor, rumorID+1, sender)
+	if err != nil {
+		return false, method.Rumor{}, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return false, method.Rumor{}, err
+	}
+
+	return true, rumor, nil
+}
+
+func newRumor(rumorID int, sender string, messages map[string][]message.Message) method.Rumor {
+	params := method.ParamsRumor{
+		RumorID:  rumorID,
+		SenderID: sender,
+		Messages: messages,
+	}
+
+	return method.Rumor{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "rumor",
+		},
+		Params: params,
+	}
+}
+
+//======================================================================================================================
+// FederationRepository interface implementation
+//======================================================================================================================
+
+func (s *SQLite) IsChallengeValid(senderPk string, challenge messagedata.FederationChallenge, channelPath string) error {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	var federationChallengeBytes []byte
+	err := s.database.QueryRow(selectValidFederationChallenges, channelPath,
+		senderPk, messagedata.FederationObject,
+		messagedata.FederationActionChallenge, challenge.Value,
+		challenge.ValidUntil).Scan(&federationChallengeBytes)
+	if err != nil {
+		return err
+	}
+
+	var federationChallenge messagedata.FederationChallenge
+	err = json.Unmarshal(federationChallengeBytes, &federationChallenge)
+	if err != nil {
+		return err
+	}
+
+	if federationChallenge != challenge {
+		return xerrors.New("the federation challenge doesn't match")
+	}
+
+	return nil
+}
+
+func (s *SQLite) RemoveChallenge(challenge messagedata.FederationChallenge) error {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	result, err := s.database.Exec(deleteFederationChallenge,
+		messagedata.FederationObject,
+		messagedata.FederationActionChallenge, challenge.Value,
+		challenge.ValidUntil)
+	if err != nil {
+		return err
+	}
+
+	nb, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if nb != 1 {
+		return xerrors.New("unexpected number of rows affected")
+	}
+
+	return nil
+}
+
+func (s *SQLite) GetFederationExpect(senderPk string, remotePk string, challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationExpect, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	rows, err := s.database.Query(selectFederationExpects, channelPath,
+		senderPk, messagedata.FederationObject,
+		messagedata.FederationActionExpect, remotePk)
+	if err != nil {
+		return messagedata.FederationExpect{}, err
+	}
+	defer rows.Close()
+
+	// iterate over all FederationExpect sent from the given sender pk,
+	// and search the one matching the given FederationChallenge
+	for rows.Next() {
+		var federationExpectBytes []byte
+		err = rows.Scan(&federationExpectBytes)
+		if err != nil {
+			continue
+		}
+
+		var federationExpect messagedata.FederationExpect
+		err = json.Unmarshal(federationExpectBytes, &federationExpect)
+		if err != nil {
+			continue
+		}
+
+		var federationChallenge messagedata.FederationChallenge
+		errAnswer := federationExpect.ChallengeMsg.UnmarshalMsgData(&federationChallenge)
+		if errAnswer != nil {
+			return messagedata.FederationExpect{}, errAnswer
+		}
+
+		if federationChallenge == challenge {
+			return federationExpect, nil
+		}
+	}
+
+	return messagedata.FederationExpect{}, sql.ErrNoRows
+}
+
+func (s *SQLite) GetFederationInit(senderPk string, remotePk string, challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationInit, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	rows, err := s.database.Query(selectFederationExpects, channelPath,
+		senderPk, messagedata.FederationObject,
+		messagedata.FederationActionInit, remotePk)
+	if err != nil {
+		return messagedata.FederationInit{}, err
+	}
+	defer rows.Close()
+
+	// iterate over all FederationInit sent from the given sender pk,
+	// and search the one matching the given FederationChallenge
+	for rows.Next() {
+		var federationInitBytes []byte
+		err = rows.Scan(&federationInitBytes)
+		if err != nil {
+			continue
+		}
+
+		var federationInit messagedata.FederationInit
+		err = json.Unmarshal(federationInitBytes, &federationInit)
+		if err != nil {
+			continue
+		}
+
+		var federationChallenge messagedata.FederationChallenge
+		errAnswer := federationInit.ChallengeMsg.UnmarshalMsgData(&federationChallenge)
+		if errAnswer != nil {
+			return messagedata.FederationInit{}, errAnswer
+		}
+
+		if federationChallenge == challenge {
+			return federationInit, nil
+		}
+	}
+
+	return messagedata.FederationInit{}, sql.ErrNoRows
 }

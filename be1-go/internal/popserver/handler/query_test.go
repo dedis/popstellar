@@ -52,8 +52,9 @@ func Test_handleGreetServer(t *testing.T) {
 	subs := types.NewSubscribers()
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
-	state.SetState(subs, peers, queries)
+	state.SetState(subs, peers, queries, hubParams)
 
 	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
@@ -138,8 +139,9 @@ func Test_handleSubscribe(t *testing.T) {
 	subs := types.NewSubscribers()
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
-	state.SetState(subs, peers, queries)
+	state.SetState(subs, peers, queries, hubParams)
 
 	type input struct {
 		name     string
@@ -226,8 +228,9 @@ func Test_handleUnsubscribe(t *testing.T) {
 	subs := types.NewSubscribers()
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
-	state.SetState(subs, peers, queries)
+	state.SetState(subs, peers, queries, hubParams)
 
 	type input struct {
 		name     string
@@ -337,8 +340,9 @@ func Test_handleCatchUp(t *testing.T) {
 	subs := types.NewSubscribers()
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
-	state.SetState(subs, peers, queries)
+	state.SetState(subs, peers, queries, hubParams)
 
 	mockRepository := repository.NewMockRepository(t)
 	database.SetDatabase(mockRepository)
@@ -418,8 +422,9 @@ func Test_handleHeartbeat(t *testing.T) {
 	subs := types.NewSubscribers()
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
-	state.SetState(subs, peers, queries)
+	state.SetState(subs, peers, queries, hubParams)
 
 	mockRepository := repository.NewMockRepository(t)
 	database.SetDatabase(mockRepository)
@@ -549,8 +554,9 @@ func Test_handleGetMessagesByID(t *testing.T) {
 	subs := types.NewSubscribers()
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
-	state.SetState(subs, peers, queries)
+	state.SetState(subs, peers, queries, hubParams)
 
 	mockRepository := repository.NewMockRepository(t)
 	database.SetDatabase(mockRepository)

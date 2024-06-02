@@ -2,6 +2,8 @@ package sqlite
 
 import (
 	"database/sql"
+	"encoding/base64"
+	"go.dedis.ch/kyber/v3"
 	database2 "popstellar/internal/popserver/database/repository"
 	"sync"
 )
@@ -91,6 +93,12 @@ func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
 		return SQLite{}, err
 	}
 
+	err = initRumorTables(tx)
+	if err != nil {
+		db.Close()
+		return SQLite{}, err
+	}
+
 	err = tx.Commit()
 	if err != nil {
 		db.Close()
@@ -100,12 +108,71 @@ func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
 	return SQLite{database: db}, nil
 }
 
+func initRumorTables(tx *sql.Tx) error {
+	_, err := tx.Exec(createRumor)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(createMessageRumor)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(createUnprocessedMessage)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(createUnprocessedMessageRumor)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Close closes the SQLite database.
 func (s *SQLite) Close() error {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
 	return s.database.Close()
+}
+
+func (s *SQLite) StoreServerKeys(serverPubKey kyber.Point, serverSecretKey kyber.Scalar) error {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	tx, err := s.database.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	serverPubBuf, err := serverPubKey.MarshalBinary()
+	if err != nil {
+		return err
+	}
+	serverSecBuf, err := serverSecretKey.MarshalBinary()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(insertKeys, serverKeysPath, base64.URLEncoding.EncodeToString(serverPubBuf),
+		base64.URLEncoding.EncodeToString(serverSecBuf))
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (s *SQLite) StoreFirstRumor() error {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+	_, err := s.database.Exec(insertFirstRumor, 0, serverKeysPath)
+	return err
 }
 
 func fillChannelTypes(tx *sql.Tx) error {

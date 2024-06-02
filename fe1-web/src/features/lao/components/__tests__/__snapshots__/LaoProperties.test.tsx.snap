@@ -369,15 +369,15 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                                     "alignItems": "center",
                                     "backgroundColor": "#3742fa",
                                     "borderRadius": 100,
-                                    "bottom": "27.9%",
+                                    "bottom": "32.4%",
                                     "display": "flex",
                                     "justifyContent": "center",
-                                    "left": "27.9%",
+                                    "left": "32.4%",
                                     "overflow": "hidden",
                                     "padding": "4",
                                     "position": "absolute",
-                                    "right": "27.9%",
-                                    "top": "27.9%",
+                                    "right": "32.4%",
+                                    "top": "32.4%",
                                   }
                                 }
                               >
@@ -385,10 +385,8 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                                   style={
                                     [
                                       {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
+                                        "fontSize": 16,
+                                        "lineHeight": 20,
                                       },
                                       {
                                         "textAlign": "center",
@@ -976,15 +974,15 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                                     "alignItems": "center",
                                     "backgroundColor": "#3742fa",
                                     "borderRadius": 100,
-                                    "bottom": "27.9%",
+                                    "bottom": "32.4%",
                                     "display": "flex",
                                     "justifyContent": "center",
-                                    "left": "27.9%",
+                                    "left": "32.4%",
                                     "overflow": "hidden",
                                     "padding": "4",
                                     "position": "absolute",
-                                    "right": "27.9%",
-                                    "top": "27.9%",
+                                    "right": "32.4%",
+                                    "top": "32.4%",
                                   }
                                 }
                               >
@@ -992,10 +990,8 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                                   style={
                                     [
                                       {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
+                                        "fontSize": 16,
+                                        "lineHeight": 20,
                                       },
                                       {
                                         "textAlign": "center",
@@ -1583,15 +1579,15 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                                     "alignItems": "center",
                                     "backgroundColor": "#3742fa",
                                     "borderRadius": 100,
-                                    "bottom": "27.9%",
+                                    "bottom": "32.4%",
                                     "display": "flex",
                                     "justifyContent": "center",
-                                    "left": "27.9%",
+                                    "left": "32.4%",
                                     "overflow": "hidden",
                                     "padding": "4",
                                     "position": "absolute",
-                                    "right": "27.9%",
-                                    "top": "27.9%",
+                                    "right": "32.4%",
+                                    "top": "32.4%",
                                   }
                                 }
                               >
@@ -1599,10 +1595,8 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                                   style={
                                     [
                                       {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
+                                        "fontSize": 16,
+                                        "lineHeight": 20,
                                       },
                                       {
                                         "textAlign": "center",

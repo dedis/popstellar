@@ -22,6 +22,7 @@ const (
 	Consensus  = "/consensus"
 	Coin       = "/coin"
 	Auth       = "/authentication"
+	Federation = "/federation"
 )
 
 func handleChannelRoot(msg message.Message) *answer.Error {
@@ -142,6 +143,7 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 		laoPath + Consensus:          sqlite.ConsensusType,
 		laoPath + Coin:               sqlite.CoinType,
 		laoPath + Auth:               sqlite.AuthType,
+		laoPath + Federation:         sqlite.FederationType,
 	}
 
 	db, errAnswer := database.GetRootRepositoryInstance()

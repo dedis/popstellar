@@ -20,7 +20,7 @@ import (
 	"popstellar/validation"
 )
 
-func handleChannel(channelPath string, msg message.Message) *answer.Error {
+func handleChannel(channelPath string, msg message.Message, fromRumor bool) *answer.Error {
 	errAnswer := verifyMessage(msg)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleChannel")
@@ -35,6 +35,9 @@ func handleChannel(channelPath string, msg message.Message) *answer.Error {
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("if message exists: %v", err)
 		return errAnswer.Wrap("handleChannel")
+	}
+	if msgAlreadyExists && fromRumor {
+		return nil
 	}
 	if msgAlreadyExists {
 		errAnswer := answer.NewInvalidActionError("message %s was already received", msg.MessageID)
@@ -60,6 +63,8 @@ func handleChannel(channelPath string, msg message.Message) *answer.Error {
 		errAnswer = handleChannelReaction(channelPath, msg)
 	case sqlite.CoinType:
 		errAnswer = handleChannelCoin(channelPath, msg)
+	case sqlite.FederationType:
+		errAnswer = handleChannelFederation(channelPath, msg)
 	default:
 		errAnswer = answer.NewInvalidResourceError("unknown channel type for %s", channelPath)
 	}

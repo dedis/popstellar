@@ -7,6 +7,7 @@ import * as events from './events';
 import * as evoting from './evoting';
 import * as home from './home';
 import * as lao from './lao';
+import * as linkedOrganizations from './linked-organizations';
 import * as meeting from './meeting';
 import * as notification from './notification';
 import { NotificationCompositionConfiguration } from './notification/interface/Configuration';
@@ -131,6 +132,16 @@ export function configureFeatures() {
     generateToken: walletConfiguration.functions.generateToken,
   });
 
+  const linkedOrganizationsConfiguration = linkedOrganizations.configure({
+    messageRegistry: messageRegistry,
+    keyPairRegistry: keyPairRegistry,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
+    useCurrentLao: laoConfiguration.hooks.useCurrentLao,
+    getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
+    getLaoOrganizerBackendPublicKey: laoConfiguration.functions.getLaoOrganizerBackendPublicKey,
+  });
+
   // compose features
   const notificationComposition = notification.compose({
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
@@ -180,6 +191,7 @@ export function configureFeatures() {
       ...walletComposition.laoScreens,
       ...digitalCashConfiguration.laoScreens,
       ...popchaConfiguration.laoScreens,
+      ...linkedOrganizationsConfiguration.laoScreens,
     ],
     eventsNavigationScreens: [
       ...eventConfiguration.laoEventScreens,
@@ -206,6 +218,7 @@ export function configureFeatures() {
     ...evotingConfiguration.reducers,
     ...walletComposition.reducers,
     ...witnessConfiguration.reducers,
+    ...linkedOrganizationsConfiguration.reducers,
   });
 
   return {
@@ -232,6 +245,7 @@ export function configureFeatures() {
       [digitalCashComposition.identifier]: digitalCashComposition.context,
       [socialConfiguration.identifier]: socialConfiguration.context,
       [popchaConfiguration.identifier]: popchaConfiguration.context,
+      [linkedOrganizationsConfiguration.identifier]: linkedOrganizationsConfiguration.context,
     },
   };
 }

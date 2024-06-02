@@ -1,6 +1,6 @@
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 
-const { LAO, MEETING, ROLL_CALL, ELECTION, MESSAGE, CHIRP, REACTION } = ObjectType;
+const { LAO, MEETING, ROLL_CALL, ELECTION, MESSAGE, CHIRP, REACTION, FEDERATION } = ObjectType;
 const {
   CREATE,
   STATE,
@@ -17,6 +17,10 @@ const {
   NOTIFY_ADD,
   DELETE,
   NOTIFY_DELETE,
+  CHALLENGE,
+  CHALLENGE_REQUEST,
+  FEDERATION_INIT,
+  FEDERATION_EXPECT,
 } = ActionType;
 
 export enum WitnessingType {
@@ -66,6 +70,12 @@ const WITNESSING_TYPE_MAP = new Map<string, WitnessEntry>([
 
   // Reactions
   [k(REACTION, ADD), { type: WitnessingType.PASSIVE }],
+
+  // Linked Organizations
+  [k(FEDERATION, CHALLENGE), { type: WitnessingType.NO_WITNESSING }],
+  [k(FEDERATION, CHALLENGE_REQUEST), { type: WitnessingType.NO_WITNESSING }],
+  [k(FEDERATION, FEDERATION_INIT), { type: WitnessingType.NO_WITNESSING }],
+  [k(FEDERATION, FEDERATION_EXPECT), { type: WitnessingType.NO_WITNESSING }],
 ]);
 
 const getWitnessRegistryEntry = (data: MessageData): WitnessEntry | undefined => {

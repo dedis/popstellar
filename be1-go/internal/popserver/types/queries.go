@@ -16,6 +16,8 @@ type Queries struct {
 	state map[int]bool
 	// getMessagesByIdQueries stores the server's getMessagesByIds queries by their ID.
 	getMessagesByIdQueries map[int]method.GetMessagesById
+	getRumorQueries        map[int]method.Rumor
+
 	// nextID store the ID of the next query
 	nextID int
 	// zerolog
@@ -27,6 +29,7 @@ func NewQueries(log *zerolog.Logger) *Queries {
 	return &Queries{
 		state:                  make(map[int]bool),
 		getMessagesByIdQueries: make(map[int]method.GetMessagesById),
+		getRumorQueries:        make(map[int]method.Rumor),
 		log:                    log,
 	}
 }
@@ -80,4 +83,33 @@ func (q *Queries) AddQuery(id int, query method.GetMessagesById) {
 
 	q.getMessagesByIdQueries[id] = query
 	q.state[id] = false
+}
+
+func (q *Queries) AddRumorQuery(id int, query method.Rumor) {
+	q.Lock()
+	defer q.Unlock()
+
+	q.getRumorQueries[id] = query
+	q.state[id] = false
+}
+
+func (q *Queries) IsRumorQuery(queryID int) bool {
+	q.Lock()
+	defer q.Unlock()
+
+	_, ok := q.getRumorQueries[queryID]
+
+	return ok
+}
+
+func (q *Queries) GetRumorFromPastQuery(queryID int) (method.Rumor, bool) {
+	q.Lock()
+	defer q.Unlock()
+
+	rumor, ok := q.getRumorQueries[queryID]
+	if !ok {
+		return method.Rumor{}, false
+	}
+
+	return rumor, true
 }
