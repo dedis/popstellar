@@ -2,23 +2,21 @@ package ch.epfl.pop.decentralized
 
 import akka.NotUsed
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import akka.event.slf4j.Logger
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.decentralized.{ConnectionMediator, GossipManager}
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.{GreetServer, Rumor, RumorState}
+import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType}
-import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey, RumorData}
+import ch.epfl.pop.model.objects.{Channel, PublicKey, RumorData}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.{DbActorAck, DbActorGenerateRumorStateAns, DbActorReadRumor, DbActorReadRumorData}
+import ch.epfl.pop.storage.DbActor.{DbActorAck, DbActorReadRumorData}
 
 import scala.concurrent.Await
-import scala.util.{Failure, Random, Success}
+import scala.util.Random
 
 final case class GossipManager(
     dbActorRef: AskableActorRef,
