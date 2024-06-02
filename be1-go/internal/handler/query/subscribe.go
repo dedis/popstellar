@@ -2,7 +2,7 @@ package query
 
 import (
 	"encoding/json"
-	"popstellar/internal/handler/high"
+	"popstellar/internal/handler/channel"
 	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
@@ -18,7 +18,7 @@ func handleSubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return nil, errAnswer.Wrap("handleSubscribe")
 	}
 
-	if high.Root == subscribe.Params.Channel {
+	if channel.Root == subscribe.Params.Channel {
 		errAnswer := answer.NewInvalidActionError("cannot Subscribe to root channel")
 		return &subscribe.ID, errAnswer.Wrap("handleSubscribe")
 	}

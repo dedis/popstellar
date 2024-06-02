@@ -3,7 +3,7 @@ package answer
 import (
 	"encoding/json"
 	"math/rand"
-	"popstellar/internal/handler/high"
+	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/query"
 	"popstellar/internal/logger"
 	"popstellar/internal/message/answer"
@@ -146,7 +146,7 @@ func tryToHandleMessages(msgsByChannel map[string]map[string]message.Message, so
 	for _, channelID := range sortedChannelIDs {
 		msgs := msgsByChannel[channelID]
 		for msgID, msg := range msgs {
-			errAnswer := high.HandleChannel(channelID, msg, false)
+			errAnswer := channel.HandleChannel(channelID, msg, false)
 			if errAnswer == nil {
 				delete(msgsByChannel[channelID], msgID)
 				continue

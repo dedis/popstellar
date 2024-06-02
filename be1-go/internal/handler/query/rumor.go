@@ -2,7 +2,7 @@ package query
 
 import (
 	"encoding/json"
-	"popstellar/internal/handler/high"
+	"popstellar/internal/handler/channel"
 	"popstellar/internal/logger"
 	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query/method"
@@ -89,13 +89,13 @@ func tryHandlingMessagesByChannel(unprocessedMsgsByChannel map[string][]message.
 	return processedMsgs
 }
 
-func tryHandlingMessages(channel string, unprocessedMsgs []message.Message) ([]message.Message, []string) {
+func tryHandlingMessages(channelPath string, unprocessedMsgs []message.Message) ([]message.Message, []string) {
 	processedMsgs := make([]string, 0)
 
 	for i := 0; i < maxRetry; i++ {
 		nbProcessed := 0
 		for index, msg := range unprocessedMsgs {
-			errAnswer := high.HandleChannel(channel, msg, true)
+			errAnswer := channel.HandleChannel(channelPath, msg, true)
 			if errAnswer == nil {
 				unprocessedMsgs = removeMessage(index-nbProcessed, unprocessedMsgs)
 				processedMsgs = append(processedMsgs, msg.MessageID)

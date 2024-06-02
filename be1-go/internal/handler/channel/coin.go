@@ -1,4 +1,4 @@
-package high
+package channel
 
 import (
 	"popstellar/internal/message/answer"
