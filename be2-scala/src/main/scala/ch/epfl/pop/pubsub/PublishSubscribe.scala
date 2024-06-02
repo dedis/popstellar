@@ -163,7 +163,7 @@ object PublishSubscribe {
           input ~> jsonRpcContentValidator ~> methodPartitioner
 
           methodPartitioner.out(portPipelineError) ~> merger
-          methodPartitioner.out(portParamsWithMessage) ~> gossipStartPartition ~> hasMessagePartition ~> merger
+          methodPartitioner.out(portParamsWithMessage) ~> hasMessagePartition ~> gossipStartPartition ~> merger
           methodPartitioner.out(portSubscribe) ~> subscribePartition ~> merger
           methodPartitioner.out(portUnsubscribe) ~> unsubscribePartition ~> merger
           methodPartitioner.out(portCatchup) ~> catchupPartition ~> merger
