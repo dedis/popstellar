@@ -1,4 +1,4 @@
-package uint53
+package types
 
 import (
 	"testing"

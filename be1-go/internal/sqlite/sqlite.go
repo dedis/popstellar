@@ -14,7 +14,7 @@ import (
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/types/election"
+	"popstellar/internal/types"
 	"strings"
 	"time"
 )
@@ -1008,7 +1008,7 @@ func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (messagedata.
 
 }
 
-func (s *SQLite) GetElectionQuestions(electionPath string) (map[string]election.Question, error) {
+func (s *SQLite) GetElectionQuestions(electionPath string) (map[string]types.Question, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
@@ -1037,7 +1037,7 @@ func (s *SQLite) GetElectionQuestions(electionPath string) (map[string]election.
 	return questions, nil
 }
 
-func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[string]election.Question, error) {
+func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[string]types.Question, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
@@ -1089,8 +1089,8 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 	return questions, nil
 }
 
-func getQuestionsFromMessage(electionSetup messagedata.ElectionSetup) (map[string]election.Question, error) {
-	questions := make(map[string]election.Question)
+func getQuestionsFromMessage(electionSetup messagedata.ElectionSetup) (map[string]types.Question, error) {
+	questions := make(map[string]types.Question)
 	for _, question := range electionSetup.Questions {
 		ballotOptions := make([]string, len(question.BallotOptions))
 		copy(ballotOptions, question.BallotOptions)
@@ -1098,17 +1098,17 @@ func getQuestionsFromMessage(electionSetup messagedata.ElectionSetup) (map[strin
 		if ok {
 			return nil, xerrors.Errorf("duplicate question ID")
 		}
-		questions[question.ID] = election.Question{
+		questions[question.ID] = types.Question{
 			ID:            []byte(question.ID),
 			BallotOptions: ballotOptions,
-			ValidVotes:    make(map[string]election.ValidVote),
+			ValidVotes:    make(map[string]types.ValidVote),
 			Method:        question.VotingMethod,
 		}
 	}
 	return questions, nil
 }
 
-func updateVote(msgID, sender string, castVote messagedata.VoteCastVote, questions map[string]election.Question) error {
+func updateVote(msgID, sender string, castVote messagedata.VoteCastVote, questions map[string]types.Question) error {
 	for idx, vote := range castVote.Votes {
 		question, ok := questions[vote.Question]
 		if !ok {
@@ -1116,7 +1116,7 @@ func updateVote(msgID, sender string, castVote messagedata.VoteCastVote, questio
 		}
 		earlierVote, ok := question.ValidVotes[sender]
 		if !ok || earlierVote.VoteTime < castVote.CreatedAt {
-			question.ValidVotes[sender] = election.ValidVote{
+			question.ValidVotes[sender] = types.ValidVote{
 				MsgID:    msgID,
 				ID:       vote.ID,
 				VoteTime: castVote.CreatedAt,

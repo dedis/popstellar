@@ -1,4 +1,4 @@
-package hubparams
+package types
 
 import (
 	"popstellar/internal/network/socket"

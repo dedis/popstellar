@@ -7,7 +7,7 @@ import (
 	"golang.org/x/xerrors"
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/answer"
-	"popstellar/internal/types/uint53"
+	"popstellar/internal/types"
 	"strconv"
 )
 
@@ -36,8 +36,8 @@ type Input struct {
 
 // Output defines the destination for the money used in transaction
 type Output struct {
-	Value  uint53.Uint53 `json:"value"`
-	Script LockScript    `json:"script"`
+	Value  types.Uint53 `json:"value"`
+	Script LockScript   `json:"script"`
 }
 
 // LockScript defines the locking value for transaction
@@ -55,11 +55,11 @@ type UnlockScript struct {
 
 // SumOutputs computes the sum of the amounts in all outputs.
 // It may signal an overflow error
-func (transaction Transaction) SumOutputs() (uint53.Uint53, error) {
-	var acc uint53.Uint53 = 0
+func (transaction Transaction) SumOutputs() (types.Uint53, error) {
+	var acc types.Uint53 = 0
 	var err error
 	for _, out := range transaction.Outputs {
-		acc, err = uint53.SafePlus(acc, out.Value)
+		acc, err = types.SafePlus(acc, out.Value)
 		if err != nil {
 			return 0, xerrors.Errorf("failed to perform uint53 addition: %v", err)
 		}

@@ -7,16 +7,12 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/mock/generatortest"
-	"popstellar/internal/network/socket"
-	"popstellar/internal/repository"
+	"popstellar/internal/mocks"
+	"popstellar/internal/mocks/generator"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/state"
-	"popstellar/internal/types/hubparams"
-	peers2 "popstellar/internal/types/peers"
-	queries2 "popstellar/internal/types/queries"
-	types2 "popstellar/internal/types/subscribers"
+	"popstellar/internal/types"
 	"testing"
 )
 
@@ -31,7 +27,7 @@ func Test_handleQuery(t *testing.T) {
 
 	// Test 1: failed to handled popquery because unknown method
 
-	msg := generatortest.NewNothingQuery(t, 999)
+	msg := generator.NewNothingQuery(t, 999)
 
 	args = append(args, input{
 		name:     "Test 1",
@@ -43,7 +39,7 @@ func Test_handleQuery(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			fakeSocket := socket.FakeSocket{Id: "fakesocket"}
+			fakeSocket := mocks.FakeSocket{Id: "fakesocket"}
 			errAnswer := handleQuery(&fakeSocket, arg.message)
 			require.NotNil(t, errAnswer)
 			require.Contains(t, errAnswer.Error(), arg.contains)
@@ -52,10 +48,10 @@ func Test_handleQuery(t *testing.T) {
 }
 
 func Test_handleGreetServer(t *testing.T) {
-	subs := types2.NewSubscribers()
-	queries := queries2.NewQueries(&noLog)
-	peers := peers2.NewPeers()
-	hubParams := hubparams.NewHubParams()
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
@@ -66,7 +62,7 @@ func Test_handleGreetServer(t *testing.T) {
 
 	type input struct {
 		name      string
-		socket    socket.FakeSocket
+		socket    mocks.FakeSocket
 		message   []byte
 		needGreet bool
 		isError   bool
@@ -75,11 +71,11 @@ func Test_handleGreetServer(t *testing.T) {
 
 	args := make([]input, 0)
 
-	greetServer := generatortest.NewGreetServerQuery(t, "pk", "client", "server")
+	greetServer := generator.NewGreetServerQuery(t, "pk", "client", "server")
 
 	// Test 1: reply with greet server when receiving a greet server from a new server
 
-	fakeSocket := socket.FakeSocket{Id: "1"}
+	fakeSocket := mocks.FakeSocket{Id: "1"}
 
 	args = append(args, input{
 		name:      "Test 1",
@@ -91,7 +87,7 @@ func Test_handleGreetServer(t *testing.T) {
 
 	// Test 2: doesn't reply with greet server when already greeted the server
 
-	fakeSocket = socket.FakeSocket{Id: "2"}
+	fakeSocket = mocks.FakeSocket{Id: "2"}
 
 	peers.AddPeerGreeted(fakeSocket.Id)
 
@@ -105,7 +101,7 @@ func Test_handleGreetServer(t *testing.T) {
 
 	// Test 3: return an error if the socket ID is already used by another server
 
-	fakeSocket = socket.FakeSocket{Id: "3"}
+	fakeSocket = mocks.FakeSocket{Id: "3"}
 
 	err := peers.AddPeerInfo(fakeSocket.Id, method.GreetServerParams{})
 	require.NoError(t, err)
@@ -139,16 +135,16 @@ func Test_handleGreetServer(t *testing.T) {
 }
 
 func Test_handleSubscribe(t *testing.T) {
-	subs := types2.NewSubscribers()
-	queries := queries2.NewQueries(&noLog)
-	peers := peers2.NewPeers()
-	hubParams := hubparams.NewHubParams()
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
 	type input struct {
 		name     string
-		socket   socket.FakeSocket
+		socket   mocks.FakeSocket
 		ID       int
 		channel  string
 		message  []byte
@@ -160,7 +156,7 @@ func Test_handleSubscribe(t *testing.T) {
 
 	// Test 1: successfully subscribe to a channel
 
-	fakeSocket := socket.FakeSocket{Id: "1"}
+	fakeSocket := mocks.FakeSocket{Id: "1"}
 	ID := 1
 	channel := "/root/lao1"
 
@@ -172,13 +168,13 @@ func Test_handleSubscribe(t *testing.T) {
 		socket:  fakeSocket,
 		ID:      ID,
 		channel: channel,
-		message: generatortest.NewSubscribeQuery(t, ID, channel),
+		message: generator.NewSubscribeQuery(t, ID, channel),
 		isError: false,
 	})
 
 	// Test 2: failed to subscribe to an unknown channel
 
-	fakeSocket = socket.FakeSocket{Id: "2"}
+	fakeSocket = mocks.FakeSocket{Id: "2"}
 	ID = 2
 	channel = "/root/lao2"
 
@@ -187,14 +183,14 @@ func Test_handleSubscribe(t *testing.T) {
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
-		message:  generatortest.NewSubscribeQuery(t, ID, channel),
+		message:  generator.NewSubscribeQuery(t, ID, channel),
 		isError:  true,
 		contains: "cannot Subscribe to unknown channel",
 	})
 
 	// cannot Subscribe to root
 
-	fakeSocket = socket.FakeSocket{Id: "3"}
+	fakeSocket = mocks.FakeSocket{Id: "3"}
 	ID = 3
 	channel = "/root"
 
@@ -203,7 +199,7 @@ func Test_handleSubscribe(t *testing.T) {
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
-		message:  generatortest.NewSubscribeQuery(t, ID, channel),
+		message:  generator.NewSubscribeQuery(t, ID, channel),
 		isError:  true,
 		contains: "cannot Subscribe to root channel",
 	})
@@ -228,16 +224,16 @@ func Test_handleSubscribe(t *testing.T) {
 }
 
 func Test_handleUnsubscribe(t *testing.T) {
-	subs := types2.NewSubscribers()
-	queries := queries2.NewQueries(&noLog)
-	peers := peers2.NewPeers()
-	hubParams := hubparams.NewHubParams()
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
 	type input struct {
 		name     string
-		socket   socket.FakeSocket
+		socket   mocks.FakeSocket
 		ID       int
 		channel  string
 		message  []byte
@@ -249,7 +245,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 
 	// Test 1: successfully unsubscribe from a subscribed channel
 
-	fakeSocket := socket.FakeSocket{Id: "1"}
+	fakeSocket := mocks.FakeSocket{Id: "1"}
 	ID := 1
 	channel := "/root/lao1"
 
@@ -264,13 +260,13 @@ func Test_handleUnsubscribe(t *testing.T) {
 		socket:  fakeSocket,
 		ID:      ID,
 		channel: channel,
-		message: generatortest.NewUnsubscribeQuery(t, ID, channel),
+		message: generator.NewUnsubscribeQuery(t, ID, channel),
 		isError: false,
 	})
 
 	// Test 2: failed to unsubscribe because not subscribed to channel
 
-	fakeSocket = socket.FakeSocket{Id: "2"}
+	fakeSocket = mocks.FakeSocket{Id: "2"}
 	ID = 2
 	channel = "/root/lao2"
 
@@ -282,14 +278,14 @@ func Test_handleUnsubscribe(t *testing.T) {
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
-		message:  generatortest.NewUnsubscribeQuery(t, ID, channel),
+		message:  generator.NewUnsubscribeQuery(t, ID, channel),
 		isError:  true,
 		contains: "cannot Unsubscribe from a channel not subscribed",
 	})
 
 	// Test 3: failed to unsubscribe because unknown channel
 
-	fakeSocket = socket.FakeSocket{Id: "3"}
+	fakeSocket = mocks.FakeSocket{Id: "3"}
 	ID = 3
 	channel = "/root/lao3"
 
@@ -298,14 +294,14 @@ func Test_handleUnsubscribe(t *testing.T) {
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
-		message:  generatortest.NewUnsubscribeQuery(t, ID, channel),
+		message:  generator.NewUnsubscribeQuery(t, ID, channel),
 		isError:  true,
 		contains: "cannot Unsubscribe from unknown channel",
 	})
 
 	// Test 3: failed to unsubscribe because cannot unsubscribe from root channel
 
-	fakeSocket = socket.FakeSocket{Id: "4"}
+	fakeSocket = mocks.FakeSocket{Id: "4"}
 	ID = 4
 	channel = "/root"
 
@@ -314,7 +310,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
-		message:  generatortest.NewUnsubscribeQuery(t, ID, channel),
+		message:  generator.NewUnsubscribeQuery(t, ID, channel),
 		isError:  true,
 		contains: "cannot Unsubscribe from root channel",
 	})
@@ -340,19 +336,19 @@ func Test_handleUnsubscribe(t *testing.T) {
 }
 
 func Test_handleCatchUp(t *testing.T) {
-	subs := types2.NewSubscribers()
-	queries := queries2.NewQueries(&noLog)
-	peers := peers2.NewPeers()
-	hubParams := hubparams.NewHubParams()
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
-	mockRepository := repository.NewMockRepository(t)
+	mockRepository := mocks.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
 	type input struct {
 		name     string
-		socket   socket.FakeSocket
+		socket   mocks.FakeSocket
 		ID       int
 		message  []byte
 		expected []message.Message
@@ -364,14 +360,14 @@ func Test_handleCatchUp(t *testing.T) {
 
 	// Test 1: successfully catchup 4 messages on a channel
 
-	fakeSocket := socket.FakeSocket{Id: "1"}
+	fakeSocket := mocks.FakeSocket{Id: "1"}
 	ID := 1
 	channel := "/root/lao1"
 	messagesToCatchUp := []message.Message{
-		generatortest.NewNothingMsg(t, "sender1", nil),
-		generatortest.NewNothingMsg(t, "sender2", nil),
-		generatortest.NewNothingMsg(t, "sender3", nil),
-		generatortest.NewNothingMsg(t, "sender4", nil),
+		generator.NewNothingMsg(t, "sender1", nil),
+		generator.NewNothingMsg(t, "sender2", nil),
+		generator.NewNothingMsg(t, "sender3", nil),
+		generator.NewNothingMsg(t, "sender4", nil),
 	}
 
 	mockRepository.On("GetAllMessagesFromChannel", channel).Return(messagesToCatchUp, nil)
@@ -380,14 +376,14 @@ func Test_handleCatchUp(t *testing.T) {
 		name:     "Test 1",
 		socket:   fakeSocket,
 		ID:       ID,
-		message:  generatortest.NewCatchupQuery(t, ID, channel),
+		message:  generator.NewCatchupQuery(t, ID, channel),
 		expected: messagesToCatchUp,
 		isError:  false,
 	})
 
 	// Test 2: failed to catchup because DB is disconnected
 
-	fakeSocket = socket.FakeSocket{Id: "2"}
+	fakeSocket = mocks.FakeSocket{Id: "2"}
 	ID = 2
 	channel = "/root/lao2"
 
@@ -398,7 +394,7 @@ func Test_handleCatchUp(t *testing.T) {
 		name:     "Test 2",
 		socket:   fakeSocket,
 		ID:       ID,
-		message:  generatortest.NewCatchupQuery(t, ID, channel),
+		message:  generator.NewCatchupQuery(t, ID, channel),
 		isError:  true,
 		contains: "DB is disconnected",
 	})
@@ -422,19 +418,19 @@ func Test_handleCatchUp(t *testing.T) {
 }
 
 func Test_handleHeartbeat(t *testing.T) {
-	subs := types2.NewSubscribers()
-	queries := queries2.NewQueries(&noLog)
-	peers := peers2.NewPeers()
-	hubParams := hubparams.NewHubParams()
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
-	mockRepository := repository.NewMockRepository(t)
+	mockRepository := mocks.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
 	type input struct {
 		name     string
-		socket   socket.FakeSocket
+		socket   mocks.FakeSocket
 		message  []byte
 		expected map[string][]string
 		isError  bool
@@ -447,7 +443,7 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	// Test 1: successfully handled heartbeat with some messages to catching up
 
-	fakeSocket := socket.FakeSocket{Id: "1"}
+	fakeSocket := mocks.FakeSocket{Id: "1"}
 
 	heartbeatMsgIDs1 := make(map[string][]string)
 	heartbeatMsgIDs1["/root"] = []string{
@@ -478,14 +474,14 @@ func Test_handleHeartbeat(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 1",
 		socket:   fakeSocket,
-		message:  generatortest.NewHeartbeatQuery(t, heartbeatMsgIDs1),
+		message:  generator.NewHeartbeatQuery(t, heartbeatMsgIDs1),
 		expected: expected1,
 		isError:  false,
 	})
 
 	// Test 2: successfully handled heartbeat with nothing to catching up
 
-	fakeSocket = socket.FakeSocket{Id: "2"}
+	fakeSocket = mocks.FakeSocket{Id: "2"}
 
 	heartbeatMsgIDs2 := make(map[string][]string)
 	heartbeatMsgIDs2["/root"] = []string{
@@ -499,13 +495,13 @@ func Test_handleHeartbeat(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 2",
 		socket:  fakeSocket,
-		message: generatortest.NewHeartbeatQuery(t, heartbeatMsgIDs2),
+		message: generator.NewHeartbeatQuery(t, heartbeatMsgIDs2),
 		isError: false,
 	})
 
 	// Test 3: failed to handled heartbeat because DB is disconnected
 
-	fakeSocket = socket.FakeSocket{Id: "3"}
+	fakeSocket = mocks.FakeSocket{Id: "3"}
 
 	heartbeatMsgIDs3 := make(map[string][]string)
 	heartbeatMsgIDs3["/root"] = []string{
@@ -524,7 +520,7 @@ func Test_handleHeartbeat(t *testing.T) {
 	args = append(args, input{
 		name:     "failed to popquery DB",
 		socket:   fakeSocket,
-		message:  generatortest.NewHeartbeatQuery(t, heartbeatMsgIDs3),
+		message:  generator.NewHeartbeatQuery(t, heartbeatMsgIDs3),
 		isError:  true,
 		contains: "DB is disconnected",
 	})
@@ -554,19 +550,19 @@ func Test_handleHeartbeat(t *testing.T) {
 }
 
 func Test_handleGetMessagesByID(t *testing.T) {
-	subs := types2.NewSubscribers()
-	queries := queries2.NewQueries(&noLog)
-	peers := peers2.NewPeers()
-	hubParams := hubparams.NewHubParams()
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
-	mockRepository := repository.NewMockRepository(t)
+	mockRepository := mocks.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
 	type input struct {
 		name     string
-		socket   socket.FakeSocket
+		socket   mocks.FakeSocket
 		ID       int
 		message  []byte
 		expected map[string][]message.Message
@@ -578,19 +574,19 @@ func Test_handleGetMessagesByID(t *testing.T) {
 
 	// Test 1: successfully handled getMessagesByID and sent the result
 
-	fakeSocket := socket.FakeSocket{Id: "1"}
+	fakeSocket := mocks.FakeSocket{Id: "1"}
 	ID := 1
 
 	expected1 := make(map[string][]message.Message)
 	expected1["/root"] = []message.Message{
-		generatortest.NewNothingMsg(t, "sender1", nil),
-		generatortest.NewNothingMsg(t, "sender2", nil),
-		generatortest.NewNothingMsg(t, "sender3", nil),
-		generatortest.NewNothingMsg(t, "sender4", nil),
+		generator.NewNothingMsg(t, "sender1", nil),
+		generator.NewNothingMsg(t, "sender2", nil),
+		generator.NewNothingMsg(t, "sender3", nil),
+		generator.NewNothingMsg(t, "sender4", nil),
 	}
 	expected1["/root/lao1"] = []message.Message{
-		generatortest.NewNothingMsg(t, "sender5", nil),
-		generatortest.NewNothingMsg(t, "sender6", nil),
+		generator.NewNothingMsg(t, "sender5", nil),
+		generator.NewNothingMsg(t, "sender6", nil),
 	}
 
 	paramsGetMessagesByID1 := make(map[string][]string)
@@ -607,14 +603,14 @@ func Test_handleGetMessagesByID(t *testing.T) {
 		name:     "Test 1",
 		socket:   fakeSocket,
 		ID:       ID,
-		message:  generatortest.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID1),
+		message:  generator.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID1),
 		expected: expected1,
 		isError:  false,
 	})
 
 	// Test 2: failed to handled getMessagesByID because DB is disconnected
 
-	fakeSocket = socket.FakeSocket{Id: "2"}
+	fakeSocket = mocks.FakeSocket{Id: "2"}
 	ID = 2
 
 	paramsGetMessagesByID2 := make(map[string][]string)
@@ -626,7 +622,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 		name:     "Test 2",
 		socket:   fakeSocket,
 		ID:       ID,
-		message:  generatortest.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID2),
+		message:  generator.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID2),
 		isError:  true,
 		contains: "DB is disconnected",
 	})

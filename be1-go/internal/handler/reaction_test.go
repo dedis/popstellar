@@ -5,25 +5,22 @@ import (
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/mock/generatortest"
-	"popstellar/internal/repository"
+	"popstellar/internal/mocks"
+	"popstellar/internal/mocks/generator"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
 	state2 "popstellar/internal/singleton/state"
-	"popstellar/internal/types/hubparams"
-	peers2 "popstellar/internal/types/peers"
-	queries2 "popstellar/internal/types/queries"
-	types2 "popstellar/internal/types/subscribers"
+	"popstellar/internal/types"
 	"strings"
 	"testing"
 	"time"
 )
 
 func Test_handleChannelReaction(t *testing.T) {
-	subs := types2.NewSubscribers()
-	queries := queries2.NewQueries(&noLog)
-	peers := peers2.NewPeers()
-	hubParams := hubparams.NewHubParams()
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
 	state2.SetState(subs, peers, queries, hubParams)
 
@@ -39,7 +36,7 @@ func Test_handleChannelReaction(t *testing.T) {
 
 	config.SetConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
-	mockRepository := repository.NewMockRepository(t)
+	mockRepository := mocks.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
 	sender := "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
@@ -225,9 +222,9 @@ func Test_handleChannelReaction(t *testing.T) {
 }
 
 func newReactionAddMsg(t *testing.T, channelID string, sender string, reactionCodePoint, chirpID string, timestamp int64,
-	mockRepository *repository.MockRepository, hasInvalidField, isNotAttendee bool) message.Message {
+	mockRepository *mocks.Repository, hasInvalidField, isNotAttendee bool) message.Message {
 
-	msg := generatortest.NewReactionAddMsg(t, sender, nil, reactionCodePoint, chirpID, timestamp)
+	msg := generator.NewReactionAddMsg(t, sender, nil, reactionCodePoint, chirpID, timestamp)
 
 	errAnswer := state2.AddChannel(channelID)
 	require.Nil(t, errAnswer)
@@ -247,9 +244,9 @@ func newReactionAddMsg(t *testing.T, channelID string, sender string, reactionCo
 }
 
 func newReactionDeleteMsg(t *testing.T, channelID string, sender string, reactionID string, timestamp int64,
-	mockRepository *repository.MockRepository, hasInvalidField, hasNotReaction, isNotOwner, isNotAttendee bool) message.Message {
+	mockRepository *mocks.Repository, hasInvalidField, hasNotReaction, isNotOwner, isNotAttendee bool) message.Message {
 
-	msg := generatortest.NewReactionDeleteMsg(t, sender, nil, reactionID, timestamp)
+	msg := generator.NewReactionDeleteMsg(t, sender, nil, reactionID, timestamp)
 
 	errAnswer := state2.AddChannel(channelID)
 	require.Nil(t, errAnswer)

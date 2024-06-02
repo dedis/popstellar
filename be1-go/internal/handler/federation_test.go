@@ -13,16 +13,12 @@ import (
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/mock/generatortest"
-	"popstellar/internal/network/socket"
-	"popstellar/internal/repository"
+	mock2 "popstellar/internal/mocks"
+	"popstellar/internal/mocks/generator"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/state"
-	"popstellar/internal/types/hubparams"
-	peers2 "popstellar/internal/types/peers"
-	queries2 "popstellar/internal/types/queries"
-	types2 "popstellar/internal/types/subscribers"
+	"popstellar/internal/types"
 	"testing"
 	"time"
 )
@@ -30,13 +26,13 @@ import (
 func Test_handleChannelFederation(t *testing.T) {
 	var args []input
 
-	mockRepository := repository.NewMockRepository(t)
+	mockRepository := mock2.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
-	subs := types2.NewSubscribers()
-	queries := queries2.NewQueries(&noLog)
-	peers := peers2.NewPeers()
-	hubParams := hubparams.NewHubParams()
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
@@ -74,7 +70,7 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 1",
 		channel: channelPath,
-		msg: generatortest.NewFederationChallengeRequest(t,
+		msg: generator.NewFederationChallengeRequest(t,
 			notOrganizer, validUntil, notOrganizerSk),
 		isError:  true,
 		contains: "sender is not the organizer of the channel",
@@ -84,7 +80,7 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 2",
 		channel: channelPath,
-		msg: generatortest.NewFederationChallengeRequest(t,
+		msg: generator.NewFederationChallengeRequest(t,
 			organizer, -1, organizerSk),
 		isError:  true,
 		contains: "VerifyJSON",
@@ -95,9 +91,9 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 3",
 		channel: channelPath,
-		msg: generatortest.NewFederationExpect(t, notOrganizer, laoID,
+		msg: generator.NewFederationExpect(t, notOrganizer, laoID,
 			serverAddressA, organizer2,
-			generatortest.NewFederationChallenge(t, organizer,
+			generator.NewFederationChallenge(t, organizer,
 				value, validUntil, organizerSk),
 			notOrganizerSk),
 		isError:  true,
@@ -108,9 +104,9 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 4",
 		channel: channelPath,
-		msg: generatortest.NewFederationExpect(t, organizer, laoID,
+		msg: generator.NewFederationExpect(t, organizer, laoID,
 			"ws:localhost:12345/client", organizer2,
-			generatortest.NewFederationChallenge(t, organizer,
+			generator.NewFederationChallenge(t, organizer,
 				value, validUntil, organizerSk),
 			organizerSk),
 		isError:  true,
@@ -121,9 +117,9 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 5",
 		channel: channelPath,
-		msg: generatortest.NewFederationExpect(t, organizer, laoID,
+		msg: generator.NewFederationExpect(t, organizer, laoID,
 			serverAddressA, "organizer2",
-			generatortest.NewFederationChallenge(t, organizer,
+			generator.NewFederationChallenge(t, organizer,
 				value, validUntil, organizerSk),
 			organizerSk),
 		isError:  true,
@@ -134,9 +130,9 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 6",
 		channel: channelPath,
-		msg: generatortest.NewFederationExpect(t, organizer, "laoID",
+		msg: generator.NewFederationExpect(t, organizer, "laoID",
 			serverAddressA, organizer2,
-			generatortest.NewFederationChallenge(t, organizer,
+			generator.NewFederationChallenge(t, organizer,
 				value, validUntil, organizerSk),
 			organizerSk),
 		isError:  true,
@@ -147,9 +143,9 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 7",
 		channel: channelPath,
-		msg: generatortest.NewFederationExpect(t, organizer, laoID,
+		msg: generator.NewFederationExpect(t, organizer, laoID,
 			serverAddressA, organizer2,
-			generatortest.NewFederationChallengeRequest(t, organizer,
+			generator.NewFederationChallengeRequest(t, organizer,
 				validUntil, organizerSk),
 			organizerSk),
 		isError:  true,
@@ -160,9 +156,9 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 8",
 		channel: channelPath,
-		msg: generatortest.NewFederationExpect(t, organizer, laoID,
+		msg: generator.NewFederationExpect(t, organizer, laoID,
 			serverAddressA, organizer2,
-			generatortest.NewFederationChallenge(t, notOrganizer,
+			generator.NewFederationChallenge(t, notOrganizer,
 				value, validUntil, notOrganizerSk),
 			organizerSk),
 		isError:  true,
@@ -174,9 +170,9 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 9",
 		channel: channelPath,
-		msg: generatortest.NewFederationInit(t, notOrganizer, laoID,
+		msg: generator.NewFederationInit(t, notOrganizer, laoID,
 			serverAddressA, organizer2,
-			generatortest.NewFederationChallenge(t, organizer,
+			generator.NewFederationChallenge(t, organizer,
 				value, validUntil, organizerSk),
 			notOrganizerSk),
 		isError:  true,
@@ -187,9 +183,9 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 10",
 		channel: channelPath,
-		msg: generatortest.NewFederationInit(t, organizer, laoID,
+		msg: generator.NewFederationInit(t, organizer, laoID,
 			"ws:localhost:12345/client", organizer2,
-			generatortest.NewFederationChallenge(t, organizer,
+			generator.NewFederationChallenge(t, organizer,
 				value, validUntil, organizerSk),
 			organizerSk),
 		isError:  true,
@@ -200,9 +196,9 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 11",
 		channel: channelPath,
-		msg: generatortest.NewFederationInit(t, organizer, laoID,
+		msg: generator.NewFederationInit(t, organizer, laoID,
 			serverAddressA, "organizer2",
-			generatortest.NewFederationChallenge(t, organizer,
+			generator.NewFederationChallenge(t, organizer,
 				value, validUntil, organizerSk),
 			organizerSk),
 		isError:  true,
@@ -213,9 +209,9 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 12",
 		channel: channelPath,
-		msg: generatortest.NewFederationInit(t, organizer, "laoID",
+		msg: generator.NewFederationInit(t, organizer, "laoID",
 			serverAddressA, organizer2,
-			generatortest.NewFederationChallenge(t, organizer,
+			generator.NewFederationChallenge(t, organizer,
 				value, validUntil, organizerSk),
 			organizerSk),
 		isError:  true,
@@ -226,9 +222,9 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 13",
 		channel: channelPath,
-		msg: generatortest.NewFederationInit(t, organizer, laoID,
+		msg: generator.NewFederationInit(t, organizer, laoID,
 			serverAddressA, organizer2,
-			generatortest.NewFederationChallengeRequest(t, organizer,
+			generator.NewFederationChallengeRequest(t, organizer,
 				validUntil, organizerSk),
 			organizerSk),
 		isError:  true,
@@ -239,9 +235,9 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 14",
 		channel: channelPath,
-		msg: generatortest.NewFederationInit(t, organizer, laoID,
+		msg: generator.NewFederationInit(t, organizer, laoID,
 			serverAddressA, organizer2,
-			generatortest.NewFederationChallenge(t, notOrganizer,
+			generator.NewFederationChallenge(t, notOrganizer,
 				value, validUntil, notOrganizerSk),
 			organizerSk),
 		isError:  true,
@@ -264,7 +260,7 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 15",
 		channel: channelPath,
-		msg: generatortest.NewFederationChallenge(t, notOrganizer, value,
+		msg: generator.NewFederationChallenge(t, notOrganizer, value,
 			validUntil, notOrganizerSk),
 		isError:  true,
 		contains: "failed to get federation expect",
@@ -274,8 +270,8 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 16",
 		channel: channelPath,
-		msg: generatortest.NewSuccessFederationResult(t, organizer2,
-			organizer, generatortest.NewFederationChallengeRequest(t,
+		msg: generator.NewSuccessFederationResult(t, organizer2,
+			organizer, generator.NewFederationChallengeRequest(t,
 				organizer2, validUntil, organizer2Sk), organizer2Sk),
 		isError:  true,
 		contains: "invalid message field",
@@ -285,8 +281,8 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 17",
 		channel: channelPath,
-		msg: generatortest.NewSuccessFederationResult(t, organizer2,
-			notOrganizer, generatortest.NewFederationChallenge(t, organizer2,
+		msg: generator.NewSuccessFederationResult(t, organizer2,
+			notOrganizer, generator.NewFederationChallenge(t, organizer2,
 				value, validUntil, organizer2Sk), organizer2Sk),
 		isError:  true,
 		contains: "invalid message field",
@@ -301,8 +297,8 @@ func Test_handleChannelFederation(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 18",
 		channel: channelPath,
-		msg: generatortest.NewSuccessFederationResult(t, organizer2,
-			organizer, generatortest.NewFederationChallenge(t, organizer2,
+		msg: generator.NewSuccessFederationResult(t, organizer2,
+			organizer, generator.NewFederationChallenge(t, organizer2,
 				value, validUntil, organizer2Sk), organizer2Sk),
 		isError:  true,
 		contains: "failed to get federation init",
@@ -321,13 +317,13 @@ func Test_handleChannelFederation(t *testing.T) {
 }
 
 func Test_handleRequestChallenge(t *testing.T) {
-	mockRepository := repository.NewMockRepository(t)
+	mockRepository := mock2.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
-	subs := types2.NewSubscribers()
-	queries := queries2.NewQueries(&noLog)
-	peers := peers2.NewPeers()
-	hubParams := hubparams.NewHubParams()
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
@@ -347,7 +343,7 @@ func Test_handleRequestChallenge(t *testing.T) {
 	errAnswer := subs.AddChannel(channelPath)
 	require.Nil(t, errAnswer)
 
-	fakeSocket := socket.FakeSocket{Id: "1"}
+	fakeSocket := mock2.FakeSocket{Id: "1"}
 	errAnswer = subs.Subscribe(channelPath, &fakeSocket)
 	require.Nil(t, errAnswer)
 
@@ -356,7 +352,7 @@ func Test_handleRequestChallenge(t *testing.T) {
 	mockRepository.On("StoreMessageAndData", channelPath,
 		mock.AnythingOfType("message.Message")).Return(nil)
 
-	errAnswer = handleRequestChallenge(generatortest.NewFederationChallengeRequest(t, organizer, time.Now().Unix(),
+	errAnswer = handleRequestChallenge(generator.NewFederationChallengeRequest(t, organizer, time.Now().Unix(),
 		organizerSk), channelPath)
 	require.Nil(t, errAnswer)
 
@@ -377,13 +373,13 @@ func Test_handleRequestChallenge(t *testing.T) {
 }
 
 func Test_handleFederationExpect(t *testing.T) {
-	mockRepository := repository.NewMockRepository(t)
+	mockRepository := mock2.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
-	subs := types2.NewSubscribers()
-	queries := queries2.NewQueries(&noLog)
-	peers := peers2.NewPeers()
-	hubParams := hubparams.NewHubParams()
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
@@ -428,8 +424,8 @@ func Test_handleFederationExpect(t *testing.T) {
 	mockRepository.On("IsChallengeValid", server, federationChallenge,
 		channelPath).Return(nil)
 
-	federationExpect := generatortest.NewFederationExpect(t, organizer, laoID,
-		serverAddressA, organizer2, generatortest.NewFederationChallenge(t,
+	federationExpect := generator.NewFederationExpect(t, organizer, laoID,
+		serverAddressA, organizer2, generator.NewFederationChallenge(t,
 			organizer, value, validUntil, organizerSk), organizerSk)
 
 	errAnswer := handleExpect(federationExpect, channelPath)
@@ -437,13 +433,13 @@ func Test_handleFederationExpect(t *testing.T) {
 }
 
 func Test_handleFederationInit(t *testing.T) {
-	mockRepository := repository.NewMockRepository(t)
+	mockRepository := mock2.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
-	subs := types2.NewSubscribers()
-	queries := queries2.NewQueries(&noLog)
-	peers := peers2.NewPeers()
-	hubParams := hubparams.NewHubParams()
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
@@ -471,10 +467,10 @@ func Test_handleFederationInit(t *testing.T) {
 	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
 
-	challengeMsg := generatortest.NewFederationChallenge(t, organizer, value,
+	challengeMsg := generator.NewFederationChallenge(t, organizer, value,
 		validUntil, organizerSk)
 
-	initMsg := generatortest.NewFederationInit(t, organizer, laoID2,
+	initMsg := generator.NewFederationInit(t, organizer, laoID2,
 		serverAddressA, organizer2, challengeMsg, organizerSk)
 
 	mockRepository.On("GetOrganizerPubKey", laoPath).Return(organizerPk, nil)
@@ -520,13 +516,13 @@ func Test_handleFederationInit(t *testing.T) {
 }
 
 func Test_handleFederationChallenge(t *testing.T) {
-	mockRepository := repository.NewMockRepository(t)
+	mockRepository := mock2.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
-	subs := types2.NewSubscribers()
-	queries := queries2.NewQueries(&noLog)
-	peers := peers2.NewPeers()
-	hubParams := hubparams.NewHubParams()
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
@@ -555,11 +551,11 @@ func Test_handleFederationChallenge(t *testing.T) {
 	errAnswer = subs.AddChannel(channelPath2)
 	require.Nil(t, errAnswer)
 
-	fakeSocket1 := socket.FakeSocket{Id: "1"}
+	fakeSocket1 := mock2.FakeSocket{Id: "1"}
 	errAnswer = subs.Subscribe(channelPath, &fakeSocket1)
 	require.Nil(t, errAnswer)
 
-	fakeSocket2 := socket.FakeSocket{Id: "2"}
+	fakeSocket2 := mock2.FakeSocket{Id: "2"}
 	errAnswer = subs.Subscribe(channelPath2, &fakeSocket2)
 	require.Nil(t, errAnswer)
 
@@ -573,10 +569,10 @@ func Test_handleFederationChallenge(t *testing.T) {
 		ValidUntil: validUntil,
 	}
 
-	challengeMsg := generatortest.NewFederationChallenge(t, organizer, value,
+	challengeMsg := generator.NewFederationChallenge(t, organizer, value,
 		validUntil, organizerSk)
 
-	challengeMsg2 := generatortest.NewFederationChallenge(t, organizer2,
+	challengeMsg2 := generator.NewFederationChallenge(t, organizer2,
 		value, validUntil, organizer2Sk)
 
 	federationExpect := messagedata.FederationExpect{
@@ -627,13 +623,13 @@ func Test_handleFederationChallenge(t *testing.T) {
 }
 
 func Test_handleFederationResult(t *testing.T) {
-	mockRepository := repository.NewMockRepository(t)
+	mockRepository := mock2.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
-	subs := types2.NewSubscribers()
-	queries := queries2.NewQueries(&noLog)
-	peers := peers2.NewPeers()
-	hubParams := hubparams.NewHubParams()
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
 	organizerPk, organizerSk := generateKeys()
 	organizer2Pk, organizer2Sk := generateKeys()
@@ -658,7 +654,7 @@ func Test_handleFederationResult(t *testing.T) {
 	errAnswer := subs.AddChannel(channelPath)
 	require.Nil(t, errAnswer)
 
-	fakeSocket := socket.FakeSocket{Id: "1"}
+	fakeSocket := mock2.FakeSocket{Id: "1"}
 	errAnswer = subs.Subscribe(channelPath, &fakeSocket)
 	require.Nil(t, errAnswer)
 
@@ -672,10 +668,10 @@ func Test_handleFederationResult(t *testing.T) {
 		ValidUntil: validUntil,
 	}
 
-	challengeMsg := generatortest.NewFederationChallenge(t, organizer, value,
+	challengeMsg := generator.NewFederationChallenge(t, organizer, value,
 		validUntil, organizerSk)
 
-	challengeMsg2 := generatortest.NewFederationChallenge(t, organizer2, value,
+	challengeMsg2 := generator.NewFederationChallenge(t, organizer2, value,
 		validUntil, organizer2Sk)
 
 	federationInit := messagedata.FederationInit{
@@ -687,7 +683,7 @@ func Test_handleFederationResult(t *testing.T) {
 		ChallengeMsg:  challengeMsg,
 	}
 
-	federationResultMsg := generatortest.NewSuccessFederationResult(t,
+	federationResultMsg := generator.NewSuccessFederationResult(t,
 		organizer2, organizer, challengeMsg2, organizer2Sk)
 
 	mockRepository.On("GetOrganizerPubKey", laoPath).Return(organizerPk, nil)

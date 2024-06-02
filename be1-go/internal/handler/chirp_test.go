@@ -6,25 +6,22 @@ import (
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/mock/generatortest"
-	"popstellar/internal/repository"
+	mock2 "popstellar/internal/mocks"
+	"popstellar/internal/mocks/generator"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
 	state2 "popstellar/internal/singleton/state"
-	"popstellar/internal/types/hubparams"
-	peers2 "popstellar/internal/types/peers"
-	queries2 "popstellar/internal/types/queries"
-	types2 "popstellar/internal/types/subscribers"
+	"popstellar/internal/types"
 	"strings"
 	"testing"
 	"time"
 )
 
 func Test_handleChannelChirp(t *testing.T) {
-	subs := types2.NewSubscribers()
-	queries := queries2.NewQueries(&noLog)
-	peers := peers2.NewPeers()
-	hubParams := hubparams.NewHubParams()
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
 	state2.SetState(subs, peers, queries, hubParams)
 
@@ -40,7 +37,7 @@ func Test_handleChannelChirp(t *testing.T) {
 
 	config.SetConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
-	mockRepository := repository.NewMockRepository(t)
+	mockRepository := mock2.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
 	sender := "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
@@ -138,9 +135,9 @@ func Test_handleChannelChirp(t *testing.T) {
 }
 
 func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int64,
-	mockRepository *repository.MockRepository, isError bool) message.Message {
+	mockRepository *mock2.Repository, isError bool) message.Message {
 
-	msg := generatortest.NewChirpAddMsg(t, sender, nil, timestamp)
+	msg := generator.NewChirpAddMsg(t, sender, nil, timestamp)
 
 	errAnswer := state2.AddChannel(channelID)
 	require.Nil(t, errAnswer)
@@ -161,9 +158,9 @@ func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int
 }
 
 func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID string,
-	timestamp int64, mockRepository *repository.MockRepository, isError bool) message.Message {
+	timestamp int64, mockRepository *mock2.Repository, isError bool) message.Message {
 
-	msg := generatortest.NewChirpDeleteMsg(t, sender, nil, chirpID, timestamp)
+	msg := generator.NewChirpDeleteMsg(t, sender, nil, chirpID, timestamp)
 
 	errAnswer := state2.AddChannel(channelID)
 	require.Nil(t, errAnswer)

@@ -8,16 +8,13 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/mock/generatortest"
-	"popstellar/internal/repository"
+	mock2 "popstellar/internal/mocks"
+	"popstellar/internal/mocks/generator"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/state"
 	"popstellar/internal/sqlite"
-	"popstellar/internal/types/hubparams"
-	peers2 "popstellar/internal/types/peers"
-	queries2 "popstellar/internal/types/queries"
-	types2 "popstellar/internal/types/subscribers"
+	"popstellar/internal/types"
 	"testing"
 	"time"
 )
@@ -38,10 +35,10 @@ type input struct {
 }
 
 func Test_handleChannelRoot(t *testing.T) {
-	subs := types2.NewSubscribers()
-	queries := queries2.NewQueries(&noLog)
-	peers := peers2.NewPeers()
-	hubParams := hubparams.NewHubParams()
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
@@ -58,7 +55,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	config.SetConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
 	var args []input
-	mockRepository := repository.NewMockRepository(t)
+	mockRepository := mock2.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
 	ownerPubBuf, err := ownerPublicKey.MarshalBinary()
@@ -92,7 +89,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	// Test 4: error when message data is not lao_create
 	args = append(args, input{
 		name:     "Test 4",
-		msg:      generatortest.NewNothingMsg(t, owner, nil),
+		msg:      generator.NewNothingMsg(t, owner, nil),
 		isError:  true,
 		contains: "failed to validate schema",
 	})
@@ -118,7 +115,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	}
 }
 
-func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepository *repository.MockRepository, isError bool) message.Message {
+func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepository *mock2.Repository, isError bool) message.Message {
 	creation := time.Now().Unix()
 	laoID := messagedata.Hash(
 		organizer,
@@ -126,7 +123,7 @@ func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockReposi
 		goodLaoName,
 	)
 
-	msg := generatortest.NewLaoCreateMsg(t, sender, laoID, laoName, creation, organizer, nil)
+	msg := generator.NewLaoCreateMsg(t, sender, laoID, laoName, creation, organizer, nil)
 
 	mockRepository.On("HasChannel", RootPrefix+laoID).Return(false, nil)
 	if !isError {

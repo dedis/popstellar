@@ -9,14 +9,10 @@ import (
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/network/socket"
-	"popstellar/internal/repository"
+	"popstellar/internal/mocks"
 	"popstellar/internal/singleton/database"
 	state2 "popstellar/internal/singleton/state"
-	"popstellar/internal/types/hubparams"
-	peers2 "popstellar/internal/types/peers"
-	queries2 "popstellar/internal/types/queries"
-	types2 "popstellar/internal/types/subscribers"
+	"popstellar/internal/types"
 	"testing"
 )
 
@@ -27,18 +23,18 @@ type inputTestHandleChannelCoin struct {
 	channelID string
 	message   message.Message
 	hasError  bool
-	sockets   []*socket.FakeSocket
+	sockets   []*mocks.FakeSocket
 }
 
 func Test_handleChannelCoin(t *testing.T) {
-	subs := types2.NewSubscribers()
-	queries := queries2.NewQueries(&noLog)
-	peers := peers2.NewPeers()
-	hubParams := hubparams.NewHubParams()
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
 	state2.SetState(subs, peers, queries, hubParams)
 
-	mockRepository := repository.NewMockRepository(t)
+	mockRepository := mocks.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
 	inputs := make([]inputTestHandleChannelCoin, 0)
@@ -120,7 +116,7 @@ func Test_handleChannelCoin(t *testing.T) {
 
 }
 
-func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string, mockRepository *repository.MockRepository) inputTestHandleChannelCoin {
+func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string, mockRepository *mocks.Repository) inputTestHandleChannelCoin {
 	laoID := messagedata.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
@@ -141,7 +137,7 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 
 	mockRepository.On("StoreMessageAndData", channelID, m).Return(nil)
 
-	sockets := []*socket.FakeSocket{
+	sockets := []*mocks.FakeSocket{
 		{Id: laoID + "0"},
 		{Id: laoID + "1"},
 		{Id: laoID + "2"},

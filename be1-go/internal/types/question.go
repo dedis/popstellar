@@ -1,4 +1,4 @@
-package election
+package types
 
 type Question struct {
 	// ID represents the ID of the Question.

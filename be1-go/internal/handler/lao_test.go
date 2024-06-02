@@ -8,15 +8,12 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/mock/generatortest"
-	"popstellar/internal/repository"
+	mock2 "popstellar/internal/mocks"
+	"popstellar/internal/mocks/generator"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/state"
-	"popstellar/internal/types/hubparams"
-	peers2 "popstellar/internal/types/peers"
-	queries2 "popstellar/internal/types/queries"
-	types2 "popstellar/internal/types/subscribers"
+	"popstellar/internal/types"
 	"strconv"
 	"strings"
 	"testing"
@@ -24,10 +21,10 @@ import (
 )
 
 func Test_handleChannelLao(t *testing.T) {
-	subs := types2.NewSubscribers()
-	queries := queries2.NewQueries(&noLog)
-	peers := peers2.NewPeers()
-	hubParams := hubparams.NewHubParams()
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+	hubParams := types.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
@@ -44,7 +41,7 @@ func Test_handleChannelLao(t *testing.T) {
 	config.SetConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
 	var args []input
-	mockRepository := repository.NewMockRepository(t)
+	mockRepository := mock2.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
 	laoID := base64.URLEncoding.EncodeToString([]byte("laoID"))
@@ -269,13 +266,13 @@ func Test_handleChannelLao(t *testing.T) {
 	}
 }
 
-func newLaoStateMsg(t *testing.T, organizer, laoID string, mockRepository *repository.MockRepository) message.Message {
+func newLaoStateMsg(t *testing.T, organizer, laoID string, mockRepository *mock2.Repository) message.Message {
 	modificationID := base64.URLEncoding.EncodeToString([]byte("modificationID"))
 	name := "laoName"
 	creation := time.Now().Unix()
 	lastModified := time.Now().Unix()
 
-	msg := generatortest.NewLaoStateMsg(t, organizer, laoID, name, modificationID, creation, lastModified, nil)
+	msg := generator.NewLaoStateMsg(t, organizer, laoID, name, modificationID, creation, lastModified, nil)
 
 	mockRepository.On("HasMessage", modificationID).
 		Return(true, nil)
@@ -288,7 +285,7 @@ func newLaoStateMsg(t *testing.T, organizer, laoID string, mockRepository *repos
 }
 
 func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation, start, end int64, isError bool,
-	mockRepository *repository.MockRepository) message.Message {
+	mockRepository *mock2.Repository) message.Message {
 
 	createID := messagedata.Hash(
 		messagedata.RollCallFlag,
@@ -297,7 +294,7 @@ func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation,
 		goodLaoName,
 	)
 
-	msg := generatortest.NewRollCallCreateMsg(t, sender, laoName, createID, creation, start, end, nil)
+	msg := generator.NewRollCallCreateMsg(t, sender, laoName, createID, creation, start, end, nil)
 
 	if !isError {
 		mockRepository.On("StoreMessageAndData", laoID, msg).Return(nil)
@@ -307,7 +304,7 @@ func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation,
 }
 
 func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, openedAt int64, isError bool,
-	mockRepository *repository.MockRepository) message.Message {
+	mockRepository *mock2.Repository) message.Message {
 
 	openID := messagedata.Hash(
 		messagedata.RollCallFlag,
@@ -316,7 +313,7 @@ func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, opene
 		strconv.Itoa(int(openedAt)),
 	)
 
-	msg := generatortest.NewRollCallOpenMsg(t, sender, openID, opens, openedAt, nil)
+	msg := generator.NewRollCallOpenMsg(t, sender, openID, opens, openedAt, nil)
 
 	if !isError {
 		mockRepository.On("StoreMessageAndData", laoID, msg).Return(nil)
@@ -329,7 +326,7 @@ func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, opene
 }
 
 func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, closedAt int64, isError bool,
-	mockRepository *repository.MockRepository) message.Message {
+	mockRepository *mock2.Repository) message.Message {
 
 	closeID := messagedata.Hash(
 		messagedata.RollCallFlag,
@@ -340,7 +337,7 @@ func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, clo
 
 	attendees := []string{base64.URLEncoding.EncodeToString([]byte("a")), base64.URLEncoding.EncodeToString([]byte("b"))}
 
-	msg := generatortest.NewRollCallCloseMsg(t, sender, closeID, closes, closedAt, attendees, nil)
+	msg := generator.NewRollCallCloseMsg(t, sender, closeID, closes, closedAt, attendees, nil)
 
 	if !isError {
 		var channels []string
@@ -359,7 +356,7 @@ func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, clo
 func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 	setupLao, laoID, electionName, question, version string,
 	createdAt, start, end int64,
-	isError bool, mockRepository *repository.MockRepository) message.Message {
+	isError bool, mockRepository *mock2.Repository) message.Message {
 
 	electionSetupID := messagedata.Hash(
 		messagedata.ElectionFlag,
@@ -389,7 +386,7 @@ func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 		})
 	}
 
-	msg := generatortest.NewElectionSetupMsg(t, sender, electionSetupID, setupLao, electionName, version, createdAt, start,
+	msg := generator.NewElectionSetupMsg(t, sender, electionSetupID, setupLao, electionName, version, createdAt, start,
 		end, questions, nil)
 
 	mockRepository.On("GetOrganizerPubKey", laoID).Return(organizer, nil)

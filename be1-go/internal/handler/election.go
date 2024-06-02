@@ -12,7 +12,7 @@ import (
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
-	"popstellar/internal/types/election"
+	"popstellar/internal/types"
 	"sort"
 )
 
@@ -391,7 +391,7 @@ func verifyVote(vote messagedata.Vote, channelPath, electionID string) *answer.E
 	return nil
 }
 
-func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd, questions map[string]election.Question) *answer.Error {
+func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd, questions map[string]types.Question) *answer.Error {
 	var voteIDs []string
 	for _, question := range questions {
 		for _, validVote := range question.ValidVotes {
@@ -413,7 +413,7 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd, questions map[st
 	return nil
 }
 
-func createElectionResult(questions map[string]election.Question, channelPath string) (message.Message, *answer.Error) {
+func createElectionResult(questions map[string]types.Question, channelPath string) (message.Message, *answer.Error) {
 	resultElection, errAnswer := computeElectionResult(questions, channelPath)
 	if errAnswer != nil {
 		return message.Message{}, errAnswer.Wrap("createElectionResult")
@@ -453,7 +453,7 @@ func createElectionResult(questions map[string]election.Question, channelPath st
 	return electionResultMsg, nil
 }
 
-func computeElectionResult(questions map[string]election.Question, channelPath string) (
+func computeElectionResult(questions map[string]types.Question, channelPath string) (
 	messagedata.ElectionResult, *answer.Error) {
 	db, errAnswer := database.GetElectionRepositoryInstance()
 	if errAnswer != nil {
@@ -503,7 +503,7 @@ func computeElectionResult(questions map[string]election.Question, channelPath s
 	return resultElection, nil
 }
 
-func getVoteIndex(vote election.ValidVote, electionType, channelPath string) (int, bool) {
+func getVoteIndex(vote types.ValidVote, electionType, channelPath string) (int, bool) {
 	switch electionType {
 	case messagedata.OpenBallot:
 		index, _ := vote.Index.(int)

@@ -2,6 +2,7 @@ package database
 
 import (
 	"popstellar/internal/message/answer"
+	"popstellar/internal/mocks"
 	repository2 "popstellar/internal/repository"
 	"sync"
 )
@@ -17,7 +18,7 @@ func InitDatabase(db repository2.Repository) {
 
 // ONLY FOR TEST PURPOSE
 // SetDatabase is only here to be used to reset the database before each test
-func SetDatabase(mockRepo *repository2.MockRepository) {
+func SetDatabase(mockRepo *mocks.Repository) {
 	instance = mockRepo
 }
 

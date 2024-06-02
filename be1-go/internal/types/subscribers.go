@@ -1,4 +1,4 @@
-package subscribers
+package types
 
 import (
 	"fmt"

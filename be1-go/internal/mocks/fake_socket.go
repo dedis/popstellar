@@ -1,12 +1,15 @@
-package socket
+package mocks
 
-import "popstellar/internal/message/query/method/message"
+import (
+	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/network/socket"
+)
 
 // FakeSocket is a fake implementation of a Socket
 //
 // - implements socket.Socket
 type FakeSocket struct {
-	Socket
+	socket.Socket
 
 	ResultID    int
 	Res         []message.Message
@@ -44,6 +47,6 @@ func (f *FakeSocket) GetMessage() []byte {
 	return f.Msg
 }
 
-func (f *FakeSocket) Type() SocketType {
-	return ClientSocketType
+func (f *FakeSocket) Type() socket.SocketType {
+	return socket.ClientSocketType
 }

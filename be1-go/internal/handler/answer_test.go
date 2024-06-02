@@ -9,14 +9,14 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/repository"
+	"popstellar/internal/mocks"
 	"popstellar/internal/singleton/database"
 	"testing"
 	"time"
 )
 
 func Test_handleMessagesByChannel(t *testing.T) {
-	mockRepository := repository.NewMockRepository(t)
+	mockRepository := mocks.NewRepository(t)
 	database.SetDatabase(mockRepository)
 
 	type input struct {

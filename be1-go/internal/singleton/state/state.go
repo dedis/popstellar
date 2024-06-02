@@ -3,11 +3,7 @@ package state
 import (
 	"github.com/rs/zerolog"
 	"popstellar/internal/message/answer"
-	"popstellar/internal/types/hubparams"
-	"popstellar/internal/types/peers"
-	"popstellar/internal/types/queries"
-	"popstellar/internal/types/sockets"
-	types2 "popstellar/internal/types/subscribers"
+	"popstellar/internal/types"
 	"sync"
 )
 
@@ -26,11 +22,11 @@ type state struct {
 func InitState(log *zerolog.Logger) {
 	once.Do(func() {
 		instance = &state{
-			subs:             types2.NewSubscribers(),
-			peers:            peers.NewPeers(),
-			queries:          queries.NewQueries(log),
-			hubParams:        hubparams.NewHubParams(),
-			sockets:          sockets.NewSockets(),
+			subs:             types.NewSubscribers(),
+			peers:            types.NewPeers(),
+			queries:          types.NewQueries(log),
+			hubParams:        types.NewHubParams(),
+			sockets:          types.NewSockets(),
 			resetRumorSender: make(chan struct{}),
 		}
 	})
