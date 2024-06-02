@@ -50,11 +50,11 @@ func Test_handleChannelLao(t *testing.T) {
 
 	// Test 1:Success For LaoState message
 	args = append(args, input{
-		name:     "Test 1",
-		msg:      newLaoStateMsg(t, ownerPubBuf64, laoID, mockRepository),
-		channel:  laoID,
-		isError:  false,
-		contains: "",
+		name:        "Test 1",
+		msg:         newLaoStateMsg(t, ownerPubBuf64, laoID, mockRepository),
+		channelPath: laoID,
+		isError:     false,
+		contains:    "",
 	})
 
 	creation := time.Now().Unix()
@@ -63,38 +63,38 @@ func Test_handleChannelLao(t *testing.T) {
 
 	// Test 2: Error when RollCallCreate ID is not the expected hash
 	args = append(args, input{
-		name:     "Test 2",
-		msg:      newRollCallCreateMsg(t, ownerPubBuf64, laoID, wrongLaoName, creation, start, end, true, mockRepository),
-		channel:  laoID,
-		isError:  true,
-		contains: "roll call id is",
+		name:        "Test 2",
+		msg:         newRollCallCreateMsg(t, ownerPubBuf64, laoID, wrongLaoName, creation, start, end, true, mockRepository),
+		channelPath: laoID,
+		isError:     true,
+		contains:    "roll call id is",
 	})
 
 	// Test 3: Error when RollCallCreate proposed start is before creation
 	args = append(args, input{
-		name:     "Test 3",
-		msg:      newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, creation-1, end, true, mockRepository),
-		channel:  laoID,
-		isError:  true,
-		contains: "roll call proposed start time should be greater than creation time",
+		name:        "Test 3",
+		msg:         newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, creation-1, end, true, mockRepository),
+		channelPath: laoID,
+		isError:     true,
+		contains:    "roll call proposed start time should be greater than creation time",
 	})
 
 	// Test 4: Error when RollCallCreate proposed end is before proposed start
 	args = append(args, input{
-		name:     "Test 4",
-		msg:      newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, start, start-1, true, mockRepository),
-		channel:  laoID,
-		isError:  true,
-		contains: "roll call proposed end should be greater than proposed start",
+		name:        "Test 4",
+		msg:         newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, start, start-1, true, mockRepository),
+		channelPath: laoID,
+		isError:     true,
+		contains:    "roll call proposed end should be greater than proposed start",
 	})
 
 	// Test 5: Success for RollCallCreate message
 	args = append(args, input{
-		name:     "Test 5",
-		msg:      newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, start, end, false, mockRepository),
-		channel:  laoID,
-		isError:  false,
-		contains: "",
+		name:        "Test 5",
+		msg:         newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, start, end, false, mockRepository),
+		channelPath: laoID,
+		isError:     false,
+		contains:    "",
 	})
 
 	opens := base64.URLEncoding.EncodeToString([]byte("opens"))
@@ -102,20 +102,20 @@ func Test_handleChannelLao(t *testing.T) {
 
 	// Test 6: Error when RollCallOpen ID is not the expected hash
 	args = append(args, input{
-		name:     "Test 6",
-		msg:      newRollCallOpenMsg(t, ownerPubBuf64, laoID, wrongOpens, "", time.Now().Unix(), true, mockRepository),
-		channel:  laoID,
-		isError:  true,
-		contains: "roll call update id is",
+		name:        "Test 6",
+		msg:         newRollCallOpenMsg(t, ownerPubBuf64, laoID, wrongOpens, "", time.Now().Unix(), true, mockRepository),
+		channelPath: laoID,
+		isError:     true,
+		contains:    "roll call update id is",
 	})
 
 	// Test 7: Error when RollCallOpen opens is not the same as previous RollCallCreate
 	args = append(args, input{
-		name:     "Test 7",
-		msg:      newRollCallOpenMsg(t, ownerPubBuf64, laoID, opens, wrongOpens, time.Now().Unix(), true, mockRepository),
-		channel:  laoID,
-		isError:  true,
-		contains: "previous id does not exist",
+		name:        "Test 7",
+		msg:         newRollCallOpenMsg(t, ownerPubBuf64, laoID, opens, wrongOpens, time.Now().Unix(), true, mockRepository),
+		channelPath: laoID,
+		isError:     true,
+		contains:    "previous id does not exist",
 	})
 
 	laoID = base64.URLEncoding.EncodeToString([]byte("laoID2"))
@@ -124,11 +124,11 @@ func Test_handleChannelLao(t *testing.T) {
 
 	// Test 8: Success for RollCallOpen message
 	args = append(args, input{
-		name:     "Test 8",
-		msg:      newRollCallOpenMsg(t, ownerPubBuf64, laoID, opens, opens, time.Now().Unix(), false, mockRepository),
-		channel:  laoID,
-		isError:  false,
-		contains: "",
+		name:        "Test 8",
+		msg:         newRollCallOpenMsg(t, ownerPubBuf64, laoID, opens, opens, time.Now().Unix(), false, mockRepository),
+		channelPath: laoID,
+		isError:     false,
+		contains:    "",
 	})
 
 	closes := base64.URLEncoding.EncodeToString([]byte("closes"))
@@ -136,20 +136,20 @@ func Test_handleChannelLao(t *testing.T) {
 
 	// Test 9: Error when RollCallClose ID is not the expected hash
 	args = append(args, input{
-		name:     "Test 9",
-		msg:      newRollCallCloseMsg(t, ownerPubBuf64, laoID, wrongCloses, "", time.Now().Unix(), true, mockRepository),
-		channel:  laoID,
-		isError:  true,
-		contains: "roll call update id is",
+		name:        "Test 9",
+		msg:         newRollCallCloseMsg(t, ownerPubBuf64, laoID, wrongCloses, "", time.Now().Unix(), true, mockRepository),
+		channelPath: laoID,
+		isError:     true,
+		contains:    "roll call update id is",
 	})
 
 	// Test 10: Error when RollCallClose closes is not the same as previous RollCallOpen
 	args = append(args, input{
-		name:     "Test 10",
-		msg:      newRollCallCloseMsg(t, ownerPubBuf64, laoID, closes, wrongCloses, time.Now().Unix(), true, mockRepository),
-		channel:  laoID,
-		isError:  true,
-		contains: "previous id does not exist",
+		name:        "Test 10",
+		msg:         newRollCallCloseMsg(t, ownerPubBuf64, laoID, closes, wrongCloses, time.Now().Unix(), true, mockRepository),
+		channelPath: laoID,
+		isError:     true,
+		contains:    "previous id does not exist",
 	})
 
 	laoID = base64.URLEncoding.EncodeToString([]byte("laoID3"))
@@ -158,11 +158,11 @@ func Test_handleChannelLao(t *testing.T) {
 
 	// Test 11: Success for RollCallClose message
 	args = append(args, input{
-		name:     "Test 11",
-		msg:      newRollCallCloseMsg(t, ownerPubBuf64, laoID, closes, closes, time.Now().Unix(), false, mockRepository),
-		channel:  laoID,
-		isError:  false,
-		contains: "",
+		name:        "Test 11",
+		msg:         newRollCallCloseMsg(t, ownerPubBuf64, laoID, closes, closes, time.Now().Unix(), false, mockRepository),
+		channelPath: laoID,
+		isError:     false,
+		contains:    "",
 	})
 
 	electionsName := "electionName"
@@ -173,20 +173,20 @@ func Test_handleChannelLao(t *testing.T) {
 		name: "Test 12",
 		msg: newElectionSetupMsg(t, ownerPublicKey, wrongSender, laoID, laoID, electionsName, question, messagedata.OpenBallot,
 			creation, start, end, true, mockRepository),
-		channel:  laoID,
-		isError:  true,
-		contains: "sender public key does not match organizer public key",
+		channelPath: laoID,
+		isError:     true,
+		contains:    "sender public key does not match organizer public key",
 	})
 
 	wrongLaoID := base64.URLEncoding.EncodeToString([]byte("wrongLaoID"))
-	// Test 13: Error when ElectionSetup lao is not the same as the channel
+	// Test 13: Error when ElectionSetup lao is not the same as the channelPath
 	args = append(args, input{
 		name: "Test 13",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, wrongLaoID, laoID, electionsName, question, messagedata.OpenBallot,
 			creation, start, end, true, mockRepository),
-		channel:  laoID,
-		isError:  true,
-		contains: "lao id is",
+		channelPath: laoID,
+		isError:     true,
+		contains:    "lao id is",
 	})
 
 	// Test 14: Error when ElectionSetup ID is not the expected hash
@@ -194,9 +194,9 @@ func Test_handleChannelLao(t *testing.T) {
 		name: "Test 14",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, "wrongName", question, messagedata.OpenBallot,
 			creation, start, end, true, mockRepository),
-		channel:  laoID,
-		isError:  true,
-		contains: "election id is",
+		channelPath: laoID,
+		isError:     true,
+		contains:    "election id is",
 	})
 
 	// Test 15: Error when proposedStart is before createdAt
@@ -204,9 +204,9 @@ func Test_handleChannelLao(t *testing.T) {
 		name: "Test 15",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, question, messagedata.OpenBallot,
 			creation, creation-1, end, true, mockRepository),
-		channel:  laoID,
-		isError:  true,
-		contains: "election start should be greater that creation time",
+		channelPath: laoID,
+		isError:     true,
+		contains:    "election start should be greater that creation time",
 	})
 
 	// Test 16: Error when proposedEnd is before proposedStart
@@ -214,9 +214,9 @@ func Test_handleChannelLao(t *testing.T) {
 		name: "Test 16",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, question, messagedata.OpenBallot,
 			creation, start, start-1, true, mockRepository),
-		channel:  laoID,
-		isError:  true,
-		contains: "election end should be greater that start time",
+		channelPath: laoID,
+		isError:     true,
+		contains:    "election end should be greater that start time",
 	})
 
 	// Test 17: Error when ElectionSetup question is empty
@@ -224,9 +224,9 @@ func Test_handleChannelLao(t *testing.T) {
 		name: "Test 17",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, "", messagedata.OpenBallot,
 			creation, start, end, true, mockRepository),
-		channel:  laoID,
-		isError:  true,
-		contains: "Question is empty",
+		channelPath: laoID,
+		isError:     true,
+		contains:    "Question is empty",
 	})
 
 	//Test 18: Error when question hash is not the same as the expected hash
@@ -234,9 +234,9 @@ func Test_handleChannelLao(t *testing.T) {
 		name: "Test 18",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, wrongQuestion, messagedata.OpenBallot,
 			creation, start, end, true, mockRepository),
-		channel:  laoID,
-		isError:  true,
-		contains: "Question id is",
+		channelPath: laoID,
+		isError:     true,
+		contains:    "Question id is",
 	})
 
 	laoID = base64.URLEncoding.EncodeToString([]byte("laoID4"))
@@ -248,14 +248,14 @@ func Test_handleChannelLao(t *testing.T) {
 		name: "Test 19",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, question, messagedata.OpenBallot,
 			creation, start, end, false, mockRepository),
-		channel:  laoID,
-		isError:  false,
-		contains: "",
+		channelPath: laoID,
+		isError:     false,
+		contains:    "",
 	})
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := handleChannelLao(arg.channel, arg.msg)
+			errAnswer := handleChannelLao(arg.channelPath, arg.msg)
 			if arg.isError {
 				require.NotNil(t, errAnswer)
 				require.Contains(t, errAnswer.Error(), arg.contains)

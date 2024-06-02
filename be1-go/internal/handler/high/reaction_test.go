@@ -52,8 +52,8 @@ func Test_handleChannelReaction(t *testing.T) {
 	channelID := RootPrefix + laoID + Social + Reactions
 
 	args = append(args, input{
-		name:    "Test 1",
-		channel: channelID,
+		name:        "Test 1",
+		channelPath: channelID,
 		msg: newReactionAddMsg(t, channelID, sender, "👍", chirpID, time.Now().Unix(), mockRepository,
 			false, false),
 		isError:  false,
@@ -66,8 +66,8 @@ func Test_handleChannelReaction(t *testing.T) {
 	channelID = RootPrefix + laoID + Social + Reactions
 
 	args = append(args, input{
-		name:    "Test 2",
-		channel: channelID,
+		name:        "Test 2",
+		channelPath: channelID,
 		msg: newReactionAddMsg(t, channelID, sender, "👎", chirpID, time.Now().Unix(), mockRepository,
 			false, false),
 		isError:  false,
@@ -80,8 +80,8 @@ func Test_handleChannelReaction(t *testing.T) {
 	channelID = RootPrefix + laoID + Social + Reactions
 
 	args = append(args, input{
-		name:    "Test 3",
-		channel: channelID,
+		name:        "Test 3",
+		channelPath: channelID,
 		msg: newReactionAddMsg(t, channelID, sender, "❤️", chirpID, time.Now().Unix(), mockRepository,
 			false, false),
 		isError:  false,
@@ -94,8 +94,8 @@ func Test_handleChannelReaction(t *testing.T) {
 	channelID = RootPrefix + laoID + Social + Reactions
 
 	args = append(args, input{
-		name:    "Test 4",
-		channel: channelID,
+		name:        "Test 4",
+		channelPath: channelID,
 		msg: newReactionAddMsg(t, channelID, sender, "👍", invalidChirpID, time.Now().Unix(), mockRepository,
 			true, false),
 		isError:  true,
@@ -108,8 +108,8 @@ func Test_handleChannelReaction(t *testing.T) {
 	channelID = RootPrefix + laoID + Social + Reactions
 
 	args = append(args, input{
-		name:    "Test 5",
-		channel: channelID,
+		name:        "Test 5",
+		channelPath: channelID,
 		msg: newReactionAddMsg(t, channelID, sender, "👍", chirpID, -1, mockRepository,
 			true, false),
 		isError:  true,
@@ -122,8 +122,8 @@ func Test_handleChannelReaction(t *testing.T) {
 	channelID = RootPrefix + laoID + Social + Reactions
 
 	args = append(args, input{
-		name:    "Test 6",
-		channel: channelID,
+		name:        "Test 6",
+		channelPath: channelID,
 		msg: newReactionAddMsg(t, channelID, sender, "👍", chirpID, time.Now().Unix(), mockRepository,
 			false, true),
 		isError:  true,
@@ -137,8 +137,8 @@ func Test_handleChannelReaction(t *testing.T) {
 	reactionID := "AAAAdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sK="
 
 	args = append(args, input{
-		name:    "Test 7",
-		channel: channelID,
+		name:        "Test 7",
+		channelPath: channelID,
 		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, time.Now().Unix(), mockRepository,
 			false, false, false, false),
 		isError:  false,
@@ -152,8 +152,8 @@ func Test_handleChannelReaction(t *testing.T) {
 	reactionID = "AAAAABu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sK="
 
 	args = append(args, input{
-		name:    "Test 8",
-		channel: channelID,
+		name:        "Test 8",
+		channelPath: channelID,
 		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, -1, mockRepository,
 			true, false, false, false),
 		isError:  true,
@@ -167,8 +167,8 @@ func Test_handleChannelReaction(t *testing.T) {
 	reactionID = "AAAAdBB8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sK="
 
 	args = append(args, input{
-		name:    "Test 9",
-		channel: channelID,
+		name:        "Test 9",
+		channelPath: channelID,
 		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, time.Now().Unix(), mockRepository,
 			false, true, false, false),
 		isError:  true,
@@ -182,8 +182,8 @@ func Test_handleChannelReaction(t *testing.T) {
 	reactionID = "AAAAdBB8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4KK="
 
 	args = append(args, input{
-		name:    "Test 10",
-		channel: channelID,
+		name:        "Test 10",
+		channelPath: channelID,
 		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, time.Now().Unix(), mockRepository,
 			false, false, true, false),
 		isError:  true,
@@ -197,8 +197,8 @@ func Test_handleChannelReaction(t *testing.T) {
 	reactionID = "AAAAdBB8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dRYKK="
 
 	args = append(args, input{
-		name:    "Test 11",
-		channel: channelID,
+		name:        "Test 11",
+		channelPath: channelID,
 		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, time.Now().Unix(), mockRepository,
 			false, false, false, true),
 		isError:  true,
@@ -209,7 +209,7 @@ func Test_handleChannelReaction(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := handleChannelReaction(arg.channel, arg.msg)
+			errAnswer := handleChannelReaction(arg.channelPath, arg.msg)
 			if arg.isError {
 				require.NotNil(t, errAnswer)
 				require.Contains(t, errAnswer.Error(), arg.contains)

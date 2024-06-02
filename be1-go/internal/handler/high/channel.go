@@ -46,7 +46,7 @@ func HandleChannel(channelPath string, msg message.Message, fromRumor bool) *ans
 
 	channelType, err := db.GetChannelType(channelPath)
 	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("channel type: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("channelPath type: %v", err)
 		return errAnswer.Wrap("HandleChannel")
 	}
 
@@ -66,7 +66,7 @@ func HandleChannel(channelPath string, msg message.Message, fromRumor bool) *ans
 	case sqlite.FederationType:
 		errAnswer = handleChannelFederation(channelPath, msg)
 	default:
-		errAnswer = answer.NewInvalidResourceError("unknown channel type for %s", channelPath)
+		errAnswer = answer.NewInvalidResourceError("unknown channelPath type for %s", channelPath)
 	}
 
 	if errAnswer != nil {

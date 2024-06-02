@@ -68,18 +68,18 @@ func Test_handleChannelFederation(t *testing.T) {
 	// Test 1 Error when FederationChallengeRequest sender is not the same as
 	// the lao organizer
 	args = append(args, input{
-		name:    "Test 1",
-		channel: channelPath,
+		name:        "Test 1",
+		channelPath: channelPath,
 		msg: generator.NewFederationChallengeRequest(t,
 			notOrganizer, validUntil, notOrganizerSk),
 		isError:  true,
-		contains: "sender is not the organizer of the channel",
+		contains: "sender is not the organizer of the channelPath",
 	})
 
 	// Test 2 Error when FederationChallengeRequest timestamp is negative
 	args = append(args, input{
-		name:    "Test 2",
-		channel: channelPath,
+		name:        "Test 2",
+		channelPath: channelPath,
 		msg: generator.NewFederationChallengeRequest(t,
 			organizer, -1, organizerSk),
 		isError:  true,
@@ -89,21 +89,21 @@ func Test_handleChannelFederation(t *testing.T) {
 	// Test 3 Error when FederationExpect sender is not the same as the lao
 	// organizer
 	args = append(args, input{
-		name:    "Test 3",
-		channel: channelPath,
+		name:        "Test 3",
+		channelPath: channelPath,
 		msg: generator.NewFederationExpect(t, notOrganizer, laoID,
 			serverAddressA, organizer2,
 			generator.NewFederationChallenge(t, organizer,
 				value, validUntil, organizerSk),
 			notOrganizerSk),
 		isError:  true,
-		contains: "sender is not the organizer of the channel",
+		contains: "sender is not the organizer of the channelPath",
 	})
 
 	// Test 4 Error when FederationExpect serverAddress is not valid format
 	args = append(args, input{
-		name:    "Test 4",
-		channel: channelPath,
+		name:        "Test 4",
+		channelPath: channelPath,
 		msg: generator.NewFederationExpect(t, organizer, laoID,
 			"ws:localhost:12345/client", organizer2,
 			generator.NewFederationChallenge(t, organizer,
@@ -115,8 +115,8 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	// Test 5 Error when FederationExpect publicKey is not valid format
 	args = append(args, input{
-		name:    "Test 5",
-		channel: channelPath,
+		name:        "Test 5",
+		channelPath: channelPath,
 		msg: generator.NewFederationExpect(t, organizer, laoID,
 			serverAddressA, "organizer2",
 			generator.NewFederationChallenge(t, organizer,
@@ -128,8 +128,8 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	// Test 6 Error when FederationExpect laoId is not valid format
 	args = append(args, input{
-		name:    "Test 6",
-		channel: channelPath,
+		name:        "Test 6",
+		channelPath: channelPath,
 		msg: generator.NewFederationExpect(t, organizer, "laoID",
 			serverAddressA, organizer2,
 			generator.NewFederationChallenge(t, organizer,
@@ -141,8 +141,8 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	// Test 7 Error when FederationExpect challenge message is not a challenge
 	args = append(args, input{
-		name:    "Test 7",
-		channel: channelPath,
+		name:        "Test 7",
+		channelPath: channelPath,
 		msg: generator.NewFederationExpect(t, organizer, laoID,
 			serverAddressA, organizer2,
 			generator.NewFederationChallengeRequest(t, organizer,
@@ -154,35 +154,35 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	// Test 8 Error when FederationExpect challenge is not from organizer
 	args = append(args, input{
-		name:    "Test 8",
-		channel: channelPath,
+		name:        "Test 8",
+		channelPath: channelPath,
 		msg: generator.NewFederationExpect(t, organizer, laoID,
 			serverAddressA, organizer2,
 			generator.NewFederationChallenge(t, notOrganizer,
 				value, validUntil, notOrganizerSk),
 			organizerSk),
 		isError:  true,
-		contains: "sender is not the organizer of the channel",
+		contains: "sender is not the organizer of the channelPath",
 	})
 
 	// Test 9 Error when FederationInit sender is not the same as the lao
 	// organizer
 	args = append(args, input{
-		name:    "Test 9",
-		channel: channelPath,
+		name:        "Test 9",
+		channelPath: channelPath,
 		msg: generator.NewFederationInit(t, notOrganizer, laoID,
 			serverAddressA, organizer2,
 			generator.NewFederationChallenge(t, organizer,
 				value, validUntil, organizerSk),
 			notOrganizerSk),
 		isError:  true,
-		contains: "sender is not the organizer of the channel",
+		contains: "sender is not the organizer of the channelPath",
 	})
 
 	// Test 10 Error when FederationInit serverAddress is not valid format
 	args = append(args, input{
-		name:    "Test 10",
-		channel: channelPath,
+		name:        "Test 10",
+		channelPath: channelPath,
 		msg: generator.NewFederationInit(t, organizer, laoID,
 			"ws:localhost:12345/client", organizer2,
 			generator.NewFederationChallenge(t, organizer,
@@ -194,8 +194,8 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	// Test 11 Error when FederationInit publicKey is not valid format
 	args = append(args, input{
-		name:    "Test 11",
-		channel: channelPath,
+		name:        "Test 11",
+		channelPath: channelPath,
 		msg: generator.NewFederationInit(t, organizer, laoID,
 			serverAddressA, "organizer2",
 			generator.NewFederationChallenge(t, organizer,
@@ -207,8 +207,8 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	// Test 12 Error when FederationInit laoId is not valid format
 	args = append(args, input{
-		name:    "Test 12",
-		channel: channelPath,
+		name:        "Test 12",
+		channelPath: channelPath,
 		msg: generator.NewFederationInit(t, organizer, "laoID",
 			serverAddressA, organizer2,
 			generator.NewFederationChallenge(t, organizer,
@@ -220,8 +220,8 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	// Test 13 Error when FederationInit challenge message is not a challenge
 	args = append(args, input{
-		name:    "Test 13",
-		channel: channelPath,
+		name:        "Test 13",
+		channelPath: channelPath,
 		msg: generator.NewFederationInit(t, organizer, laoID,
 			serverAddressA, organizer2,
 			generator.NewFederationChallengeRequest(t, organizer,
@@ -233,15 +233,15 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	// Test 14 Error when FederationInit challenge is not from organizer
 	args = append(args, input{
-		name:    "Test 14",
-		channel: channelPath,
+		name:        "Test 14",
+		channelPath: channelPath,
 		msg: generator.NewFederationInit(t, organizer, laoID,
 			serverAddressA, organizer2,
 			generator.NewFederationChallenge(t, notOrganizer,
 				value, validUntil, notOrganizerSk),
 			organizerSk),
 		isError:  true,
-		contains: "sender is not the organizer of the channel",
+		contains: "sender is not the organizer of the channelPath",
 	})
 
 	federationChallenge1 := messagedata.FederationChallenge{
@@ -258,8 +258,8 @@ func Test_handleChannelFederation(t *testing.T) {
 	// Test 15 Error when FederationChallenge is received without any
 	// matching FederationExpect
 	args = append(args, input{
-		name:    "Test 15",
-		channel: channelPath,
+		name:        "Test 15",
+		channelPath: channelPath,
 		msg: generator.NewFederationChallenge(t, notOrganizer, value,
 			validUntil, notOrganizerSk),
 		isError:  true,
@@ -268,8 +268,8 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	// Test 16 Error when FederationResult challenge message is not a challenge
 	args = append(args, input{
-		name:    "Test 16",
-		channel: channelPath,
+		name:        "Test 16",
+		channelPath: channelPath,
 		msg: generator.NewSuccessFederationResult(t, organizer2,
 			organizer, generator.NewFederationChallengeRequest(t,
 				organizer2, validUntil, organizer2Sk), organizer2Sk),
@@ -279,8 +279,8 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	// Test 17 Error when FederationResult PublicKey is not the organizerPk
 	args = append(args, input{
-		name:    "Test 17",
-		channel: channelPath,
+		name:        "Test 17",
+		channelPath: channelPath,
 		msg: generator.NewSuccessFederationResult(t, organizer2,
 			notOrganizer, generator.NewFederationChallenge(t, organizer2,
 				value, validUntil, organizer2Sk), organizer2Sk),
@@ -295,8 +295,8 @@ func Test_handleChannelFederation(t *testing.T) {
 	// Test 18 Error when FederationResult is received without any
 	// matching FederationInit
 	args = append(args, input{
-		name:    "Test 18",
-		channel: channelPath,
+		name:        "Test 18",
+		channelPath: channelPath,
 		msg: generator.NewSuccessFederationResult(t, organizer2,
 			organizer, generator.NewFederationChallenge(t, organizer2,
 				value, validUntil, organizer2Sk), organizer2Sk),
@@ -306,7 +306,7 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := handleChannelFederation(arg.channel, arg.msg)
+			errAnswer := handleChannelFederation(arg.channelPath, arg.msg)
 			if arg.isError {
 				require.Contains(t, errAnswer.Error(), arg.contains)
 			} else {

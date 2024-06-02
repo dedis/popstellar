@@ -27,11 +27,11 @@ const (
 )
 
 type input struct {
-	name     string
-	channel  string
-	msg      message.Message
-	isError  bool
-	contains string
+	name        string
+	channelPath string
+	msg         message.Message
+	isError     bool
+	contains    string
 }
 
 func Test_handleChannelRoot(t *testing.T) {

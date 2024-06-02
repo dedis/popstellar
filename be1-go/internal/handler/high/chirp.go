@@ -36,7 +36,7 @@ func handleChannelChirp(channelPath string, msg message.Message) *answer.Error {
 
 	generalChirpsChannelID, ok := strings.CutSuffix(channelPath, Social+"/"+msg.Sender)
 	if !ok {
-		errAnswer := answer.NewInvalidMessageFieldError("invalid channel path %s", channelPath)
+		errAnswer := answer.NewInvalidMessageFieldError("invalid channelPath path %s", channelPath)
 		return errAnswer.Wrap("handleChannelChirp")
 	}
 
@@ -117,7 +117,7 @@ func verifyChirpMessage(channelID string, msg message.Message, chirpMsg messaged
 	}
 
 	if !strings.HasSuffix(channelID, msg.Sender) {
-		errAnswer := answer.NewAccessDeniedError("only the owner of the channel can post chirps")
+		errAnswer := answer.NewAccessDeniedError("only the owner of the channelPath can post chirps")
 		return errAnswer.Wrap("verifyChirpMessage")
 	}
 

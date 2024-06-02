@@ -18,7 +18,7 @@ import (
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/singleton/database"
-	state2 "popstellar/internal/singleton/state"
+	state "popstellar/internal/singleton/state"
 	"strings"
 	"time"
 )
@@ -62,7 +62,7 @@ func handleChannelFederation(channelPath string, msg message.Message) *answer.Er
 }
 
 // handleRequestChallenge expects the sender to be the organizer of the lao,
-// a challenge message is then stored and broadcast on the same channel.
+// a challenge message is then stored and broadcast on the same channelPath.
 // The FederationChallengeRequest message is neither stored nor broadcast
 func handleRequestChallenge(msg message.Message, channelPath string) *answer.Error {
 	var requestChallenge messagedata.FederationChallengeRequest
@@ -169,7 +169,7 @@ func handleExpect(msg message.Message, channelPath string) *answer.Error {
 	}
 
 	remoteChannel := fmt.Sprintf(channelPattern, federationExpect.LaoId)
-	_ = state2.AddChannel(remoteChannel)
+	_ = state.AddChannel(remoteChannel)
 
 	err = db.StoreMessageAndData(channelPath, msg)
 	if err != nil {
@@ -231,8 +231,8 @@ func handleInit(msg message.Message, channelPath string) *answer.Error {
 
 	//Force the remote server to be subscribed to /root/<remote_lao>/federation
 	remoteChannel := fmt.Sprintf(channelPattern, federationInit.LaoId)
-	_ = state2.AddChannel(remoteChannel)
-	errAnswer = state2.Subscribe(remote, remoteChannel)
+	_ = state.AddChannel(remoteChannel)
+	errAnswer = state.Subscribe(remote, remoteChannel)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleFederationInit")
 	}
@@ -255,12 +255,12 @@ func handleInit(msg message.Message, channelPath string) *answer.Error {
 	}
 
 	// Subscribe to /root/<local_lao>/federation on the remote server
-	errAnswer = state2.SendToAll(subscribeBytes, remoteChannel)
+	errAnswer = state.SendToAll(subscribeBytes, remoteChannel)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleFederationInit")
 	}
 
-	// send the challenge to a channel where the remote server is subscribed to
+	// send the challenge to a channelPath where the remote server is subscribed to
 	errAnswer = publishTo(federationInit.ChallengeMsg, remoteChannel)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleFederationInit")
@@ -468,7 +468,7 @@ func verifyLocalOrganizer(msg message.Message, channelPath string) *answer.Error
 	}
 
 	if organizePk != msg.Sender {
-		errAnswer = answer.NewAccessDeniedError("sender is not the organizer of the channel")
+		errAnswer = answer.NewAccessDeniedError("sender is not the organizer of the channelPath")
 		return errAnswer.Wrap("verifyLocalSender")
 	}
 
@@ -483,22 +483,22 @@ func connectTo(serverAddress string) (socket.Socket, *answer.Error) {
 		return nil, errAnswer.Wrap("connectTo")
 	}
 
-	messageChan, errAnswer := state2.GetMessageChan()
+	messageChan, errAnswer := state.GetMessageChan()
 	if errAnswer != nil {
 		return nil, errAnswer.Wrap("connectTo")
 	}
 
-	closedSockets, errAnswer := state2.GetClosedSockets()
+	closedSockets, errAnswer := state.GetClosedSockets()
 	if errAnswer != nil {
 		return nil, errAnswer.Wrap("connectTo")
 	}
 
-	wg, errAnswer := state2.GetWaitGroup()
+	wg, errAnswer := state.GetWaitGroup()
 	if errAnswer != nil {
 		return nil, errAnswer.Wrap("connectTo")
 	}
 
-	stopChan, errAnswer := state2.GetStopChan()
+	stopChan, errAnswer := state.GetStopChan()
 	if errAnswer != nil {
 		return nil, errAnswer.Wrap("connectTo")
 	}
@@ -562,7 +562,7 @@ func createMessage(data messagedata.MessageData) (message.Message, *answer.Error
 	return msg, nil
 }
 
-func publishTo(msg message.Message, channel string) *answer.Error {
+func publishTo(msg message.Message, channelPath string) *answer.Error {
 	publishMsg := method.Publish{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -571,7 +571,7 @@ func publishTo(msg message.Message, channel string) *answer.Error {
 			Method: "publish",
 		},
 		Params: method.PublishParams{
-			Channel: channel,
+			Channel: channelPath,
 			Message: msg,
 		},
 	}
@@ -583,7 +583,7 @@ func publishTo(msg message.Message, channel string) *answer.Error {
 		return errAnswer.Wrap("publishTo")
 	}
 
-	errAnswer := state2.SendToAll(publishBytes, channel)
+	errAnswer := state.SendToAll(publishBytes, channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("publishTo")
 	}

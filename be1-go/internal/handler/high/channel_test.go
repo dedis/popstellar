@@ -45,43 +45,43 @@ func Test_handleChannel(t *testing.T) {
 	sender := base64.URLEncoding.EncodeToString(keypair.PublicBuf)
 
 	type input struct {
-		name     string
-		channel  string
-		message  message.Message
-		contains string
+		name        string
+		channelPath string
+		message     message.Message
+		contains    string
 	}
 
 	args := make([]input, 0)
 
-	// Test 1: failed to handled message because unknown channel type
+	// Test 1: failed to handled message because unknown channelPath type
 
-	channel := "unknown"
+	channelPath := "unknown"
 	msg := generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
-	mockRepository.On("GetChannelType", channel).Return("", nil)
+	mockRepository.On("GetChannelType", channelPath).Return("", nil)
 
 	args = append(args, input{
-		name:     "Test 1",
-		channel:  channel,
-		message:  msg,
-		contains: "unknown channel type for " + channel,
+		name:        "Test 1",
+		channelPath: channelPath,
+		message:     msg,
+		contains:    "unknown channelPath type for " + channelPath,
 	})
 
-	// Test 2: failed to handled message because db is disconnected when querying the channel type
+	// Test 2: failed to handled message because db is disconnected when querying the channelPath type
 
-	channel = "disconnectedDB"
+	channelPath = "disconnectedDB"
 	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
-	mockRepository.On("GetChannelType", channel).
+	mockRepository.On("GetChannelType", channelPath).
 		Return("", xerrors.Errorf("DB is disconnected"))
 
 	args = append(args, input{
-		name:     "Test 2",
-		channel:  channel,
-		message:  msg,
-		contains: "DB is disconnected",
+		name:        "Test 2",
+		channelPath: channelPath,
+		message:     msg,
+		contains:    "DB is disconnected",
 	})
 
 	// Test 3: failed to handled message because message already exists
@@ -189,7 +189,7 @@ func Test_handleChannel(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := HandleChannel(arg.channel, arg.message, false)
+			errAnswer := HandleChannel(arg.channelPath, arg.message, false)
 			require.NotNil(t, errAnswer)
 			require.Contains(t, errAnswer.Error(), arg.contains)
 		})

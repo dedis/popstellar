@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func handleChannelReaction(channel string, msg message.Message) *answer.Error {
+func handleChannelReaction(channelPath string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleChannelReaction")
@@ -19,7 +19,7 @@ func handleChannelReaction(channel string, msg message.Message) *answer.Error {
 		return errAnswer.Wrap("handleChannelReaction")
 	}
 
-	laoPath, _ := strings.CutSuffix(channel, Social+Reactions)
+	laoPath, _ := strings.CutSuffix(channelPath, Social+Reactions)
 	isAttendee, err := db.IsAttendee(laoPath, msg.Sender)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("if is attendee: %v", err)
@@ -42,13 +42,13 @@ func handleChannelReaction(channel string, msg message.Message) *answer.Error {
 		return errAnswer.Wrap("handleChannelReaction")
 	}
 
-	err = db.StoreMessageAndData(channel, msg)
+	err = db.StoreMessageAndData(channelPath, msg)
 	if err != nil {
 		errAnswer := answer.NewStoreDatabaseError(err.Error())
 		return errAnswer.Wrap("handleChannelReaction")
 	}
 
-	errAnswer = broadcastToAllClients(msg, channel)
+	errAnswer = broadcastToAllClients(msg, channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleChannelReaction")
 	}

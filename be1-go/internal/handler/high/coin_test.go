@@ -39,52 +39,52 @@ func Test_handleChannelCoin(t *testing.T) {
 
 	inputs := make([]inputTestHandleChannelCoin, 0)
 
-	// Tests that the channel works correctly when it receives a transaction
+	// Tests that the channelPath works correctly when it receives a transaction
 
 	inputs = append(inputs, newSuccessTestHandleChannelCoin(t,
 		"post_transaction.json",
 		"send transaction",
 		mockRepository))
 
-	// Tests that the channel works correctly when it receives a large transaction
+	// Tests that the channelPath works correctly when it receives a large transaction
 
 	inputs = append(inputs, newSuccessTestHandleChannelCoin(t,
 		"post_transaction_max_amount.json",
 		"send transaction max amount",
 		mockRepository))
 
-	// Tests that the channel rejects transactions that exceed the maximum amount
+	// Tests that the channelPath rejects transactions that exceed the maximum amount
 
 	inputs = append(inputs, newFailTestHandleChannelCoin(t,
 		"post_transaction_overflow_amount.json",
 		"send transaction overflow amount"))
 
-	// Tests that the channel accepts transactions with zero amounts
+	// Tests that the channelPath accepts transactions with zero amounts
 
 	inputs = append(inputs, newSuccessTestHandleChannelCoin(t,
 		"post_transaction_zero_amount.json",
 		"send transaction zero amount",
 		mockRepository))
 
-	// Tests that the channel rejects transactions with negative amounts
+	// Tests that the channelPath rejects transactions with negative amounts
 
 	inputs = append(inputs, newFailTestHandleChannelCoin(t,
 		"post_transaction_negative_amount.json",
 		"send transaction negative amount"))
 
-	// Tests that the channel rejects Transaction with wrong id
+	// Tests that the channelPath rejects Transaction with wrong id
 
 	inputs = append(inputs, newFailTestHandleChannelCoin(t,
 		"post_transaction_wrong_transaction_id.json",
 		"send transaction wrong id"))
 
-	// Tests that the channel rejects Transaction with bad signature
+	// Tests that the channelPath rejects Transaction with bad signature
 
 	inputs = append(inputs, newFailTestHandleChannelCoin(t,
 		"post_transaction_bad_signature.json",
 		"send transaction bad signature"))
 
-	// Tests that the channel works correctly when it receives a transaction
+	// Tests that the channelPath works correctly when it receives a transaction
 
 	inputs = append(inputs, newSuccessTestHandleChannelCoin(t,
 		"post_transaction_coinbase.json",

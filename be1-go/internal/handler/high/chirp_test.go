@@ -48,81 +48,81 @@ func Test_handleChannelChirp(t *testing.T) {
 
 	// Test 1: successfully add a chirp and notify it
 
-	channelID := "/root/lao1/social/" + sender
+	channelPath := "/root/lao1/social/" + sender
 
 	args = append(args, input{
-		name:     "Test 1",
-		channel:  channelID,
-		msg:      newChirpAddMsg(t, channelID, sender, time.Now().Unix(), mockRepository, false),
-		isError:  false,
-		contains: "",
+		name:        "Test 1",
+		channelPath: channelPath,
+		msg:         newChirpAddMsg(t, channelPath, sender, time.Now().Unix(), mockRepository, false),
+		isError:     false,
+		contains:    "",
 	})
 
-	// Test 2: failed to add chirp because not owner of the channel
+	// Test 2: failed to add chirp because not owner of the channelPath
 
-	channelID = "/root/lao2/social/" + sender
+	channelPath = "/root/lao2/social/" + sender
 
 	args = append(args, input{
-		name:     "Test 2",
-		channel:  channelID,
-		msg:      newChirpAddMsg(t, channelID, wrongSender, time.Now().Unix(), mockRepository, true),
-		isError:  true,
-		contains: "only the owner of the channel can post chirps",
+		name:        "Test 2",
+		channelPath: channelPath,
+		msg:         newChirpAddMsg(t, channelPath, wrongSender, time.Now().Unix(), mockRepository, true),
+		isError:     true,
+		contains:    "only the owner of the channelPath can post chirps",
 	})
 
 	// Test 3: failed to add chirp because negative timestamp
 
-	channelID = "/root/lao3/social/" + sender
+	channelPath = "/root/lao3/social/" + sender
 
 	args = append(args, input{
-		name:     "Test 3",
-		channel:  channelID,
-		msg:      newChirpAddMsg(t, channelID, sender, -1, mockRepository, true),
-		isError:  true,
-		contains: "invalid message field",
+		name:        "Test 3",
+		channelPath: channelPath,
+		msg:         newChirpAddMsg(t, channelPath, sender, -1, mockRepository, true),
+		isError:     true,
+		contains:    "invalid message field",
 	})
 
 	// Test 4: successfully delete a chirp and notify it
 
-	channelID = "/root/lao4/social/" + sender
+	channelPath = "/root/lao4/social/" + sender
 
 	args = append(args, input{
-		name:     "Test 4",
-		channel:  channelID,
-		msg:      newChirpDeleteMsg(t, channelID, sender, chirpID, time.Now().Unix(), mockRepository, false),
-		isError:  false,
-		contains: "",
+		name:        "Test 4",
+		channelPath: channelPath,
+		msg:         newChirpDeleteMsg(t, channelPath, sender, chirpID, time.Now().Unix(), mockRepository, false),
+		isError:     false,
+		contains:    "",
 	})
 
-	// Test 5: failed to delete chirp because not owner of the channel
+	// Test 5: failed to delete chirp because not owner of the channelPath
 
-	channelID = "/root/lao5/social/" + sender
+	channelPath = "/root/lao5/social/" + sender
 
 	args = append(args, input{
-		name:     "Test 5",
-		channel:  channelID,
-		msg:      newChirpDeleteMsg(t, channelID, wrongSender, chirpID, time.Now().Unix(), mockRepository, true),
-		isError:  true,
-		contains: "only the owner of the channel can post chirps",
+		name:        "Test 5",
+		channelPath: channelPath,
+		msg:         newChirpDeleteMsg(t, channelPath, wrongSender, chirpID, time.Now().Unix(), mockRepository, true),
+		isError:     true,
+		contains:    "only the owner of the channelPath can post chirps",
 	})
 
 	// Test 6: failed to delete chirp because negative timestamp
 
-	channelID = "/root/lao6/social/" + sender
+	channelPath = "/root/lao6/social/" + sender
 
 	args = append(args, input{
-		name:     "Test 6",
-		channel:  channelID,
-		msg:      newChirpDeleteMsg(t, channelID, sender, chirpID, -1, mockRepository, true),
-		isError:  true,
-		contains: "invalid message field",
+		name:        "Test 6",
+		channelPath: channelPath,
+		msg:         newChirpDeleteMsg(t, channelPath, sender, chirpID, -1, mockRepository, true),
+		isError:     true,
+		contains:    "invalid message field",
 	})
 
 	// Tests all cases
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := handleChannelChirp(arg.channel, arg.msg)
+			errAnswer := handleChannelChirp(arg.channelPath, arg.msg)
 			if arg.isError {
 				require.NotNil(t, errAnswer)
 				require.Contains(t, errAnswer.Error(), arg.contains)

@@ -52,9 +52,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 1",
 		msg: newElectionOpenMsg(t, ownerPublicKey, wrongSender, laoID, electionID, channelPath, "",
 			-1, true, mockRepository),
-		channel:  channelPath,
-		isError:  true,
-		contains: "sender is not the organizer of the channel",
+		channelPath: channelPath,
+		isError:     true,
+		contains:    "sender is not the organizer of the channel",
 	})
 
 	wrongChannelPath := "/root/" + base64.URLEncoding.EncodeToString([]byte("wrongLaoID")) + "/" + electionID
@@ -64,9 +64,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 2",
 		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, wrongChannelPath, "",
 			-1, true, mockRepository),
-		channel:  wrongChannelPath,
-		isError:  true,
-		contains: "lao id is not the same as the channel",
+		channelPath: wrongChannelPath,
+		isError:     true,
+		contains:    "lao id is not the same as the channel",
 	})
 
 	wrongChannelPath = "/root/" + laoID + "/" + base64.URLEncoding.EncodeToString([]byte("wrongElectionID"))
@@ -76,9 +76,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 3",
 		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, wrongChannelPath, "",
 			-1, true, mockRepository),
-		channel:  wrongChannelPath,
-		isError:  true,
-		contains: "election id is not the same as the channel",
+		channelPath: wrongChannelPath,
+		isError:     true,
+		contains:    "election id is not the same as the channel",
 	})
 
 	// Test 4 Error when Election is already started or ended
@@ -86,9 +86,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 4",
 		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen,
 			-1, true, mockRepository),
-		channel:  channelPath,
-		isError:  true,
-		contains: "election is already started or ended",
+		channelPath: channelPath,
+		isError:     true,
+		contains:    "election is already started or ended",
 	})
 
 	//to avoid conflicts with the previous test
@@ -99,9 +99,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 5",
 		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionSetup,
 			2, true, mockRepository),
-		channel:  channelPath,
-		isError:  true,
-		contains: "election open cannot have a creation time prior to election setup",
+		channelPath: channelPath,
+		isError:     true,
+		contains:    "election open cannot have a creation time prior to election setup",
 	})
 
 	//to avoid conflicts with the previous test
@@ -116,9 +116,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 6",
 		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionSetup,
 			1, false, mockRepository),
-		channel:  channelPath,
-		isError:  false,
-		contains: "",
+		channelPath: channelPath,
+		isError:     false,
+		contains:    "",
 	})
 
 	laoID = base64.URLEncoding.EncodeToString([]byte("electionID4"))
@@ -129,9 +129,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 7",
 		msg: newElectionEndMsg(t, ownerPublicKey, wrongSender, laoID, electionID, channelPath, "", "",
 			-1, true, mockRepository),
-		channel:  channelPath,
-		isError:  true,
-		contains: "sender is not the organizer of the channel",
+		channelPath: channelPath,
+		isError:     true,
+		contains:    "sender is not the organizer of the channel",
 	})
 
 	wrongChannelPath = "/root/" + base64.URLEncoding.EncodeToString([]byte("wrongLaoID2")) + "/" + electionID
@@ -141,9 +141,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 8",
 		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, wrongChannelPath, "", "",
 			-1, true, mockRepository),
-		channel:  wrongChannelPath,
-		isError:  true,
-		contains: "lao id is not the same as the channel",
+		channelPath: wrongChannelPath,
+		isError:     true,
+		contains:    "lao id is not the same as the channel",
 	})
 
 	wrongChannelPath = "/root/" + laoID + "/" + base64.URLEncoding.EncodeToString([]byte("wrongElectionID2"))
@@ -153,9 +153,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 9",
 		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, wrongChannelPath, "", "",
 			-1, true, mockRepository),
-		channel:  wrongChannelPath,
-		isError:  true,
-		contains: "election id is not the same as the channel",
+		channelPath: wrongChannelPath,
+		isError:     true,
+		contains:    "election id is not the same as the channel",
 	})
 
 	// Test 10 Error when ElectionEnd is not started
@@ -163,9 +163,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 10",
 		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionEnd, "",
 			-1, true, mockRepository),
-		channel:  channelPath,
-		isError:  true,
-		contains: "election was not started",
+		channelPath: channelPath,
+		isError:     true,
+		contains:    "election was not started",
 	})
 
 	//to avoid conflicts with the previous test
@@ -177,9 +177,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 11",
 		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, "",
 			2, true, mockRepository),
-		channel:  channelPath,
-		isError:  true,
-		contains: "election end cannot have a creation time prior to election setup",
+		channelPath: channelPath,
+		isError:     true,
+		contains:    "election end cannot have a creation time prior to election setup",
 	})
 
 	//to avoid conflicts with the previous test
@@ -193,9 +193,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 12",
 		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, wrongVotes,
 			1, true, mockRepository),
-		channel:  channelPath,
-		isError:  true,
-		contains: fmt.Sprintf("registered votes is %s, should be sorted and equal to", wrongVotes),
+		channelPath: channelPath,
+		isError:     true,
+		contains:    fmt.Sprintf("registered votes is %s, should be sorted and equal to", wrongVotes),
 	})
 
 	//to avoid conflicts with the previous test
@@ -212,9 +212,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 13",
 		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, registeredVotes,
 			1, false, mockRepository),
-		channel:  channelPath,
-		isError:  false,
-		contains: "",
+		channelPath: channelPath,
+		isError:     false,
+		contains:    "",
 	})
 
 	votes := []generator.VoteInt{
@@ -230,9 +230,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 14",
 		msg: newVoteCastVoteIntMsg(t, wrongSender, laoID, electionID, channelPath, "", "",
 			-1, votes, nil, ownerPublicKey, mockRepository, true),
-		channel:  channelPath,
-		isError:  true,
-		contains: "sender is not an attendee or the organizer of the election",
+		channelPath: channelPath,
+		isError:     true,
+		contains:    "sender is not an attendee or the organizer of the election",
 	})
 
 	// Test 15 Error when VoteCastVote lao id is not the same as the channel
@@ -242,9 +242,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 15",
 		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, wrongChannelPath, "", "",
 			-1, votes, nil, ownerPublicKey, mockRepository, true),
-		channel:  wrongChannelPath,
-		isError:  true,
-		contains: "lao id is not the same as the channel",
+		channelPath: wrongChannelPath,
+		isError:     true,
+		contains:    "lao id is not the same as the channel",
 	})
 
 	// Test 16 Error when VoteCastVote election id is not the same as the channel
@@ -254,9 +254,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 16",
 		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, wrongChannelPath, "", "",
 			-1, votes, nil, ownerPublicKey, mockRepository, true),
-		channel:  wrongChannelPath,
-		isError:  true,
-		contains: "election id is not the same as the channel",
+		channelPath: wrongChannelPath,
+		isError:     true,
+		contains:    "election id is not the same as the channel",
 	})
 
 	//to avoid conflicts with the previous test
@@ -268,9 +268,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 17",
 		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, "", "",
 			2, votes, nil, ownerPublicKey, mockRepository, true),
-		channel:  channelPath,
-		isError:  true,
-		contains: "cast vote cannot have a creation time prior to election setup",
+		channelPath: channelPath,
+		isError:     true,
+		contains:    "cast vote cannot have a creation time prior to election setup",
 	})
 
 	//to avoid conflicts with the previous test
@@ -287,9 +287,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 18",
 		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, "", "",
 			0, votes, questions, ownerPublicKey, mockRepository, true),
-		channel:  channelPath,
-		isError:  true,
-		contains: "Question does not exist",
+		channelPath: channelPath,
+		isError:     true,
+		contains:    "Question does not exist",
 	})
 
 	//to avoid conflicts with the previous test
@@ -309,9 +309,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 19",
 		msg: newVoteCastVoteStringMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.OpenBallot,
 			0, stringVotes, questions, ownerPublicKey, mockRepository),
-		channel:  channelPath,
-		isError:  true,
-		contains: "vote in open ballot should be an integer",
+		channelPath: channelPath,
+		isError:     true,
+		contains:    "vote in open ballot should be an integer",
 	})
 
 	//to avoid conflicts with the previous test
@@ -331,9 +331,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 20",
 		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, "", messagedata.SecretBallot,
 			0, intVotes, questions, ownerPublicKey, mockRepository, true),
-		channel:  channelPath,
-		isError:  true,
-		contains: "vote in secret ballot should be a string",
+		channelPath: channelPath,
+		isError:     true,
+		contains:    "vote in secret ballot should be a string",
 	})
 
 	//to avoid conflicts with the previous test
@@ -346,9 +346,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 21",
 		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, "", messagedata.OpenBallot,
 			0, intVotes, questions, ownerPublicKey, mockRepository, true),
-		channel:  channelPath,
-		isError:  true,
-		contains: "vote ID is not the expected hash",
+		channelPath: channelPath,
+		isError:     true,
+		contains:    "vote ID is not the expected hash",
 	})
 
 	//to avoid conflicts with the previous test
@@ -374,9 +374,9 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 22",
 		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionEnd, messagedata.OpenBallot,
 			0, votes, questions, ownerPublicKey, mockRepository, false),
-		channel:  channelPath,
-		isError:  false,
-		contains: "",
+		channelPath: channelPath,
+		isError:     false,
+		contains:    "",
 	})
 
 	//to avoid conflicts with the previous test
@@ -388,14 +388,14 @@ func Test_handleChannelElection(t *testing.T) {
 		name: "Test 23",
 		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, "",
 			-1, votes, nil, ownerPublicKey, mockRepository, true),
-		channel:  channelPath,
-		isError:  false,
-		contains: "",
+		channelPath: channelPath,
+		isError:     false,
+		contains:    "",
 	})
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := handleChannelElection(arg.channel, arg.msg)
+			errAnswer := handleChannelElection(arg.channelPath, arg.msg)
 			if arg.isError {
 				require.Contains(t, errAnswer.Error(), arg.contains)
 			} else {
