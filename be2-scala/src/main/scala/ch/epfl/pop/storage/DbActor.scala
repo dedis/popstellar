@@ -227,40 +227,38 @@ final case class DbActor(
 
       val chirpScores = collection.mutable.Map[Hash, Int]()
 
-      for reaction <- reactionsList
-        do
-          val reactionObj = AddReaction.buildFromJson(reaction.toJsonString)
-          if reactionObj.action.toString == "add" then
-            if reactionObj.reaction_codepoint == "👍" then
-              chirpScores(reactionObj.chirp_id) += 1
-            else if reactionObj.reaction_codepoint == "👎" then
-              chirpScores(reactionObj.chirp_id) -= 1
-            else if reactionObj.reaction_codepoint == "❤️" then
-              chirpScores(reactionObj.chirp_id) += 1
+      for reaction <- reactionsList do
+        val reactionObj = AddReaction.buildFromJson(reaction.toJsonString)
+        if reactionObj.action.toString == "add" then
+          if reactionObj.reaction_codepoint == "👍" then
+            chirpScores(reactionObj.chirp_id) += 1
+          else if reactionObj.reaction_codepoint == "👎" then
+            chirpScores(reactionObj.chirp_id) -= 1
+          else if reactionObj.reaction_codepoint == "❤️" then
+            chirpScores(reactionObj.chirp_id) += 1
 
       var first = new Hash(Base64Data(""))
       var second = new Hash(Base64Data(""))
       var third = new Hash(Base64Data(""))
       var temp = new Hash(Base64Data(""))
-      for (chirpId, score) <- chirpScores
-        do
-          if first.base64Data.toString == "" then
-            first = chirpId
-          else if score > chirpScores(first) then
-            temp = first
-            first = chirpId
-            third = second
-            second = temp
-          else if second.base64Data.toString == "" then
-              second = chirpId
-          else if score > chirpScores(second) then
-            temp = second
-            second = chirpId
-            third = temp
-          else if third.base64Data.toString == "" then
-            third = chirpId
-          else if score > chirpScores(third) then
-            third = chirpId
+      for (chirpId, score) <- chirpScores do
+        if first.base64Data.toString == "" then
+          first = chirpId
+        else if score > chirpScores(first) then
+          temp = first
+          first = chirpId
+          third = second
+          second = temp
+        else if second.base64Data.toString == "" then
+          second = chirpId
+        else if score > chirpScores(second) then
+          temp = second
+          second = chirpId
+          third = temp
+        else if third.base64Data.toString == "" then
+          third = chirpId
+        else if score > chirpScores(third) then
+          third = chirpId
 
       val chirpsChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/chirps")
       val topThreeChirps: List[Hash] = List(first, second, third)
@@ -277,7 +275,7 @@ final case class DbActor(
 
       readGreetLao(chirpsChannel) match {
         case Some(msg) => msg :: catchupList
-        case None => catchupList
+        case None      => catchupList
       }
     } else {
       val channelData: ChannelData = readChannelData(channel)
@@ -295,7 +293,7 @@ final case class DbActor(
 
       readGreetLao(channel) match {
         case Some(msg) => msg :: catchupList
-        case None => catchupList
+        case None      => catchupList
       }
     }
   }
@@ -358,7 +356,7 @@ final case class DbActor(
       }
       readGreetLao(chirpsChannel) match {
         case Some(msg) => msg :: pagedCatchupList
-        case None => pagedCatchupList
+        case None      => pagedCatchupList
       }
     } else if (profilePattern.findFirstMatchIn(channel.toString).isDefined) {
       val profilePublicKey = channel.toString.split("/")(5)
@@ -398,7 +396,7 @@ final case class DbActor(
       }
       readGreetLao(profileChannel) match {
         case Some(msg) => msg :: pagedCatchupList
-        case None => pagedCatchupList
+        case None      => pagedCatchupList
       }
     } else {
       List()
