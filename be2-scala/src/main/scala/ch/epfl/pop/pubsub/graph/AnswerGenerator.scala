@@ -55,7 +55,7 @@ class AnswerGenerator(dbActor: => AskableActorRef) extends AskPatternConstants {
           val askPagedCatchup = dbActor ? DbActor.PagedCatchup(channel, numberOfMessages, beforeMessageID)
           Await.ready(askPagedCatchup, duration).value match {
             case Some(Success(DbActor.DbActorCatchupAck(messages))) =>
-              val resultObject: ResultObject = new ResultObject(messages)
+              val resultObject: ResultObject = new ResultObject(ResultMessage(messages))
               Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, Some(resultObject), None, rpcRequest.id))
             case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"AnswerGenerator failed : ${ex.message}", rpcRequest.getId))
             case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"AnswerGenerator failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
