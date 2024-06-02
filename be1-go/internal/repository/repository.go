@@ -5,7 +5,7 @@ import (
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/types"
+	"popstellar/internal/types/election"
 )
 
 type Repository interface {
@@ -169,10 +169,10 @@ type ElectionRepository interface {
 	GetElectionAttendees(electionID string) (map[string]struct{}, error)
 
 	// GetElectionQuestions returns the questions of an election.
-	GetElectionQuestions(electionID string) (map[string]types.Question, error)
+	GetElectionQuestions(electionID string) (map[string]election.Question, error)
 
 	// GetElectionQuestionsWithValidVotes returns the questions of an election with valid votes.
-	GetElectionQuestionsWithValidVotes(electionID string) (map[string]types.Question, error)
+	GetElectionQuestionsWithValidVotes(electionID string) (map[string]election.Question, error)
 
 	// StoreElectionEndWithResult stores a message and an election result message inside the database.
 	StoreElectionEndWithResult(channelID string, msg, electionResultMsg message.Message) error

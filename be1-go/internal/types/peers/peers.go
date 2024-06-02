@@ -1,4 +1,4 @@
-package types
+package peers
 
 import (
 	"popstellar/internal/message/answer"

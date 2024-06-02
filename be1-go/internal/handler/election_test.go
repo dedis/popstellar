@@ -9,12 +9,16 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/mock/generatortest"
 	"popstellar/internal/repository"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
 	state2 "popstellar/internal/singleton/state"
-	"popstellar/internal/test/generatortest"
-	types2 "popstellar/internal/types"
+	"popstellar/internal/types/election"
+	"popstellar/internal/types/hubparams"
+	peers2 "popstellar/internal/types/peers"
+	queries2 "popstellar/internal/types/queries"
+	types2 "popstellar/internal/types/subscribers"
 	"testing"
 )
 
@@ -25,9 +29,9 @@ func Test_handleChannelElection(t *testing.T) {
 	database.SetDatabase(mockRepository)
 
 	subs := types2.NewSubscribers()
-	queries := types2.NewQueries(&noLog)
-	peers := types2.NewPeers()
-	hubParams := types2.NewHubParams()
+	queries := queries2.NewQueries(&noLog)
+	peers := peers2.NewPeers()
+	hubParams := hubparams.NewHubParams()
 
 	ownerPubBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
 	require.NoError(t, err)
@@ -278,7 +282,7 @@ func Test_handleChannelElection(t *testing.T) {
 	channelPath = "/root/" + laoID + "/" + electionID
 
 	//Test 18 Error when VoteCastVote question is not present in election setup
-	questions := map[string]types2.Question{
+	questions := map[string]election.Question{
 		base64.URLEncoding.EncodeToString([]byte("questionID2")): {ID: []byte(base64.URLEncoding.EncodeToString([]byte("questionID2")))},
 		base64.URLEncoding.EncodeToString([]byte("questionID3")): {ID: []byte(base64.URLEncoding.EncodeToString([]byte("questionID3")))},
 	}
@@ -445,10 +449,10 @@ func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionI
 	}
 
 	if votes != "" {
-		questions := map[string]types2.Question{
+		questions := map[string]election.Question{
 			"questionID1": {
 				ID: []byte("questionID1"),
-				ValidVotes: map[string]types2.ValidVote{
+				ValidVotes: map[string]election.ValidVote{
 					"voteID1": {
 						ID: "voteID1",
 					},
@@ -459,7 +463,7 @@ func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionI
 			},
 			"questionID2": {
 				ID: []byte("questionID2"),
-				ValidVotes: map[string]types2.ValidVote{
+				ValidVotes: map[string]election.ValidVote{
 					"voteID3": {
 						ID: "voteID3",
 					},
@@ -480,7 +484,7 @@ func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionI
 }
 
 func newVoteCastVoteIntMsg(t *testing.T, sender, laoID, electionID, electionPath, state, electionType string,
-	createdAt int64, votes []generatortest.VoteInt, questions map[string]types2.Question, owner kyber.Point,
+	createdAt int64, votes []generatortest.VoteInt, questions map[string]election.Question, owner kyber.Point,
 	mockRepository *repository.MockRepository, isEroor bool) message.Message {
 
 	msg := generatortest.NewVoteCastVoteIntMsg(t, sender, laoID, electionID, 1, votes, nil)
@@ -518,7 +522,7 @@ func newVoteCastVoteIntMsg(t *testing.T, sender, laoID, electionID, electionPath
 }
 
 func newVoteCastVoteStringMsg(t *testing.T, sender, laoID, electionID, electionPath, electionType string,
-	createdAt int64, votes []generatortest.VoteString, questions map[string]types2.Question, owner kyber.Point,
+	createdAt int64, votes []generatortest.VoteString, questions map[string]election.Question, owner kyber.Point,
 	mockRepository *repository.MockRepository) message.Message {
 
 	msg := generatortest.NewVoteCastVoteStringMsg(t, sender, laoID, electionID, 1, votes, nil)

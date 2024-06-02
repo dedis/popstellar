@@ -5,7 +5,7 @@ package repository
 import (
 	messagedata "popstellar/internal/message/messagedata"
 	message "popstellar/internal/message/query/method/message"
-	"popstellar/internal/types"
+	"popstellar/internal/types/election"
 
 	kyber "go.dedis.ch/kyber/v3"
 
@@ -283,23 +283,23 @@ func (_m *MockRepository) GetElectionCreationTime(electionID string) (int64, err
 }
 
 // GetElectionQuestions provides a mock function with given fields: electionID
-func (_m *MockRepository) GetElectionQuestions(electionID string) (map[string]types.Question, error) {
+func (_m *MockRepository) GetElectionQuestions(electionID string) (map[string]election.Question, error) {
 	ret := _m.Called(electionID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetElectionQuestions")
 	}
 
-	var r0 map[string]types.Question
+	var r0 map[string]election.Question
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string) (map[string]types.Question, error)); ok {
+	if rf, ok := ret.Get(0).(func(string) (map[string]election.Question, error)); ok {
 		return rf(electionID)
 	}
-	if rf, ok := ret.Get(0).(func(string) map[string]types.Question); ok {
+	if rf, ok := ret.Get(0).(func(string) map[string]election.Question); ok {
 		r0 = rf(electionID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(map[string]types.Question)
+			r0 = ret.Get(0).(map[string]election.Question)
 		}
 	}
 
@@ -313,23 +313,23 @@ func (_m *MockRepository) GetElectionQuestions(electionID string) (map[string]ty
 }
 
 // GetElectionQuestionsWithValidVotes provides a mock function with given fields: electionID
-func (_m *MockRepository) GetElectionQuestionsWithValidVotes(electionID string) (map[string]types.Question, error) {
+func (_m *MockRepository) GetElectionQuestionsWithValidVotes(electionID string) (map[string]election.Question, error) {
 	ret := _m.Called(electionID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetElectionQuestionsWithValidVotes")
 	}
 
-	var r0 map[string]types.Question
+	var r0 map[string]election.Question
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string) (map[string]types.Question, error)); ok {
+	if rf, ok := ret.Get(0).(func(string) (map[string]election.Question, error)); ok {
 		return rf(electionID)
 	}
-	if rf, ok := ret.Get(0).(func(string) map[string]types.Question); ok {
+	if rf, ok := ret.Get(0).(func(string) map[string]election.Question); ok {
 		r0 = rf(electionID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(map[string]types.Question)
+			r0 = ret.Get(0).(map[string]election.Question)
 		}
 	}
 

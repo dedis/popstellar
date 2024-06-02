@@ -7,9 +7,9 @@ import (
 	"golang.org/x/xerrors"
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/mock/generatortest"
 	"popstellar/internal/repository"
 	"popstellar/internal/singleton/database"
-	"popstellar/internal/test/generatortest"
 	"testing"
 	"time"
 )

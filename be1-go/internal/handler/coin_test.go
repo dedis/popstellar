@@ -13,7 +13,10 @@ import (
 	"popstellar/internal/repository"
 	"popstellar/internal/singleton/database"
 	state2 "popstellar/internal/singleton/state"
-	types2 "popstellar/internal/types"
+	"popstellar/internal/types/hubparams"
+	peers2 "popstellar/internal/types/peers"
+	queries2 "popstellar/internal/types/queries"
+	types2 "popstellar/internal/types/subscribers"
 	"testing"
 )
 
@@ -29,9 +32,9 @@ type inputTestHandleChannelCoin struct {
 
 func Test_handleChannelCoin(t *testing.T) {
 	subs := types2.NewSubscribers()
-	queries := types2.NewQueries(&noLog)
-	peers := types2.NewPeers()
-	hubParams := types2.NewHubParams()
+	queries := queries2.NewQueries(&noLog)
+	peers := peers2.NewPeers()
+	hubParams := hubparams.NewHubParams()
 
 	state2.SetState(subs, peers, queries, hubParams)
 

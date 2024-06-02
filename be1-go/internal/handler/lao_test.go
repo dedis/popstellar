@@ -8,12 +8,15 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/mock/generatortest"
 	"popstellar/internal/repository"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/state"
-	"popstellar/internal/test/generatortest"
-	types2 "popstellar/internal/types"
+	"popstellar/internal/types/hubparams"
+	peers2 "popstellar/internal/types/peers"
+	queries2 "popstellar/internal/types/queries"
+	types2 "popstellar/internal/types/subscribers"
 	"strconv"
 	"strings"
 	"testing"
@@ -22,9 +25,9 @@ import (
 
 func Test_handleChannelLao(t *testing.T) {
 	subs := types2.NewSubscribers()
-	queries := types2.NewQueries(&noLog)
-	peers := types2.NewPeers()
-	hubParams := types2.NewHubParams()
+	queries := queries2.NewQueries(&noLog)
+	peers := peers2.NewPeers()
+	hubParams := hubparams.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 

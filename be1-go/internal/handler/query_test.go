@@ -7,13 +7,16 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/mock/generatortest"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/repository"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/state"
-	generatortest2 "popstellar/internal/test/generatortest"
-	types2 "popstellar/internal/types"
+	"popstellar/internal/types/hubparams"
+	peers2 "popstellar/internal/types/peers"
+	queries2 "popstellar/internal/types/queries"
+	types2 "popstellar/internal/types/subscribers"
 	"testing"
 )
 
@@ -28,7 +31,7 @@ func Test_handleQuery(t *testing.T) {
 
 	// Test 1: failed to handled popquery because unknown method
 
-	msg := generatortest2.NewNothingQuery(t, 999)
+	msg := generatortest.NewNothingQuery(t, 999)
 
 	args = append(args, input{
 		name:     "Test 1",
@@ -50,9 +53,9 @@ func Test_handleQuery(t *testing.T) {
 
 func Test_handleGreetServer(t *testing.T) {
 	subs := types2.NewSubscribers()
-	queries := types2.NewQueries(&noLog)
-	peers := types2.NewPeers()
-	hubParams := types2.NewHubParams()
+	queries := queries2.NewQueries(&noLog)
+	peers := peers2.NewPeers()
+	hubParams := hubparams.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
@@ -72,7 +75,7 @@ func Test_handleGreetServer(t *testing.T) {
 
 	args := make([]input, 0)
 
-	greetServer := generatortest2.NewGreetServerQuery(t, "pk", "client", "server")
+	greetServer := generatortest.NewGreetServerQuery(t, "pk", "client", "server")
 
 	// Test 1: reply with greet server when receiving a greet server from a new server
 
@@ -137,9 +140,9 @@ func Test_handleGreetServer(t *testing.T) {
 
 func Test_handleSubscribe(t *testing.T) {
 	subs := types2.NewSubscribers()
-	queries := types2.NewQueries(&noLog)
-	peers := types2.NewPeers()
-	hubParams := types2.NewHubParams()
+	queries := queries2.NewQueries(&noLog)
+	peers := peers2.NewPeers()
+	hubParams := hubparams.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
@@ -169,7 +172,7 @@ func Test_handleSubscribe(t *testing.T) {
 		socket:  fakeSocket,
 		ID:      ID,
 		channel: channel,
-		message: generatortest2.NewSubscribeQuery(t, ID, channel),
+		message: generatortest.NewSubscribeQuery(t, ID, channel),
 		isError: false,
 	})
 
@@ -184,7 +187,7 @@ func Test_handleSubscribe(t *testing.T) {
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
-		message:  generatortest2.NewSubscribeQuery(t, ID, channel),
+		message:  generatortest.NewSubscribeQuery(t, ID, channel),
 		isError:  true,
 		contains: "cannot Subscribe to unknown channel",
 	})
@@ -200,7 +203,7 @@ func Test_handleSubscribe(t *testing.T) {
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
-		message:  generatortest2.NewSubscribeQuery(t, ID, channel),
+		message:  generatortest.NewSubscribeQuery(t, ID, channel),
 		isError:  true,
 		contains: "cannot Subscribe to root channel",
 	})
@@ -226,9 +229,9 @@ func Test_handleSubscribe(t *testing.T) {
 
 func Test_handleUnsubscribe(t *testing.T) {
 	subs := types2.NewSubscribers()
-	queries := types2.NewQueries(&noLog)
-	peers := types2.NewPeers()
-	hubParams := types2.NewHubParams()
+	queries := queries2.NewQueries(&noLog)
+	peers := peers2.NewPeers()
+	hubParams := hubparams.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
@@ -261,7 +264,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 		socket:  fakeSocket,
 		ID:      ID,
 		channel: channel,
-		message: generatortest2.NewUnsubscribeQuery(t, ID, channel),
+		message: generatortest.NewUnsubscribeQuery(t, ID, channel),
 		isError: false,
 	})
 
@@ -279,7 +282,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
-		message:  generatortest2.NewUnsubscribeQuery(t, ID, channel),
+		message:  generatortest.NewUnsubscribeQuery(t, ID, channel),
 		isError:  true,
 		contains: "cannot Unsubscribe from a channel not subscribed",
 	})
@@ -295,7 +298,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
-		message:  generatortest2.NewUnsubscribeQuery(t, ID, channel),
+		message:  generatortest.NewUnsubscribeQuery(t, ID, channel),
 		isError:  true,
 		contains: "cannot Unsubscribe from unknown channel",
 	})
@@ -311,7 +314,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
-		message:  generatortest2.NewUnsubscribeQuery(t, ID, channel),
+		message:  generatortest.NewUnsubscribeQuery(t, ID, channel),
 		isError:  true,
 		contains: "cannot Unsubscribe from root channel",
 	})
@@ -338,9 +341,9 @@ func Test_handleUnsubscribe(t *testing.T) {
 
 func Test_handleCatchUp(t *testing.T) {
 	subs := types2.NewSubscribers()
-	queries := types2.NewQueries(&noLog)
-	peers := types2.NewPeers()
-	hubParams := types2.NewHubParams()
+	queries := queries2.NewQueries(&noLog)
+	peers := peers2.NewPeers()
+	hubParams := hubparams.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
@@ -365,10 +368,10 @@ func Test_handleCatchUp(t *testing.T) {
 	ID := 1
 	channel := "/root/lao1"
 	messagesToCatchUp := []message.Message{
-		generatortest2.NewNothingMsg(t, "sender1", nil),
-		generatortest2.NewNothingMsg(t, "sender2", nil),
-		generatortest2.NewNothingMsg(t, "sender3", nil),
-		generatortest2.NewNothingMsg(t, "sender4", nil),
+		generatortest.NewNothingMsg(t, "sender1", nil),
+		generatortest.NewNothingMsg(t, "sender2", nil),
+		generatortest.NewNothingMsg(t, "sender3", nil),
+		generatortest.NewNothingMsg(t, "sender4", nil),
 	}
 
 	mockRepository.On("GetAllMessagesFromChannel", channel).Return(messagesToCatchUp, nil)
@@ -377,7 +380,7 @@ func Test_handleCatchUp(t *testing.T) {
 		name:     "Test 1",
 		socket:   fakeSocket,
 		ID:       ID,
-		message:  generatortest2.NewCatchupQuery(t, ID, channel),
+		message:  generatortest.NewCatchupQuery(t, ID, channel),
 		expected: messagesToCatchUp,
 		isError:  false,
 	})
@@ -395,7 +398,7 @@ func Test_handleCatchUp(t *testing.T) {
 		name:     "Test 2",
 		socket:   fakeSocket,
 		ID:       ID,
-		message:  generatortest2.NewCatchupQuery(t, ID, channel),
+		message:  generatortest.NewCatchupQuery(t, ID, channel),
 		isError:  true,
 		contains: "DB is disconnected",
 	})
@@ -420,9 +423,9 @@ func Test_handleCatchUp(t *testing.T) {
 
 func Test_handleHeartbeat(t *testing.T) {
 	subs := types2.NewSubscribers()
-	queries := types2.NewQueries(&noLog)
-	peers := types2.NewPeers()
-	hubParams := types2.NewHubParams()
+	queries := queries2.NewQueries(&noLog)
+	peers := peers2.NewPeers()
+	hubParams := hubparams.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
@@ -475,7 +478,7 @@ func Test_handleHeartbeat(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 1",
 		socket:   fakeSocket,
-		message:  generatortest2.NewHeartbeatQuery(t, heartbeatMsgIDs1),
+		message:  generatortest.NewHeartbeatQuery(t, heartbeatMsgIDs1),
 		expected: expected1,
 		isError:  false,
 	})
@@ -496,7 +499,7 @@ func Test_handleHeartbeat(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 2",
 		socket:  fakeSocket,
-		message: generatortest2.NewHeartbeatQuery(t, heartbeatMsgIDs2),
+		message: generatortest.NewHeartbeatQuery(t, heartbeatMsgIDs2),
 		isError: false,
 	})
 
@@ -521,7 +524,7 @@ func Test_handleHeartbeat(t *testing.T) {
 	args = append(args, input{
 		name:     "failed to popquery DB",
 		socket:   fakeSocket,
-		message:  generatortest2.NewHeartbeatQuery(t, heartbeatMsgIDs3),
+		message:  generatortest.NewHeartbeatQuery(t, heartbeatMsgIDs3),
 		isError:  true,
 		contains: "DB is disconnected",
 	})
@@ -552,9 +555,9 @@ func Test_handleHeartbeat(t *testing.T) {
 
 func Test_handleGetMessagesByID(t *testing.T) {
 	subs := types2.NewSubscribers()
-	queries := types2.NewQueries(&noLog)
-	peers := types2.NewPeers()
-	hubParams := types2.NewHubParams()
+	queries := queries2.NewQueries(&noLog)
+	peers := peers2.NewPeers()
+	hubParams := hubparams.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
@@ -580,14 +583,14 @@ func Test_handleGetMessagesByID(t *testing.T) {
 
 	expected1 := make(map[string][]message.Message)
 	expected1["/root"] = []message.Message{
-		generatortest2.NewNothingMsg(t, "sender1", nil),
-		generatortest2.NewNothingMsg(t, "sender2", nil),
-		generatortest2.NewNothingMsg(t, "sender3", nil),
-		generatortest2.NewNothingMsg(t, "sender4", nil),
+		generatortest.NewNothingMsg(t, "sender1", nil),
+		generatortest.NewNothingMsg(t, "sender2", nil),
+		generatortest.NewNothingMsg(t, "sender3", nil),
+		generatortest.NewNothingMsg(t, "sender4", nil),
 	}
 	expected1["/root/lao1"] = []message.Message{
-		generatortest2.NewNothingMsg(t, "sender5", nil),
-		generatortest2.NewNothingMsg(t, "sender6", nil),
+		generatortest.NewNothingMsg(t, "sender5", nil),
+		generatortest.NewNothingMsg(t, "sender6", nil),
 	}
 
 	paramsGetMessagesByID1 := make(map[string][]string)
@@ -604,7 +607,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 		name:     "Test 1",
 		socket:   fakeSocket,
 		ID:       ID,
-		message:  generatortest2.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID1),
+		message:  generatortest.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID1),
 		expected: expected1,
 		isError:  false,
 	})
@@ -623,7 +626,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 		name:     "Test 2",
 		socket:   fakeSocket,
 		ID:       ID,
-		message:  generatortest2.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID2),
+		message:  generatortest.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID2),
 		isError:  true,
 		contains: "DB is disconnected",
 	})

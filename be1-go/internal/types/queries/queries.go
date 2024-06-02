@@ -1,4 +1,4 @@
-package types
+package queries
 
 import (
 	"popstellar/internal/message/query/method"

@@ -8,13 +8,16 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/mock/generatortest"
 	"popstellar/internal/repository"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/state"
 	"popstellar/internal/sqlite"
-	generatortest2 "popstellar/internal/test/generatortest"
-	types2 "popstellar/internal/types"
+	"popstellar/internal/types/hubparams"
+	peers2 "popstellar/internal/types/peers"
+	queries2 "popstellar/internal/types/queries"
+	types2 "popstellar/internal/types/subscribers"
 	"testing"
 	"time"
 )
@@ -36,9 +39,9 @@ type input struct {
 
 func Test_handleChannelRoot(t *testing.T) {
 	subs := types2.NewSubscribers()
-	queries := types2.NewQueries(&noLog)
-	peers := types2.NewPeers()
-	hubParams := types2.NewHubParams()
+	queries := queries2.NewQueries(&noLog)
+	peers := peers2.NewPeers()
+	hubParams := hubparams.NewHubParams()
 
 	state.SetState(subs, peers, queries, hubParams)
 
@@ -89,7 +92,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	// Test 4: error when message data is not lao_create
 	args = append(args, input{
 		name:     "Test 4",
-		msg:      generatortest2.NewNothingMsg(t, owner, nil),
+		msg:      generatortest.NewNothingMsg(t, owner, nil),
 		isError:  true,
 		contains: "failed to validate schema",
 	})
@@ -123,7 +126,7 @@ func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockReposi
 		goodLaoName,
 	)
 
-	msg := generatortest2.NewLaoCreateMsg(t, sender, laoID, laoName, creation, organizer, nil)
+	msg := generatortest.NewLaoCreateMsg(t, sender, laoID, laoName, creation, organizer, nil)
 
 	mockRepository.On("HasChannel", RootPrefix+laoID).Return(false, nil)
 	if !isError {

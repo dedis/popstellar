@@ -7,9 +7,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"io"
 	"os"
+	"popstellar/internal/mock/generatortest"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/singleton/utils"
-	generatortest2 "popstellar/internal/test/generatortest"
 	"popstellar/internal/validation"
 	"testing"
 )
@@ -43,18 +43,18 @@ func Test_handleIncomingMessage(t *testing.T) {
 
 	args = append(args, input{
 		name:     "Test 1",
-		message:  generatortest2.NewNothingQuery(t, 999),
+		message:  generatortest.NewNothingQuery(t, 999),
 		contains: "invalid json",
 	})
 
 	// Test 2: failed to handled popanswer because wrong publish popanswer format
 
-	msg := generatortest2.NewNothingMsg(t, base64.URLEncoding.EncodeToString([]byte("sender")), nil)
+	msg := generatortest.NewNothingMsg(t, base64.URLEncoding.EncodeToString([]byte("sender")), nil)
 	msg.MessageID = "wrong messageID"
 
 	args = append(args, input{
 		name:     "Test 2",
-		message:  generatortest2.NewPublishQuery(t, 1, "/root/lao1", msg),
+		message:  generatortest.NewPublishQuery(t, 1, "/root/lao1", msg),
 		contains: "invalid json",
 	})
 
