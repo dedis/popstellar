@@ -15,13 +15,13 @@ const (
 	continueMongering = 0.5
 )
 
-func HandleAnswer(msg []byte) *answer.Error {
+func handleAnswer(msg []byte) *answer.Error {
 	var answerMsg answer.Answer
 
 	err := json.Unmarshal(msg, &answerMsg)
 	if err != nil {
 		errAnswer := answer.NewJsonUnmarshalError(err.Error())
-		return errAnswer.Wrap("HandleAnswer")
+		return errAnswer.Wrap("handleAnswer")
 	}
 
 	isRumor, errAnswer := state.IsRumorQuery(*answerMsg.ID)
@@ -46,12 +46,12 @@ func HandleAnswer(msg []byte) *answer.Error {
 
 	errAnswer = state.SetQueryReceived(*answerMsg.ID)
 	if errAnswer != nil {
-		return errAnswer.Wrap("HandleAnswer")
+		return errAnswer.Wrap("handleAnswer")
 	}
 
 	errAnswer = handleGetMessagesByIDAnswer(answerMsg)
 	if errAnswer != nil {
-		return errAnswer.Wrap("HandleAnswer")
+		return errAnswer.Wrap("handleAnswer")
 	}
 
 	return nil
@@ -144,7 +144,7 @@ func tryToHandleMessages(msgsByChannel map[string]map[string]message.Message, so
 	for _, channelID := range sortedChannelIDs {
 		msgs := msgsByChannel[channelID]
 		for msgID, msg := range msgs {
-			errAnswer := HandleMessage(channelID, msg, false)
+			errAnswer := handleChannel(channelID, msg, false)
 			if errAnswer == nil {
 				delete(msgsByChannel[channelID], msgID)
 				continue

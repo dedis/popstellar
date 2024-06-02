@@ -22,7 +22,7 @@ func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return nil, errAnswer.Wrap("handlePublish")
 	}
 
-	errAnswer := HandleMessage(publish.Params.Channel, publish.Params.Message, false)
+	errAnswer := handleChannel(publish.Params.Channel, publish.Params.Message, false)
 	if errAnswer != nil {
 		return &publish.ID, errAnswer.Wrap("handlePublish")
 	}

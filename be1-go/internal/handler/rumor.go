@@ -92,7 +92,7 @@ func tryHandlingMessages(channel string, unprocessedMsgs []message.Message) ([]m
 	for i := 0; i < maxRetry; i++ {
 		nbProcessed := 0
 		for index, msg := range unprocessedMsgs {
-			errAnswer := HandleMessage(channel, msg, true)
+			errAnswer := handleChannel(channel, msg, true)
 			if errAnswer == nil {
 				unprocessedMsgs = removeMessage(index-nbProcessed, unprocessedMsgs)
 				processedMsgs = append(processedMsgs, msg.MessageID)

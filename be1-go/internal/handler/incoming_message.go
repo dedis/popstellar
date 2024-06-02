@@ -25,9 +25,9 @@ func HandleIncomingMessage(socket socket.Socket, msg []byte) error {
 
 	switch rpcType {
 	case message.RPCTypeQuery:
-		errAnswer = HandleQuery(socket, msg)
+		errAnswer = handleQuery(socket, msg)
 	case message.RPCTypeAnswer:
-		errAnswer = HandleAnswer(msg)
+		errAnswer = handleAnswer(msg)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("jsonRPC is of unknown type")
 	}
