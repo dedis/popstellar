@@ -40,7 +40,7 @@ func Test_handleQuery(t *testing.T) {
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
 			fakeSocket := mocks.FakeSocket{Id: "fakesocket"}
-			errAnswer := handleQuery(&fakeSocket, arg.message)
+			errAnswer := HandleQuery(&fakeSocket, arg.message)
 			require.NotNil(t, errAnswer)
 			require.Contains(t, errAnswer.Error(), arg.contains)
 		})

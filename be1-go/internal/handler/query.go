@@ -12,12 +12,12 @@ import (
 	state2 "popstellar/internal/singleton/state"
 )
 
-func handleQuery(socket socket.Socket, msg []byte) *answer.Error {
+func HandleQuery(socket socket.Socket, msg []byte) *answer.Error {
 	var queryBase query.Base
 
 	err := json.Unmarshal(msg, &queryBase)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleQuery")
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("HandleQuery")
 		socket.SendError(nil, errAnswer)
 		return errAnswer
 	}
@@ -47,7 +47,7 @@ func handleQuery(socket socket.Socket, msg []byte) *answer.Error {
 	}
 
 	if errAnswer != nil && queryBase.Method != query.MethodGreetServer && queryBase.Method != query.MethodHeartbeat {
-		errAnswer = errAnswer.Wrap("handleQuery")
+		errAnswer = errAnswer.Wrap("HandleQuery")
 		socket.SendError(id, errAnswer)
 		return errAnswer
 	}
