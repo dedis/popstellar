@@ -28,15 +28,17 @@ const (
 )
 
 func handleChannelFederation(channelPath string, msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelFederation")
+	object, action, err := verifyDataAndGetObjectAction(msg)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	if object != messagedata.FederationObject {
-		errAnswer = answer.NewInvalidMessageFieldError("invalid object %v", object)
+		errAnswer := answer.NewInvalidMessageFieldError("invalid object %v", object)
 		return errAnswer.Wrap("handleChannelFederation")
 	}
+
+	var errAnswer *answer.Error
 
 	switch action {
 	case messagedata.FederationActionChallengeRequest:

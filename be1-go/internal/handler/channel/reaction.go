@@ -9,9 +9,9 @@ import (
 )
 
 func handleChannelReaction(channelPath string, msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelReaction")
+	object, action, err := verifyDataAndGetObjectAction(msg)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	db, errAnswer := database.GetReactionRepositoryInstance()

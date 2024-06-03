@@ -26,10 +26,12 @@ const (
 )
 
 func handleChannelRoot(msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelRoot")
+	object, action, err := verifyDataAndGetObjectAction(msg)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
+
+	var errAnswer *answer.Error
 
 	switch object + "#" + action {
 	case messagedata.LAOObject + "#" + messagedata.LAOActionCreate:

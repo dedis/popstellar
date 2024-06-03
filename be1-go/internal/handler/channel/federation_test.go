@@ -83,7 +83,7 @@ func Test_handleChannelFederation(t *testing.T) {
 		msg: generator.NewFederationChallengeRequest(t,
 			organizer, -1, organizerSk),
 		isError:  true,
-		contains: "VerifyJSON",
+		contains: "failed to validate schema:",
 	})
 
 	// Test 3 Error when FederationExpect sender is not the same as the lao
@@ -110,7 +110,7 @@ func Test_handleChannelFederation(t *testing.T) {
 				value, validUntil, organizerSk),
 			organizerSk),
 		isError:  true,
-		contains: "VerifyJSON",
+		contains: "failed to validate schema:",
 	})
 
 	// Test 5 Error when FederationExpect publicKey is not valid format
@@ -123,7 +123,7 @@ func Test_handleChannelFederation(t *testing.T) {
 				value, validUntil, organizerSk),
 			organizerSk),
 		isError:  true,
-		contains: "VerifyJSON",
+		contains: "failed to validate schema:",
 	})
 
 	// Test 6 Error when FederationExpect laoId is not valid format
@@ -136,7 +136,7 @@ func Test_handleChannelFederation(t *testing.T) {
 				value, validUntil, organizerSk),
 			organizerSk),
 		isError:  true,
-		contains: "VerifyJSON",
+		contains: "failed to validate schema:",
 	})
 
 	// Test 7 Error when FederationExpect challenge message is not a challenge
@@ -189,7 +189,7 @@ func Test_handleChannelFederation(t *testing.T) {
 				value, validUntil, organizerSk),
 			organizerSk),
 		isError:  true,
-		contains: "VerifyJSON",
+		contains: "failed to validate schema:",
 	})
 
 	// Test 11 Error when FederationInit publicKey is not valid format
@@ -202,7 +202,7 @@ func Test_handleChannelFederation(t *testing.T) {
 				value, validUntil, organizerSk),
 			organizerSk),
 		isError:  true,
-		contains: "VerifyJSON",
+		contains: "failed to validate schema:",
 	})
 
 	// Test 12 Error when FederationInit laoId is not valid format
@@ -215,7 +215,7 @@ func Test_handleChannelFederation(t *testing.T) {
 				value, validUntil, organizerSk),
 			organizerSk),
 		isError:  true,
-		contains: "VerifyJSON",
+		contains: "failed to validate schema:",
 	})
 
 	// Test 13 Error when FederationInit challenge message is not a challenge

@@ -3,7 +3,7 @@ package utils
 import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
 	"popstellar/internal/validation"
 	"sync"
 )
@@ -25,18 +25,12 @@ func InitUtils(log *zerolog.Logger, schemaValidator *validation.SchemaValidator)
 	})
 }
 
-func VerifyJSON(msg []byte, st validation.SchemaType) *answer.Error {
+func VerifyJSON(msg []byte, st validation.SchemaType) error {
 	if instance == nil || instance.schemaValidator == nil {
-		return answer.NewInternalServerError("schema validator was not instantiated").Wrap("VerifyJSON")
+		return errors.NewInternalServerError("schema validator was not instantiated")
 	}
 
-	err := instance.schemaValidator.VerifyJSON(msg, st)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("invalid json: %v", err).Wrap("VerifyJSON")
-		return errAnswer
-	}
-
-	return nil
+	return instance.schemaValidator.VerifyJSON(msg, st)
 }
 
 func LogInfo(msg string) {

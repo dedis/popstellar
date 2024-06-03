@@ -12,10 +12,12 @@ import (
 )
 
 func handleChannelChirp(channelPath string, msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelChirp")
+	object, action, err := verifyDataAndGetObjectAction(msg)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
+
+	var errAnswer *answer.Error
 
 	switch object + "#" + action {
 	case messagedata.ChirpObject + "#" + messagedata.ChirpActionAdd:
@@ -45,7 +47,7 @@ func handleChannelChirp(channelPath string, msg message.Message) *answer.Error {
 		return errAnswer.Wrap("handleChannelChirp")
 	}
 
-	err := db.StoreChirpMessages(channelPath, generalChirpsChannelID, msg, generalMsg)
+	err = db.StoreChirpMessages(channelPath, generalChirpsChannelID, msg, generalMsg)
 	if err != nil {
 		errAnswer = answer.NewStoreDatabaseError(err.Error())
 		return errAnswer.Wrap("handleChannelChirp")

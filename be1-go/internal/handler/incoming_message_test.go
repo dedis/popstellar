@@ -44,7 +44,7 @@ func Test_handleIncomingMessage(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 1",
 		message:  generator.NewNothingQuery(t, 999),
-		contains: "invalid json",
+		contains: "failed to validate schema:",
 	})
 
 	// Test 2: failed to handled popanswer because wrong publish popanswer format
@@ -55,7 +55,7 @@ func Test_handleIncomingMessage(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 2",
 		message:  generator.NewPublishQuery(t, 1, "/root/lao1", msg),
-		contains: "invalid json",
+		contains: "failed to validate schema:",
 	})
 
 	// run all tests

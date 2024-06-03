@@ -8,10 +8,12 @@ import (
 )
 
 func handleChannelCoin(channelPath string, msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelCoin")
+	object, action, err := verifyDataAndGetObjectAction(msg)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
+
+	var errAnswer *answer.Error
 
 	switch object + "#" + action {
 	case messagedata.CoinObject + "#" + messagedata.CoinActionPostTransaction:
@@ -28,7 +30,7 @@ func handleChannelCoin(channelPath string, msg message.Message) *answer.Error {
 		return errAnswer.Wrap("handleChannelCoin")
 	}
 
-	err := db.StoreMessageAndData(channelPath, msg)
+	err = db.StoreMessageAndData(channelPath, msg)
 	if err != nil {
 		errAnswer = answer.NewStoreDatabaseError(err.Error())
 		return errAnswer.Wrap("handleChannelCoin")

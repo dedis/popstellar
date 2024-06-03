@@ -112,7 +112,7 @@ func verifyMessage(msg message.Message) *answer.Error {
 	return nil
 }
 
-func verifyDataAndGetObjectAction(msg message.Message) (string, string, *answer.Error) {
+func verifyDataAndGetObjectAction(msg message.Message) (string, string, error) {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
@@ -120,18 +120,12 @@ func verifyDataAndGetObjectAction(msg message.Message) (string, string, *answer.
 	}
 
 	// validate message data against the json schema
-	errAnswer := utils.VerifyJSON(jsonData, validation.Data)
-	if errAnswer != nil {
-		return "", "", errAnswer.Wrap("verifyDataAndGetObjectAction")
+	err = utils.VerifyJSON(jsonData, validation.Data)
+	if err != nil {
+		return "", "", err
 	}
 
-	// get object#action
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to get object#action: %v", err)
-		return "", "", errAnswer.Wrap("verifyDataAndGetObjectAction")
-	}
-	return object, action, nil
+	return messagedata.GetObjectAndAction(jsonData)
 }
 
 func Sign(data []byte) ([]byte, *answer.Error) {

@@ -17,10 +17,12 @@ import (
 )
 
 func handleChannelLao(channelPath string, msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelLao")
+	object, action, err := verifyDataAndGetObjectAction(msg)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
+
+	var errAnswer *answer.Error
 
 	storeMessage := true
 	switch object + "#" + action {

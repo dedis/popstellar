@@ -510,8 +510,7 @@ func Test_SendTransaction_MissingData(t *testing.T) {
 	message.Params.Channel = digitalCashChannelName
 
 	err = channel.Publish(message, socket.ClientSocket{})
-	require.EqualError(t, err, "failed to verify publish message: failed to "+
-		"verify json schema: failed to validate schema: EOF")
+	require.Contains(t, err.Error(), "failed to validate schema:")
 }
 
 // Tests that the channel works correctly when it receives a Transaction with wrong id
