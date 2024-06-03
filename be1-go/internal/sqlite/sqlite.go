@@ -559,52 +559,6 @@ func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, general
 // ReactionRepository interface implementation
 //======================================================================================================================
 
-func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {
-	dbLock.Lock()
-	defer dbLock.Unlock()
-
-	var rollCallCloseBytes []byte
-	err := s.database.QueryRow(selectLastRollCallClose, laoPath, messagedata.RollCallObject, messagedata.RollCallActionClose).Scan(&rollCallCloseBytes)
-	if err != nil {
-		return false, err
-	}
-
-	var rollCallClose messagedata.RollCallClose
-	err = json.Unmarshal(rollCallCloseBytes, &rollCallClose)
-	if err != nil {
-		return false, err
-	}
-
-	for _, attendee := range rollCallClose.Attendees {
-		if attendee == poptoken {
-			return true, nil
-		}
-	}
-
-	return false, nil
-}
-
-func (s *SQLite) GetReactionSender(messageID string) (string, error) {
-	dbLock.Lock()
-	defer dbLock.Unlock()
-
-	var sender string
-	var object string
-	var action string
-	err := s.database.QueryRow(selectSender, messageID).Scan(&sender, &object, &action)
-	if err != nil && errors.Is(err, sql.ErrNoRows) {
-		return "", nil
-	} else if err != nil {
-		return "", err
-
-	}
-
-	if object != messagedata.ReactionObject || action != messagedata.ReactionActionAdd {
-		return "", xerrors.New("unexpected object or action")
-	}
-	return sender, nil
-}
-
 func (s *SQLite) CheckRumor(senderID string, rumorID int) (bool, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()

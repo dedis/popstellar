@@ -34,7 +34,7 @@ func (s *SQLite) GetLAOOrganizerPubKey(electionPath string) (kyber.Point, error)
 	organizerPubKey := crypto.Suite.Point()
 	err = organizerPubKey.UnmarshalBinary(organizerPubBuf)
 	if err != nil {
-		return nil, poperrors.NewInternalServerError("failed to unmarshall lao organizer public key: %v", err)
+		return nil, poperrors.NewInternalServerError("failed to unmarshal lao organizer public key: %v", err)
 	}
 
 	err = tx.Commit()
@@ -59,7 +59,7 @@ func (s *SQLite) GetElectionSecretKey(electionPath string) (kyber.Scalar, error)
 	electionSecretKey := crypto.Suite.Scalar()
 	err = electionSecretKey.UnmarshalBinary(electionSecretBuf)
 	if err != nil {
-		return nil, poperrors.NewInternalServerError("failed to unmarshall election secret key: %v", err)
+		return nil, poperrors.NewInternalServerError("failed to unmarshal election secret key: %v", err)
 	}
 	return electionSecretKey, nil
 }
