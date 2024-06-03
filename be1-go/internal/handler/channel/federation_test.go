@@ -308,7 +308,7 @@ func Test_handleChannelFederation(t *testing.T) {
 		t.Run(arg.name, func(t *testing.T) {
 			err = handleChannelFederation(arg.channelPath, arg.msg)
 			if arg.isError {
-				require.Contains(t, err.Error(), arg.contains)
+				require.Error(t, err, arg.contains)
 			} else {
 				require.NoError(t, err)
 			}
