@@ -193,7 +193,7 @@ func (s *SQLite) storeElectionHelper(
 
 	err = s.insertMessageHelper(tx, msg.MessageID, msgBytes, messageData, storedTime)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("election create message: %v", err)
+		return err
 	}
 	_, err = tx.Exec(insertChannelMessage, laoPath, msg.MessageID, true)
 	if err != nil {
@@ -284,5 +284,9 @@ func (s *SQLite) StoreElectionWithElectionKey(
 		return poperrors.NewDatabaseInsertErrorMsg("association of election key message with election channel: %v", err)
 	}
 
-	return tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		return poperrors.NewDatabaseTransactionCommitErrorMsg("%v", err)
+	}
+	return nil
 }
