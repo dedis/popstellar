@@ -859,16 +859,16 @@ func Test_SQLite_IsChallengeValid(t *testing.T) {
 	require.NoError(t, err)
 
 	err = lite.IsChallengeValid(notSender, challenge, fedPath)
-	require.ErrorIs(t, err, sql.ErrNoRows)
+	require.Error(t, err, sql.ErrNoRows)
 
 	challenge.Value = "12345678"
 	err = lite.IsChallengeValid(sender, challenge, fedPath)
-	require.ErrorIs(t, err, sql.ErrNoRows)
+	require.Error(t, err, sql.ErrNoRows)
 
 	challenge.Value = value
 	challenge.ValidUntil = validUntil + 1
 	err = lite.IsChallengeValid(sender, challenge, fedPath)
-	require.ErrorIs(t, err, sql.ErrNoRows)
+	require.Error(t, err, sql.ErrNoRows)
 }
 
 func Test_SQLite_GetFederationExpect(t *testing.T) {

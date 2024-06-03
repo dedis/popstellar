@@ -15,25 +15,30 @@ const (
 	AccessDeniedErrorCode        = -5
 	InternalServerErrorCode      = -6
 
-	InvalidActionErrorMsg             = "invalid action: "
-	InvalidResourceErrorMsg           = "invalid resource: "
-	DuplicateResourceErrorMsg         = "duplicate resource: "
-	InvalidMessageFieldErrorMsg       = "invalid message field: "
-	JsonUnmarshalErrorMsg             = InvalidMessageFieldErrorMsg + "failed to unmarshal JSON: "
-	JsonMarshalErrorMsg               = InvalidMessageFieldErrorMsg + "failed to marshal JSON: "
-	DecodeStringErrorMsg              = InvalidMessageFieldErrorMsg + "failed to decode string: "
-	AccessDeniedErrorMsg              = "access denied: "
-	InternalServerErrorMsg            = "internal server error: "
+	InvalidActionErrorMsg       = "invalid action: "
+	InvalidResourceErrorMsg     = "invalid resource: "
+	DuplicateResourceErrorMsg   = "duplicate resource: "
+	InvalidMessageFieldErrorMsg = "invalid message field: "
+	JsonUnmarshalErrorMsg       = InvalidMessageFieldErrorMsg + "failed to unmarshal JSON: "
+	JsonMarshalErrorMsg         = InvalidMessageFieldErrorMsg + "failed to marshal JSON: "
+	DecodeStringErrorMsg        = InvalidMessageFieldErrorMsg + "failed to decode string: "
+	AccessDeniedErrorMsg        = "access denied: "
+	InternalServerErrorMsg      = "internal server error: "
+
 	DatabaseInsertErrorMsg            = InternalServerErrorMsg + "failed to insert into database: "
 	DatabaseSelectErrorMsg            = InternalServerErrorMsg + "failed to select from database: "
+	DatabaseDeleteErrorMsg            = InternalServerErrorMsg + "failed to delete from database: "
 	DatabaseTransactionBeginErrorMsg  = InternalServerErrorMsg + "failed to start database transaction: "
 	DatabaseTransactionCommitErrorMsg = InternalServerErrorMsg + "failed to commit database transaction: "
 	DatabaseScanErrorMsg              = InternalServerErrorMsg + "failed to scan database row: "
 	DatabaseIteratorErrorMsg          = InternalServerErrorMsg + "failed to iterate over database rows: "
-	QueryDatabaseErrorMsg             = InternalServerErrorMsg + "failed to query from database: "
-	StoreDatabaseErrorMsg             = InternalServerErrorMsg + "failed to store inside database: "
-	KeyMarshalErrorMsg                = InternalServerErrorMsg + "failed to marshal key: "
-	KeyUnmarshalErrorMsg              = InternalServerErrorMsg + "failed to unmarshal key: "
+	DatabaseRowsAffectedErrorMsg      = InternalServerErrorMsg + "failed to get number of rows affected: "
+
+	QueryDatabaseErrorMsg = InternalServerErrorMsg + "failed to query from database: "
+	StoreDatabaseErrorMsg = InternalServerErrorMsg + "failed to store inside database: "
+
+	KeyMarshalErrorMsg   = InternalServerErrorMsg + "failed to marshal key: "
+	KeyUnmarshalErrorMsg = InternalServerErrorMsg + "failed to unmarshal key: "
 )
 
 // PopError defines a custom error type that includes a stack trace.
@@ -144,6 +149,11 @@ func NewDatabaseSelectErrorMsg(format string, a ...interface{}) error {
 	return NewPopError(InternalServerErrorCode, DatabaseSelectErrorMsg+format, a...)
 }
 
+// NewDatabaseDeleteErrorMsg returns an error with the code -6 when there is an error with a database delete
+func NewDatabaseDeleteErrorMsg(format string, a ...interface{}) error {
+	return NewPopError(InternalServerErrorCode, DatabaseDeleteErrorMsg+format, a...)
+}
+
 // NewDatabaseTransactionBeginErrorMsg returns an error with the code -6 when there is an error with a database transaction
 func NewDatabaseTransactionBeginErrorMsg(format string, a ...interface{}) error {
 	return NewPopError(InternalServerErrorCode, DatabaseTransactionBeginErrorMsg+format, a...)
@@ -162,6 +172,11 @@ func NewDatabaseScanErrorMsg(format string, a ...interface{}) error {
 // NewDatabaseIteratorErrorMsg returns an error with the code -6 when there is an error with a database iterator
 func NewDatabaseIteratorErrorMsg(format string, a ...interface{}) error {
 	return NewPopError(InternalServerErrorCode, DatabaseIteratorErrorMsg+format, a...)
+}
+
+// NewDatabaseRowsAffectedErrorMsg returns an error with the code -6 when there is an error with a database rows affected
+func NewDatabaseRowsAffectedErrorMsg(format string, a ...interface{}) error {
+	return NewPopError(InternalServerErrorCode, DatabaseRowsAffectedErrorMsg+format, a...)
 }
 
 // NewKeyMarshalError returns an error with the code -6 when it is impossible to marshal a key
