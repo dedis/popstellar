@@ -183,7 +183,7 @@ func (s *baseSocket) SendError(id *int, err error) {
 
 	answerBuf, err := json.Marshal(answer)
 	if err != nil {
-		s.log.Err(err).Msg("failed to marshal answer")
+		s.log.Err(err).Msg("failed to marshal error")
 		return
 	}
 
@@ -219,7 +219,7 @@ func (s *baseSocket) SendPopError(id *int, err error) {
 
 	answerBuf, err := json.Marshal(answer)
 	if err != nil {
-		s.log.Err(err).Msg("failed to marshal answer")
+		s.log.Err(err).Msg("failed to marshal poperror")
 		return
 	}
 
@@ -274,7 +274,7 @@ func (s *baseSocket) SendResult(id int, res []message.Message, missingMessagesBy
 
 	answerBuf, err := json.Marshal(&answer)
 	if err != nil {
-		s.log.Err(err).Msg("failed to marshal answer")
+		s.log.Err(err).Msg("failed to marshal result")
 		return
 	}
 
