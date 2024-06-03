@@ -83,7 +83,7 @@ func Test_handleChannelRoot(t *testing.T) {
 		name:     "Test 3",
 		msg:      newLaoCreateMsg(t, owner, owner, wrongLaoName, mockRepository, true),
 		isError:  true,
-		contains: "failed to verify message data: invalid message field: lao id",
+		contains: "invalid message field: lao id",
 	})
 
 	// Test 4: error when message data is not lao_create

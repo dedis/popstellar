@@ -3,13 +3,14 @@ package channel
 import (
 	"encoding/base64"
 	"encoding/json"
+
 	"popstellar/internal/crypto"
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
-	state "popstellar/internal/singleton/state"
+	"popstellar/internal/singleton/state"
 	"popstellar/internal/sqlite"
 )
 
@@ -25,119 +26,104 @@ const (
 	Federation = "/federation"
 )
 
-func handleChannelRoot(msg message.Message) *answer.Error {
+func handleChannelRoot(msg message.Message) error {
 	object, action, err := verifyDataAndGetObjectAction(msg)
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
-
-	var errAnswer *answer.Error
 
 	switch object + "#" + action {
 	case messagedata.LAOObject + "#" + messagedata.LAOActionCreate:
-		errAnswer = handleLaoCreate(msg)
+		err = handleLaoCreate(msg)
 	default:
-		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
+		err = errors.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
 
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelRoot")
-	}
-
-	return nil
+	return err
 }
 
-func handleLaoCreate(msg message.Message) *answer.Error {
+func handleLaoCreate(msg message.Message) error {
 	var laoCreate messagedata.LaoCreate
-	errAnswer := msg.UnmarshalMsgData(&laoCreate)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleLaoCreate")
+	err := msg.UnmarshalData(&laoCreate)
+	if err != nil {
+		return err
 	}
 
 	laoPath := RootPrefix + laoCreate.ID
-	organizerPubBuf, errAnswer := verifyLaoCreation(msg, laoCreate, laoPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleLaoCreate")
+
+	organizerPubBuf, err := verifyLaoCreation(msg, laoCreate, laoPath)
+	if err != nil {
+		return err
 	}
-	laoGreetMsg, errAnswer := createLaoGreet(organizerPubBuf, laoCreate.ID)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleLaoCreate")
+
+	laoGreetMsg, err := createLaoGreet(organizerPubBuf, laoCreate.ID)
+	if err != nil {
+		return err
 	}
-	errAnswer = createLaoAndChannels(msg, laoGreetMsg, organizerPubBuf, laoPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleLaoCreate")
-	}
-	return nil
+
+	return createLaoAndChannels(msg, laoGreetMsg, organizerPubBuf, laoPath)
 }
 
-func verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, *answer.Error) {
+func verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, error) {
 	db, err := database.GetRootRepositoryInstance()
 	if err != nil {
-		return nil, answer.NewInternalServerError(err.Error())
+		return nil, err
 	}
 
 	ok, err := db.HasChannel(laoPath)
 	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("if lao already exists: %v", err)
-		return nil, errAnswer.Wrap("verifyLAOCreation")
+		return nil, err
 	} else if ok {
-		errAnswer := answer.NewDuplicateResourceError("failed to create lao: duplicate lao path: %s", laoPath)
-		return nil, errAnswer.Wrap("verifyLAOCreation")
+		return nil, errors.NewDuplicateResourceError("duplicate lao path: %s", laoPath)
 	}
 
 	err = laoCreate.Verify()
 	if err != nil {
-		errAnswer := answer.NewInvalidActionError("failed to verify message data: %v", err)
-		return nil, errAnswer.Wrap("verifyLAOCreation")
+		return nil, err
 	}
 
 	senderPubBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode public key of the sender: %v", err)
-		return nil, errAnswer.Wrap("verifyLAOCreation")
+		return nil, errors.NewInvalidMessageFieldError("failed to decode public key of the sender: %v", err)
 	}
 
 	senderPubKey := crypto.Suite.Point()
 	err = senderPubKey.UnmarshalBinary(senderPubBuf)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal public key of the sender: %v", err)
-		return nil, errAnswer.Wrap("verifyLAOCreation")
+		return nil, errors.NewInvalidMessageFieldError("failed to unmarshal public key of the sender: %v", err)
 	}
 
 	organizerPubBuf, err := base64.URLEncoding.DecodeString(laoCreate.Organizer)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode public key of the organizer: %v", err)
-		return nil, errAnswer.Wrap("verifyLAOCreation")
+		return nil, errors.NewInvalidMessageFieldError("failed to decode public key of the organizer: %v", err)
 	}
 
 	organizerPubKey := crypto.Suite.Point()
 	err = organizerPubKey.UnmarshalBinary(organizerPubBuf)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal public key of the organizer: %v", err)
-		return nil, errAnswer.Wrap("verifyLAOCreation")
+		return nil, errors.NewInvalidMessageFieldError("failed to unmarshal public key of the organizer: %v", err)
 	}
 	// Check if the sender and organizer fields of the create#lao message are equal
 	if !organizerPubKey.Equal(senderPubKey) {
-		errAnswer := answer.NewAccessDeniedError("sender's public key does not match the organizer public key: %s != %s",
+		return nil, errors.NewAccessDeniedError("sender's public key does not match the organizer public key: %s != %s",
 			senderPubKey, organizerPubKey)
-		return nil, errAnswer.Wrap("verifyLAOCreation")
 	}
 
 	ownerPublicKey, err := config.GetOwnerPublicKeyInstance()
 	if err != nil {
-		return nil, answer.NewInternalServerError(err.Error())
+		return nil, err
 	}
 
 	// Check if the sender of the LAO creation message is the owner
 	if ownerPublicKey != nil && !ownerPublicKey.Equal(senderPubKey) {
-		errAnswer := answer.NewAccessDeniedError("sender's public key does not match the owner public key: %s != %s",
+		return nil, errors.NewAccessDeniedError("sender's public key does not match the owner public key: %s != %s",
 			senderPubKey, ownerPublicKey)
-		return nil, errAnswer.Wrap("verifyLAOCreation")
 	}
+
 	return organizerPubBuf, nil
 }
 
-func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []byte, laoPath string) *answer.Error {
+func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []byte, laoPath string) error {
 	channels := map[string]string{
 		laoPath:                      sqlite.LaoType,
 		laoPath + Social + Chirps:    sqlite.ChirpType,
@@ -150,29 +136,28 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 
 	db, err := database.GetRootRepositoryInstance()
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
 
 	err = db.StoreLaoWithLaoGreet(channels, laoPath, organizerPubBuf, msg, laoGreetMsg)
 	if err != nil {
-		errAnswer := answer.NewStoreDatabaseError("lao and sub channels: %v", err)
-		return errAnswer.Wrap("createLaoAndSubChannels")
+		return err
 	}
 
 	for channelPath := range channels {
 		err = state.AddChannel(channelPath)
 		if err != nil {
-			return answer.NewInternalServerError(err.Error())
+			return err
 		}
 	}
 
 	return nil
 }
 
-func createLaoGreet(organizerBuf []byte, laoID string) (message.Message, *answer.Error) {
+func createLaoGreet(organizerBuf []byte, laoID string) (message.Message, error) {
 	peersInfo, err := state.GetAllPeersInfo()
 	if err != nil {
-		return message.Message{}, answer.NewInternalServerError(err.Error())
+		return message.Message{}, err
 	}
 
 	knownPeers := make([]messagedata.Peer, 0, len(peersInfo))
@@ -182,7 +167,7 @@ func createLaoGreet(organizerBuf []byte, laoID string) (message.Message, *answer
 
 	_, clientServerAddress, _, err := config.GetServerInfo()
 	if err != nil {
-		return message.Message{}, answer.NewInternalServerError(err.Error())
+		return message.Message{}, err
 	}
 
 	msgData := messagedata.LaoGreet{
@@ -197,28 +182,26 @@ func createLaoGreet(organizerBuf []byte, laoID string) (message.Message, *answer
 	// Marshall the message data
 	dataBuf, err := json.Marshal(&msgData)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to marshal message data: %v", err)
-		return message.Message{}, errAnswer.Wrap("createAndSendLaoGreet")
+		return message.Message{}, errors.NewJsonMarshalError(err.Error())
 	}
 
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
 
 	serverPublicKey, err := config.GetServerPublicKeyInstance()
 	if err != nil {
-		return message.Message{}, answer.NewInternalServerError(err.Error())
+		return message.Message{}, err
 	}
 
 	// Marshall the server public key
 	serverPubBuf, err := serverPublicKey.MarshalBinary()
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to marshal server public key: %v", err)
-		return message.Message{}, errAnswer.Wrap("createAndSendLaoGreet")
+		return message.Message{}, errors.NewInternalServerError("failed to marshal server public key: %v", err)
 	}
 
 	// sign the data
 	signatureBuf, err := sign(dataBuf)
 	if err != nil {
-		return message.Message{}, answer.NewInternalServerError(err.Error())
+		return message.Message{}, err
 	}
 
 	signature := base64.URLEncoding.EncodeToString(signatureBuf)

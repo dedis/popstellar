@@ -72,50 +72,50 @@ func (p *PopError) StackTraceString() string {
 
 // NewInvalidActionError returns an error with the code -1 for an invalid action
 func NewInvalidActionError(format string, a ...interface{}) error {
-	return NewPopError(InvalidActionErrorCode, InvalidActionErrorMsg+format, a)
+	return NewPopError(InvalidActionErrorCode, InvalidActionErrorMsg+format, a...)
 }
 
 // NewInvalidResourceError returns an error with the code -2 for an object with invalid resources
 func NewInvalidResourceError(format string, a ...interface{}) error {
-	return NewPopError(InvalidResourceErrorCode, InvalidResourceErrorMsg+format, a)
+	return NewPopError(InvalidResourceErrorCode, InvalidResourceErrorMsg+format, a...)
 }
 
 // NewDuplicateResourceError returns an error with the code -3 for a resource that already exists
 func NewDuplicateResourceError(format string, a ...interface{}) error {
-	return NewPopError(DuplicateResourceErrorCode, DuplicateResourceErrorMsg+format, a)
+	return NewPopError(DuplicateResourceErrorCode, DuplicateResourceErrorMsg+format, a...)
 }
 
 // NewInvalidMessageFieldError returns an error with the code -4 when a message field is bogus
 func NewInvalidMessageFieldError(format string, a ...interface{}) error {
-	return NewPopError(InvalidMessageFieldErrorCode, InvalidMessageFieldErrorMsg+format, a)
+	return NewPopError(InvalidMessageFieldErrorCode, InvalidMessageFieldErrorMsg+format, a...)
 }
 
 // NewJsonUnmarshalError returns an error with -4 when it is impossible to unmarshal a json message
 func NewJsonUnmarshalError(format string, a ...interface{}) error {
-	return NewPopError(InvalidMessageFieldErrorCode, JsonUnmarshalErrorMsg+format, a)
+	return NewPopError(InvalidMessageFieldErrorCode, JsonUnmarshalErrorMsg+format, a...)
 }
 
 // NewAccessDeniedError returns an error with the code -5 when an access is denied for the sender
 func NewAccessDeniedError(format string, a ...interface{}) error {
-	return NewPopError(AccessDeniedErrorCode, AccessDeniedErrorMsg+format, a)
+	return NewPopError(AccessDeniedErrorCode, AccessDeniedErrorMsg+format, a...)
 }
 
 // NewInternalServerError returns an error with the code -6 when there is an internal server error
 func NewInternalServerError(format string, a ...interface{}) error {
-	return NewPopError(InternalServerErrorCode, InternalServerErrorMsg+format, a)
+	return NewPopError(InternalServerErrorCode, InternalServerErrorMsg+format, a...)
 }
 
 // NewJsonMarshalError returns an error with -6 when it is impossible to marshal a json message
 func NewJsonMarshalError(format string, a ...interface{}) error {
-	return NewPopError(InvalidMessageFieldErrorCode, JsonMarshalErrorMsg+format, a)
+	return NewPopError(InvalidMessageFieldErrorCode, JsonMarshalErrorMsg+format, a...)
 }
 
 // NewQueryDatabaseError returns an error with the code -6 when there is an error with a database query
 func NewQueryDatabaseError(format string, a ...interface{}) error {
-	return NewPopError(InternalServerErrorCode, QueryDatabaseErrorMsg+format, a)
+	return NewPopError(InternalServerErrorCode, QueryDatabaseErrorMsg+format, a...)
 }
 
 // NewStoreDatabaseError returns an error with the code -6 when there is an error with a database store
 func NewStoreDatabaseError(format string, a ...interface{}) error {
-	return NewPopError(InternalServerErrorCode, StoreDatabaseErrorMsg+format, a)
+	return NewPopError(InternalServerErrorCode, StoreDatabaseErrorMsg+format, a...)
 }
