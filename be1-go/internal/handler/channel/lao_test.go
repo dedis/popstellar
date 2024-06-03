@@ -45,8 +45,8 @@ func Test_handleChannelLao(t *testing.T) {
 	database.SetDatabase(mockRepository)
 
 	laoID := base64.URLEncoding.EncodeToString([]byte("laoID"))
-	errAnswer := subs.AddChannel(laoID)
-	require.Nil(t, errAnswer)
+	err = subs.AddChannel(laoID)
+	require.NoError(t, err)
 
 	// Test 1:Success For LaoState message
 	args = append(args, input{
@@ -119,8 +119,8 @@ func Test_handleChannelLao(t *testing.T) {
 	})
 
 	laoID = base64.URLEncoding.EncodeToString([]byte("laoID2"))
-	errAnswer = subs.AddChannel(laoID)
-	require.Nil(t, errAnswer)
+	err = subs.AddChannel(laoID)
+	require.NoError(t, err)
 
 	// Test 8: Success for RollCallOpen message
 	args = append(args, input{
@@ -153,8 +153,8 @@ func Test_handleChannelLao(t *testing.T) {
 	})
 
 	laoID = base64.URLEncoding.EncodeToString([]byte("laoID3"))
-	errAnswer = subs.AddChannel(laoID)
-	require.Nil(t, errAnswer)
+	err = subs.AddChannel(laoID)
+	require.NoError(t, err)
 
 	// Test 11: Success for RollCallClose message
 	args = append(args, input{
@@ -240,8 +240,8 @@ func Test_handleChannelLao(t *testing.T) {
 	})
 
 	laoID = base64.URLEncoding.EncodeToString([]byte("laoID4"))
-	errAnswer = subs.AddChannel(laoID)
-	require.Nil(t, errAnswer)
+	err = subs.AddChannel(laoID)
+	require.NoError(t, err)
 
 	// Test 19: Success for ElectionSetup message
 	args = append(args, input{
@@ -257,8 +257,7 @@ func Test_handleChannelLao(t *testing.T) {
 		t.Run(arg.name, func(t *testing.T) {
 			err := handleChannelLao(arg.channelPath, arg.msg)
 			if arg.isError {
-				require.NotNil(t, err)
-				require.Contains(t, err.Error(), arg.contains)
+				require.Error(t, err, arg.contains)
 			} else {
 				require.NoError(t, err)
 			}
