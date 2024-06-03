@@ -125,20 +125,19 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := handleHeartbeat(&arg.socket, arg.message)
+			err := handleHeartbeat(&arg.socket, arg.message)
 			if arg.isError {
-				require.NotNil(t, errAnswer)
+				require.Error(t, err)
 			} else if arg.expected != nil {
-				require.Nil(t, errAnswer)
+				require.NoError(t, err)
 				require.NotNil(t, arg.socket.Msg)
 
 				var getMessageByID method.GetMessagesById
 				err := json.Unmarshal(arg.socket.Msg, &getMessageByID)
 				require.NoError(t, err)
-
 				require.Equal(t, arg.expected, getMessageByID.Params)
 			} else {
-				require.Nil(t, errAnswer)
+				require.NoError(t, err)
 				require.Nil(t, arg.socket.Msg)
 			}
 		})
