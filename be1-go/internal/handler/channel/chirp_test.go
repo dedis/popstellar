@@ -10,7 +10,7 @@ import (
 	"popstellar/internal/mock/generator"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
-	state2 "popstellar/internal/singleton/state"
+	"popstellar/internal/singleton/state"
 	"popstellar/internal/types"
 	"strings"
 	"testing"
@@ -23,7 +23,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	peers := types.NewPeers()
 	hubParams := types.NewHubParams()
 
-	state2.SetState(subs, peers, queries, hubParams)
+	state.SetState(subs, peers, queries, hubParams)
 
 	organizerBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
 	require.NoError(t, err)
@@ -122,12 +122,11 @@ func Test_handleChannelChirp(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := handleChannelChirp(arg.channelPath, arg.msg)
+			err = handleChannelChirp(arg.channelPath, arg.msg)
 			if arg.isError {
-				require.NotNil(t, errAnswer)
-				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.Error(t, err, arg.contains)
 			} else {
-				require.Nil(t, errAnswer)
+				require.NoError(t, err)
 			}
 		})
 	}
@@ -139,8 +138,8 @@ func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int
 
 	msg := generator.NewChirpAddMsg(t, sender, nil, timestamp)
 
-	errAnswer := state2.AddChannel(channelID)
-	require.Nil(t, errAnswer)
+	err := state.AddChannel(channelID)
+	require.NoError(t, err)
 
 	if isError {
 		return msg
@@ -148,8 +147,8 @@ func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int
 
 	chirpNotifyChannelID, _ := strings.CutSuffix(channelID, Social+"/"+msg.Sender)
 
-	errAnswer = state2.AddChannel(chirpNotifyChannelID)
-	require.Nil(t, errAnswer)
+	err = state.AddChannel(chirpNotifyChannelID)
+	require.NoError(t, err)
 
 	mockRepository.On("StoreChirpMessages", channelID, chirpNotifyChannelID, mock.AnythingOfType("message.Message"),
 		mock.AnythingOfType("message.Message")).Return(nil)
@@ -162,8 +161,8 @@ func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID st
 
 	msg := generator.NewChirpDeleteMsg(t, sender, nil, chirpID, timestamp)
 
-	errAnswer := state2.AddChannel(channelID)
-	require.Nil(t, errAnswer)
+	err := state.AddChannel(channelID)
+	require.NoError(t, err)
 
 	if isError {
 		return msg
@@ -173,8 +172,8 @@ func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID st
 
 	chirpNotifyChannelID, _ := strings.CutSuffix(channelID, Social+"/"+msg.Sender)
 
-	errAnswer = state2.AddChannel(chirpNotifyChannelID)
-	require.Nil(t, errAnswer)
+	err = state.AddChannel(chirpNotifyChannelID)
+	require.NoError(t, err)
 
 	mockRepository.On("StoreChirpMessages", channelID, chirpNotifyChannelID, mock.AnythingOfType("message.Message"),
 		mock.AnythingOfType("message.Message")).Return(nil)
