@@ -48,6 +48,23 @@ func (s *SQLite) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
 	return serverPubKey, serverSecKey, nil
 }
 
+func (s *SQLite) GetOrganizerPubKey(laoPath string) (kyber.Point, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	var organizerPubBuf []byte
+	err := s.database.QueryRow(selectPublicKey, laoPath).Scan(&organizerPubBuf)
+	if err != nil {
+		return nil, err
+	}
+	organizerPubKey := crypto.Suite.Point()
+	err = organizerPubKey.UnmarshalBinary(organizerPubBuf)
+	if err != nil {
+		return nil, err
+	}
+	return organizerPubKey, nil
+}
+
 func (s *SQLite) insertMessageHelper(tx *sql.Tx, messageID string, msg, messageData []byte, storedTime int64) error {
 	_, err := tx.Exec(insertMessage, messageID, msg, messageData, storedTime)
 	if err != nil {
@@ -170,10 +187,6 @@ func (s *SQLite) StoreChannel(channelPath, channelType, laoPath string) error {
 	return err
 }
 
-//======================================================================================================================
-// ChannelRepository interface implementation
-//======================================================================================================================
-
 func (s *SQLite) HasMessage(messageID string) (bool, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
@@ -187,21 +200,4 @@ func (s *SQLite) HasMessage(messageID string) (bool, error) {
 	} else {
 		return true, nil
 	}
-}
-
-func (s *SQLite) GetOrganizerPubKey(laoPath string) (kyber.Point, error) {
-	dbLock.Lock()
-	defer dbLock.Unlock()
-
-	var organizerPubBuf []byte
-	err := s.database.QueryRow(selectPublicKey, laoPath).Scan(&organizerPubBuf)
-	if err != nil {
-		return nil, err
-	}
-	organizerPubKey := crypto.Suite.Point()
-	err = organizerPubKey.UnmarshalBinary(organizerPubBuf)
-	if err != nil {
-		return nil, err
-	}
-	return organizerPubKey, nil
 }

@@ -1,7 +1,6 @@
 package sqlite
 
 const (
-	DefaultPath    = "sqlite.db"
 	serverKeysPath = "server_keys"
 )
 
@@ -172,8 +171,6 @@ const (
 	selectPublicKey = `SELECT publicKey FROM key WHERE channelPath = ?`
 
 	selectSecretKey = `SELECT secretKey FROM key WHERE channelPath = ?`
-
-	selectPendingSignatures = `SELECT witness, signature FROM pendingSignatures WHERE messageID = ?`
 
 	selectMessage = `SELECT message FROM message WHERE messageID = ?`
 
@@ -403,11 +400,6 @@ const (
 )
 
 const (
-	deletePendingSignatures       = `DELETE FROM pendingSignatures WHERE messageID = ?`
 	deleteUnprocessedMessage      = `DELETE FROM unprocessedMessage WHERE messageID = ?`
 	deleteUnprocessedMessageRumor = `DELETE FROM unprocessedMessageRumor WHERE messageID = ?`
-)
-
-const (
-	updateMsg = `UPDATE OR IGNORE message SET message = json_insert(message,'$.witness_signatures[#]', json(?)) WHERE messageID = ?`
 )
