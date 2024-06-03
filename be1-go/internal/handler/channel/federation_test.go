@@ -308,7 +308,7 @@ func Test_handleChannelFederation(t *testing.T) {
 		t.Run(arg.name, func(t *testing.T) {
 			err = handleChannelFederation(arg.channelPath, arg.msg)
 			if arg.isError {
-				require.Contains(t, err.Error(), arg.contains)
+				require.Error(t, err, arg.contains)
 			} else {
 				require.NoError(t, err)
 			}
@@ -340,21 +340,21 @@ func Test_handleRequestChallenge(t *testing.T) {
 	laoPath := fmt.Sprintf("/root/%s", laoID)
 	channelPath := fmt.Sprintf("/root/%s/federation", laoID)
 
-	errAnswer := subs.AddChannel(channelPath)
-	require.Nil(t, errAnswer)
+	err = subs.AddChannel(channelPath)
+	require.NoError(t, err)
 
 	fakeSocket := mock2.FakeSocket{Id: "1"}
-	errAnswer = subs.Subscribe(channelPath, &fakeSocket)
-	require.Nil(t, errAnswer)
+	err = subs.Subscribe(channelPath, &fakeSocket)
+	require.NoError(t, err)
 
 	mockRepository.On("GetOrganizerPubKey", laoPath).Return(organizerPk, nil)
 	mockRepository.On("GetServerKeys").Return(serverPk, serverSk, nil)
 	mockRepository.On("StoreMessageAndData", channelPath,
 		mock.AnythingOfType("message.Message")).Return(nil)
 
-	errAnswer = handleRequestChallenge(generator.NewFederationChallengeRequest(t, organizer, time.Now().Unix(),
+	err = handleRequestChallenge(generator.NewFederationChallengeRequest(t, organizer, time.Now().Unix(),
 		organizerSk), channelPath)
-	require.Nil(t, errAnswer)
+	require.NoError(t, err)
 
 	require.NotNil(t, fakeSocket.Msg)
 	var broadcastMsg method.Broadcast
@@ -365,11 +365,11 @@ func Test_handleRequestChallenge(t *testing.T) {
 	require.Equal(t, channelPath, broadcastMsg.Params.Channel)
 
 	var challenge messagedata.FederationChallenge
-	errAnswer = broadcastMsg.Params.Message.UnmarshalMsgData(&challenge)
-	require.Nil(t, errAnswer)
+	err = broadcastMsg.Params.Message.UnmarshalData(&challenge)
+	require.NoError(t, err)
 
-	errAnswer = challenge.Verify()
-	require.Nil(t, errAnswer)
+	err = challenge.Verify()
+	require.NoError(t, err)
 }
 
 func Test_handleFederationExpect(t *testing.T) {
@@ -428,8 +428,8 @@ func Test_handleFederationExpect(t *testing.T) {
 		serverAddressA, organizer2, generator.NewFederationChallenge(t,
 			organizer, value, validUntil, organizerSk), organizerSk)
 
-	errAnswer := handleExpect(federationExpect, channelPath)
-	require.Nil(t, errAnswer)
+	err = handleExpect(federationExpect, channelPath)
+	require.NoError(t, err)
 }
 
 func Test_handleFederationInit(t *testing.T) {
@@ -486,8 +486,8 @@ func Test_handleFederationInit(t *testing.T) {
 	<-serverBStarted
 	defer serverB.Close()
 
-	errAnswer := handleInit(initMsg, channelPath)
-	require.Nil(t, errAnswer)
+	err = handleInit(initMsg, channelPath)
+	require.NoError(t, err)
 
 	var msgBytes []byte
 	select {
@@ -546,18 +546,18 @@ func Test_handleFederationChallenge(t *testing.T) {
 	channelPath := fmt.Sprintf("/root/%s/federation", laoID)
 	channelPath2 := fmt.Sprintf("/root/%s/federation", laoID2)
 
-	errAnswer := subs.AddChannel(channelPath)
-	require.Nil(t, errAnswer)
-	errAnswer = subs.AddChannel(channelPath2)
-	require.Nil(t, errAnswer)
+	err = subs.AddChannel(channelPath)
+	require.NoError(t, err)
+	err = subs.AddChannel(channelPath2)
+	require.NoError(t, err)
 
 	fakeSocket1 := mock2.FakeSocket{Id: "1"}
-	errAnswer = subs.Subscribe(channelPath, &fakeSocket1)
-	require.Nil(t, errAnswer)
+	err = subs.Subscribe(channelPath, &fakeSocket1)
+	require.NoError(t, err)
 
 	fakeSocket2 := mock2.FakeSocket{Id: "2"}
-	errAnswer = subs.Subscribe(channelPath2, &fakeSocket2)
-	require.Nil(t, errAnswer)
+	err = subs.Subscribe(channelPath2, &fakeSocket2)
+	require.NoError(t, err)
 
 	serverAddressA := "ws://localhost:9801/client"
 	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
@@ -592,8 +592,8 @@ func Test_handleFederationChallenge(t *testing.T) {
 	mockRepository.On("RemoveChallenge", challenge).Return(nil)
 	mockRepository.On("GetServerKeys").Return(serverPk, serverSk, nil)
 
-	errAnswer = handleChallenge(challengeMsg2, channelPath)
-	require.Nil(t, errAnswer)
+	err = handleChallenge(challengeMsg2, channelPath)
+	require.NoError(t, err)
 
 	// The same federation result message should be received by both sockets
 	// on fakeSocket1, representing the organizer, it should be in a broadcast
@@ -612,8 +612,8 @@ func Test_handleFederationChallenge(t *testing.T) {
 	require.Equal(t, broadcastMsg.Params.Message, publishMsg.Params.Message)
 
 	var resultMsg messagedata.FederationResult
-	errAnswer = broadcastMsg.Params.Message.UnmarshalMsgData(&resultMsg)
-	require.Nil(t, errAnswer)
+	err = broadcastMsg.Params.Message.UnmarshalData(&resultMsg)
+	require.NoError(t, err)
 
 	// it should contain the challenge from organizer, not organizer2
 	require.Equal(t, challengeMsg, resultMsg.ChallengeMsg)
@@ -651,12 +651,12 @@ func Test_handleFederationResult(t *testing.T) {
 	laoPath := fmt.Sprintf("/root/%s", laoID)
 	channelPath := fmt.Sprintf("/root/%s/federation", laoID)
 
-	errAnswer := subs.AddChannel(channelPath)
-	require.Nil(t, errAnswer)
+	err = subs.AddChannel(channelPath)
+	require.NoError(t, err)
 
 	fakeSocket := mock2.FakeSocket{Id: "1"}
-	errAnswer = subs.Subscribe(channelPath, &fakeSocket)
-	require.Nil(t, errAnswer)
+	err = subs.Subscribe(channelPath, &fakeSocket)
+	require.NoError(t, err)
 
 	serverAddressA := "ws://localhost:9801/client"
 	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
@@ -692,8 +692,8 @@ func Test_handleFederationResult(t *testing.T) {
 	mockRepository.On("GetFederationInit", organizer, organizer2, challenge,
 		channelPath).Return(federationInit, nil)
 
-	errAnswer = handleResult(federationResultMsg, channelPath)
-	require.Nil(t, errAnswer)
+	err = handleResult(federationResultMsg, channelPath)
+	require.NoError(t, err)
 
 	require.NotNil(t, fakeSocket.Msg)
 	var broadcastMsg method.Broadcast
