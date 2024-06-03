@@ -3,15 +3,17 @@ package socket
 import (
 	"encoding/json"
 	"errors"
-	jsonrpc "popstellar/internal/message"
-	"popstellar/internal/message/answer"
-	"popstellar/internal/message/query/method/message"
 	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/rs/xid"
 	"github.com/rs/zerolog"
+
+	poperror "popstellar/internal/errors"
+	jsonrpc "popstellar/internal/message"
+	"popstellar/internal/message/answer"
+	"popstellar/internal/message/query/method/message"
 )
 
 // SocketType represents different socket types
@@ -177,6 +179,42 @@ func (s *baseSocket) SendError(id *int, err error) {
 		},
 		ID:    id,
 		Error: msgError,
+	}
+
+	answerBuf, err := json.Marshal(answer)
+	if err != nil {
+		s.log.Err(err).Msg("failed to marshal answer")
+		return
+	}
+
+	s.log.Info().
+		Str("to", s.conn.RemoteAddr().String()).
+		Str("msg", string(answerBuf)).
+		Msg("send error")
+
+	s.send <- answerBuf
+}
+
+// SendError is a utility method that allows sending an `error` as a
+// `message.Error` message to the socket.
+func (s *baseSocket) SendPopError(id *int, err error) {
+	popError := &poperror.PopError{}
+
+	if !errors.As(err, &popError) {
+		popError = poperror.NewPopError(-6, err.Error())
+	}
+
+	msgError := answer.Error{
+		Code:        popError.Code(),
+		Description: popError.StackTraceString(),
+	}
+
+	answer := answer.Answer{
+		JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPC: "2.0",
+		},
+		ID:    id,
+		Error: &msgError,
 	}
 
 	answerBuf, err := json.Marshal(answer)

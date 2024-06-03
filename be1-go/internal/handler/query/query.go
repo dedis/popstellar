@@ -2,12 +2,14 @@ package query
 
 import (
 	"encoding/json"
+	"popstellar/internal/errors"
+
 	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query"
 	"popstellar/internal/network/socket"
 )
 
-func HandleQuery(socket socket.Socket, msg []byte) *answer.Error {
+func HandleQuery(socket socket.Socket, msg []byte) error {
 	var queryBase query.Base
 
 	err := json.Unmarshal(msg, &queryBase)
@@ -18,34 +20,31 @@ func HandleQuery(socket socket.Socket, msg []byte) *answer.Error {
 	}
 
 	var id *int = nil
-	var errAnswer *answer.Error
 
 	switch queryBase.Method {
 	case query.MethodCatchUp:
-		id, errAnswer = handleCatchUp(socket, msg)
+		id, err = handleCatchUp(socket, msg)
 	case query.MethodGetMessagesById:
-		id, errAnswer = handleGetMessagesByID(socket, msg)
+		id, err = handleGetMessagesByID(socket, msg)
 	case query.MethodGreetServer:
-		id, errAnswer = handleGreetServer(socket, msg)
+		id, err = handleGreetServer(socket, msg)
 	case query.MethodHeartbeat:
-		errAnswer = handleHeartbeat(socket, msg)
+		err = handleHeartbeat(socket, msg)
 	case query.MethodPublish:
-		id, errAnswer = handlePublish(socket, msg)
+		id, err = handlePublish(socket, msg)
 	case query.MethodSubscribe:
-		id, errAnswer = handleSubscribe(socket, msg)
+		id, err = handleSubscribe(socket, msg)
 	case query.MethodUnsubscribe:
-		id, errAnswer = handleUnsubscribe(socket, msg)
+		id, err = handleUnsubscribe(socket, msg)
 	case query.MethodRumor:
-		id, errAnswer = handleRumor(socket, msg)
+		id, err = handleRumor(socket, msg)
 	default:
-		errAnswer = answer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
+		err = errors.NewInvalidActionError("unexpected method: '%s'", queryBase.Method)
 	}
 
-	if errAnswer != nil && queryBase.Method != query.MethodGreetServer && queryBase.Method != query.MethodHeartbeat {
-		errAnswer = errAnswer.Wrap("HandleQuery")
-		socket.SendError(id, errAnswer)
-		return errAnswer
+	if err != nil && id != nil {
+		socket.SendPopError(id, err)
 	}
 
-	return nil
+	return err
 }

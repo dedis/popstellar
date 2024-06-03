@@ -33,6 +33,7 @@ func Test_handleQuery(t *testing.T) {
 	type input struct {
 		name     string
 		message  []byte
+		isError  bool
 		contains string
 	}
 
@@ -45,6 +46,7 @@ func Test_handleQuery(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 1",
 		message:  msg,
+		isError:  true,
 		contains: "unexpected method",
 	})
 
@@ -53,9 +55,12 @@ func Test_handleQuery(t *testing.T) {
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
 			fakeSocket := mock.FakeSocket{Id: "fakesocket"}
-			errAnswer := HandleQuery(&fakeSocket, arg.message)
-			require.NotNil(t, errAnswer)
-			require.Contains(t, errAnswer.Error(), arg.contains)
+			err := HandleQuery(&fakeSocket, arg.message)
+			if arg.isError {
+				require.Contains(t, err.Error(), arg.contains)
+			} else {
+				require.NoError(t, err)
+			}
 		})
 	}
 }

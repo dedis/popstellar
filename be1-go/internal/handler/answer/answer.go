@@ -3,6 +3,8 @@ package answer
 import (
 	"encoding/json"
 	"math/rand"
+	"sort"
+
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/query"
@@ -10,7 +12,6 @@ import (
 	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/singleton/state"
-	"sort"
 )
 
 const (
