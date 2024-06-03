@@ -16,6 +16,10 @@ class RollCallArrayAdapter(
     private val myToken: PoPToken?,
 ) : ArrayAdapter<String>(context, layout, attendeesList) {
 
+  init {
+    RollCallFragment.isAttendeeListSorted(attendeesList, context)
+  }
+
   override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
     val view = super.getView(position, convertView, parent)
 

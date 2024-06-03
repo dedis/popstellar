@@ -125,8 +125,23 @@ constructor(
     val updateId = closeRollCall.updateId
     val closes = closeRollCall.closes
     val existingRollCall = rollCallRepo.getRollCallWithId(laoView.id, closes)
-    val currentAttendees = existingRollCall.attendees
-    currentAttendees.addAll(closeRollCall.attendees)
+
+    val currentAttendees: Set<PublicKey>
+    if (closeRollCall.attendees.containsAll(existingRollCall.attendees)) {
+        // closeRollCall.attendees is sorted, so we prefer to use it if we can
+      currentAttendees = closeRollCall.attendees.toMutableSet()
+    } else {
+        // if both lists have different attendees, we merge them even though we lose the order
+        // We are not ordering it because it is important to keep the order that we received to know if we face de-anonymization
+      currentAttendees = existingRollCall.attendees
+      currentAttendees.addAll(closeRollCall.attendees)
+    }
+
+    // log existingRollCall.attendees and closeRollCall.attendees
+    Timber.tag(TAG).d("existingRollCall.attendees: %s", existingRollCall.attendees)
+    Timber.tag(TAG).d("closeRollCall.attendees: %s", closeRollCall.attendees)
+    // log currentAttendees
+    Timber.tag(TAG).d("currentAttendees: %s", currentAttendees)
 
     val builder = RollCallBuilder()
     builder
@@ -142,7 +157,6 @@ constructor(
         .setEnd(closeRollCall.closedAt)
     val laoId = laoView.id
     val rollCall = builder.build()
-
     witnessingRepo.addWitnessMessage(laoId, closeRollCallWitnessMessage(messageId, rollCall))
     if (witnessingRepo.areWitnessesEmpty(laoId)) {
       addRollCallRoutine(rollCallRepo, digitalCashRepo, laoId, rollCall)

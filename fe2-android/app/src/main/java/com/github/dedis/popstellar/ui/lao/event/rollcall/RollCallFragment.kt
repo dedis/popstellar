@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.lao.event.rollcall
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.os.Bundle
@@ -9,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.lifecycle.MutableLiveData
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.RollCallFragmentBinding
 import com.github.dedis.popstellar.model.objects.RollCall
@@ -253,6 +256,7 @@ class RollCallFragment : AbstractEventFragment {
               .getAttendees()
               .stream()
               .map(PublicKey::encoded)
+              .sorted(compareBy(String::toString))
               .collect(Collectors.toList())
 
       binding.rollCallAttendeesText.text =
@@ -342,15 +346,25 @@ class RollCallFragment : AbstractEventFragment {
 
   companion object {
     val TAG: String = RollCallFragment::class.java.simpleName
+    private val deAnonymizationWarned = MutableLiveData(false)
 
     @JvmStatic
     fun newInstance(persistentId: String?): RollCallFragment {
+      deAnonymizationWarned.value = false
       val fragment = RollCallFragment()
       val bundle = Bundle(1)
       bundle.putString(ROLL_CALL_ID, persistentId)
       fragment.arguments = bundle
-
       return fragment
+    }
+
+    fun isAttendeeListSorted(attendeesList: List<String>, context: Context): Boolean {
+      if (attendeesList != attendeesList.sorted() && deAnonymizationWarned.value == false) {
+        deAnonymizationWarned.value = true
+        logAndShow(context, TAG, R.string.roll_call_attendees_list_not_sorted)
+        return false
+      }
+      return true
     }
 
     /**

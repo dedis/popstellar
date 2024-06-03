@@ -66,12 +66,12 @@ class RollCallBuilder {
   }
 
   fun setAttendees(attendees: Set<PublicKey>): RollCallBuilder {
-    this.attendees = HashSet(attendees)
+    this.attendees = LinkedHashSet(attendees)
     return this
   }
 
   fun setEmptyAttendees(): RollCallBuilder {
-    attendees = HashSet()
+    attendees = LinkedHashSet()
     return this
   }
 
