@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"go.dedis.ch/kyber/v3"
 	poperrors "popstellar/internal/errors"
+	"popstellar/internal/handler/channel"
 	database "popstellar/internal/repository"
 	"sync"
 )
@@ -76,7 +77,7 @@ func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
 		return SQLite{}, poperrors.NewDatabaseCreateTableErrorMsg("channel: %v", err)
 	}
 
-	_, err = tx.Exec(insertOrIgnoreChannel, "/root", channelTypeToID[RootType], "")
+	_, err = tx.Exec(insertOrIgnoreChannel, "/root", channelTypeToID[channel.RootType], "")
 	if err != nil {
 		db.Close()
 		return SQLite{}, poperrors.NewDatabaseInsertErrorMsg("root channel: %v", err)

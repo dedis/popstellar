@@ -11,7 +11,6 @@ import (
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/state"
-	"popstellar/internal/sqlite"
 )
 
 const (
@@ -125,13 +124,13 @@ func verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, lao
 
 func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []byte, laoPath string) error {
 	channels := map[string]string{
-		laoPath:                      sqlite.LaoType,
-		laoPath + Social + Chirps:    sqlite.ChirpType,
-		laoPath + Social + Reactions: sqlite.ReactionType,
-		laoPath + Consensus:          sqlite.ConsensusType,
-		laoPath + Coin:               sqlite.CoinType,
-		laoPath + Auth:               sqlite.AuthType,
-		laoPath + Federation:         sqlite.FederationType,
+		laoPath:                      LaoType,
+		laoPath + Social + Chirps:    ChirpType,
+		laoPath + Social + Reactions: ReactionType,
+		laoPath + Consensus:          ConsensusType,
+		laoPath + Coin:               CoinType,
+		laoPath + Auth:               AuthType,
+		laoPath + Federation:         FederationType,
 	}
 
 	db, err := database.GetRootRepositoryInstance()

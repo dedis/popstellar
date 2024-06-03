@@ -12,7 +12,6 @@ import (
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/state"
-	"popstellar/internal/sqlite"
 	"popstellar/internal/types"
 	"testing"
 	"time"
@@ -129,13 +128,13 @@ func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockReposi
 		organizerBuf, err := base64.URLEncoding.DecodeString(organizer)
 		require.NoError(t, err)
 		channels := map[string]string{
-			laoPath:                      sqlite.LaoType,
-			laoPath + Social + Chirps:    sqlite.ChirpType,
-			laoPath + Social + Reactions: sqlite.ReactionType,
-			laoPath + Consensus:          sqlite.ConsensusType,
-			laoPath + Coin:               sqlite.CoinType,
-			laoPath + Auth:               sqlite.AuthType,
-			laoPath + Federation:         sqlite.FederationType,
+			laoPath:                      LaoType,
+			laoPath + Social + Chirps:    ChirpType,
+			laoPath + Social + Reactions: ReactionType,
+			laoPath + Consensus:          ConsensusType,
+			laoPath + Coin:               CoinType,
+			laoPath + Auth:               AuthType,
+			laoPath + Federation:         FederationType,
 		}
 		mockRepository.On("StoreLaoWithLaoGreet",
 			channels,

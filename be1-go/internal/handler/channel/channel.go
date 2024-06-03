@@ -18,8 +18,21 @@ import (
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/state"
 	"popstellar/internal/singleton/utils"
-	"popstellar/internal/sqlite"
 	"popstellar/internal/validation"
+)
+
+const (
+	RootType         = "root"
+	LaoType          = "lao"
+	ElectionType     = "election"
+	ChirpType        = "chirp"
+	ReactionType     = "reaction"
+	ConsensusType    = "consensus"
+	CoinType         = "coin"
+	AuthType         = "auth"
+	PopChaType       = "popcha"
+	GeneralChirpType = "generalChirp"
+	FederationType   = "federation"
 )
 
 func HandleChannel(channelPath string, msg message.Message, fromRumor bool) error {
@@ -50,19 +63,19 @@ func HandleChannel(channelPath string, msg message.Message, fromRumor bool) erro
 	}
 
 	switch channelType {
-	case sqlite.RootType:
+	case RootType:
 		err = handleChannelRoot(msg)
-	case sqlite.LaoType:
+	case LaoType:
 		err = handleChannelLao(channelPath, msg)
-	case sqlite.ElectionType:
+	case ElectionType:
 		err = handleChannelElection(channelPath, msg)
-	case sqlite.ChirpType:
+	case ChirpType:
 		err = handleChannelChirp(channelPath, msg)
-	case sqlite.ReactionType:
+	case ReactionType:
 		err = handleChannelReaction(channelPath, msg)
-	case sqlite.CoinType:
+	case CoinType:
 		err = handleChannelCoin(channelPath, msg)
-	case sqlite.FederationType:
+	case FederationType:
 		err = handleChannelFederation(channelPath, msg)
 	default:
 		err = errors.NewInvalidResourceError("unknown channelPath type for %s", channelPath)
