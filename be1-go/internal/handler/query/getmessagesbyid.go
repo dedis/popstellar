@@ -2,30 +2,28 @@ package query
 
 import (
 	"encoding/json"
-	"popstellar/internal/message/answer"
+
+	"popstellar/internal/errors"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/singleton/database"
 )
 
-func handleGetMessagesByID(socket socket.Socket, msg []byte) (*int, *answer.Error) {
+func handleGetMessagesByID(socket socket.Socket, msg []byte) (*int, error) {
 	var getMessagesById method.GetMessagesById
-
 	err := json.Unmarshal(msg, &getMessagesById)
 	if err != nil {
-		errAnswer := answer.NewJsonUnmarshalError(err.Error())
-		return nil, errAnswer.Wrap("handleGetMessageByID")
+		return nil, errors.NewJsonUnmarshalError(err.Error())
 	}
 
 	db, err := database.GetQueryRepositoryInstance()
 	if err != nil {
-		return &getMessagesById.ID, answer.NewInternalServerError(err.Error())
+		return &getMessagesById.ID, err
 	}
 
 	result, err := db.GetResultForGetMessagesByID(getMessagesById.Params)
 	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("result for get messages by id: %v", err)
-		return &getMessagesById.ID, errAnswer.Wrap("handleGetMessageByID")
+		return &getMessagesById.ID, errors.NewQueryDatabaseError("result for get messages by id: %v", err)
 	}
 
 	socket.SendResult(getMessagesById.ID, nil, result)
