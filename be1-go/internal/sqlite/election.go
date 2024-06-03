@@ -225,7 +225,7 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 
 	tx, err := s.database.Begin()
 	if err != nil {
-		return nil, err
+		return nil, poperrors.NewDatabaseTransactionBeginErrorMsg("%v", err)
 	}
 	defer tx.Rollback()
 
@@ -249,7 +249,7 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 		var msgID string
 		var sender string
 		if err = rows.Scan(&voteBytes, &msgID, &sender); err != nil {
-			return nil, err
+			return nil, poperrors.NewDatabaseScanErrorMsg("cast vote message: %v", err)
 		}
 		var vote messagedata.VoteCastVote
 		err = json.Unmarshal(voteBytes, &vote)
@@ -262,7 +262,7 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 		}
 	}
 	if err = rows.Err(); err != nil {
-		return nil, poperrors.NewDatabaseSelectErrorMsg("while iterating over cast vote messages: %v", err)
+		return nil, poperrors.NewDatabaseIteratorErrorMsg("cast vote messages: %v", err)
 	}
 	err = tx.Commit()
 	if err != nil {
@@ -345,7 +345,7 @@ func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionRes
 	}
 	_, err = tx.Exec(insertChannelMessage, channelPath, msg.MessageID, true)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("association of election end message with election channel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation election end message and election channel: %v", err)
 	}
 	_, err = tx.Exec(insertMessage, electionResultMsg.MessageID, electionResultMsgBytes, electionResult, storedTime)
 	if err != nil {
@@ -353,7 +353,7 @@ func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionRes
 	}
 	_, err = tx.Exec(insertChannelMessage, channelPath, electionResultMsg.MessageID, false)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("association of election result message with election channel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation election result message and election channel: %v", err)
 	}
 	err = tx.Commit()
 

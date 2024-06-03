@@ -55,12 +55,12 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	}
 	_, err = tx.Exec(insertChannelMessage, "/root", msg.MessageID, true)
 	if err != nil {
-		return errors.NewDatabaseInsertErrorMsg("association of lao create message with root channel: %v", err)
+		return errors.NewDatabaseInsertErrorMsg("relation lao create message and root channel: %v", err)
 	}
 
 	_, err = tx.Exec(insertChannelMessage, laoPath, msg.MessageID, false)
 	if err != nil {
-		return errors.NewDatabaseInsertErrorMsg("association of lao create message with lao channel: %v", err)
+		return errors.NewDatabaseInsertErrorMsg("relation lao create message and lao channel: %v", err)
 	}
 
 	_, err = tx.Exec(insertPublicKey, laoPath, organizerPubBuf)
@@ -73,7 +73,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	}
 	_, err = tx.Exec(insertChannelMessage, laoPath, laoGreetMsg.MessageID, false)
 	if err != nil {
-		return errors.NewDatabaseInsertErrorMsg("association of lao greet message with lao channel: %v", err)
+		return errors.NewDatabaseInsertErrorMsg("relation lao greet message lao channel: %v", err)
 	}
 
 	err = tx.Commit()

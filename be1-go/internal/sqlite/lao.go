@@ -140,7 +140,7 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg messa
 	}
 	_, err = tx.Exec(insertChannelMessage, laoPath, msg.MessageID, true)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("association of roll call close message with lao channel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation roll call close message and lao channel: %v", err)
 	}
 
 	if len(channels) == 0 {
@@ -197,7 +197,7 @@ func (s *SQLite) storeElectionHelper(
 	}
 	_, err = tx.Exec(insertChannelMessage, laoPath, msg.MessageID, true)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("association of election create message with lao channel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation election create message and lao channel: %v", err)
 	}
 	_, err = tx.Exec(insertChannel, electionPath, channelTypeToID[ElectionType], laoPath)
 	if err != nil {
@@ -205,7 +205,7 @@ func (s *SQLite) storeElectionHelper(
 	}
 	_, err = tx.Exec(insertChannelMessage, electionPath, msg.MessageID, false)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("association of election create message with election channel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation election create message and election channel: %v", err)
 	}
 	_, err = tx.Exec(insertKeys, electionPath, electionPubBuf, electionSecretBuf)
 	if err != nil {
@@ -281,7 +281,7 @@ func (s *SQLite) StoreElectionWithElectionKey(
 	}
 	_, err = tx.Exec(insertChannelMessage, electionPath, electionKeyMsg.MessageID, false)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("association of election key message with election channel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation election key message and election channel: %v", err)
 	}
 
 	err = tx.Commit()

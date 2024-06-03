@@ -28,6 +28,8 @@ const (
 	DatabaseSelectErrorMsg            = InternalServerErrorMsg + "failed to select from database: "
 	DatabaseTransactionBeginErrorMsg  = InternalServerErrorMsg + "failed to start database transaction: "
 	DatabaseTransactionCommitErrorMsg = InternalServerErrorMsg + "failed to commit database transaction: "
+	DatabaseScanErrorMsg              = InternalServerErrorMsg + "failed to scan database row: "
+	DatabaseIteratorErrorMsg          = InternalServerErrorMsg + "failed to iterate over database rows: "
 	QueryDatabaseErrorMsg             = InternalServerErrorMsg + "failed to query from database: "
 	StoreDatabaseErrorMsg             = InternalServerErrorMsg + "failed to store inside database: "
 	KeyMarshalErrorMsg                = InternalServerErrorMsg + "failed to marshal key: "
@@ -150,6 +152,16 @@ func NewDatabaseTransactionBeginErrorMsg(format string, a ...interface{}) error 
 // NewDatabaseTransactionCommitErrorMsg returns an error with the code -6 when there is an error with a database transaction
 func NewDatabaseTransactionCommitErrorMsg(format string, a ...interface{}) error {
 	return NewPopError(InternalServerErrorCode, DatabaseTransactionCommitErrorMsg+format, a...)
+}
+
+// NewDatabaseScanErrorMsg returns an error with the code -6 when there is an error with a database scan
+func NewDatabaseScanErrorMsg(format string, a ...interface{}) error {
+	return NewPopError(InternalServerErrorCode, DatabaseScanErrorMsg+format, a...)
+}
+
+// NewDatabaseIteratorErrorMsg returns an error with the code -6 when there is an error with a database iterator
+func NewDatabaseIteratorErrorMsg(format string, a ...interface{}) error {
+	return NewPopError(InternalServerErrorCode, DatabaseIteratorErrorMsg+format, a...)
 }
 
 // NewKeyMarshalError returns an error with the code -6 when it is impossible to marshal a key
