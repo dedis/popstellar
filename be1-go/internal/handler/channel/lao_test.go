@@ -255,12 +255,12 @@ func Test_handleChannelLao(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := handleChannelLao(arg.channelPath, arg.msg)
+			err := handleChannelLao(arg.channelPath, arg.msg)
 			if arg.isError {
-				require.NotNil(t, errAnswer)
-				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.NotNil(t, err)
+				require.Contains(t, err.Error(), arg.contains)
 			} else {
-				require.Nil(t, errAnswer)
+				require.NoError(t, err)
 			}
 		})
 	}
