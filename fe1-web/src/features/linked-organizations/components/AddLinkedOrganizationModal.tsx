@@ -71,6 +71,8 @@ const AddLinkedOrganizationModal = () => {
   // this is needed as otherwise the camera may stay turned on
   const [showScanner, setShowScanner] = useState(false);
 
+  const [linkedOrganization, setLinkedOrganization] = useState<LinkedOrganization>();
+
   const onRequestChallenge = useCallback(() => {
     requestChallenge(laoId)
       .then(() => {})
@@ -157,7 +159,7 @@ const AddLinkedOrganizationModal = () => {
       if (isInitiatingOrganizer) {
         requestChallengeAndDisplayQRCode();
         setShowQRCodeModal(true);
-        onFederationInit(scannedLinkedOrganization);
+        setLinkedOrganization(scannedLinkedOrganization);
       } else {
         onFederationExpect(scannedLinkedOrganization);
         navigation.navigate(STRINGS.navigation_linked_organizations);
@@ -267,6 +269,7 @@ const AddLinkedOrganizationModal = () => {
             setShowQRScannerModal(true);
             setShowScanner(true);
           } else {
+            onFederationInit(linkedOrganization!);
             navigation.navigate(STRINGS.navigation_linked_organizations);
           }
           setShowQRCodeModal(false);
