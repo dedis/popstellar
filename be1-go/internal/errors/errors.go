@@ -34,7 +34,7 @@ const (
 	DatabaseIteratorErrorMsg          = InternalServerErrorMsg + "failed to iterate over database rows: "
 	DatabaseRowsAffectedErrorMsg      = InternalServerErrorMsg + "failed to get number of rows affected: "
 	DatabaseCreateTableErrorMsg       = InternalServerErrorMsg + "failed to create table: "
-	DatabseInternalErrorMsg           = InternalServerErrorMsg + "internal database error: "
+	DatabaseInternalErrorMsg          = InternalServerErrorMsg + "internal database error: "
 
 	KeyMarshalErrorMsg   = InternalServerErrorMsg + "failed to marshal key: "
 	KeyUnmarshalErrorMsg = InternalServerErrorMsg + "failed to unmarshal key: "
@@ -185,5 +185,5 @@ func NewDatabaseCreateTableErrorMsg(format string, a ...interface{}) error {
 
 // NewDatabaseInternalErrorMsg returns an error with the code -6 when there is an internal database error
 func NewDatabaseInternalErrorMsg(format string, a ...interface{}) error {
-	return NewPopError(InternalServerErrorCode, DatabseInternalErrorMsg+format, a...)
+	return NewPopError(InternalServerErrorCode, DatabaseInternalErrorMsg+format, a...)
 }
