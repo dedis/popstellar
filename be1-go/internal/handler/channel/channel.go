@@ -172,9 +172,9 @@ func broadcastToAllClients(msg message.Message, channel string) *answer.Error {
 		return errAnswer.Wrap("broadcastToAllClients")
 	}
 
-	errAnswer := state.SendToAll(buf, channel)
-	if errAnswer != nil {
-		return errAnswer.Wrap("broadcastToAllClients")
+	err = state.SendToAll(buf, channel)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	return nil

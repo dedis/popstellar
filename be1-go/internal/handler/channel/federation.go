@@ -234,9 +234,9 @@ func handleInit(msg message.Message, channelPath string) *answer.Error {
 	//Force the remote server to be subscribed to /root/<remote_lao>/federation
 	remoteChannel := fmt.Sprintf(channelPattern, federationInit.LaoId)
 	_ = state.AddChannel(remoteChannel)
-	errAnswer = state.Subscribe(remote, remoteChannel)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
+	err = state.Subscribe(remote, remoteChannel)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	subscribeMsg := method.Subscribe{
@@ -257,9 +257,9 @@ func handleInit(msg message.Message, channelPath string) *answer.Error {
 	}
 
 	// Subscribe to /root/<local_lao>/federation on the remote server
-	errAnswer = state.SendToAll(subscribeBytes, remoteChannel)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
+	err = state.SendToAll(subscribeBytes, remoteChannel)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	// send the challenge to a channelPath where the remote server is subscribed to
@@ -585,9 +585,9 @@ func publishTo(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("publishTo")
 	}
 
-	errAnswer := state.SendToAll(publishBytes, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("publishTo")
+	err = state.SendToAll(publishBytes, channelPath)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	return nil

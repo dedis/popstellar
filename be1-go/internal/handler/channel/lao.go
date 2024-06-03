@@ -188,16 +188,17 @@ func createNewAttendeeChannels(channelPath string, rollCallClose messagedata.Rol
 
 	newChannels := make([]string, 0)
 	for _, channelPath := range channels {
-		alreadyExists, errAnswer := state.HasChannel(channelPath)
-		if errAnswer != nil {
-			return nil, errAnswer
+		alreadyExists, err := state.HasChannel(channelPath)
+		if err != nil {
+			return nil, answer.NewInternalServerError(err.Error())
 		}
 		if alreadyExists {
 			continue
 		}
-		errAnswer = state.AddChannel(channelPath)
-		if errAnswer != nil {
-			return nil, errAnswer
+
+		err = state.AddChannel(channelPath)
+		if err != nil {
+			return nil, answer.NewInternalServerError(err.Error())
 		}
 
 		newChannels = append(newChannels, channelPath)
@@ -302,9 +303,9 @@ func storeElection(msg message.Message, electionSetup messagedata.ElectionSetup,
 		}
 	}
 
-	errAnswer = state.AddChannel(electionPath)
-	if errAnswer != nil {
-		return errAnswer
+	err = state.AddChannel(electionPath)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	return nil

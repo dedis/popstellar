@@ -160,11 +160,12 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 	}
 
 	for channelPath := range channels {
-		errAnswer := state.AddChannel(channelPath)
-		if errAnswer != nil {
-			return errAnswer.Wrap("createLaoAndSubChannels")
+		err = state.AddChannel(channelPath)
+		if err != nil {
+			return answer.NewInternalServerError(err.Error())
 		}
 	}
+
 	return nil
 }
 
