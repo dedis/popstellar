@@ -1,7 +1,7 @@
 package types
 
 import (
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
 	"popstellar/internal/message/query/method"
 	"sync"
 
@@ -33,7 +33,7 @@ func (p *Peers) AddPeerInfo(socketId string, info method.GreetServerParams) erro
 
 	currentInfo, ok := p.peersInfo[socketId]
 	if ok {
-		return answer.NewInvalidActionError(
+		return errors.NewDuplicateResourceError(
 			"cannot add %s because peersInfo[%s] already contains %s",
 			info, socketId, currentInfo)
 	}

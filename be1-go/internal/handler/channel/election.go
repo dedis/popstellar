@@ -428,9 +428,9 @@ func createElectionResult(questions map[string]types.Question, channelPath strin
 	}
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	serverPubKey, errAnswer := config.GetServerPublicKeyInstance()
-	if errAnswer != nil {
-		return message.Message{}, errAnswer.Wrap("createElectionResult")
+	serverPubKey, err := config.GetServerPublicKeyInstance()
+	if err != nil {
+		return message.Message{}, answer.NewInternalServerError(err.Error())
 	}
 	serverPubBuf, err := serverPubKey.MarshalBinary()
 	if err != nil {

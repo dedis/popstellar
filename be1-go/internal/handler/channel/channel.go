@@ -129,16 +129,14 @@ func verifyDataAndGetObjectAction(msg message.Message) (string, string, error) {
 }
 
 func Sign(data []byte) ([]byte, *answer.Error) {
-	var errAnswer *answer.Error
-
-	serverSecretKey, errAnswer := config.GetServerSecretKeyInstance()
-	if errAnswer != nil {
-		return nil, errAnswer.Wrap("Sign")
+	serverSecretKey, err := config.GetServerSecretKeyInstance()
+	if err != nil {
+		return nil, answer.NewInternalServerError(err.Error())
 	}
 
 	signatureBuf, err := schnorr.Sign(crypto.Suite, serverSecretKey, data)
 	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to sign the data: %v", err)
+		errAnswer := answer.NewInternalServerError("failed to sign the data: %v", err)
 		return nil, errAnswer.Wrap("Sign")
 	}
 	return signatureBuf, nil

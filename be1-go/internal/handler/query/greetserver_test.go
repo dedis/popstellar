@@ -76,23 +76,22 @@ func Test_handleGreetServer(t *testing.T) {
 		socket:   fakeSocket,
 		message:  greetServer,
 		isError:  true,
-		contains: "failed to add peer",
+		contains: "cannot add",
 	})
 
 	// run all tests
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			id, errAnswer := handleGreetServer(&arg.socket, arg.message)
+			err := handleGreetServer(&arg.socket, arg.message)
 			if arg.isError {
-				require.NotNil(t, errAnswer)
-				require.Contains(t, errAnswer.Error(), arg.contains)
-				require.Nil(t, id)
+				require.NotNil(t, err)
+				require.Contains(t, err.Error(), arg.contains)
 			} else if arg.needGreet {
-				require.Nil(t, errAnswer)
+				require.NoError(t, err)
 				require.NotNil(t, arg.socket.Msg)
 			} else {
-				require.Nil(t, errAnswer)
+				require.NoError(t, err)
 				require.Nil(t, arg.socket.Msg)
 			}
 		})

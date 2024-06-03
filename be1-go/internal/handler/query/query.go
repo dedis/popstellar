@@ -24,7 +24,7 @@ func HandleQuery(socket socket.Socket, msg []byte) error {
 	case query.MethodGetMessagesById:
 		id, err = handleGetMessagesByID(socket, msg)
 	case query.MethodGreetServer:
-		id, err = handleGreetServer(socket, msg)
+		err = handleGreetServer(socket, msg)
 	case query.MethodHeartbeat:
 		err = handleHeartbeat(socket, msg)
 	case query.MethodPublish:

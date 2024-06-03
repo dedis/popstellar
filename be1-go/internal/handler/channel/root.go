@@ -9,7 +9,7 @@ import (
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
-	state2 "popstellar/internal/singleton/state"
+	state "popstellar/internal/singleton/state"
 	"popstellar/internal/sqlite"
 )
 
@@ -123,9 +123,9 @@ func verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, lao
 		return nil, errAnswer.Wrap("verifyLAOCreation")
 	}
 
-	ownerPublicKey, errAnswer := config.GetOwnerPublicKeyInstance()
-	if errAnswer != nil {
-		return nil, errAnswer.Wrap("verifyLAOCreation")
+	ownerPublicKey, err := config.GetOwnerPublicKeyInstance()
+	if err != nil {
+		return nil, answer.NewInternalServerError(err.Error())
 	}
 
 	// Check if the sender of the LAO creation message is the owner
@@ -160,7 +160,7 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 	}
 
 	for channelPath := range channels {
-		errAnswer := state2.AddChannel(channelPath)
+		errAnswer := state.AddChannel(channelPath)
 		if errAnswer != nil {
 			return errAnswer.Wrap("createLaoAndSubChannels")
 		}
@@ -169,9 +169,9 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 }
 
 func createLaoGreet(organizerBuf []byte, laoID string) (message.Message, *answer.Error) {
-	peersInfo, errAnswer := state2.GetAllPeersInfo()
-	if errAnswer != nil {
-		return message.Message{}, errAnswer.Wrap("createAndSendLaoGreet")
+	peersInfo, err := state.GetAllPeersInfo()
+	if err != nil {
+		return message.Message{}, answer.NewInternalServerError(err.Error())
 	}
 
 	knownPeers := make([]messagedata.Peer, 0, len(peersInfo))
@@ -179,9 +179,9 @@ func createLaoGreet(organizerBuf []byte, laoID string) (message.Message, *answer
 		knownPeers = append(knownPeers, messagedata.Peer{Address: info.ClientAddress})
 	}
 
-	_, clientServerAddress, _, errAnswer := config.GetServerInfo()
-	if errAnswer != nil {
-		return message.Message{}, errAnswer.Wrap("createAndSendLaoGreet")
+	_, clientServerAddress, _, err := config.GetServerInfo()
+	if err != nil {
+		return message.Message{}, answer.NewInternalServerError(err.Error())
 	}
 
 	msgData := messagedata.LaoGreet{
@@ -202,9 +202,9 @@ func createLaoGreet(organizerBuf []byte, laoID string) (message.Message, *answer
 
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
 
-	serverPublicKey, errAnswer := config.GetServerPublicKeyInstance()
-	if errAnswer != nil {
-		return message.Message{}, errAnswer.Wrap("createAndSendLaoGreet")
+	serverPublicKey, err := config.GetServerPublicKeyInstance()
+	if err != nil {
+		return message.Message{}, answer.NewInternalServerError(err.Error())
 	}
 
 	// Marshall the server public key

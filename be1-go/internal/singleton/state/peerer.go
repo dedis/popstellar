@@ -1,7 +1,7 @@
 package state
 
 import (
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
 	"popstellar/internal/message/query/method"
 )
 
@@ -12,33 +12,27 @@ type Peerer interface {
 	IsPeerGreeted(socketID string) bool
 }
 
-func getPeers() (Peerer, *answer.Error) {
+func getPeers() (Peerer, error) {
 	if instance == nil || instance.peers == nil {
-		return nil, answer.NewInternalServerError("peerer was not instantiated")
+		return nil, errors.NewInternalServerError("peerer was not instantiated")
 	}
 
 	return instance.peers, nil
 }
 
-func AddPeerInfo(socketID string, info method.GreetServerParams) *answer.Error {
-	peers, errAnswer := getPeers()
-	if errAnswer != nil {
-		return errAnswer
-	}
-
-	err := peers.AddPeerInfo(socketID, info)
+func AddPeerInfo(socketID string, info method.GreetServerParams) error {
+	peers, err := getPeers()
 	if err != nil {
-		errAnswer := answer.NewInvalidActionError("failed to add peer: %v", err)
-		return errAnswer
+		return err
 	}
 
-	return nil
+	return peers.AddPeerInfo(socketID, info)
 }
 
-func AddPeerGreeted(socketID string) *answer.Error {
-	peers, errAnswer := getPeers()
-	if errAnswer != nil {
-		return errAnswer
+func AddPeerGreeted(socketID string) error {
+	peers, err := getPeers()
+	if err != nil {
+		return err
 	}
 
 	peers.AddPeerGreeted(socketID)
@@ -46,19 +40,19 @@ func AddPeerGreeted(socketID string) *answer.Error {
 	return nil
 }
 
-func GetAllPeersInfo() ([]method.GreetServerParams, *answer.Error) {
-	peers, errAnswer := getPeers()
-	if errAnswer != nil {
-		return nil, errAnswer
+func GetAllPeersInfo() ([]method.GreetServerParams, error) {
+	peers, err := getPeers()
+	if err != nil {
+		return nil, err
 	}
 
 	return peers.GetAllPeersInfo(), nil
 }
 
-func IsPeerGreeted(socketID string) (bool, *answer.Error) {
-	peers, errAnswer := getPeers()
-	if errAnswer != nil {
-		return false, errAnswer
+func IsPeerGreeted(socketID string) (bool, error) {
+	peers, err := getPeers()
+	if err != nil {
+		return false, err
 	}
 
 	return peers.IsPeerGreeted(socketID), nil
