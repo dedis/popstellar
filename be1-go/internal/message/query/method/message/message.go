@@ -27,7 +27,7 @@ func (m Message) UnmarshalData(e interface{}) error {
 
 	err = json.Unmarshal(jsonData, e)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to unmarshal jsonData: %v", err)
+		return answer.NewJsonUnmarshalError(err.Error())
 	}
 
 	return nil

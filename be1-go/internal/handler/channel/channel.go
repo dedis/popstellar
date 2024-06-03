@@ -10,7 +10,6 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
 	jsonrpc "popstellar/internal/message"
-	"popstellar/internal/message/answer"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
@@ -106,8 +105,7 @@ func verifyMessage(msg message.Message) error {
 func verifyDataAndGetObjectAction(msg message.Message) (string, string, error) {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
-		return "", "", errAnswer.Wrap("verifyDataAndGetObjectAction")
+		return "", "", errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
 	}
 
 	// validate message data against the json schema
