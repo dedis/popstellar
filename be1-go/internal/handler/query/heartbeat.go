@@ -5,7 +5,6 @@ import (
 
 	"popstellar/internal/errors"
 	"popstellar/internal/message"
-	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
@@ -27,8 +26,7 @@ func handleHeartbeat(socket socket.Socket, byteMessage []byte) error {
 
 	result, err := db.GetParamsForGetMessageByID(heartbeat.Params)
 	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("params for get messages by id: %v", err)
-		return errAnswer.Wrap("handleHeartbeat")
+		return errors.NewQueryDatabaseError("params for get messages by id: %v", err)
 	}
 
 	if len(result) == 0 {
@@ -37,7 +35,7 @@ func handleHeartbeat(socket socket.Socket, byteMessage []byte) error {
 
 	queryId, err := state.GetNextID()
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
 
 	getMessagesById := method.GetMessagesById{
@@ -53,16 +51,10 @@ func handleHeartbeat(socket socket.Socket, byteMessage []byte) error {
 
 	buf, err := json.Marshal(getMessagesById)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to marshal: %v", err)
-		return errAnswer.Wrap("handleHeartbeat")
+		return errors.NewJsonMarshalError(err.Error())
 	}
 
 	socket.Send(buf)
 
-	err = state.AddQuery(queryId, getMessagesById)
-	if err != nil {
-		return answer.NewInternalServerError(err.Error())
-	}
-
-	return nil
+	return state.AddQuery(queryId, getMessagesById)
 }
