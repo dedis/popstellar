@@ -80,14 +80,13 @@ func Test_handleCatchUp(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			id, errAnswer := handleCatchUp(&arg.socket, arg.message)
+			id, err := handleCatchUp(&arg.socket, arg.message)
 			if arg.isError {
-				require.NotNil(t, errAnswer)
-				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.Error(t, err, arg.contains)
 				require.NotNil(t, id)
 				require.Equal(t, arg.ID, *id)
 			} else {
-				require.Nil(t, errAnswer)
+				require.NoError(t, err)
 				require.Equal(t, arg.expected, arg.socket.Res)
 			}
 		})
