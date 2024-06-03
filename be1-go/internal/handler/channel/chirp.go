@@ -3,12 +3,13 @@ package channel
 import (
 	"encoding/base64"
 	"encoding/json"
+	"strings"
+
 	"popstellar/internal/errors"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
-	"strings"
 )
 
 func handleChannelChirp(channelPath string, msg message.Message) error {

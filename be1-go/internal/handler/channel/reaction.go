@@ -1,110 +1,97 @@
 package channel
 
 import (
-	"popstellar/internal/message/answer"
+	"strings"
+
+	"popstellar/internal/errors"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/singleton/database"
-	"strings"
 )
 
-func handleChannelReaction(channelPath string, msg message.Message) *answer.Error {
+func handleChannelReaction(channelPath string, msg message.Message) error {
 	object, action, err := verifyDataAndGetObjectAction(msg)
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
 
 	db, err := database.GetReactionRepositoryInstance()
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
 
 	laoPath, _ := strings.CutSuffix(channelPath, Social+Reactions)
 	isAttendee, err := db.IsAttendee(laoPath, msg.Sender)
 	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("if is attendee: %v", err)
-		return errAnswer.Wrap("handleChannelReaction")
+		return err
 	}
 	if !isAttendee {
-		errAnswer := answer.NewAccessDeniedError("user not inside roll-call")
-		return errAnswer.Wrap("handleChannelReaction")
+		return errors.NewAccessDeniedError("user not inside roll-call")
 	}
-
-	var errAnswer *answer.Error
 
 	switch object + "#" + action {
 	case messagedata.ReactionObject + "#" + messagedata.ReactionActionAdd:
-		errAnswer = handleReactionAdd(msg)
+		err = handleReactionAdd(msg)
 	case messagedata.ReactionObject + "#" + messagedata.ReactionActionDelete:
-		errAnswer = handleReactionDelete(msg)
+		err = handleReactionDelete(msg)
 	default:
-		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
+		err = errors.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelReaction")
+
+	if err != nil {
+		return err
 	}
 
 	err = db.StoreMessageAndData(channelPath, msg)
 	if err != nil {
-		errAnswer := answer.NewStoreDatabaseError(err.Error())
-		return errAnswer.Wrap("handleChannelReaction")
+		return err
 	}
 
-	err = broadcastToAllClients(msg, channelPath)
-	if err != nil {
-		return answer.NewInternalServerError(err.Error())
-	}
-
-	return nil
-
+	return broadcastToAllClients(msg, channelPath)
 }
 
-func handleReactionAdd(msg message.Message) *answer.Error {
+func handleReactionAdd(msg message.Message) error {
 	var reactMsg messagedata.ReactionAdd
-	errAnswer := msg.UnmarshalMsgData(&reactMsg)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleReactionAdd")
+	err := msg.UnmarshalData(&reactMsg)
+	if err != nil {
+		return err
 	}
 
-	err := reactMsg.Verify()
+	err = reactMsg.Verify()
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("invalid message: %v", err)
-		return errAnswer.Wrap("handleReactionAdd")
+		return err
 	}
 
 	return nil
 }
 
-func handleReactionDelete(msg message.Message) *answer.Error {
+func handleReactionDelete(msg message.Message) error {
 	var delReactMsg messagedata.ReactionDelete
-	errAnswer := msg.UnmarshalMsgData(&delReactMsg)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleReactionDelete")
+	err := msg.UnmarshalData(&delReactMsg)
+	if err != nil {
+		return err
 	}
 
-	err := delReactMsg.Verify()
+	err = delReactMsg.Verify()
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("invalid message: %v", err)
-		return errAnswer.Wrap("handleReactionDelete")
+		return err
 	}
 
 	db, err := database.GetReactionRepositoryInstance()
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
+
 	reactSender, err := db.GetReactionSender(delReactMsg.ReactionID)
 	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("sender of the reaction %s: %v", delReactMsg.ReactionID, err)
-		return errAnswer.Wrap("handleReactionDelete")
+		return err
 	}
 	if reactSender == "" {
-		errAnswer := answer.NewInvalidResourceError("unknown reaction")
-		return errAnswer.Wrap("handleReactionDelete")
+		return errors.NewInvalidResourceError("unknown reaction")
 	}
 
 	if msg.Sender != reactSender {
-		errAnswer := answer.NewAccessDeniedError("only the owner of the reaction can delete it")
-		return errAnswer.Wrap("handleReactionDelete")
+		return errors.NewAccessDeniedError("only the owner of the reaction can delete it")
 	}
 
 	return nil

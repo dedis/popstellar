@@ -2,7 +2,6 @@ package channel
 
 import (
 	"popstellar/internal/errors"
-	"popstellar/internal/message/answer"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/singleton/database"
@@ -11,7 +10,7 @@ import (
 func handleChannelCoin(channelPath string, msg message.Message) error {
 	object, action, err := verifyDataAndGetObjectAction(msg)
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
 
 	switch object + "#" + action {
