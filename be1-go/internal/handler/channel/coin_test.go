@@ -11,7 +11,7 @@ import (
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/mock"
 	"popstellar/internal/singleton/database"
-	state2 "popstellar/internal/singleton/state"
+	"popstellar/internal/singleton/state"
 	"popstellar/internal/types"
 	"testing"
 )
@@ -32,7 +32,7 @@ func Test_handleChannelCoin(t *testing.T) {
 	peers := types.NewPeers()
 	hubParams := types.NewHubParams()
 
-	state2.SetState(subs, peers, queries, hubParams)
+	state.SetState(subs, peers, queries, hubParams)
 
 	mockRepository := mock.NewRepository(t)
 	database.SetDatabase(mockRepository)
@@ -95,11 +95,11 @@ func Test_handleChannelCoin(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			errAnswer := handleChannelCoin(i.channelID, i.message)
+			err := handleChannelCoin(i.channelID, i.message)
 			if i.hasError {
-				require.NotNil(t, errAnswer)
+				require.Error(t, err)
 			} else {
-				require.Nil(t, errAnswer)
+				require.NoError(t, err)
 
 				for _, s := range i.sockets {
 					require.NotNil(t, s.Msg)
@@ -144,12 +144,12 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 		{Id: laoID + "3"},
 	}
 
-	errAnswer := state2.AddChannel(channelID)
-	require.Nil(t, errAnswer)
+	err = state.AddChannel(channelID)
+	require.NoError(t, err)
 
 	for _, s := range sockets {
-		errAnswer := state2.Subscribe(s, channelID)
-		require.Nil(t, errAnswer)
+		err = state.Subscribe(s, channelID)
+		require.NoError(t, err)
 	}
 
 	return inputTestHandleChannelCoin{
@@ -180,8 +180,8 @@ func newFailTestHandleChannelCoin(t *testing.T, filename string, name string) in
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	errAnswer := state2.AddChannel(channelID)
-	require.Nil(t, errAnswer)
+	err = state.AddChannel(channelID)
+	require.NoError(t, err)
 
 	return inputTestHandleChannelCoin{
 		name:      name,
