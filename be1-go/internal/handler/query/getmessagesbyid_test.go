@@ -94,14 +94,13 @@ func Test_handleGetMessagesByID(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			id, errAnswer := handleGetMessagesByID(&arg.socket, arg.message)
+			id, err := handleGetMessagesByID(&arg.socket, arg.message)
 			if arg.isError {
-				require.NotNil(t, errAnswer)
 				require.NotNil(t, id)
-				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.Error(t, err, arg.contains)
 				require.Equal(t, arg.ID, *id)
 			} else {
-				require.Nil(t, errAnswer)
+				require.NoError(t, err)
 				require.NotNil(t, arg.expected)
 				require.Equal(t, arg.expected, arg.socket.MissingMsgs)
 			}
