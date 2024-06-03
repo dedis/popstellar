@@ -13,7 +13,7 @@ import (
 	"popstellar/internal/mock/generator"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
-	state2 "popstellar/internal/singleton/state"
+	"popstellar/internal/singleton/state"
 	"popstellar/internal/types"
 	"testing"
 )
@@ -41,7 +41,7 @@ func Test_handleChannelElection(t *testing.T) {
 
 	config.SetConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
-	state2.SetState(subs, peers, queries, hubParams)
+	state.SetState(subs, peers, queries, hubParams)
 
 	laoID := base64.URLEncoding.EncodeToString([]byte("laoID"))
 	electionID := base64.URLEncoding.EncodeToString([]byte("electionID"))
@@ -108,8 +108,8 @@ func Test_handleChannelElection(t *testing.T) {
 	electionID = base64.URLEncoding.EncodeToString([]byte("electionID3"))
 	channelPath = "/root/" + laoID + "/" + electionID
 
-	errAnswer := state2.AddChannel(channelPath)
-	require.Nil(t, errAnswer)
+	err = state.AddChannel(channelPath)
+	require.NoError(t, err)
 
 	// Test 6: Success when ElectionOpen is valid
 	args = append(args, input{
@@ -204,8 +204,8 @@ func Test_handleChannelElection(t *testing.T) {
 
 	registeredVotes := messagedata.Hash("voteID1", "voteID2", "voteID3")
 
-	errAnswer = state2.AddChannel(channelPath)
-	require.Nil(t, errAnswer)
+	err = state.AddChannel(channelPath)
+	require.NoError(t, err)
 
 	// Test 13: Success when ElectionEnd is valid
 	args = append(args, input{
@@ -367,8 +367,8 @@ func Test_handleChannelElection(t *testing.T) {
 		},
 	}
 
-	errAnswer = subs.AddChannel(channelPath)
-	require.Nil(t, errAnswer)
+	err = subs.AddChannel(channelPath)
+	require.NoError(t, err)
 
 	args = append(args, input{
 		name: "Test 22",
@@ -397,7 +397,7 @@ func Test_handleChannelElection(t *testing.T) {
 		t.Run(arg.name, func(t *testing.T) {
 			err = handleChannelElection(arg.channelPath, arg.msg)
 			if arg.isError {
-				require.Contains(t, err.Error(), arg.contains)
+				require.Error(t, err, arg.contains)
 			} else {
 				require.NoError(t, err)
 			}
