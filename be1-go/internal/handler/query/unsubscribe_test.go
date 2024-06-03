@@ -35,11 +35,11 @@ func Test_handleUnsubscribe(t *testing.T) {
 	ID := 1
 	channel := "/root/lao1"
 
-	errAnswer := subs.AddChannel(channel)
-	require.Nil(t, errAnswer)
+	err := subs.AddChannel(channel)
+	require.NoError(t, err)
 
-	errAnswer = subs.Subscribe(channel, &fakeSocket)
-	require.Nil(t, errAnswer)
+	err = subs.Subscribe(channel, &fakeSocket)
+	require.NoError(t, err)
 
 	args = append(args, input{
 		name:    "Test 1",
@@ -56,8 +56,8 @@ func Test_handleUnsubscribe(t *testing.T) {
 	ID = 2
 	channel = "/root/lao2"
 
-	errAnswer = subs.AddChannel(channel)
-	require.Nil(t, errAnswer)
+	err = subs.AddChannel(channel)
+	require.NoError(t, err)
 
 	args = append(args, input{
 		name:     "Test 2",
@@ -105,13 +105,12 @@ func Test_handleUnsubscribe(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			id, errAnswer := handleUnsubscribe(&arg.socket, arg.message)
+			id, err := handleUnsubscribe(&arg.socket, arg.message)
 			if arg.isError {
-				require.NotNil(t, errAnswer)
-				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.Error(t, err, arg.contains)
 				require.Equal(t, arg.ID, *id)
 			} else {
-				require.Nil(t, errAnswer)
+				require.NoError(t, err)
 
 				isSubscribe, err := subs.IsSubscribed(arg.channel, &arg.socket)
 				require.NoError(t, err)
