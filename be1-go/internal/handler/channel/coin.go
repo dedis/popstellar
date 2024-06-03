@@ -1,62 +1,49 @@
 package channel
 
 import (
+	"popstellar/internal/errors"
 	"popstellar/internal/message/answer"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/singleton/database"
 )
 
-func handleChannelCoin(channelPath string, msg message.Message) *answer.Error {
+func handleChannelCoin(channelPath string, msg message.Message) error {
 	object, action, err := verifyDataAndGetObjectAction(msg)
 	if err != nil {
 		return answer.NewInternalServerError(err.Error())
 	}
 
-	var errAnswer *answer.Error
-
 	switch object + "#" + action {
 	case messagedata.CoinObject + "#" + messagedata.CoinActionPostTransaction:
-		errAnswer = handleCoinPostTransaction(msg)
+		err = handleCoinPostTransaction(msg)
 	default:
-		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
+		err = errors.NewInvalidActionError("failed to handle %s#%s, invalid object#action", object, action)
 	}
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelCoin")
+
+	if err != nil {
+		return err
 	}
 
 	db, err := database.GetCoinRepositoryInstance()
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
 
 	err = db.StoreMessageAndData(channelPath, msg)
 	if err != nil {
-		errAnswer = answer.NewStoreDatabaseError(err.Error())
-		return errAnswer.Wrap("handleChannelCoin")
+		return err
 	}
 
-	err = broadcastToAllClients(msg, channelPath)
-	if err != nil {
-		return answer.NewInternalServerError(err.Error())
-	}
-
-	return nil
+	return broadcastToAllClients(msg, channelPath)
 }
 
-func handleCoinPostTransaction(msg message.Message) *answer.Error {
+func handleCoinPostTransaction(msg message.Message) error {
 	var data messagedata.PostTransaction
-
-	errAnswer := msg.UnmarshalMsgData(&data)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleCoinPostTransaction")
-	}
-
-	err := data.Verify()
+	err := msg.UnmarshalData(&data)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("invalid data: %v", err)
-		return errAnswer.Wrap("handleCoinPostTransaction")
+		return err
 	}
 
-	return nil
+	return data.Verify()
 }

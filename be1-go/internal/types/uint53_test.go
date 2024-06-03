@@ -26,7 +26,8 @@ func Test_SafePlus_Examples(t *testing.T) {
 	require.EqualValues(t, r, MaxUint53)
 
 	r, err = SafePlus(MaxUint53, 1)
-	require.EqualError(t, err, "uint53 addition overflow")
+	require.NotNil(t, err)
+	require.Contains(t, err.Error(), "uint53 addition overflow")
 	require.EqualValues(t, r, 0)
 
 	r, err = SafePlus(MaxUint53/2, MaxUint53/2)
@@ -34,6 +35,7 @@ func Test_SafePlus_Examples(t *testing.T) {
 	require.EqualValues(t, r, MaxUint53-1)
 
 	r, err = SafePlus(MaxUint53+1, 0)
-	require.EqualError(t, err, "Uint53.SafePlus: argument out of range")
+	require.NotNil(t, err)
+	require.Contains(t, err.Error(), "Uint53.SafePlus: argument out of range")
 	require.EqualValues(t, r, 0)
 }
