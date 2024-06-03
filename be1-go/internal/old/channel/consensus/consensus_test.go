@@ -181,7 +181,7 @@ func Test_Consensus_Channel_Broadcast(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         message.Hash(bufb64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -245,7 +245,7 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         message.Hash(bufb64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -349,7 +349,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         message.Hash(bufb64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -473,7 +473,7 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         message.Hash(bufb64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -595,7 +595,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         message.Hash(bufb64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -721,7 +721,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         message.Hash(bufb64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -845,7 +845,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         message.Hash(bufb64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -972,7 +972,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         message.Hash(bufb64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -1094,7 +1094,7 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         message.Hash(bufb64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -1193,7 +1193,7 @@ func Test_Consensus_Publish_Failure(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         message.Hash(bufb64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -1269,7 +1269,7 @@ func Test_Publish_New_Message(t *testing.T) {
 		Data:              data64,
 		Sender:            base64.URLEncoding.EncodeToString(pubKeyServBuf),
 		Signature:         signature,
-		MessageID:         messagedata.Hash(data64, signature),
+		MessageID:         message.Hash(data64, signature),
 		WitnessSignatures: make([]message.WitnessSignature, 0),
 	}
 
@@ -1322,7 +1322,7 @@ func Test_Timeout_Elect(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         message.Hash(bufb64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -1438,7 +1438,7 @@ func Test_Timeout_Prepare(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         message.Hash(bufb64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -1568,7 +1568,7 @@ func Test_Timeout_Promise(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         message.Hash(bufb64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -1700,7 +1700,7 @@ func Test_Timeout_Propose(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         message.Hash(bufb64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -1832,7 +1832,7 @@ func Test_Timeout_Accept(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         message.Hash(bufb64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 

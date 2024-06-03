@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"popstellar/internal/errors"
+	message2 "popstellar/internal/message/query/method/message"
 )
 
 // LaoCreate defines a message data
@@ -29,7 +30,7 @@ func (message LaoCreate) Verify() error {
 	}
 
 	// verify lao id
-	expectedLaoID := Hash(
+	expectedLaoID := message2.Hash(
 		message.Organizer,
 		fmt.Sprintf("%d", message.Creation),
 		message.Name,

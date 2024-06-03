@@ -286,7 +286,7 @@ func newLaoStateMsg(t *testing.T, organizer, laoID string, mockRepository *mock2
 func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation, start, end int64, isError bool,
 	mockRepository *mock2.Repository) message.Message {
 
-	createID := messagedata.Hash(
+	createID := message.Hash(
 		messagedata.RollCallFlag,
 		strings.ReplaceAll(laoID, RootPrefix, ""),
 		strconv.Itoa(int(creation)),
@@ -305,7 +305,7 @@ func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation,
 func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, openedAt int64, isError bool,
 	mockRepository *mock2.Repository) message.Message {
 
-	openID := messagedata.Hash(
+	openID := message.Hash(
 		messagedata.RollCallFlag,
 		strings.ReplaceAll(laoID, RootPrefix, ""),
 		base64.URLEncoding.EncodeToString([]byte("opens")),
@@ -327,7 +327,7 @@ func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, opene
 func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, closedAt int64, isError bool,
 	mockRepository *mock2.Repository) message.Message {
 
-	closeID := messagedata.Hash(
+	closeID := message.Hash(
 		messagedata.RollCallFlag,
 		strings.ReplaceAll(laoID, RootPrefix, ""),
 		base64.URLEncoding.EncodeToString([]byte("closes")),
@@ -357,7 +357,7 @@ func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 	createdAt, start, end int64,
 	isError bool, mockRepository *mock2.Repository) message.Message {
 
-	electionSetupID := messagedata.Hash(
+	electionSetupID := message.Hash(
 		messagedata.ElectionFlag,
 		setupLao,
 		strconv.Itoa(int(createdAt)),
@@ -366,7 +366,7 @@ func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 
 	var questions []messagedata.ElectionSetupQuestion
 	if question != "" {
-		questionID := messagedata.Hash("Question", electionSetupID, "question")
+		questionID := message.Hash("Question", electionSetupID, "question")
 		questions = append(questions, messagedata.ElectionSetupQuestion{
 			ID:            questionID,
 			Question:      question,
@@ -375,7 +375,7 @@ func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 			WriteIn:       false,
 		})
 	} else {
-		questionID := messagedata.Hash("Question", electionSetupID, "")
+		questionID := message.Hash("Question", electionSetupID, "")
 		questions = append(questions, messagedata.ElectionSetupQuestion{
 			ID:            questionID,
 			Question:      "",

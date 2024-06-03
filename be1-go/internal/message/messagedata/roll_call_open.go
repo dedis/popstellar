@@ -3,6 +3,7 @@ package messagedata
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
+	message2 "popstellar/internal/message/query/method/message"
 	"strconv"
 	"strings"
 )
@@ -23,7 +24,7 @@ func (message RollCallOpen) Verify(laoPath string) error {
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode roll call update ID: %v", err)
 	}
-	expectedID := Hash(
+	expectedID := message2.Hash(
 		RollCallFlag,
 		strings.ReplaceAll(laoPath, RootPrefix, ""),
 		message.Opens,

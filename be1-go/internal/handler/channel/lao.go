@@ -310,7 +310,7 @@ func createElectionKey(electionID string, electionPubKey kyber.Point) (message.M
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(serverPubBuf),
 		Signature:         signature,
-		MessageID:         messagedata.Hash(newData64, signature),
+		MessageID:         message.Hash(newData64, signature),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 

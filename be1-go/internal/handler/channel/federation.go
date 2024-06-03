@@ -310,7 +310,7 @@ func handleResult(msg message.Message, channelPath string) error {
 
 	// verify that the embedded challenge is correctly signed,
 	// we compare the sender field of the challenge later
-	err = verifyMessage(result.ChallengeMsg)
+	err = result.ChallengeMsg.VerifyMessage()
 	if err != nil {
 		return err
 	}
@@ -482,7 +482,7 @@ func createMessage(data messagedata.MessageData) (message.Message, error) {
 		Data:              dataBase64,
 		Sender:            sender,
 		Signature:         signature,
-		MessageID:         messagedata.Hash(dataBase64, signature),
+		MessageID:         message.Hash(dataBase64, signature),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 

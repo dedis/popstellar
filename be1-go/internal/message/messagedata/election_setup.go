@@ -3,6 +3,7 @@ package messagedata
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
+	message2 "popstellar/internal/message/query/method/message"
 	"strconv"
 )
 
@@ -45,7 +46,7 @@ func (message ElectionSetup) Verify(laoID string) error {
 	}
 
 	// verify election setup message id
-	expectedID := Hash(
+	expectedID := message2.Hash(
 		ElectionFlag,
 		laoID,
 		strconv.Itoa(int(message.CreatedAt)),
@@ -116,7 +117,7 @@ func (q ElectionSetupQuestion) Verify(electionSetupID string) error {
 		return errors.NewInvalidMessageFieldError("failed to decode Question id: %v", err)
 	}
 
-	expectedID := Hash(
+	expectedID := message2.Hash(
 		questionFlag,
 		electionSetupID,
 		q.Question,

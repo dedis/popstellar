@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/crypto"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	mock2 "popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
@@ -116,7 +115,7 @@ func Test_handleChannelRoot(t *testing.T) {
 
 func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepository *mock2.Repository, isError bool) message.Message {
 	creation := time.Now().Unix()
-	laoID := messagedata.Hash(
+	laoID := message.Hash(
 		organizer,
 		fmt.Sprintf("%d", creation),
 		goodLaoName,

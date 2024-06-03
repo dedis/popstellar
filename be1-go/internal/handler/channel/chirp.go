@@ -166,7 +166,7 @@ func createChirpNotify(channelID string, msg message.Message) (message.Message, 
 
 	signature64 := base64.URLEncoding.EncodeToString(signatureBuf)
 
-	messageID64 := messagedata.Hash(data64, signature64)
+	messageID64 := message.Hash(data64, signature64)
 
 	newMsg := message.Message{
 		Data:              data64,

@@ -186,7 +186,7 @@ func Test_handleChannelElection(t *testing.T) {
 	electionID = base64.URLEncoding.EncodeToString([]byte("electionID6"))
 	channelPath = "/root/" + laoID + "/" + electionID
 
-	wrongVotes := messagedata.Hash("wrongVotes")
+	wrongVotes := message.Hash("wrongVotes")
 
 	// Test 12 Error when ElectionEnd is not the expected hash
 	args = append(args, input{
@@ -202,7 +202,7 @@ func Test_handleChannelElection(t *testing.T) {
 	electionID = base64.URLEncoding.EncodeToString([]byte("electionID7"))
 	channelPath = "/root/" + laoID + "/" + electionID
 
-	registeredVotes := messagedata.Hash("voteID1", "voteID2", "voteID3")
+	registeredVotes := message.Hash("voteID1", "voteID2", "voteID3")
 
 	err = state.AddChannel(channelPath)
 	require.NoError(t, err)
@@ -357,7 +357,7 @@ func Test_handleChannelElection(t *testing.T) {
 
 	//Test 22 Success when election is already ended
 	questionID := base64.URLEncoding.EncodeToString([]byte("questionID2"))
-	voteID := messagedata.Hash(voteFlag, electionID, questionID, "1")
+	voteID := message.Hash(voteFlag, electionID, questionID, "1")
 
 	votes = []generator.VoteInt{
 		{

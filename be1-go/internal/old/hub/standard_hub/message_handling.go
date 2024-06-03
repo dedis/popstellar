@@ -248,7 +248,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 		return publish.ID, answer.NewInvalidMessageFieldError("failed to verify signature : %v", err)
 	}
 
-	expectedMessageID := messagedata.Hash(data, signature)
+	expectedMessageID := message.Hash(data, signature)
 	if expectedMessageID != messageID {
 		return publish.ID, answer.NewInvalidMessageFieldError(wrongMessageIdError,
 			expectedMessageID, messageID)
@@ -294,7 +294,7 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 	messageID := broadcast.Params.Message.MessageID
 	data := broadcast.Params.Message.Data
 
-	expectedMessageID := messagedata.Hash(data, signature)
+	expectedMessageID := message.Hash(data, signature)
 	if expectedMessageID != messageID {
 		return xerrors.Errorf(wrongMessageIdError,
 			expectedMessageID, messageID)
@@ -517,7 +517,7 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Me
 	data := messageData.Data
 	log.Info().Msgf("Received message on %s", targetChannel)
 
-	expectedMessageID := messagedata.Hash(data, signature)
+	expectedMessageID := message.Hash(data, signature)
 	if expectedMessageID != messageID {
 		return xerrors.Errorf(wrongMessageIdError,
 			expectedMessageID, messageID)

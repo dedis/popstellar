@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/crypto"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
@@ -214,7 +213,7 @@ func Test_SendTransaction(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -271,7 +270,7 @@ func Test_SendTransactionMaxAmount(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -328,7 +327,7 @@ func Test_SendTransactionOverflowAmount(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -385,7 +384,7 @@ func Test_SendTransactionZeroAmount(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -442,7 +441,7 @@ func Test_SendTransactionNegativeAmount(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -490,7 +489,7 @@ func Test_SendTransaction_MissingData(t *testing.T) {
 	m := message.Message{
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash("helloworld", "h"),
+		MessageID:         message.Hash("helloworld", "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -548,7 +547,7 @@ func Test_SendTransactionWrongId(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -607,7 +606,7 @@ func Test_SendTransactionBadSignature(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -665,7 +664,7 @@ func Test_SendTransactionCoinbase(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 

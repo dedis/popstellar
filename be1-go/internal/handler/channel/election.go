@@ -347,7 +347,7 @@ func verifyVote(vote messagedata.Vote, channelPath, electionID string) error {
 		return errors.NewInvalidMessageFieldError("invalid election type: %s", electionType)
 	}
 
-	hash := messagedata.Hash(voteFlag, electionID, string(question.ID), voteString)
+	hash := message.Hash(voteFlag, electionID, string(question.ID), voteString)
 	if vote.ID != hash {
 		return errors.NewInvalidMessageFieldError("vote ID is not the expected hash")
 	}
@@ -366,7 +366,7 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd, questions map[st
 	sort.Strings(voteIDs)
 
 	// hash all valid vote ids
-	validVotesHash := messagedata.Hash(voteIDs...)
+	validVotesHash := message.Hash(voteIDs...)
 
 	// compare registered votes with local saved votes
 	if electionEnd.RegisteredVotes != validVotesHash {
@@ -411,7 +411,7 @@ func createElectionResult(questions map[string]types.Question, channelPath strin
 		Data:              buf64,
 		Sender:            base64.URLEncoding.EncodeToString(serverPubBuf),
 		Signature:         signature,
-		MessageID:         messagedata.Hash(buf64, signature),
+		MessageID:         message.Hash(buf64, signature),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 

@@ -6,6 +6,7 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
+	message2 "popstellar/internal/message/query/method/message"
 	"popstellar/internal/types"
 	"strconv"
 )
@@ -127,7 +128,7 @@ func (message PostTransaction) verifyTransactionId() error {
 
 	hashFields = append(hashFields, version)
 
-	expectedID := Hash(hashFields...)
+	expectedID := message2.Hash(hashFields...)
 
 	if message.TransactionID != expectedID {
 		return errors.NewInvalidMessageFieldError("transaction id is not valid: %s != %s", message.TransactionID, expectedID)

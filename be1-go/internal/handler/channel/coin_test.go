@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/mock"
@@ -117,7 +116,7 @@ func Test_handleChannelCoin(t *testing.T) {
 }
 
 func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string, mockRepository *mock.Repository) inputTestHandleChannelCoin {
-	laoID := messagedata.Hash(name)
+	laoID := message.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
 
@@ -131,7 +130,7 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -162,7 +161,7 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 }
 
 func newFailTestHandleChannelCoin(t *testing.T, filename string, name string) inputTestHandleChannelCoin {
-	laoID := messagedata.Hash(name)
+	laoID := message.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
 
@@ -176,7 +175,7 @@ func newFailTestHandleChannelCoin(t *testing.T, filename string, name string) in
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 

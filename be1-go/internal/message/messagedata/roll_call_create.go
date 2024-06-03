@@ -3,6 +3,7 @@ package messagedata
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
+	message2 "popstellar/internal/message/query/method/message"
 	"strconv"
 	"strings"
 )
@@ -37,7 +38,7 @@ func (message RollCallCreate) Verify(laoPath string) error {
 	}
 
 	// verify roll call create message id
-	expectedID := Hash(
+	expectedID := message2.Hash(
 		RollCallFlag,
 		strings.ReplaceAll(laoPath, RootPrefix, ""),
 		strconv.Itoa(int(message.Creation)),

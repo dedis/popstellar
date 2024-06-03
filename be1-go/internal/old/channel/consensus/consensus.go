@@ -844,7 +844,7 @@ func (c *Channel) publishNewMessage(byteMsg []byte) error {
 
 	signature := base64.URLEncoding.EncodeToString(signatureBuf)
 
-	messageID := messagedata.Hash(encryptedMsg, signature)
+	messageID := message.Hash(encryptedMsg, signature)
 
 	msg := message.Message{
 		Data:              encryptedMsg,

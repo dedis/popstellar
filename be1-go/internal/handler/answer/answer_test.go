@@ -47,7 +47,7 @@ func Test_handleMessagesByChannel(t *testing.T) {
 	now := time.Now().Unix()
 	name := "LAO X"
 
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.PublicBuf), fmt.Sprintf("%d", now), name)
+	laoID := message.Hash(base64.URLEncoding.EncodeToString(keypair.PublicBuf), fmt.Sprintf("%d", now), name)
 
 	data := messagedata.LaoCreate{
 		Object:    messagedata.LAOObject,
@@ -71,7 +71,7 @@ func Test_handleMessagesByChannel(t *testing.T) {
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.PublicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		MessageID:         message.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 

@@ -3,6 +3,7 @@ package messagedata
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
+	message2 "popstellar/internal/message/query/method/message"
 )
 
 // ConsensusElect defines a message data
@@ -34,7 +35,7 @@ func (message ConsensusElect) Verify() error {
 	}
 
 	// verify the instance ID
-	expectedID := Hash(
+	expectedID := message2.Hash(
 		message.Object,
 		message.Key.Type,
 		message.Key.ID,

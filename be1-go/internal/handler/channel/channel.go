@@ -23,7 +23,7 @@ import (
 )
 
 func HandleChannel(channelPath string, msg message.Message, fromRumor bool) error {
-	err := verifyMessage(msg)
+	err := msg.VerifyMessage()
 	if err != nil {
 		return err
 	}
@@ -72,35 +72,6 @@ func HandleChannel(channelPath string, msg message.Message, fromRumor bool) erro
 }
 
 // util for the channels
-
-func verifyMessage(msg message.Message) error {
-	dataBytes, err := base64.URLEncoding.DecodeString(msg.Data)
-	if err != nil {
-		return errors.NewInvalidMessageFieldError("failed to decode data: %v", err)
-	}
-
-	publicKeySender, err := base64.URLEncoding.DecodeString(msg.Sender)
-	if err != nil {
-		return errors.NewInvalidMessageFieldError("failed to decode public key: %v", err)
-	}
-
-	signatureBytes, err := base64.URLEncoding.DecodeString(msg.Signature)
-	if err != nil {
-		return errors.NewInvalidMessageFieldError("failed to decode signature: %v", err)
-	}
-
-	err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes)
-	if err != nil {
-		return errors.NewInvalidMessageFieldError("failed to verify signature : %v", err)
-	}
-
-	expectedMessageID := messagedata.Hash(msg.Data, msg.Signature)
-	if expectedMessageID != msg.MessageID {
-		return errors.NewInvalidActionError("messageID is wrong: expected %s found %s", expectedMessageID, msg.MessageID)
-	}
-
-	return nil
-}
 
 func verifyDataAndGetObjectAction(msg message.Message) (string, string, error) {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
