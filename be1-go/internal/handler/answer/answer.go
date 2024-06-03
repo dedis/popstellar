@@ -3,13 +3,15 @@ package answer
 import (
 	"encoding/json"
 	"math/rand"
+	"sort"
+
+	"popstellar/internal/errors"
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/query"
 	"popstellar/internal/logger"
 	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/singleton/state"
-	"sort"
 )
 
 const (
@@ -17,18 +19,17 @@ const (
 	continueMongering = 0.5
 )
 
-func HandleAnswer(msg []byte) *answer.Error {
+func HandleAnswer(msg []byte) error {
 	var answerMsg answer.Answer
 
 	err := json.Unmarshal(msg, &answerMsg)
 	if err != nil {
-		errAnswer := answer.NewJsonUnmarshalError(err.Error())
-		return errAnswer.Wrap("handleAnswer")
+		return errors.NewJsonUnmarshalError(err.Error())
 	}
 
-	isRumor, errAnswer := state.IsRumorQuery(*answerMsg.ID)
-	if errAnswer != nil {
-		return errAnswer
+	isRumor, err := state.IsRumorQuery(*answerMsg.ID)
+	if err != nil {
+		return err
 	}
 	if isRumor {
 		return handleRumorAnswer(answerMsg)
@@ -46,30 +47,27 @@ func HandleAnswer(msg []byte) *answer.Error {
 		return nil
 	}
 
-	errAnswer = state.SetQueryReceived(*answerMsg.ID)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleAnswer")
+	err = state.SetQueryReceived(*answerMsg.ID)
+	if err != nil {
+		return err
 	}
 
-	errAnswer = handleGetMessagesByIDAnswer(answerMsg)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleAnswer")
-	}
+	handleGetMessagesByIDAnswer(answerMsg)
 
 	return nil
 }
 
-func handleRumorAnswer(msg answer.Answer) *answer.Error {
-	errAnswer := state.SetQueryReceived(*msg.ID)
-	if errAnswer != nil {
-		return errAnswer
+func handleRumorAnswer(msg answer.Answer) error {
+	err := state.SetQueryReceived(*msg.ID)
+	if err != nil {
+		return err
 	}
 
 	logger.Logger.Debug().Msgf("received an answer to rumor query %d", *msg.ID)
 
 	if msg.Error != nil {
 		logger.Logger.Debug().Msgf("received an answer error to rumor query %d", *msg.ID)
-		if msg.Error.Code != answer.DuplicateResourceErrorCode {
+		if msg.Error.Code != errors.DuplicateResourceErrorCode {
 			logger.Logger.Debug().Msgf("invalid error code to rumor query %d", *msg.ID)
 			return nil
 		}
@@ -85,12 +83,12 @@ func handleRumorAnswer(msg answer.Answer) *answer.Error {
 	}
 
 	logger.Logger.Debug().Msgf("sender rumor need to continue sending query %d", *msg.ID)
-	rumor, ok, errAnswer := state.GetRumorFromPastQuery(*msg.ID)
-	if errAnswer != nil {
-		return errAnswer
+	rumor, ok, err := state.GetRumorFromPastQuery(*msg.ID)
+	if err != nil {
+		return err
 	}
 	if !ok {
-		return answer.NewInternalServerError("rumor query %d doesn't exist", *msg.ID)
+		return errors.NewInternalServerError("rumor query %d doesn't exist", *msg.ID)
 	}
 
 	query.SendRumor(nil, rumor)
@@ -98,7 +96,7 @@ func handleRumorAnswer(msg answer.Answer) *answer.Error {
 	return nil
 }
 
-func handleGetMessagesByIDAnswer(msg answer.Answer) *answer.Error {
+func handleGetMessagesByIDAnswer(msg answer.Answer) {
 	result := msg.Result.GetMessagesByChannel()
 	msgsByChan := make(map[string]map[string]message.Message)
 
@@ -113,8 +111,8 @@ func handleGetMessagesByIDAnswer(msg answer.Answer) *answer.Error {
 				continue
 			}
 
-			errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err)
-			logger.Logger.Error().Err(errAnswer)
+			err = errors.NewJsonUnmarshalError("failed to unmarshal: %v", err)
+			logger.Logger.Error().Err(err)
 		}
 
 		if len(msgsByChan[channelID]) == 0 {
@@ -124,8 +122,6 @@ func handleGetMessagesByIDAnswer(msg answer.Answer) *answer.Error {
 
 	// Handle every message and discard them if handled without error
 	handleMessagesByChannel(msgsByChan)
-
-	return nil
 }
 
 func handleMessagesByChannel(msgsByChannel map[string]map[string]message.Message) {
@@ -146,18 +142,13 @@ func tryToHandleMessages(msgsByChannel map[string]map[string]message.Message, so
 	for _, channelID := range sortedChannelIDs {
 		msgs := msgsByChannel[channelID]
 		for msgID, msg := range msgs {
-			errAnswer := channel.HandleChannel(channelID, msg, false)
-			if errAnswer == nil {
+			err := channel.HandleChannel(channelID, msg, false)
+			if err == nil {
 				delete(msgsByChannel[channelID], msgID)
 				continue
 			}
 
-			if errAnswer.Code == answer.InvalidMessageFieldErrorCode {
-				delete(msgsByChannel[channelID], msgID)
-			}
-
-			errAnswer = errAnswer.Wrap(msgID).Wrap("tryToHandleMessages")
-			logger.Logger.Error().Err(errAnswer)
+			logger.Logger.Error().Err(err)
 		}
 
 		if len(msgsByChannel[channelID]) == 0 {

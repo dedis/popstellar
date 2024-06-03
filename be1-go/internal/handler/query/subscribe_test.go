@@ -35,8 +35,8 @@ func Test_handleSubscribe(t *testing.T) {
 	ID := 1
 	channel := "/root/lao1"
 
-	errAnswer := subs.AddChannel(channel)
-	require.Nil(t, errAnswer)
+	err := subs.AddChannel(channel)
+	require.NoError(t, err)
 
 	args = append(args, input{
 		name:    "Test 1",
@@ -83,13 +83,12 @@ func Test_handleSubscribe(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			id, errAnswer := handleSubscribe(&arg.socket, arg.message)
+			id, err := handleSubscribe(&arg.socket, arg.message)
 			if arg.isError {
-				require.NotNil(t, errAnswer)
-				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.Error(t, err, arg.contains)
 				require.Equal(t, arg.ID, *id)
 			} else {
-				require.Nil(t, errAnswer)
+				require.NoError(t, err)
 				isSubscribed, err := subs.IsSubscribed(arg.channel, &arg.socket)
 				require.NoError(t, err)
 				require.True(t, isSubscribed)

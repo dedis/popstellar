@@ -105,7 +105,7 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 		return nil, err
 	}
 
-	utils.InitUtils(l, schemaValidator)
+	utils.InitUtils(schemaValidator)
 
 	state.InitState(l)
 

@@ -9,7 +9,7 @@ import (
 	"popstellar/internal/mock/generator"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
-	state2 "popstellar/internal/singleton/state"
+	"popstellar/internal/singleton/state"
 	"popstellar/internal/types"
 	"strings"
 	"testing"
@@ -22,7 +22,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	peers := types.NewPeers()
 	hubParams := types.NewHubParams()
 
-	state2.SetState(subs, peers, queries, hubParams)
+	state.SetState(subs, peers, queries, hubParams)
 
 	organizerBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
 	require.NoError(t, err)
@@ -209,12 +209,11 @@ func Test_handleChannelReaction(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := handleChannelReaction(arg.channelPath, arg.msg)
+			err := handleChannelReaction(arg.channelPath, arg.msg)
 			if arg.isError {
-				require.NotNil(t, errAnswer)
-				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.Error(t, err, arg.contains)
 			} else {
-				require.Nil(t, errAnswer)
+				require.NoError(t, err)
 			}
 		})
 	}
@@ -226,8 +225,8 @@ func newReactionAddMsg(t *testing.T, channelID string, sender string, reactionCo
 
 	msg := generator.NewReactionAddMsg(t, sender, nil, reactionCodePoint, chirpID, timestamp)
 
-	errAnswer := state2.AddChannel(channelID)
-	require.Nil(t, errAnswer)
+	err := state.AddChannel(channelID)
+	require.NoError(t, err)
 
 	laoPath, _ := strings.CutSuffix(channelID, Social+Reactions)
 
@@ -248,8 +247,8 @@ func newReactionDeleteMsg(t *testing.T, channelID string, sender string, reactio
 
 	msg := generator.NewReactionDeleteMsg(t, sender, nil, reactionID, timestamp)
 
-	errAnswer := state2.AddChannel(channelID)
-	require.Nil(t, errAnswer)
+	err := state.AddChannel(channelID)
+	require.NoError(t, err)
 
 	laoPath, _ := strings.CutSuffix(channelID, Social+Reactions)
 

@@ -3,7 +3,7 @@ package config
 import (
 	"encoding/base64"
 	"go.dedis.ch/kyber/v3"
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
 	"sync"
 )
 
@@ -44,52 +44,50 @@ func SetConfig(ownerPubKey, serverPubKey kyber.Point, serverSecretKey kyber.Scal
 	}
 }
 
-func getConfig() (*config, *answer.Error) {
+func getConfig() (*config, error) {
 	if instance == nil {
-		errAnswer := answer.NewInternalServerError("config was not instantiated")
-		return nil, errAnswer
+		return nil, errors.NewInternalServerError("config was not instantiated")
 	}
 
 	return instance, nil
 }
 
-func GetOwnerPublicKeyInstance() (kyber.Point, *answer.Error) {
-	config, errAnswer := getConfig()
-	if errAnswer != nil {
-		return nil, errAnswer
+func GetOwnerPublicKeyInstance() (kyber.Point, error) {
+	config, err := getConfig()
+	if err != nil {
+		return nil, err
 	}
 
 	return config.ownerPubKey, nil
 }
 
-func GetServerPublicKeyInstance() (kyber.Point, *answer.Error) {
-	config, errAnswer := getConfig()
-	if errAnswer != nil {
-		return nil, errAnswer
+func GetServerPublicKeyInstance() (kyber.Point, error) {
+	config, err := getConfig()
+	if err != nil {
+		return nil, err
 	}
 
 	return config.serverPubKey, nil
 }
 
-func GetServerSecretKeyInstance() (kyber.Scalar, *answer.Error) {
-	config, errAnswer := getConfig()
-	if errAnswer != nil {
-		return nil, errAnswer
+func GetServerSecretKeyInstance() (kyber.Scalar, error) {
+	config, err := getConfig()
+	if err != nil {
+		return nil, err
 	}
 
 	return config.serverSecretKey, nil
 }
 
-func GetServerInfo() (string, string, string, *answer.Error) {
-	config, errAnswer := getConfig()
-	if errAnswer != nil {
-		return "", "", "", errAnswer
+func GetServerInfo() (string, string, string, error) {
+	config, err := getConfig()
+	if err != nil {
+		return "", "", "", err
 	}
 
 	pkBuf, err := config.serverPubKey.MarshalBinary()
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to unmarshall server public key", err)
-		return "", "", "", errAnswer
+		return "", "", "", errors.NewJsonUnmarshalError("server public key: %v", err)
 	}
 
 	return base64.URLEncoding.EncodeToString(pkBuf), instance.clientServerAddress, instance.serverServerAddress, nil

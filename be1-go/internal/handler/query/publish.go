@@ -2,30 +2,29 @@ package query
 
 import (
 	"encoding/json"
+	"strings"
+
+	"popstellar/internal/errors"
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/logger"
-	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/state"
-	"strings"
 )
 
 const thresholdMessagesByRumor = 1
 
-func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
+func handlePublish(socket socket.Socket, msg []byte) (*int, error) {
 	var publish method.Publish
-
 	err := json.Unmarshal(msg, &publish)
 	if err != nil {
-		errAnswer := answer.NewJsonUnmarshalError(err.Error())
-		return nil, errAnswer.Wrap("handlePublish")
+		return nil, errors.NewJsonUnmarshalError(err.Error())
 	}
 
-	errAnswer := channel.HandleChannel(publish.Params.Channel, publish.Params.Message, false)
-	if errAnswer != nil {
-		return &publish.ID, errAnswer.Wrap("handlePublish")
+	err = channel.HandleChannel(publish.Params.Channel, publish.Params.Message, false)
+	if err != nil {
+		return &publish.ID, err
 	}
 
 	socket.SendResult(publish.ID, nil, nil)
@@ -34,17 +33,15 @@ func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return nil, nil
 	}
 
-	db, errAnswer := database.GetRumorSenderRepositoryInstance()
-	if errAnswer != nil {
-		logger.Logger.Error().Err(errAnswer)
-		return nil, nil
+	db, err := database.GetRumorSenderRepositoryInstance()
+	if err != nil {
+		return nil, err
 	}
 
 	logger.Logger.Debug().Msgf("sender rumor need to add message %s", publish.Params.Message.MessageID)
 	nbMessagesInsideRumor, err := db.AddMessageToMyRumor(publish.Params.Message.MessageID)
 	if err != nil {
-		logger.Logger.Error().Err(err)
-		return nil, nil
+		return nil, err
 	}
 
 	if nbMessagesInsideRumor < thresholdMessagesByRumor {
@@ -52,10 +49,5 @@ func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return nil, nil
 	}
 
-	errAnswer = state.NotifyResetRumorSender()
-	if errAnswer != nil {
-		logger.Logger.Error().Err(errAnswer)
-	}
-
-	return nil, nil
+	return nil, state.NotifyResetRumorSender()
 }

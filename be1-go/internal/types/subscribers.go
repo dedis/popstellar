@@ -1,9 +1,7 @@
 package types
 
 import (
-	"fmt"
-	"golang.org/x/xerrors"
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
 	"popstellar/internal/network/socket"
 	"sync"
 )
@@ -19,49 +17,49 @@ func NewSubscribers() *Subscribers {
 	}
 }
 
-func (s *Subscribers) AddChannel(channel string) *answer.Error {
+func (s *Subscribers) AddChannel(channelPath string) error {
 	s.Lock()
 	defer s.Unlock()
 
-	_, ok := s.list[channel]
+	_, ok := s.list[channelPath]
 	if ok {
-		return answer.NewInvalidActionError("channel %s already exists", channel)
+		return errors.NewDuplicateResourceError("channel %s already exists", channelPath)
 	}
 
-	s.list[channel] = make(map[string]socket.Socket)
+	s.list[channelPath] = make(map[string]socket.Socket)
 
 	return nil
 }
 
-func (s *Subscribers) Subscribe(channel string, socket socket.Socket) *answer.Error {
+func (s *Subscribers) Subscribe(channelPath string, socket socket.Socket) error {
 	s.Lock()
 	defer s.Unlock()
 
-	_, ok := s.list[channel]
+	_, ok := s.list[channelPath]
 	if !ok {
-		return answer.NewInvalidResourceError("cannot Subscribe to unknown channel")
+		return errors.NewInvalidResourceError("cannot Subscribe to unknown channel: %s", channelPath)
 	}
 
-	s.list[channel][socket.ID()] = socket
+	s.list[channelPath][socket.ID()] = socket
 
 	return nil
 }
 
-func (s *Subscribers) Unsubscribe(channel string, socket socket.Socket) *answer.Error {
+func (s *Subscribers) Unsubscribe(channelPath string, socket socket.Socket) error {
 	s.Lock()
 	defer s.Unlock()
 
-	_, ok := s.list[channel]
+	_, ok := s.list[channelPath]
 	if !ok {
-		return answer.NewInvalidResourceError("cannot Unsubscribe from unknown channel")
+		return errors.NewInvalidResourceError("cannot Unsubscribe from unknown channel: %s", channelPath)
 	}
 
-	_, ok = s.list[channel][socket.ID()]
+	_, ok = s.list[channelPath][socket.ID()]
 	if !ok {
-		return answer.NewInvalidActionError("cannot Unsubscribe from a channel not subscribed")
+		return errors.NewInvalidActionError("cannot Unsubscribe from a channel not subscribed: %s", channelPath)
 	}
 
-	delete(s.list[channel], socket.ID())
+	delete(s.list[channelPath], socket.ID())
 
 	return nil
 }
@@ -70,24 +68,23 @@ func (s *Subscribers) UnsubscribeFromAll(socketID string) {
 	s.Lock()
 	defer s.Unlock()
 
-	for channel, subs := range s.list {
+	for channelPath, subs := range s.list {
 		_, ok := subs[socketID]
 		if !ok {
 			continue
 		}
-		delete(s.list[channel], socketID)
-		fmt.Println("unsubscribe from " + channel)
+		delete(s.list[channelPath], socketID)
 	}
 }
 
 // SendToAll sends a message to all sockets.
-func (s *Subscribers) SendToAll(buf []byte, channel string) *answer.Error {
+func (s *Subscribers) SendToAll(buf []byte, channelPath string) error {
 	s.RLock()
 	defer s.RUnlock()
 
-	sockets, ok := s.list[channel]
+	sockets, ok := s.list[channelPath]
 	if !ok {
-		return answer.NewInvalidResourceError("failed to send to all clients, channel %s not found", channel)
+		return errors.NewInvalidResourceError("failed to send to all clients, channel %s not found", channelPath)
 	}
 	for _, v := range sockets {
 		v.Send(buf)
@@ -96,22 +93,22 @@ func (s *Subscribers) SendToAll(buf []byte, channel string) *answer.Error {
 	return nil
 }
 
-func (s *Subscribers) HasChannel(channel string) bool {
+func (s *Subscribers) HasChannel(channelPath string) bool {
 	s.RLock()
 	defer s.RUnlock()
 
-	_, ok := s.list[channel]
+	_, ok := s.list[channelPath]
 
 	return ok
 }
 
-func (s *Subscribers) IsSubscribed(channel string, socket socket.Socket) (bool, error) {
+func (s *Subscribers) IsSubscribed(channelPath string, socket socket.Socket) (bool, error) {
 	s.RLock()
 	defer s.RUnlock()
 
-	sockets, ok := s.list[channel]
+	sockets, ok := s.list[channelPath]
 	if !ok {
-		return false, xerrors.Errorf("channel doesn't exist")
+		return false, errors.NewInvalidResourceError("channel doesn't exist: %s", channelPath)
 	}
 	_, ok = sockets[socket.ID()]
 	if !ok {

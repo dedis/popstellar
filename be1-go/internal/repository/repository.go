@@ -76,8 +76,6 @@ type AnswerRepository interface {
 // ======================= Channel ==========================
 
 type ChannelRepository interface {
-	// HasChannel returns true if the channel already exists.
-	HasChannel(channel string) (bool, error)
 
 	// HasMessage returns true if the message already exists.
 	HasMessage(messageID string) (bool, error)

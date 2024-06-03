@@ -1,10 +1,12 @@
 package state
 
 import (
-	"github.com/rs/zerolog"
-	"popstellar/internal/message/answer"
-	"popstellar/internal/types"
 	"sync"
+
+	"github.com/rs/zerolog"
+
+	"popstellar/internal/errors"
+	"popstellar/internal/types"
 )
 
 var once sync.Once
@@ -43,17 +45,17 @@ func SetState(subs Subscriber, peers Peerer, queries Querier, hubParams HubParam
 	}
 }
 
-func GetResetRumorSender() (chan struct{}, *answer.Error) {
+func GetResetRumorSender() (chan struct{}, error) {
 	if instance == nil || instance.resetRumorSender == nil {
-		return nil, answer.NewInternalServerError("resetRumorSender was not instantiated")
+		return nil, errors.NewInternalServerError("resetRumorSender was not instantiated")
 	}
 
 	return instance.resetRumorSender, nil
 }
 
-func NotifyResetRumorSender() *answer.Error {
+func NotifyResetRumorSender() error {
 	if instance == nil || instance.resetRumorSender == nil {
-		return answer.NewInternalServerError("resetRumorSender was not instantiated")
+		return errors.NewInternalServerError("resetRumorSender was not instantiated")
 	}
 
 	select {

@@ -1,16 +1,17 @@
 package database
 
 import (
-	"popstellar/internal/message/answer"
-	"popstellar/internal/mock"
-	repository2 "popstellar/internal/repository"
 	"sync"
+
+	"popstellar/internal/errors"
+	"popstellar/internal/mock"
+	"popstellar/internal/repository"
 )
 
 var once sync.Once
-var instance repository2.Repository
+var instance repository.Repository
 
-func InitDatabase(db repository2.Repository) {
+func InitDatabase(db repository.Repository) {
 	once.Do(func() {
 		instance = db
 	})
@@ -22,51 +23,50 @@ func SetDatabase(mockRepo *mock.Repository) {
 	instance = mockRepo
 }
 
-func getInstance() (repository2.Repository, *answer.Error) {
+func getInstance() (repository.Repository, error) {
 	if instance == nil {
-		errAnswer := answer.NewInternalServerError("database was not instantiated")
-		return nil, errAnswer
+		return nil, errors.NewInternalServerError("database was not instantiated")
 	}
 
 	return instance, nil
 }
 
-func GetRumorSenderRepositoryInstance() (repository2.RumorSenderRepository, *answer.Error) {
+func GetRumorSenderRepositoryInstance() (repository.RumorSenderRepository, error) {
 	return getInstance()
 }
 
-func GetQueryRepositoryInstance() (repository2.QueryRepository, *answer.Error) {
+func GetQueryRepositoryInstance() (repository.QueryRepository, error) {
 	return getInstance()
 }
 
-func GetChannelRepositoryInstance() (repository2.ChannelRepository, *answer.Error) {
+func GetChannelRepositoryInstance() (repository.ChannelRepository, error) {
 	return getInstance()
 }
 
-func GetRootRepositoryInstance() (repository2.RootRepository, *answer.Error) {
+func GetRootRepositoryInstance() (repository.RootRepository, error) {
 	return getInstance()
 }
 
-func GetLAORepositoryInstance() (repository2.LAORepository, *answer.Error) {
+func GetLAORepositoryInstance() (repository.LAORepository, error) {
 	return getInstance()
 }
 
-func GetChirpRepositoryInstance() (repository2.ChirpRepository, *answer.Error) {
+func GetChirpRepositoryInstance() (repository.ChirpRepository, error) {
 	return getInstance()
 }
 
-func GetCoinRepositoryInstance() (repository2.CoinRepository, *answer.Error) {
+func GetCoinRepositoryInstance() (repository.CoinRepository, error) {
 	return getInstance()
 }
 
-func GetElectionRepositoryInstance() (repository2.ElectionRepository, *answer.Error) {
+func GetElectionRepositoryInstance() (repository.ElectionRepository, error) {
 	return getInstance()
 }
 
-func GetReactionRepositoryInstance() (repository2.ReactionRepository, *answer.Error) {
+func GetReactionRepositoryInstance() (repository.ReactionRepository, error) {
 	return getInstance()
 }
 
-func GetFederationRepositoryInstance() (repository2.FederationRepository, *answer.Error) {
+func GetFederationRepositoryInstance() (repository.FederationRepository, error) {
 	return getInstance()
 }

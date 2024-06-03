@@ -27,7 +27,7 @@ test-no-cache: protocol
 	go test -v -race ./... -count=1
 
 test-cov: protocol
-	go test -v -coverpkg=./... -coverprofile=coverage.out ./... -json > report.json
+	go test -v -coverpkg=./internal/... -coverprofile=coverage.out ./internal/... ./cli/... -json > report.json
 
 vet: protocol
 	go vet ./...

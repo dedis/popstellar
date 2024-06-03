@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/crypto"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
@@ -214,7 +213,7 @@ func Test_SendTransaction(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -271,7 +270,7 @@ func Test_SendTransactionMaxAmount(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -328,7 +327,7 @@ func Test_SendTransactionOverflowAmount(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -385,7 +384,7 @@ func Test_SendTransactionZeroAmount(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -442,7 +441,7 @@ func Test_SendTransactionNegativeAmount(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -490,7 +489,7 @@ func Test_SendTransaction_MissingData(t *testing.T) {
 	m := message.Message{
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash("helloworld", "h"),
+		MessageID:         message.Hash("helloworld", "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -510,8 +509,7 @@ func Test_SendTransaction_MissingData(t *testing.T) {
 	message.Params.Channel = digitalCashChannelName
 
 	err = channel.Publish(message, socket.ClientSocket{})
-	require.EqualError(t, err, "failed to verify publish message: failed to "+
-		"verify json schema: failed to validate schema: EOF")
+	require.Contains(t, err.Error(), "failed to validate schema:")
 }
 
 // Tests that the channel works correctly when it receives a Transaction with wrong id
@@ -549,7 +547,7 @@ func Test_SendTransactionWrongId(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -570,14 +568,7 @@ func Test_SendTransactionWrongId(t *testing.T) {
 
 	// Transaction Id is not valid, value=0xBADID3AN0N0N0bvJC2LcZbm0chV1GrJDGfMlJSLRc=, computed=_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=
 	err = channel.Publish(message, socket.ClientSocket{})
-	require.EqualError(t, err, "failed to handle a publish message:"+
-		" failed to process message:"+
-		" failed to process action 'coin#post_transaction':"+
-		" invalid coin#postTransaction message:"+
-		" failed to verify the transaction id:"+
-		" transaction id is not valid:"+
-		" 0xBADID3AN0N0N0bvJC2LcZbm0chV1GrJDGfMlJSLRc= !="+
-		" _6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=")
+	require.Contains(t, err.Error(), "transaction id is not valid")
 }
 
 // Tests that the channel works correctly when it receives a transaction
@@ -615,7 +606,7 @@ func Test_SendTransactionBadSignature(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -673,7 +664,7 @@ func Test_SendTransactionCoinbase(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 

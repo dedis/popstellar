@@ -173,10 +173,29 @@ jobs:
         run: |
           make vet
 
+      - name: Generate coverage report
+        if: ${{ matrix.platform == 'ubuntu-latest' }}
+        run: |
+          make test-cov
+
+      - name: Upload coverage report
+        if: ${{ matrix.platform == 'ubuntu-latest' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: ./be1-go/coverage.out
+
       - name: Build
         if: ${{ always() }} # execute even if previous steps failed
         run: |
           make build
+
+      - name: Download coverage report
+        if: ${{ matrix.platform == 'ubuntu-latest' && steps.test-cov.outcome == 'success' }}
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-report
+          path: ./be1-go/
 
       - name: Run SonarCloud analysis
         if: ${{ matrix.platform == 'ubuntu-latest' && !startsWith(github.head_ref, 'dependabot/') }} # execute even if previous steps failed
@@ -186,6 +205,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BE1 }}
+
+      - name: Cleanup coverage report
+        if: ${{ matrix.platform == 'ubuntu-latest' }}
+        run: |
+          rm -f ./be1-go/coverage.out
 
   fe2-android:
     name: Fe2-Android

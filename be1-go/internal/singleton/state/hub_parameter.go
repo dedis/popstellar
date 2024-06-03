@@ -1,7 +1,7 @@
 package state
 
 import (
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
 	"popstellar/internal/network/socket"
 	"sync"
 )
@@ -13,45 +13,45 @@ type HubParameter interface {
 	GetClosedSockets() chan string
 }
 
-func getHubParams() (HubParameter, *answer.Error) {
+func getHubParams() (HubParameter, error) {
 	if instance == nil || instance.hubParams == nil {
-		return nil, answer.NewInternalServerError("hubparams was not instantiated")
+		return nil, errors.NewInternalServerError("hubparams was not instantiated")
 	}
 
 	return instance.hubParams, nil
 }
 
-func GetWaitGroup() (*sync.WaitGroup, *answer.Error) {
-	hubParams, errAnswer := getHubParams()
-	if errAnswer != nil {
-		return nil, errAnswer
+func GetWaitGroup() (*sync.WaitGroup, error) {
+	hubParams, err := getHubParams()
+	if err != nil {
+		return nil, err
 	}
 
 	return hubParams.GetWaitGroup(), nil
 }
 
-func GetMessageChan() (chan socket.IncomingMessage, *answer.Error) {
-	hubParams, errAnswer := getHubParams()
-	if errAnswer != nil {
-		return nil, errAnswer
+func GetMessageChan() (chan socket.IncomingMessage, error) {
+	hubParams, err := getHubParams()
+	if err != nil {
+		return nil, err
 	}
 
 	return hubParams.GetMessageChan(), nil
 }
 
-func GetStopChan() (chan struct{}, *answer.Error) {
-	hubParams, errAnswer := getHubParams()
-	if errAnswer != nil {
-		return nil, errAnswer
+func GetStopChan() (chan struct{}, error) {
+	hubParams, err := getHubParams()
+	if err != nil {
+		return nil, err
 	}
 
 	return hubParams.GetStopChan(), nil
 }
 
-func GetClosedSockets() (chan string, *answer.Error) {
-	hubParams, errAnswer := getHubParams()
-	if errAnswer != nil {
-		return nil, errAnswer
+func GetClosedSockets() (chan string, error) {
+	hubParams, err := getHubParams()
+	if err != nil {
+		return nil, err
 	}
 
 	return hubParams.GetClosedSockets(), nil

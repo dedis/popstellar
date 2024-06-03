@@ -1,12 +1,8 @@
 package messagedata
 
 import (
-	"crypto/sha256"
-	"encoding/base64"
 	"encoding/json"
-	"fmt"
-
-	"golang.org/x/xerrors"
+	"popstellar/internal/errors"
 )
 
 const (
@@ -99,7 +95,7 @@ func GetObjectAndAction(buf []byte) (string, string, error) {
 
 	err := json.Unmarshal(buf, &objmap)
 	if err != nil {
-		return "", "", xerrors.Errorf("failed to unmarshal objmap: %v", err)
+		return "", "", errors.NewInvalidMessageFieldError("failed to unmarshal objmap: %v", err)
 	}
 
 	var object string
@@ -107,12 +103,12 @@ func GetObjectAndAction(buf []byte) (string, string, error) {
 
 	err = json.Unmarshal(objmap["object"], &object)
 	if err != nil {
-		return "", "", xerrors.Errorf("failed to get object: %v", err)
+		return "", "", errors.NewInvalidActionError("failed to get object: %v", err)
 	}
 
 	err = json.Unmarshal(objmap["action"], &action)
 	if err != nil {
-		return "", "", xerrors.Errorf("failed to get action: %v", err)
+		return "", "", errors.NewInvalidActionError("failed to get action: %v", err)
 	}
 
 	return object, action, nil
@@ -124,26 +120,15 @@ func GetTime(buf []byte) (int64, error) {
 
 	err := json.Unmarshal(buf, &objmap)
 	if err != nil {
-		return 0, xerrors.Errorf("failed to unmarshal objmap: %v", err)
+		return 0, errors.NewInvalidMessageFieldError("failed to unmarshal objmap: %v", err)
 	}
 
 	var time int64
 
 	err = json.Unmarshal(objmap["timestamp"], &time)
 	if err != nil {
-		return 0, xerrors.Errorf("failed to get time: %v", err)
+		return 0, errors.NewInvalidMessageFieldError("failed to get time: %v", err)
 	}
 
 	return time, nil
-}
-
-// Hash returns the sha256 created from an array of strings
-func Hash(strs ...string) string {
-	h := sha256.New()
-	for _, s := range strs {
-		h.Write([]byte(fmt.Sprintf("%d", len(s))))
-		h.Write([]byte(s))
-	}
-
-	return base64.URLEncoding.EncodeToString(h.Sum(nil))
 }

@@ -2,8 +2,7 @@ package message
 
 import (
 	"encoding/json"
-
-	"golang.org/x/xerrors"
+	"popstellar/internal/errors"
 )
 
 const (
@@ -31,7 +30,7 @@ func GetType(jsonbuf []byte) (RPCType, error) {
 
 	err := json.Unmarshal(jsonbuf, &objmap)
 	if err != nil {
-		return RPCUnknown, xerrors.Errorf("failed to get objmap: %v", err)
+		return RPCUnknown, errors.NewInvalidMessageFieldError("failed to get objmap: %v", err)
 	}
 
 	if objmap["method"] != nil {

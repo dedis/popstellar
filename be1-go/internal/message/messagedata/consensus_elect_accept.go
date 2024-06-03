@@ -2,8 +2,7 @@ package messagedata
 
 import (
 	"encoding/base64"
-
-	"golang.org/x/xerrors"
+	"popstellar/internal/errors"
 )
 
 // ConsensusElectAccept defines a message data
@@ -21,13 +20,13 @@ func (message ConsensusElectAccept) Verify() error {
 	// verify that the instance id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(message.InstanceID)
 	if err != nil {
-		return xerrors.Errorf("instance id is %s, should be base64URL encoded", message.InstanceID)
+		return errors.NewInvalidMessageFieldError("instance id is %s, should be base64URL encoded", message.InstanceID)
 	}
 
 	// verify that the message id is base64URL encoded
 	_, err = base64.URLEncoding.DecodeString(message.MessageID)
 	if err != nil {
-		return xerrors.Errorf("message id is %s, should be base64URL encoded", message.MessageID)
+		return errors.NewInvalidMessageFieldError("message id is %s, should be base64URL encoded", message.MessageID)
 	}
 
 	return nil

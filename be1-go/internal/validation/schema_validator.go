@@ -7,7 +7,7 @@ import (
 	"io"
 	"io/fs"
 	"path/filepath"
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
 	"strings"
 
 	"github.com/santhosh-tekuri/jsonschema/v3"
@@ -62,12 +62,12 @@ func (s SchemaValidator) VerifyJSON(msg []byte, st SchemaType) error {
 	case Data:
 		schema = s.dataSchema
 	default:
-		return answer.NewErrorf(-6, "unsupported schema type: %v", st)
+		return errors.NewInternalServerError("unsupported schema type: %v", st)
 	}
 
 	err := schema.Validate(reader)
 	if err != nil {
-		return answer.NewErrorf(-4, "failed to validate schema: %v", err)
+		return errors.NewInvalidMessageFieldError("failed to validate schema: %v", err)
 	}
 
 	return nil

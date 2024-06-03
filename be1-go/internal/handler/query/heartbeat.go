@@ -2,8 +2,9 @@ package query
 
 import (
 	"encoding/json"
+
+	"popstellar/internal/errors"
 	"popstellar/internal/message"
-	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
@@ -11,33 +12,30 @@ import (
 	"popstellar/internal/singleton/state"
 )
 
-func handleHeartbeat(socket socket.Socket, byteMessage []byte) *answer.Error {
+func handleHeartbeat(socket socket.Socket, byteMessage []byte) error {
 	var heartbeat method.Heartbeat
-
 	err := json.Unmarshal(byteMessage, &heartbeat)
 	if err != nil {
-		errAnswer := answer.NewJsonUnmarshalError(err.Error())
-		return errAnswer.Wrap("handleHeartbeat")
+		return errors.NewJsonUnmarshalError(err.Error())
 	}
 
-	db, errAnswer := database.GetQueryRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleHeartbeat")
+	db, err := database.GetQueryRepositoryInstance()
+	if err != nil {
+		return err
 	}
 
 	result, err := db.GetParamsForGetMessageByID(heartbeat.Params)
 	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("params for get messages by id: %v", err)
-		return errAnswer.Wrap("handleHeartbeat")
+		return err
 	}
 
 	if len(result) == 0 {
 		return nil
 	}
 
-	queryId, errAnswer := state.GetNextID()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleHeartbeat")
+	queryId, err := state.GetNextID()
+	if err != nil {
+		return err
 	}
 
 	getMessagesById := method.GetMessagesById{
@@ -53,16 +51,10 @@ func handleHeartbeat(socket socket.Socket, byteMessage []byte) *answer.Error {
 
 	buf, err := json.Marshal(getMessagesById)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to marshal: %v", err)
-		return errAnswer.Wrap("handleHeartbeat")
+		return errors.NewJsonMarshalError(err.Error())
 	}
 
 	socket.Send(buf)
 
-	errAnswer = state.AddQuery(queryId, getMessagesById)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleHeartbeat")
-	}
-
-	return nil
+	return state.AddQuery(queryId, getMessagesById)
 }

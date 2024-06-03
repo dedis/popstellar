@@ -3,9 +3,7 @@ package handler
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
-	"io"
 	"os"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
@@ -14,8 +12,6 @@ import (
 	"testing"
 )
 
-var noLog = zerolog.New(io.Discard)
-
 func TestMain(m *testing.M) {
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
@@ -23,7 +19,7 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 
-	utils.InitUtils(&noLog, schemaValidator)
+	utils.InitUtils(schemaValidator)
 
 	exitVal := m.Run()
 
@@ -44,7 +40,7 @@ func Test_handleIncomingMessage(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 1",
 		message:  generator.NewNothingQuery(t, 999),
-		contains: "invalid json",
+		contains: "failed to validate schema:",
 	})
 
 	// Test 2: failed to handled popanswer because wrong publish popanswer format
@@ -55,7 +51,7 @@ func Test_handleIncomingMessage(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 2",
 		message:  generator.NewPublishQuery(t, 1, "/root/lao1", msg),
-		contains: "invalid json",
+		contains: "failed to validate schema:",
 	})
 
 	// run all tests
@@ -64,8 +60,7 @@ func Test_handleIncomingMessage(t *testing.T) {
 		t.Run(arg.name, func(t *testing.T) {
 			fakeSocket := mock.FakeSocket{Id: "1"}
 			err := HandleIncomingMessage(&fakeSocket, arg.message)
-			require.Error(t, err)
-			require.Contains(t, err.Error(), arg.contains)
+			require.Error(t, err, arg.contains)
 		})
 	}
 }

@@ -1,7 +1,7 @@
 package state
 
 import (
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
 	"popstellar/internal/message/query/method"
 )
 
@@ -15,42 +15,41 @@ type Querier interface {
 	GetRumorFromPastQuery(queryID int) (method.Rumor, bool)
 }
 
-func getQueries() (Querier, *answer.Error) {
+func getQueries() (Querier, error) {
 	if instance == nil || instance.queries == nil {
-		return nil, answer.NewInternalServerError("querier was not instantiated")
+		return nil, errors.NewInternalServerError("querier was not instantiated")
 	}
 
 	return instance.queries, nil
 }
 
-func GetNextID() (int, *answer.Error) {
-	queries, errAnswer := getQueries()
-	if errAnswer != nil {
-		return -1, errAnswer
+func GetNextID() (int, error) {
+	queries, err := getQueries()
+	if err != nil {
+		return -1, err
 	}
 
 	return queries.GetNextID(), nil
 }
 
-func SetQueryReceived(ID int) *answer.Error {
-	queries, errAnswer := getQueries()
-	if errAnswer != nil {
-		return errAnswer
+func SetQueryReceived(ID int) error {
+	queries, err := getQueries()
+	if err != nil {
+		return err
 	}
 
-	err := queries.SetQueryReceived(ID)
+	err = queries.SetQueryReceived(ID)
 	if err != nil {
-		errAnswer := answer.NewInvalidActionError("%v", err)
-		return errAnswer
+		return err
 	}
 
 	return nil
 }
 
-func AddQuery(ID int, query method.GetMessagesById) *answer.Error {
-	queries, errAnswer := getQueries()
-	if errAnswer != nil {
-		return errAnswer
+func AddQuery(ID int, query method.GetMessagesById) error {
+	queries, err := getQueries()
+	if err != nil {
+		return err
 	}
 
 	queries.AddQuery(ID, query)
@@ -58,10 +57,10 @@ func AddQuery(ID int, query method.GetMessagesById) *answer.Error {
 	return nil
 }
 
-func AddRumorQuery(ID int, query method.Rumor) *answer.Error {
-	queries, errAnswer := getQueries()
-	if errAnswer != nil {
-		return errAnswer
+func AddRumorQuery(ID int, query method.Rumor) error {
+	queries, err := getQueries()
+	if err != nil {
+		return err
 	}
 
 	queries.AddRumorQuery(ID, query)
@@ -69,19 +68,19 @@ func AddRumorQuery(ID int, query method.Rumor) *answer.Error {
 	return nil
 }
 
-func IsRumorQuery(ID int) (bool, *answer.Error) {
-	queries, errAnswer := getQueries()
-	if errAnswer != nil {
-		return false, errAnswer
+func IsRumorQuery(ID int) (bool, error) {
+	queries, err := getQueries()
+	if err != nil {
+		return false, err
 	}
 
 	return queries.IsRumorQuery(ID), nil
 }
 
-func GetRumorFromPastQuery(ID int) (method.Rumor, bool, *answer.Error) {
-	queries, errAnswer := getQueries()
-	if errAnswer != nil {
-		return method.Rumor{}, false, errAnswer
+func GetRumorFromPastQuery(ID int) (method.Rumor, bool, error) {
+	queries, err := getQueries()
+	if err != nil {
+		return method.Rumor{}, false, err
 	}
 
 	rumor, ok := queries.GetRumorFromPastQuery(ID)

@@ -1,11 +1,11 @@
 package types
 
 import (
+	"popstellar/internal/errors"
 	"popstellar/internal/message/query/method"
 	"sync"
 
 	"github.com/rs/zerolog"
-	"golang.org/x/xerrors"
 )
 
 // Queries let the hub remember all queries that it sent to other servers
@@ -41,7 +41,7 @@ func (q *Queries) GetQueryState(id int) (bool, error) {
 
 	state, ok := q.state[id]
 	if !ok {
-		return false, xerrors.Errorf("query with id %d not found", id)
+		return false, errors.NewInvalidResourceError("query with id %d not found", id)
 	}
 	return state, nil
 }
@@ -64,7 +64,7 @@ func (q *Queries) SetQueryReceived(id int) error {
 	currentState, ok := q.state[id]
 
 	if !ok {
-		return xerrors.Errorf("query with id %d not found", id)
+		return errors.NewInvalidResourceError("query with id %d not found", id)
 	}
 
 	if currentState {

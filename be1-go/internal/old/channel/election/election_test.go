@@ -227,7 +227,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 		Data:              buf64,
 		Sender:            pkOrganizer,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -279,7 +279,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 		Data:              buf64,
 		Sender:            pkOrganizer,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -443,7 +443,7 @@ func Test_Publish_Election_Open(t *testing.T) {
 		Data:              buf64,
 		Sender:            pkOrganizer,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -488,7 +488,7 @@ func Test_Process_Election_Open(t *testing.T) {
 		Data:              buf64,
 		Sender:            "@@@",
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
