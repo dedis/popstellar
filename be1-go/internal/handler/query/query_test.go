@@ -22,7 +22,7 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 
-	utils.InitUtils(&noLog, schemaValidator)
+	utils.InitUtils(schemaValidator)
 
 	exitVal := m.Run()
 

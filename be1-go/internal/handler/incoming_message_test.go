@@ -3,9 +3,7 @@ package handler
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
-	"io"
 	"os"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
@@ -14,8 +12,6 @@ import (
 	"testing"
 )
 
-var noLog = zerolog.New(io.Discard)
-
 func TestMain(m *testing.M) {
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
@@ -23,7 +19,7 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 
-	utils.InitUtils(&noLog, schemaValidator)
+	utils.InitUtils(schemaValidator)
 
 	exitVal := m.Run()
 

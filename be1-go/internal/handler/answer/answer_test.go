@@ -4,10 +4,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"io"
 	"os"
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/messagedata"
@@ -21,8 +19,6 @@ import (
 	"time"
 )
 
-var noLog = zerolog.New(io.Discard)
-
 func TestMain(m *testing.M) {
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
@@ -30,7 +26,7 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 
-	utils.InitUtils(&noLog, schemaValidator)
+	utils.InitUtils(schemaValidator)
 
 	exitVal := m.Run()
 

@@ -13,7 +13,6 @@ import (
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/state"
-	"popstellar/internal/singleton/utils"
 	"sync"
 	"time"
 )
@@ -210,6 +209,9 @@ func (h *Hub) runHeartbeat() {
 	ticker := time.NewTicker(heartbeatDelay)
 	defer ticker.Stop()
 	defer h.wg.Done()
+	defer logger.Logger.Info().Msg("stopping heartbeat sender")
+
+	logger.Logger.Info().Msg("starting heartbeat sender")
 
 	for {
 		select {
@@ -219,7 +221,6 @@ func (h *Hub) runHeartbeat() {
 				logger.Logger.Error().Err(err)
 			}
 		case <-h.stop:
-			utils.LogInfo("stopping the heartbeat")
 			return
 		}
 	}
