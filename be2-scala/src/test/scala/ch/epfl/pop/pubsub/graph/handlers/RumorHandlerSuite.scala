@@ -4,7 +4,7 @@ import akka.NotUsed
 import akka.actor.Status.Failure
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.AskableActorRef
-import akka.testkit.{TestKit, TestProbe}
+import akka.testkit.{TestKit, TestKitBase, TestProbe}
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.{DbActor, InMemoryStorage, SecurityModuleActor}
 import akka.pattern.ask
@@ -27,8 +27,9 @@ import org.scalatest.matchers.should.Matchers.{a, equal, should, shouldBe}
 import scala.concurrent.Await
 import scala.concurrent.duration.FiniteDuration
 
-class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem")) with AnyFunSuiteLike with AskPatternConstants with BeforeAndAfterAll with BeforeAndAfterEach {
+class RumorHandlerSuite extends TestKitBase with AnyFunSuiteLike with AskPatternConstants with BeforeAndAfterAll with BeforeAndAfterEach {
 
+  implicit val system: ActorSystem = ActorSystem("RumorActorSuiteActorSystem")
   val MAX_TIME: FiniteDuration = duration.mul(2)
 
   private val inMemoryStorage: InMemoryStorage = InMemoryStorage()
@@ -39,8 +40,12 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
   private val monitorRef: ActorRef = system.actorOf(Monitor.props(dbActorRef), "monitorRumor")
   private var connectionMediatorRef: AskableActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry), "connMediatorRumor")
   private val rumorHandler: Flow[GraphMessage, GraphMessage, NotUsed] = ParamsHandler.rumorHandler(dbActorRef, messageRegistry)
-  // Inject dbActor above
-  PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, isServer = false)
+
+  override def beforeAll(): Unit = {
+    // Inject dbActor above
+    PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, isServer = false)
+
+  }
 
   val pathCorrectRumor: String = "src/test/scala/util/examples/json/rumor/rumor_correct_msg.json"
 
@@ -125,7 +130,7 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
   }
 
   // https://github.com/dedis/popstellar/issues/1870
-  /*test("rumor handler should process messages received in a rumor") {
+  test("rumor handler should process messages received in a rumor") {
     val dbRef = PublishSubscribe.getDbActorRef
     val output = Source.single(Right(rumorRequest)).via(rumorHandler).runWith(Sink.head)
 
@@ -144,6 +149,6 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
     val messagesInRumor = rumor.messages.values.foldLeft(Set.empty: Set[Message])((acc, set) => acc ++ set)
 
     messagesInRumor.diff(messagesInDb) should equal(Set.empty)
-  }*/
+  }
 
 }
