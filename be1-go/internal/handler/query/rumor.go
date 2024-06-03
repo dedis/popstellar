@@ -2,27 +2,25 @@ package query
 
 import (
 	"encoding/json"
+	"sort"
+
+	"popstellar/internal/errors"
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/logger"
-	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/state"
-	"popstellar/internal/singleton/utils"
-	"sort"
 )
 
 const maxRetry = 10
 
-func handleRumor(socket socket.Socket, msg []byte) (*int, *answer.Error) {
+func handleRumor(socket socket.Socket, msg []byte) (*int, error) {
 	var rumor method.Rumor
-
 	err := json.Unmarshal(msg, &rumor)
 	if err != nil {
-		errAnswer := answer.NewJsonUnmarshalError(err.Error())
-		return nil, errAnswer.Wrap("handleRumor")
+		return nil, errors.NewJsonUnmarshalError(err.Error())
 	}
 
 	logger.Logger.Debug().Msgf("received rumor %s-%d from query %d",
@@ -30,18 +28,16 @@ func handleRumor(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 
 	db, err := database.GetQueryRepositoryInstance()
 	if err != nil {
-		return &rumor.ID, answer.NewInternalServerError(err.Error())
+		return &rumor.ID, err
 	}
 
 	ok, err := db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID)
 	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("if rumor is not valid: %v", err)
-		return &rumor.ID, errAnswer.Wrap("handleRumor")
+		return &rumor.ID, err
 	}
 	if !ok {
-		errAnswer := answer.NewInvalidResourceError("rumor %s: %v is not valid",
+		return &rumor.ID, errors.NewDuplicateResourceError("rumor [%s|%v] is not valid",
 			rumor.Params.SenderID, rumor.Params.RumorID)
-		return &rumor.ID, errAnswer
 	}
 
 	socket.SendResult(rumor.ID, nil, nil)
@@ -52,19 +48,17 @@ func handleRumor(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 
 	err = db.StoreRumor(rumor.Params.RumorID, rumor.Params.SenderID, rumor.Params.Messages, processedMsgs)
 	if err != nil {
-		utils.LogError(err)
-		return &rumor.ID, nil
+		return nil, err
 	}
 
 	messages, err := db.GetUnprocessedMessagesByChannel()
 	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("unprocessed messages: %v", err)
-		return &rumor.ID, errAnswer.Wrap("handleRumor")
+		return nil, err
 	}
 
 	_ = tryHandlingMessagesByChannel(messages)
 
-	return &rumor.ID, nil
+	return nil, nil
 }
 
 func tryHandlingMessagesByChannel(unprocessedMsgsByChannel map[string][]message.Message) []string {
@@ -72,17 +66,17 @@ func tryHandlingMessagesByChannel(unprocessedMsgsByChannel map[string][]message.
 
 	sortedChannels := sortChannels(unprocessedMsgsByChannel)
 
-	for _, channel := range sortedChannels {
-		unprocessedMsgs, newProcessedMsgs := tryHandlingMessages(channel, unprocessedMsgsByChannel[channel])
+	for _, channelPath := range sortedChannels {
+		unprocessedMsgs, newProcessedMsgs := tryHandlingMessages(channelPath, unprocessedMsgsByChannel[channelPath])
 
 		if len(newProcessedMsgs) > 0 {
 			processedMsgs = append(processedMsgs, newProcessedMsgs...)
 		}
 
 		if len(unprocessedMsgs) > 0 {
-			unprocessedMsgsByChannel[channel] = unprocessedMsgs
+			unprocessedMsgsByChannel[channelPath] = unprocessedMsgs
 		} else {
-			delete(unprocessedMsgsByChannel, channel)
+			delete(unprocessedMsgsByChannel, channelPath)
 		}
 	}
 
@@ -133,17 +127,17 @@ func sortChannels(msgsByChannel map[string][]message.Message) []string {
 }
 
 func SendRumor(socket socket.Socket, rumor method.Rumor) {
-	id, errAnswer := state.GetNextID()
-	if errAnswer != nil {
-		logger.Logger.Error().Err(errAnswer)
+	id, err := state.GetNextID()
+	if err != nil {
+		logger.Logger.Error().Err(err)
 		return
 	}
 
 	rumor.ID = id
 
-	errAnswer = state.AddRumorQuery(id, rumor)
-	if errAnswer != nil {
-		logger.Logger.Error().Err(errAnswer)
+	err = state.AddRumorQuery(id, rumor)
+	if err != nil {
+		logger.Logger.Error().Err(err)
 		return
 	}
 
@@ -154,8 +148,8 @@ func SendRumor(socket socket.Socket, rumor method.Rumor) {
 	}
 
 	logger.Logger.Debug().Msgf("sending rumor %s-%d query %d", rumor.Params.SenderID, rumor.Params.RumorID, rumor.ID)
-	errAnswer = state.SendRumor(socket, rumor.Params.SenderID, rumor.Params.RumorID, buf)
-	if errAnswer != nil {
-		logger.Logger.Err(errAnswer)
+	err = state.SendRumor(socket, rumor.Params.SenderID, rumor.Params.RumorID, buf)
+	if err != nil {
+		logger.Logger.Err(err)
 	}
 }
