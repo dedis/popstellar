@@ -2,9 +2,8 @@ package query
 
 import (
 	"encoding/json"
-	"popstellar/internal/errors"
 
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
 	"popstellar/internal/message/query"
 	"popstellar/internal/network/socket"
 )
@@ -14,9 +13,7 @@ func HandleQuery(socket socket.Socket, msg []byte) error {
 
 	err := json.Unmarshal(msg, &queryBase)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("HandleQuery")
-		socket.SendError(nil, errAnswer)
-		return errAnswer
+		return errors.NewJsonUnmarshalError(err.Error())
 	}
 
 	var id *int = nil
