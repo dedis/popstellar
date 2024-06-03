@@ -263,7 +263,7 @@ func Test_handleChannelFederation(t *testing.T) {
 		msg: generator.NewFederationChallenge(t, notOrganizer, value,
 			validUntil, notOrganizerSk),
 		isError:  true,
-		contains: "failed to get federation expect",
+		contains: "sql: no rows in result set",
 	})
 
 	// Test 16 Error when FederationResult challenge message is not a challenge
@@ -301,16 +301,16 @@ func Test_handleChannelFederation(t *testing.T) {
 			organizer, generator.NewFederationChallenge(t, organizer2,
 				value, validUntil, organizer2Sk), organizer2Sk),
 		isError:  true,
-		contains: "failed to get federation init",
+		contains: "sql: no rows in result set",
 	})
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := handleChannelFederation(arg.channelPath, arg.msg)
+			err = handleChannelFederation(arg.channelPath, arg.msg)
 			if arg.isError {
-				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.Contains(t, err.Error(), arg.contains)
 			} else {
-				require.Nil(t, errAnswer)
+				require.NoError(t, err)
 			}
 		})
 	}

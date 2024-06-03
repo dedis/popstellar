@@ -9,9 +9,9 @@ import (
 	"github.com/gorilla/websocket"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/internal/crypto"
+	"popstellar/internal/errors"
 	"popstellar/internal/logger"
 	jsonrpc "popstellar/internal/message"
-	"popstellar/internal/message/answer"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
@@ -27,63 +27,53 @@ const (
 	channelPattern = "/root/%s/federation"
 )
 
-func handleChannelFederation(channelPath string, msg message.Message) *answer.Error {
+func handleChannelFederation(channelPath string, msg message.Message) error {
 	object, action, err := verifyDataAndGetObjectAction(msg)
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
 
 	if object != messagedata.FederationObject {
-		errAnswer := answer.NewInvalidMessageFieldError("invalid object %v", object)
-		return errAnswer.Wrap("handleChannelFederation")
+		return errors.NewInvalidMessageFieldError("invalid object %v", object)
 	}
-
-	var errAnswer *answer.Error
 
 	switch action {
 	case messagedata.FederationActionChallengeRequest:
-		errAnswer = handleRequestChallenge(msg, channelPath)
+		err = handleRequestChallenge(msg, channelPath)
 	case messagedata.FederationActionInit:
-		errAnswer = handleInit(msg, channelPath)
+		err = handleInit(msg, channelPath)
 	case messagedata.FederationActionExpect:
-		errAnswer = handleExpect(msg, channelPath)
+		err = handleExpect(msg, channelPath)
 	case messagedata.FederationActionChallenge:
-		errAnswer = handleChallenge(msg, channelPath)
+		err = handleChallenge(msg, channelPath)
 	case messagedata.FederationActionResult:
-		errAnswer = handleResult(msg, channelPath)
-
+		err = handleResult(msg, channelPath)
 	default:
-		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
+		err = errors.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
 
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelFederation")
-	}
-
-	return nil
+	return err
 }
 
 // handleRequestChallenge expects the sender to be the organizer of the lao,
 // a challenge message is then stored and broadcast on the same channelPath.
 // The FederationChallengeRequest message is neither stored nor broadcast
-func handleRequestChallenge(msg message.Message, channelPath string) *answer.Error {
+func handleRequestChallenge(msg message.Message, channelPath string) error {
 	var requestChallenge messagedata.FederationChallengeRequest
-	errAnswer := msg.UnmarshalMsgData(&requestChallenge)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationRequestChallenge")
+	err := msg.UnmarshalData(&requestChallenge)
+	if err != nil {
+		return err
 	}
 
-	errAnswer = verifyLocalOrganizer(msg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationRequestChallenge")
+	err = verifyLocalOrganizer(msg, channelPath)
+	if err != nil {
+		return err
 	}
 
 	randomBytes := make([]byte, 32)
-	_, err := rand.Read(randomBytes)
+	_, err = rand.Read(randomBytes)
 	if err != nil {
-		errAnswer = answer.NewInternalServerError(
-			"Failed to generate random bytes: %v", err)
-		return errAnswer.Wrap("handleFederationRequestChallenge")
+		return errors.NewInternalServerError("Failed to generate random bytes: %v", err)
 	}
 
 	challengeValue := hex.EncodeToString(randomBytes)
@@ -97,138 +87,124 @@ func handleRequestChallenge(msg message.Message, channelPath string) *answer.Err
 
 	// The challenge sent to the organizer is signed by the server but should
 	// not be confused with the challenge that will be signed by the organizer
-	challengeMsg, errAnswer := createMessage(federationChallenge)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationRequestChallenge")
+	challengeMsg, err := createMessage(federationChallenge)
+	if err != nil {
+		return err
 	}
 
 	db, err := database.GetFederationRepositoryInstance()
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
 
 	// store the generated challenge message, not the challenge request
 	err = db.StoreMessageAndData(channelPath, challengeMsg)
 	if err != nil {
-		errAnswer = answer.NewStoreDatabaseError(err.Error())
-		return errAnswer.Wrap("handleFederationRequestChallenge")
+		return err
 	}
 
-	err = broadcastToAllClients(challengeMsg, channelPath)
-	if err != nil {
-		return answer.NewInternalServerError(err.Error())
-	}
-
-	return nil
+	return broadcastToAllClients(challengeMsg, channelPath)
 }
 
 // handleExpect checks that the message is from the local organizer and that
 // it contains a valid challenge, then stores the msg
-func handleExpect(msg message.Message, channelPath string) *answer.Error {
+func handleExpect(msg message.Message, channelPath string) error {
 	var federationExpect messagedata.FederationExpect
-	errAnswer := msg.UnmarshalMsgData(&federationExpect)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationExpect")
+	err := msg.UnmarshalData(&federationExpect)
+	if err != nil {
+		return err
 	}
 
-	errAnswer = verifyLocalOrganizer(msg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationExpect")
+	err = verifyLocalOrganizer(msg, channelPath)
+	if err != nil {
+		return err
 	}
 
 	// Both the FederationExpect and the embedded FederationChallenge need to
 	// be signed by the local organizer
-	errAnswer = verifyLocalOrganizer(federationExpect.ChallengeMsg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationExpect")
+	err = verifyLocalOrganizer(federationExpect.ChallengeMsg, channelPath)
+	if err != nil {
+		return err
 	}
 
 	var challenge messagedata.FederationChallenge
-	errAnswer = federationExpect.ChallengeMsg.UnmarshalMsgData(&challenge)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationExpect")
+	err = federationExpect.ChallengeMsg.UnmarshalData(&challenge)
+	if err != nil {
+		return err
 	}
 
-	errAnswer = challenge.Verify()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationExpect")
+	err = challenge.Verify()
+	if err != nil {
+		return err
 	}
 
 	db, err := database.GetFederationRepositoryInstance()
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
 
-	serverPk, errAnswer := getServerPk()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationExpect")
+	serverPk, err := getServerPk()
+	if err != nil {
+		return err
 	}
 
 	err = db.IsChallengeValid(serverPk, challenge, channelPath)
 	if err != nil {
-		errAnswer = answer.NewQueryDatabaseError("No valid challenge: %v", err)
-		return errAnswer.Wrap("handleFederationExpect")
+		return err
 	}
 
 	remoteChannel := fmt.Sprintf(channelPattern, federationExpect.LaoId)
 	_ = state.AddChannel(remoteChannel)
 
-	err = db.StoreMessageAndData(channelPath, msg)
-	if err != nil {
-		errAnswer = answer.NewStoreDatabaseError(err.Error())
-		return errAnswer.Wrap("handleFederationExpect")
-	}
-
-	return nil
+	return db.StoreMessageAndData(channelPath, msg)
 }
 
 // handleInit checks that the message is from the local organizer and that
 // it contains a valid challenge, then stores the msg,
 // connect to the server and send the embedded challenge
-func handleInit(msg message.Message, channelPath string) *answer.Error {
+func handleInit(msg message.Message, channelPath string) error {
 	var federationInit messagedata.FederationInit
-	errAnswer := msg.UnmarshalMsgData(&federationInit)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
+	err := msg.UnmarshalData(&federationInit)
+	if err != nil {
+		return err
 	}
 
-	errAnswer = verifyLocalOrganizer(msg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
+	err = verifyLocalOrganizer(msg, channelPath)
+	if err != nil {
+		return err
 	}
 
 	// Both the FederationInit and the embedded FederationChallenge need to
 	// be signed by the local organizer
-	errAnswer = verifyLocalOrganizer(federationInit.ChallengeMsg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
+	err = verifyLocalOrganizer(federationInit.ChallengeMsg, channelPath)
+	if err != nil {
+		return err
 	}
 
 	var challenge messagedata.FederationChallenge
-	errAnswer = federationInit.ChallengeMsg.UnmarshalMsgData(&challenge)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
+	err = federationInit.ChallengeMsg.UnmarshalData(&challenge)
+	if err != nil {
+		return err
 	}
 
-	errAnswer = challenge.Verify()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
+	err = challenge.Verify()
+	if err != nil {
+		return err
 	}
 
 	db, err := database.GetFederationRepositoryInstance()
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
 
 	err = db.StoreMessageAndData(channelPath, msg)
 	if err != nil {
-		errAnswer = answer.NewStoreDatabaseError(err.Error())
-		return errAnswer.Wrap("handleFederationInit")
+		return err
 	}
 
-	remote, errAnswer := connectTo(federationInit.ServerAddress)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
+	remote, err := connectTo(federationInit.ServerAddress)
+	if err != nil {
+		return err
 	}
 
 	//Force the remote server to be subscribed to /root/<remote_lao>/federation
@@ -236,7 +212,7 @@ func handleInit(msg message.Message, channelPath string) *answer.Error {
 	_ = state.AddChannel(remoteChannel)
 	err = state.Subscribe(remote, remoteChannel)
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
 
 	subscribeMsg := method.Subscribe{
@@ -251,61 +227,48 @@ func handleInit(msg message.Message, channelPath string) *answer.Error {
 
 	subscribeBytes, err := json.Marshal(subscribeMsg)
 	if err != nil {
-		errAnswer = answer.NewInternalServerError(
-			"failed to marshal subscribe: %v", err)
-		return errAnswer.Wrap("handleFederationInit")
+		return errors.NewJsonMarshalError(err.Error())
 	}
 
 	// Subscribe to /root/<local_lao>/federation on the remote server
 	err = state.SendToAll(subscribeBytes, remoteChannel)
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
 
 	// send the challenge to a channelPath where the remote server is subscribed to
-	errAnswer = publishTo(federationInit.ChallengeMsg, remoteChannel)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
-	}
-
-	return nil
+	return publishTo(federationInit.ChallengeMsg, remoteChannel)
 }
 
-func handleChallenge(msg message.Message, channelPath string) *answer.Error {
+func handleChallenge(msg message.Message, channelPath string) error {
 	var federationChallenge messagedata.FederationChallenge
-	errAnswer := msg.UnmarshalMsgData(&federationChallenge)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationChallenge")
+	err := msg.UnmarshalData(&federationChallenge)
+	if err != nil {
+		return err
 	}
 
 	db, err := database.GetFederationRepositoryInstance()
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
 
-	organizerPk, errAnswer := getOrganizerPk(channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationChallenge")
-	}
-
-	federationExpect, err := db.GetFederationExpect(organizerPk, msg.Sender,
-		federationChallenge, channelPath)
+	organizerPk, err := getOrganizerPk(channelPath)
 	if err != nil {
-		errAnswer = answer.NewQueryDatabaseError(
-			"failed to get federation expect: %v", err)
-		return errAnswer.Wrap("handleFederationChallenge")
+		return err
+	}
+
+	federationExpect, err := db.GetFederationExpect(organizerPk, msg.Sender, federationChallenge, channelPath)
+	if err != nil {
+		return err
 	}
 
 	err = db.RemoveChallenge(federationChallenge)
 	if err != nil {
-		errAnswer = answer.NewQueryDatabaseError("failed to use challenge: %v", err)
-		return errAnswer.Wrap("handleFederationChallenge")
+		return err
 	}
 
 	if federationChallenge.ValidUntil < time.Now().Unix() {
-		errAnswer = answer.NewAccessDeniedError(
-			"This challenge has expired: %v", federationChallenge)
-		return errAnswer.Wrap("handleFederationChallenge")
+		return errors.NewAccessDeniedError("This challenge has expired: %v", federationChallenge)
 	}
 
 	result := messagedata.FederationResult{
@@ -317,196 +280,166 @@ func handleChallenge(msg message.Message, channelPath string) *answer.Error {
 		ChallengeMsg: federationExpect.ChallengeMsg,
 	}
 
-	resultMsg, errAnswer := createMessage(result)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationChallenge")
+	resultMsg, err := createMessage(result)
+	if err != nil {
+		return err
 	}
 
 	err = db.StoreMessageAndData(channelPath, resultMsg)
 	if err != nil {
-		errAnswer = answer.NewStoreDatabaseError(err.Error())
-		return errAnswer.Wrap("handleFederationChallenge")
+		return err
 	}
 
 	// publish the FederationResult to the other server
 	remoteChannel := fmt.Sprintf(channelPattern, federationExpect.LaoId)
-	errAnswer = publishTo(resultMsg, remoteChannel)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationChallenge")
+	err = publishTo(resultMsg, remoteChannel)
+	if err != nil {
+		return err
 	}
 
 	// broadcast the FederationResult to the local organizer
-	err = broadcastToAllClients(resultMsg, channelPath)
-	if err != nil {
-		return answer.NewInternalServerError(err.Error())
-	}
-
-	return nil
+	return broadcastToAllClients(resultMsg, channelPath)
 }
 
-func handleResult(msg message.Message, channelPath string) *answer.Error {
+func handleResult(msg message.Message, channelPath string) error {
 	var result messagedata.FederationResult
-	errAnswer := msg.UnmarshalMsgData(&result)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationResult")
+	err := msg.UnmarshalData(&result)
+	if err != nil {
+		return err
 	}
 
 	// verify that the embedded challenge is correctly signed,
 	// we compare the sender field of the challenge later
-	err := verifyMessage(result.ChallengeMsg)
+	err = verifyMessage(result.ChallengeMsg)
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
 
 	if result.Status != "success" {
-		errAnswer = answer.NewInternalServerError(
-			"failed to establish federated connection: %s", result.Reason)
-		return errAnswer.Wrap("handleFederationResult")
+		return errors.NewInternalServerError("failed to establish federated connection: %s", result.Reason)
 	}
 
 	db, err := database.GetFederationRepositoryInstance()
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
 
-	organizerPk, errAnswer := getOrganizerPk(channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationResult")
+	organizerPk, err := getOrganizerPk(channelPath)
+	if err != nil {
+		return err
 	}
 
 	// the result is from the other server if publicKey == organizer
 	if result.PublicKey != organizerPk {
-		errAnswer = answer.NewInvalidMessageFieldError(
-			"invalid public key contained in FederationResult message")
-		return errAnswer.Wrap("handleFederationResult")
+		return errors.NewInvalidMessageFieldError("invalid public key contained in FederationResult message")
 	}
 
 	var federationChallenge messagedata.FederationChallenge
-	errAnswer = result.ChallengeMsg.UnmarshalMsgData(&federationChallenge)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationResult")
+	err = result.ChallengeMsg.UnmarshalData(&federationChallenge)
+	if err != nil {
+		return err
 	}
 
-	errAnswer = federationChallenge.Verify()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationResult")
+	err = federationChallenge.Verify()
+	if err != nil {
+		return err
 	}
 
 	// try to get a matching FederationInit, if found then we know that
 	// the local organizer was waiting this result
-	_, err = db.GetFederationInit(organizerPk,
-		result.ChallengeMsg.Sender, federationChallenge, channelPath)
+	_, err = db.GetFederationInit(organizerPk, result.ChallengeMsg.Sender, federationChallenge, channelPath)
 	if err != nil {
-		errAnswer = answer.NewQueryDatabaseError(
-			"failed to get federation init: %v", err)
-		return errAnswer.Wrap("handleFederationResult")
+		return err
 	}
 
 	err = db.StoreMessageAndData(channelPath, msg)
 	if err != nil {
-		errAnswer = answer.NewStoreDatabaseError(err.Error())
-		return errAnswer.Wrap("handleFederationResult")
+		return err
 	}
 
-	err = broadcastToAllClients(msg, channelPath)
-	if err != nil {
-		return answer.NewInternalServerError(err.Error())
-	}
-
-	return nil
+	return broadcastToAllClients(msg, channelPath)
 }
 
-func getOrganizerPk(federationChannel string) (string, *answer.Error) {
+func getOrganizerPk(federationChannel string) (string, error) {
 	db, err := database.GetFederationRepositoryInstance()
 	if err != nil {
-		return "", answer.NewInternalServerError(err.Error())
+		return "", err
 	}
 
 	laoChannel := strings.TrimSuffix(federationChannel, "/federation")
 
 	organizerPk, err := db.GetOrganizerPubKey(laoChannel)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get key")
-		return "", errAnswer.Wrap("getOrganizerPk")
+		return "", err
 	}
 
 	organizerPkBytes, err := organizerPk.MarshalBinary()
 	if err != nil {
-		errAnswer := answer.NewInternalServerError(
-			"failed to marshal organizer key: %v", err)
-		return "", errAnswer.Wrap("getOrganizerPk")
+		return "", errors.NewInternalServerError("failed to marshal organizer key: %v", err)
 	}
 
 	return base64.URLEncoding.EncodeToString(organizerPkBytes), nil
 }
 
-func getServerPk() (string, *answer.Error) {
+func getServerPk() (string, error) {
 	db, err := database.GetFederationRepositoryInstance()
 	if err != nil {
-		return "", answer.NewInternalServerError(err.Error())
+		return "", err
 	}
 
 	serverPk, _, err := db.GetServerKeys()
 	if err != nil {
-		errAnswer := answer.NewInternalServerError(
-			"Failed to get server keys: %v", err)
-		return "", errAnswer.Wrap("getServerPk")
+		return "", err
 	}
 
 	serverPkBytes, err := serverPk.MarshalBinary()
 	if err != nil {
-		errAnswer := answer.NewInternalServerError(
-			"failed to marshal server pk: %v", err)
-		return "", errAnswer.Wrap("getServerPk")
+		return "", errors.NewInternalServerError("failed to marshal server pk: %v", err)
 	}
 
 	return base64.URLEncoding.EncodeToString(serverPkBytes), nil
 }
 
-func verifyLocalOrganizer(msg message.Message, channelPath string) *answer.Error {
-	organizePk, errAnswer := getOrganizerPk(channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("verifyLocalOrganizer")
+func verifyLocalOrganizer(msg message.Message, channelPath string) error {
+	organizePk, err := getOrganizerPk(channelPath)
+	if err != nil {
+		return err
 	}
 
 	if organizePk != msg.Sender {
-		errAnswer = answer.NewAccessDeniedError("sender is not the organizer of the channelPath")
-		return errAnswer.Wrap("verifyLocalSender")
+		return errors.NewAccessDeniedError("sender is not the organizer of the channelPath")
 	}
 
 	return nil
 }
 
-func connectTo(serverAddress string) (socket.Socket, *answer.Error) {
+func connectTo(serverAddress string) (socket.Socket, error) {
 	ws, _, err := websocket.DefaultDialer.Dial(serverAddress, nil)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError(
-			"failed to connect to server %s: %v", serverAddress, err)
-		return nil, errAnswer.Wrap("connectTo")
+		return nil, errors.NewInternalServerError("failed to connect to server %s: %v", serverAddress, err)
 	}
 
-	messageChan, errAnswer := state.GetMessageChan()
-	if errAnswer != nil {
-		return nil, errAnswer.Wrap("connectTo")
+	messageChan, err := state.GetMessageChan()
+	if err != nil {
+		return nil, err
 	}
 
-	closedSockets, errAnswer := state.GetClosedSockets()
-	if errAnswer != nil {
-		return nil, errAnswer.Wrap("connectTo")
+	closedSockets, err := state.GetClosedSockets()
+	if err != nil {
+		return nil, err
 	}
 
-	wg, errAnswer := state.GetWaitGroup()
-	if errAnswer != nil {
-		return nil, errAnswer.Wrap("connectTo")
+	wg, err := state.GetWaitGroup()
+	if err != nil {
+		return nil, err
 	}
 
-	stopChan, errAnswer := state.GetStopChan()
-	if errAnswer != nil {
-		return nil, errAnswer.Wrap("connectTo")
+	stopChan, err := state.GetStopChan()
+	if err != nil {
+		return nil, err
 	}
 
-	client := socket.NewClientSocket(messageChan, closedSockets, ws, wg,
-		stopChan, logger.Logger)
+	client := socket.NewClientSocket(messageChan, closedSockets, ws, wg, stopChan, logger.Logger)
 
 	wg.Add(2)
 
@@ -516,40 +449,32 @@ func connectTo(serverAddress string) (socket.Socket, *answer.Error) {
 	return client, nil
 }
 
-func createMessage(data messagedata.MessageData) (message.Message, *answer.Error) {
+func createMessage(data messagedata.MessageData) (message.Message, error) {
 	db, err := database.GetFederationRepositoryInstance()
 	if err != nil {
-		return message.Message{}, answer.NewInternalServerError(err.Error())
+		return message.Message{}, err
 	}
 
 	dataBytes, err := json.Marshal(data)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError(
-			"failed to marshal %v: %v", data, err)
-		return message.Message{}, errAnswer.Wrap("createMessage")
+		return message.Message{}, errors.NewJsonMarshalError(err.Error())
 	}
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBytes)
 
 	serverPk, serverSk, err := db.GetServerKeys()
 	if err != nil {
-		errAnswer := answer.NewInternalServerError(
-			"Failed to get server keys: %v", err)
-		return message.Message{}, errAnswer.Wrap("createMessage")
+		return message.Message{}, err
 	}
 
 	senderBytes, err := serverPk.MarshalBinary()
 	if err != nil {
-		errAnswer := answer.NewInternalServerError(
-			"failed to marshal key: %v", err)
-		return message.Message{}, errAnswer.Wrap("createMessage")
+		return message.Message{}, errors.NewInternalServerError("failed to marshal key: %v", err)
 	}
 	sender := base64.URLEncoding.EncodeToString(senderBytes)
 
 	signatureBytes, err := schnorr.Sign(crypto.Suite, serverSk, dataBytes)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError(
-			"failed to sign message: %v", err)
-		return message.Message{}, errAnswer.Wrap("createMessage")
+		return message.Message{}, errors.NewInternalServerError("failed to sign message: %v", err)
 	}
 	signature := base64.URLEncoding.EncodeToString(signatureBytes)
 
@@ -564,7 +489,7 @@ func createMessage(data messagedata.MessageData) (message.Message, *answer.Error
 	return msg, nil
 }
 
-func publishTo(msg message.Message, channelPath string) *answer.Error {
+func publishTo(msg message.Message, channelPath string) error {
 	publishMsg := method.Publish{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -580,15 +505,8 @@ func publishTo(msg message.Message, channelPath string) *answer.Error {
 
 	publishBytes, err := json.Marshal(&publishMsg)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError(
-			"failed to marshal publish: %v", err)
-		return errAnswer.Wrap("publishTo")
+		return errors.NewJsonMarshalError(err.Error())
 	}
 
-	err = state.SendToAll(publishBytes, channelPath)
-	if err != nil {
-		return answer.NewInternalServerError(err.Error())
-	}
-
-	return nil
+	return state.SendToAll(publishBytes, channelPath)
 }
