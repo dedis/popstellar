@@ -6,10 +6,10 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
-import ch.epfl.pop.model.network.method.{Rumor, RumorState}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
+import ch.epfl.pop.model.network.method.{Rumor, RumorState}
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.pubsub.graph.AnswerGenerator.timout
@@ -20,7 +20,6 @@ import com.google.crypto.tink.subtle.Ed25519Sign
 
 import java.util.concurrent.TimeUnit
 import scala.collection.immutable.HashMap
-import scala.collection.mutable.ListBuffer
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.util.{Failure, Success, Try}
@@ -655,6 +654,12 @@ final case class DbActor(
         case failure            => sender() ! failure.recover(Status.Failure(_))
       }
 
+    case GetRumorState() =>
+      log.info(s"Actor $self (db) received a GetRumorState request")
+      Try(getRumorState) match
+        case Success(rumorState) => sender() ! DbActorGetRumorStateAck(rumorState)
+        case failure             => sender() ! failure.recover(Status.Failure(_))
+
     case m =>
       log.info(s"Actor $self (db) received an unknown message")
       sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"database actor received a message '$m' that it could not recognize"))
@@ -898,6 +903,10 @@ object DbActor {
 
   final case class GenerateRumorStateAns(rumorState: RumorState) extends Event
 
+  /** Requests the db to build out rumorState +
+    */
+  final case class GetRumorState() extends Event
+
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
@@ -990,6 +999,10 @@ object DbActor {
   /** Response for a [[GenerateRumorStateAns]]
     */
   final case class DbActorGenerateRumorStateAns(rumorList: List[Rumor]) extends DbActorMessage
+
+  /** Response for a [[GetRumorState]] +
+    */
+  final case class DbActorGetRumorStateAck(rumorState: RumorState) extends DbActorMessage
 
   /** Response for a general db actor ACK
     */

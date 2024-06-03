@@ -1,9 +1,11 @@
 package ch.epfl.pop.decentralized
 
 import akka.NotUsed
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props, Timers}
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
+import ch.epfl.pop.decentralized.GossipManager.TriggerPullState
+import ch.epfl.pop.model.network.MethodType.rumor_state
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType}
@@ -13,23 +15,28 @@ import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.{DbActorAck, DbActorReadRumorData}
+import ch.epfl.pop.storage.DbActor.{DbActorAck, DbActorGetRumorStateAck, DbActorReadRumorData, GetRumorState}
 
 import scala.concurrent.Await
+import scala.concurrent.duration.{DurationInt, FiniteDuration}
 import scala.util.Random
 
 final case class GossipManager(
     dbActorRef: AskableActorRef,
     monitorRef: ActorRef,
     connectionMediator: AskableActorRef,
-    stopProbability: Double = 0.5
-) extends Actor with AskPatternConstants with ActorLogging {
+    stopProbability: Double = 0.5,
+    pullRate: FiniteDuration = 15.seconds
+) extends Actor with AskPatternConstants with ActorLogging with Timers {
 
   private type ServerInfos = (ActorRef, GreetServer)
   private var activeGossipProtocol: Map[JsonRpcRequest, List[ServerInfos]] = Map.empty
   private var jsonId = 0
   private var rumorId = 0
+  private var stateId = 0
   private var publicKey: Option[PublicKey] = None
+
+  private val periodicRumorStateKey = 0
 
   publicKey = {
     val readPk = dbActorRef ? DbActor.ReadServerPublicKey()
@@ -135,6 +142,26 @@ final case class GossipManager(
       log.info(s"Actor (gossip) $self will not be able to start rumors because it has no publicKey")
   }
 
+  private def sendRumorState(): Unit = {
+    val randomPeer = connectionMediator ? ConnectionMediator.GetRandomPeer()
+    Await.result(randomPeer, duration) match {
+      case ConnectionMediator.GetRandomPeerAck(serverRef, greetServer) =>
+        val rumorStateGet = dbActorRef ? GetRumorState
+        Await.result(rumorStateGet, duration) match
+          case DbActorGetRumorStateAck(rumorState) =>
+            serverRef ! ClientAnswer(
+              Right(JsonRpcRequest(
+                RpcValidator.JSON_RPC_VERSION,
+                rumor_state,
+                rumorState,
+                Some(stateId)
+              ))
+            )
+      case _ =>
+        log.info(s"Actor $self received an unexpected message waiting for a random peer")
+    }
+  }
+
   override def receive: Receive = {
     case GossipManager.HandleRumor(jsonRpcRequest: JsonRpcRequest) =>
       handleRumor(jsonRpcRequest)
@@ -145,6 +172,14 @@ final case class GossipManager(
     case GossipManager.StartGossip(messages) =>
       startGossip(messages)
 
+    case Monitor.AtLeastOneServerConnected =>
+      timers.startTimerWithFixedDelay(periodicRumorStateKey, TriggerPullState, pullRate)
+
+    case Monitor.NoServerConnected =>
+      timers.cancel(periodicRumorStateKey)
+
+    case TriggerPullState =>
+      sendRumorState()
     case _ =>
       log.info(s"Actor $self received an unexpected message")
   }
@@ -188,6 +223,7 @@ object GossipManager extends AskPatternConstants {
   final case class HandleRumor(jsonRpcRequest: JsonRpcRequest)
   final case class ManageGossipResponse(jsonRpcResponse: JsonRpcResponse)
   final case class StartGossip(messages: Map[Channel, List[Message]])
+  final case class TriggerPullState()
 
   sealed trait GossipManagerMessage
   final case class Ping() extends GossipManagerMessage
