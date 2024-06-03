@@ -2,8 +2,7 @@ package messagedata
 
 import (
 	"encoding/base64"
-
-	"golang.org/x/xerrors"
+	"popstellar/internal/errors"
 )
 
 // ConsensusFailure defines a message data
@@ -24,18 +23,18 @@ func (message ConsensusFailure) Verify() error {
 	// verify that the instance id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(message.InstanceID)
 	if err != nil {
-		return xerrors.Errorf("instance id is %s, should be base64URL encoded", message.InstanceID)
+		return errors.NewInvalidMessageFieldError("instance id is %s, should be base64URL encoded", message.InstanceID)
 	}
 
 	// verify that the message id is base64URL encoded
 	_, err = base64.URLEncoding.DecodeString(message.MessageID)
 	if err != nil {
-		return xerrors.Errorf("message id is %s, should be base64URL encoded", message.MessageID)
+		return errors.NewInvalidMessageFieldError("message id is %s, should be base64URL encoded", message.MessageID)
 	}
 
 	// verify that created at is positive
 	if message.CreatedAt < 0 {
-		return xerrors.Errorf("created at is %d, should be minimum 0", message.CreatedAt)
+		return errors.NewInvalidMessageFieldError("created at is %d, should be minimum 0", message.CreatedAt)
 	}
 
 	return nil
