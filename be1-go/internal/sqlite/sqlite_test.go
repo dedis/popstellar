@@ -70,49 +70,6 @@ func Test_SQLite_GetMessagesByID(t *testing.T) {
 	require.Equal(t, expected, messages)
 }
 
-func Test_SQLite_AddWitnessSignature(t *testing.T) {
-	lite, dir, err := newFakeSQLite(t)
-	require.NoError(t, err)
-	defer lite.Close()
-	defer os.RemoveAll(dir)
-
-	testMessages := newTestMessages()
-	for _, m := range testMessages {
-		err = lite.StoreMessageAndData(m.channel, m.msg)
-		require.NoError(t, err)
-	}
-	// Add signatures to message1
-	expected := []message.WitnessSignature{{Witness: "witness1", Signature: "sig1"}, {Witness: "witness2", Signature: "sig2"}}
-	err = lite.AddWitnessSignature("ID1", "witness1", "sig1")
-	require.NoError(t, err)
-	err = lite.AddWitnessSignature("ID1", "witness2", "sig2")
-	require.NoError(t, err)
-
-	//Verify that the signature have been added to the message
-	msg1, err := lite.GetMessageByID("ID1")
-	require.NoError(t, err)
-	require.Equal(t, expected, msg1.WitnessSignatures)
-
-	message4 := message.Message{Data: base64.URLEncoding.EncodeToString([]byte("data4")),
-		Sender:            "sender4",
-		Signature:         "sig4",
-		MessageID:         "ID5",
-		WitnessSignatures: []message.WitnessSignature{},
-	}
-
-	// Add signatures to message4 who is not currently stored
-	err = lite.AddWitnessSignature("ID5", "witness2", "sig3")
-	require.NoError(t, err)
-
-	//Verify that the signature has been added to the message
-	err = lite.StoreMessageAndData("channel1", message4)
-	require.NoError(t, err)
-	expected = []message.WitnessSignature{{Witness: "witness2", Signature: "sig3"}}
-	msg4, err := lite.GetMessageByID("ID5")
-	require.NoError(t, err)
-	require.Equal(t, expected, msg4.WitnessSignatures)
-}
-
 //======================================================================================================================
 // Helper functions
 //======================================================================================================================

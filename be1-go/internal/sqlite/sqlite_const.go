@@ -47,6 +47,8 @@ var channelTypes = []string{
 	FederationType,
 }
 
+const foreignKeyOff = `PRAGMA foreign_keys = OFF;`
+
 const (
 	createMessage = `
 	CREATE TABLE IF NOT EXISTS message (
@@ -142,9 +144,9 @@ const (
 	insertMessage                  = `INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)`
 	insertChannel                  = `INSERT INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
 	insertOrIgnoreChannel          = `INSERT OR IGNORE INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
+	insertChannelType              = `INSERT INTO channelType (type) VALUES (?)`
 	insertKeys                     = `INSERT INTO key (channelPath, publicKey, secretKey) VALUES (?, ?, ?)`
 	insertPublicKey                = `INSERT INTO key (channelPath, publicKey) VALUES (?, ?)`
-	insertPendingSignatures        = `INSERT INTO pendingSignatures (messageID, witness, signature) VALUES (?, ?, ?)`
 	insertRumor                    = `INSERT INTO rumor (ID, sender) VALUES (?, ?)`
 	insertUnprocessedMessage       = `INSERT INTO unprocessedMessage (messageID, channelPath, message) VALUES (?, ?, ?)`
 	insertUnprocessedMessageRumor  = `INSERT INTO unprocessedMessageRumor (messageID, rumorID, sender) VALUES (?, ?, ?)`

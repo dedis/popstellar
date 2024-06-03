@@ -1,9 +1,11 @@
 package sqlite
 
 import (
+	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	"popstellar/internal/errors"
+	"errors"
+	poperrors "popstellar/internal/errors"
 	"popstellar/internal/message/query/method/message"
 	"time"
 )
@@ -19,25 +21,25 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 
 	tx, err := s.database.Begin()
 	if err != nil {
-		return errors.NewDatabaseTransactionBeginErrorMsg("%v", err)
+		return poperrors.NewDatabaseTransactionBeginErrorMsg("%v", err)
 	}
 
 	msgByte, err := json.Marshal(msg)
 	if err != nil {
-		return errors.NewJsonMarshalError("lao create message: %v", err)
+		return poperrors.NewJsonMarshalError("lao create message: %v", err)
 	}
 	laoGreetMsgByte, err := json.Marshal(laoGreetMsg)
 	if err != nil {
-		return errors.NewInternalServerError("lao greet message: %v", err)
+		return poperrors.NewInternalServerError("lao greet message: %v", err)
 	}
 
 	messageData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		return errors.NewDecodeStringError("lao create message data in database: %v", err)
+		return poperrors.NewDecodeStringError("lao create message data in database: %v", err)
 	}
 	laoGreetData, err := base64.URLEncoding.DecodeString(laoGreetMsg.Data)
 	if err != nil {
-		return errors.NewInternalServerError("failed to decode string: lao greet message data in database: %v", err)
+		return poperrors.NewInternalServerError("failed to decode string: lao greet message data in database: %v", err)
 	}
 
 	storedTime := time.Now().UnixNano()
@@ -45,7 +47,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	for channel, channelType := range channels {
 		_, err = tx.Exec(insertChannel, channel, channelTypeToID[channelType], laoPath)
 		if err != nil {
-			return errors.NewDatabaseInsertErrorMsg("channel %s: %v", channel, err)
+			return poperrors.NewDatabaseInsertErrorMsg("channel %s: %v", channel, err)
 		}
 	}
 
@@ -55,31 +57,46 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	}
 	_, err = tx.Exec(insertChannelMessage, "/root", msg.MessageID, true)
 	if err != nil {
-		return errors.NewDatabaseInsertErrorMsg("relation lao create message and root channel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation lao create message and root channel: %v", err)
 	}
 
 	_, err = tx.Exec(insertChannelMessage, laoPath, msg.MessageID, false)
 	if err != nil {
-		return errors.NewDatabaseInsertErrorMsg("relation lao create message and lao channel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation lao create message and lao channel: %v", err)
 	}
 
 	_, err = tx.Exec(insertPublicKey, laoPath, organizerPubBuf)
 	if err != nil {
-		return errors.NewDatabaseInsertErrorMsg("lao organizer public key: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("lao organizer public key: %v", err)
 	}
 	_, err = tx.Exec(insertMessage, laoGreetMsg.MessageID, laoGreetMsgByte, laoGreetData, storedTime)
 	if err != nil {
-		return errors.NewDatabaseInsertErrorMsg("lao greet message: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("lao greet message: %v", err)
 	}
 	_, err = tx.Exec(insertChannelMessage, laoPath, laoGreetMsg.MessageID, false)
 	if err != nil {
-		return errors.NewDatabaseInsertErrorMsg("relation lao greet message lao channel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation lao greet message lao channel: %v", err)
 	}
 
 	err = tx.Commit()
 	if err != nil {
-		return errors.NewDatabaseTransactionCommitErrorMsg("%v", err)
+		return poperrors.NewDatabaseTransactionCommitErrorMsg("%v", err)
 	}
 
 	return nil
+}
+
+func (s *SQLite) HasChannel(channelPath string) (bool, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	var channel string
+	err := s.database.QueryRow(selectChannelPath, channelPath).Scan(&channel)
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	} else if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return false, poperrors.NewDatabaseSelectErrorMsg("channel: %v", err)
+	} else {
+		return true, nil
+	}
 }

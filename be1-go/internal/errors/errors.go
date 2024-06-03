@@ -33,6 +33,8 @@ const (
 	DatabaseScanErrorMsg              = InternalServerErrorMsg + "failed to scan database row: "
 	DatabaseIteratorErrorMsg          = InternalServerErrorMsg + "failed to iterate over database rows: "
 	DatabaseRowsAffectedErrorMsg      = InternalServerErrorMsg + "failed to get number of rows affected: "
+	DatabaseCreateTableErrorMsg       = InternalServerErrorMsg + "failed to create table: "
+	DatabseInternalErrorMsg           = InternalServerErrorMsg + "internal database error: "
 
 	QueryDatabaseErrorMsg = InternalServerErrorMsg + "failed to query from database: "
 	StoreDatabaseErrorMsg = InternalServerErrorMsg + "failed to store inside database: "
@@ -187,4 +189,14 @@ func NewKeyMarshalError(format string, a ...interface{}) error {
 // NewKeyUnmarshalError returns an error with the code -6 when it is impossible to unmarshal a key
 func NewKeyUnmarshalError(format string, a ...interface{}) error {
 	return NewPopError(InternalServerErrorCode, KeyUnmarshalErrorMsg+format, a...)
+}
+
+// NewDatabaseCreateTableErrorMsg returns an error with the code -6 when it is impossible to create a table
+func NewDatabaseCreateTableErrorMsg(format string, a ...interface{}) error {
+	return NewPopError(InternalServerErrorCode, DatabaseCreateTableErrorMsg+format, a...)
+}
+
+// NewDatabaseInternalErrorMsg returns an error with the code -6 when there is an internal database error
+func NewDatabaseInternalErrorMsg(format string, a ...interface{}) error {
+	return NewPopError(InternalServerErrorCode, DatabseInternalErrorMsg+format, a...)
 }

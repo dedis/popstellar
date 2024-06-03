@@ -76,10 +76,6 @@ func (s *SQLite) StoreMessageAndData(channelPath string, msg message.Message) er
 	}
 	defer tx.Rollback()
 
-	if err = addPendingSignatures(tx, &msg); err != nil {
-		return err
-	}
-
 	messageData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return err
@@ -101,32 +97,6 @@ func (s *SQLite) StoreMessageAndData(channelPath string, msg message.Message) er
 	}
 
 	return tx.Commit()
-}
-
-func addPendingSignatures(tx *sql.Tx, msg *message.Message) error {
-	rows, err := tx.Query(selectPendingSignatures, msg.MessageID)
-	if err != nil {
-		return err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var witness string
-		var signature string
-		if err = rows.Scan(&witness, &signature); err != nil {
-			return err
-		}
-		msg.WitnessSignatures = append(msg.WitnessSignatures, message.WitnessSignature{
-			Witness:   witness,
-			Signature: signature,
-		})
-	}
-
-	if err = rows.Err(); err != nil {
-		return err
-	}
-
-	_, err = tx.Exec(deletePendingSignatures, msg.MessageID)
-	return err
 }
 
 // GetMessagesByID returns a set of messages by their IDs.
@@ -191,42 +161,6 @@ func (s *SQLite) GetMessageByID(ID string) (message.Message, error) {
 	return msg, nil
 }
 
-// AddWitnessSignature stores a pending signature inside the SQLite database.
-func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature string) error {
-	dbLock.Lock()
-	defer dbLock.Unlock()
-
-	tx, err := s.database.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	witnessSignature, err := json.Marshal(message.WitnessSignature{
-		Witness:   witness,
-		Signature: signature,
-	})
-	if err != nil {
-		return err
-	}
-
-	res, err := tx.Exec(updateMsg, witnessSignature, messageID)
-	if err != nil {
-		return err
-	}
-	changes, err := res.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if changes == 0 {
-		_, err := tx.Exec(insertPendingSignatures, messageID, witness, signature)
-		if err != nil {
-			return err
-		}
-	}
-	return tx.Commit()
-}
-
 // StoreChannel mainly used for testing purposes.
 func (s *SQLite) StoreChannel(channelPath, channelType, laoPath string) error {
 	dbLock.Lock()
@@ -236,64 +170,9 @@ func (s *SQLite) StoreChannel(channelPath, channelType, laoPath string) error {
 	return err
 }
 
-func (s *SQLite) GetAllChannels() ([]string, error) {
-	dbLock.Lock()
-	defer dbLock.Unlock()
-
-	rows, err := s.database.Query(selectAllChannels)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var channels []string
-	for rows.Next() {
-		var channelPath string
-		if err = rows.Scan(&channelPath); err != nil {
-			return nil, err
-		}
-		channels = append(channels, channelPath)
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return channels, nil
-}
-
-//======================================================================================================================
-// QueryRepository interface implementation
-//======================================================================================================================
-
-// GetChannelType returns the type of the channelPath.
-func (s *SQLite) GetChannelType(channelPath string) (string, error) {
-	dbLock.Lock()
-	defer dbLock.Unlock()
-
-	var channelType string
-	err := s.database.QueryRow(selectChannelType, channelPath).Scan(&channelType)
-	return channelType, err
-}
-
 //======================================================================================================================
 // ChannelRepository interface implementation
 //======================================================================================================================
-
-func (s *SQLite) HasChannel(channelPath string) (bool, error) {
-	dbLock.Lock()
-	defer dbLock.Unlock()
-
-	var c string
-	err := s.database.QueryRow(selectChannelPath, channelPath).Scan(&c)
-	if err != nil && errors.Is(err, sql.ErrNoRows) {
-		return false, nil
-	} else if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return false, err
-	} else {
-		return true, nil
-	}
-}
 
 func (s *SQLite) HasMessage(messageID string) (bool, error) {
 	dbLock.Lock()
