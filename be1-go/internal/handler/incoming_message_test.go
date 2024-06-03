@@ -64,8 +64,7 @@ func Test_handleIncomingMessage(t *testing.T) {
 		t.Run(arg.name, func(t *testing.T) {
 			fakeSocket := mock.FakeSocket{Id: "1"}
 			err := HandleIncomingMessage(&fakeSocket, arg.message)
-			require.Error(t, err)
-			require.Contains(t, err.Error(), arg.contains)
+			require.Error(t, err, arg.contains)
 		})
 	}
 }
