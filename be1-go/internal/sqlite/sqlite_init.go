@@ -77,7 +77,7 @@ func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
 		return SQLite{}, poperrors.NewDatabaseCreateTableErrorMsg("channel: %v", err)
 	}
 
-	_, err = tx.Exec(insertOrIgnoreChannel, "/root", channelTypeToID[channel.RootType], "")
+	_, err = tx.Exec(insertOrIgnoreChannel, channel.Root, channelTypeToID[channel.RootType], "")
 	if err != nil {
 		db.Close()
 		return SQLite{}, poperrors.NewDatabaseInsertErrorMsg("root channel: %v", err)

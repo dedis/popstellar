@@ -81,7 +81,11 @@ func (s *SQLite) insertMessageHelper(tx *sql.Tx, messageID string, msg, messageD
 		return poperrors.NewDatabaseDeleteErrorMsg("relation unprocessed message rumor: %v", err)
 	}
 	_, err = tx.Exec(deleteUnprocessedMessage, messageID)
-	return poperrors.NewDatabaseDeleteErrorMsg("unprocessed message: %v", err)
+	if err != nil {
+		return poperrors.NewDatabaseDeleteErrorMsg("unprocessed message: %v", err)
+	}
+
+	return nil
 }
 
 func (s *SQLite) StoreMessageAndData(channelPath string, msg message.Message) error {
