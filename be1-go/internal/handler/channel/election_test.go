@@ -395,11 +395,11 @@ func Test_handleChannelElection(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := handleChannelElection(arg.channelPath, arg.msg)
+			err = handleChannelElection(arg.channelPath, arg.msg)
 			if arg.isError {
-				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.Contains(t, err.Error(), arg.contains)
 			} else {
-				require.Nil(t, errAnswer)
+				require.NoError(t, err)
 			}
 		})
 	}
