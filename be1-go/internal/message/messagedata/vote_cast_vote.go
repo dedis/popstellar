@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/internal/errors"
-	"popstellar/internal/message/answer"
 	"strings"
 )
 
@@ -42,7 +41,7 @@ func (v *Vote) UnmarshalJSON(b []byte) error {
 
 	err := json.Unmarshal(b, &vTemp)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to unmarshal vote")
+		return errors.NewJsonMarshalError(err.Error())
 	}
 
 	// checking that Vote.Vote is either an int or a string
@@ -51,13 +50,13 @@ func (v *Vote) UnmarshalJSON(b []byte) error {
 	case float64:
 		i := int(t)
 		if float64(i) != t {
-			return answer.NewErrorf(-4, "invalid vote type, should be int but was float")
+			return errors.NewInvalidMessageFieldError("invalid vote type, should be int but was float")
 		}
 		*v = Vote{vTemp.ID, vTemp.Question, i}
 	case string:
 		*v = Vote(vTemp)
 	default:
-		return answer.NewErrorf(-4, "invalid vote type, should be int or string but was %v", t)
+		return errors.NewInvalidMessageFieldError("invalid vote type, should be int or string but was %v", t)
 	}
 
 	return nil

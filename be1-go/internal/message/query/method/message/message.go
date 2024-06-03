@@ -8,7 +8,6 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
-	"popstellar/internal/message/answer"
 )
 
 // Message defines a JSON RPC message
@@ -33,12 +32,12 @@ type WitnessSignature struct {
 func (m Message) UnmarshalData(e interface{}) error {
 	jsonData, err := base64.URLEncoding.DecodeString(m.Data)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to decode base64: %v", err)
+		return errors.NewInvalidMessageFieldError("failed to decode base64: %v", err)
 	}
 
 	err = json.Unmarshal(jsonData, e)
 	if err != nil {
-		return answer.NewJsonUnmarshalError(err.Error())
+		return errors.NewJsonUnmarshalError(err.Error())
 	}
 
 	return nil

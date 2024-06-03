@@ -1,7 +1,6 @@
 package types
 
 import (
-	"fmt"
 	"popstellar/internal/errors"
 	"popstellar/internal/network/socket"
 	"sync"
@@ -75,7 +74,6 @@ func (s *Subscribers) UnsubscribeFromAll(socketID string) {
 			continue
 		}
 		delete(s.list[channelPath], socketID)
-		fmt.Println("unsubscribe from " + channelPath)
 	}
 }
 
