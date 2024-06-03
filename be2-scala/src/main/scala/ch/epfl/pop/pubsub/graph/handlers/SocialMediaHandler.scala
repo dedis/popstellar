@@ -51,6 +51,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActor
 
     Await.ready(ask, duration).value match {
       case Some(Success(_)) =>
+        dbActor ? DbActor.UpdateNumberOfNewChirpsReactions(rpcMessage.getParamsChannel)
         val (chirpId, channelChirp, data, broadcastChannel) = parametersToBroadcast[AddChirp](rpcMessage)
         //  create and propagate the notifyAddChirp message
         val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirpId, channelChirp, data.timestamp)
@@ -83,6 +84,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActor
 
     Await.ready(ask, duration).value match {
       case Some(Success(_)) =>
+        dbActor ? DbActor.UpdateNumberOfNewChirpsReactions(rpcMessage.getParamsChannel)
         val (chirpId, channelChirp, data, broadcastChannel) = parametersToBroadcast[DeleteChirp](rpcMessage)
         // create and propagate the notifyDeleteChirp message
         val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirpId, channelChirp, data.timestamp)

@@ -12,7 +12,7 @@ import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.network.method.message.data.socialMedia.AddReaction
 import ch.epfl.pop.model.objects.*
-import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL_PREFIX}
+import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.pubsub.graph.AnswerGenerator.timout
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
@@ -270,6 +270,27 @@ final case class DbActor(
     }
   }
 
+  private def updateNumberOfNewChirpsReactions(channel: Channel, resetToZero: Boolean): Unit = {
+    val newReactionsChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/top_chirps/number_of_new_reactions")
+    if(!checkChannelExistence(newReactionsChannel)) {
+      val numberOfReactions : JsonString = "0"
+      val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfReactions)
+      storage.write(pair)
+    }
+    else {
+      if(resetToZero) {
+        val numberOfReactionsInt = 0
+        val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfReactionsInt.toString)
+        storage.write(pair)
+      } else {
+        val numberOfReactions = storage.read(storage.CHANNEL_DATA_KEY + newReactionsChannel.toString)
+        val numberOfReactionsInt = numberOfReactions.toString.toInt + 1
+        val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfReactionsInt.toString)
+        storage.write(pair)
+      }
+    }
+  }
+
   @throws[DbActorNAckException]
   private def catchupChannel(channel: Channel): List[Message] = {
 
@@ -294,7 +315,16 @@ final case class DbActor(
         getTopChirps(channel, buildCatchupList)
       }
       else {
-        if(LocalDateTime.now().isAfter(topChirpsTimestamp.plusSeconds(5))) {
+        val newReactionsChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/top_chirps/number_of_new_reactions")
+        var numberOfNewChirpsReactionsInt = 0
+        if(checkChannelExistence(newReactionsChannel)) {
+          val numberOfNewChirpsReactions = storage.read(storage.CHANNEL_DATA_KEY + newReactionsChannel.toString)
+          numberOfNewChirpsReactionsInt = numberOfNewChirpsReactions.toString.toInt
+        }
+        if(LocalDateTime.now().isAfter(topChirpsTimestamp.plusSeconds(5)) || numberOfNewChirpsReactionsInt >= 5) {
+          if(numberOfNewChirpsReactionsInt >= 5) {
+            updateNumberOfNewChirpsReactions(channel, true)
+          }
           this.topChirpsTimestamp = LocalDateTime.now()
           getTopChirps(channel, buildCatchupList)
         } else {
@@ -361,7 +391,7 @@ final case class DbActor(
       }
 
       beforeMessageID match {
-        case Some(msgID) => {
+        case Some(msgID) =>
           val indexOfMessage = pagedCatchupList.indexOf(msgID)
           if (indexOfMessage != -1 && indexOfMessage != 0) {
             var startingIndex = indexOfMessage - numberOfMessages
@@ -370,14 +400,13 @@ final case class DbActor(
             }
             pagedCatchupList = pagedCatchupList.slice(startingIndex, indexOfMessage)
           }
-        }
-        case None => {
+
+        case None =>
           var startingIndex = pagedCatchupList.length - numberOfMessages
           if (startingIndex < 0) {
             startingIndex = 0
           }
           pagedCatchupList = pagedCatchupList.slice(startingIndex, pagedCatchupList.length)
-        }
       }
       readGreetLao(chirpsChannel) match {
         case Some(msg) => msg :: pagedCatchupList
@@ -385,7 +414,7 @@ final case class DbActor(
       }
     } else if (profilePattern.findFirstMatchIn(channel.toString).isDefined) {
       val profilePublicKey = channel.toString.split("/")(5)
-      val profileChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/${profilePublicKey}")
+      val profileChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/$profilePublicKey")
 
       val channelData: ChannelData = readChannelData(profileChannel)
 
@@ -401,7 +430,7 @@ final case class DbActor(
       }
 
       beforeMessageID match {
-        case Some(msgID) => {
+        case Some(msgID) =>
           val indexOfMessage = pagedCatchupList.indexOf(msgID)
           if (indexOfMessage != -1 && indexOfMessage != 0) {
             var startingIndex = indexOfMessage - numberOfMessages
@@ -410,14 +439,13 @@ final case class DbActor(
             }
             pagedCatchupList = pagedCatchupList.slice(startingIndex, indexOfMessage)
           }
-        }
-        case None => {
+
+        case None =>
           var startingIndex = pagedCatchupList.length - numberOfMessages
           if (startingIndex < 0) {
             startingIndex = 0
           }
           pagedCatchupList = pagedCatchupList.slice(startingIndex, pagedCatchupList.length)
-        }
       }
       readGreetLao(profileChannel) match {
         case Some(msg) => msg :: pagedCatchupList
@@ -838,6 +866,9 @@ final case class DbActor(
         case failure                => sender() ! failure.recover(Status.Failure(_))
       }
 
+    case UpdateNumberOfNewChirpsReactions(channel: Channel) =>
+      updateNumberOfNewChirpsReactions(channel, false)
+
     case m =>
       log.info(s"Actor $self (db) received an unknown message")
       sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"database actor received a message '$m' that it could not recognize"))
@@ -1080,6 +1111,13 @@ object DbActor {
     *   Public key that we want to request
     */
   final case class ReadRumorData(senderPk: PublicKey) extends Event
+
+  /** Requests the Db for the update the number of chirps reaction events since last top chirps request
+   *
+   * @param channel
+   * Channel containing the number of chirps reaction events since last top chirps request
+   */
+  final case class UpdateNumberOfNewChirpsReactions(channel: Channel) extends Event
 
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
