@@ -3,9 +3,12 @@ package channel
 import (
 	"encoding/base64"
 	"encoding/json"
+
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
+
 	"popstellar/internal/crypto"
+	"popstellar/internal/errors"
 	jsonrpc "popstellar/internal/message"
 	"popstellar/internal/message/answer"
 	"popstellar/internal/message/messagedata"
@@ -20,95 +23,83 @@ import (
 	"popstellar/internal/validation"
 )
 
-func HandleChannel(channelPath string, msg message.Message, fromRumor bool) *answer.Error {
-	errAnswer := verifyMessage(msg)
-	if errAnswer != nil {
-		return errAnswer.Wrap("HandleChannel")
+func HandleChannel(channelPath string, msg message.Message, fromRumor bool) error {
+	err := verifyMessage(msg)
+	if err != nil {
+		return err
 	}
 
 	db, err := database.GetChannelRepositoryInstance()
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
 
 	msgAlreadyExists, err := db.HasMessage(msg.MessageID)
 	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("if message exists: %v", err)
-		return errAnswer.Wrap("HandleChannel")
+		return err
 	}
 	if msgAlreadyExists && fromRumor {
 		return nil
 	}
 	if msgAlreadyExists {
-		errAnswer := answer.NewInvalidActionError("message %s was already received", msg.MessageID)
-		return errAnswer.Wrap("HandleChannel")
+		return errors.NewDuplicateResourceError("message %s was already received", msg.MessageID)
 	}
 
 	channelType, err := db.GetChannelType(channelPath)
 	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("channelPath type: %v", err)
-		return errAnswer.Wrap("HandleChannel")
+		return err
 	}
 
 	switch channelType {
 	case sqlite.RootType:
-		errAnswer = handleChannelRoot(msg)
+		err = handleChannelRoot(msg)
 	case sqlite.LaoType:
-		errAnswer = handleChannelLao(channelPath, msg)
+		err = handleChannelLao(channelPath, msg)
 	case sqlite.ElectionType:
-		errAnswer = handleChannelElection(channelPath, msg)
+		err = handleChannelElection(channelPath, msg)
 	case sqlite.ChirpType:
-		errAnswer = handleChannelChirp(channelPath, msg)
+		err = handleChannelChirp(channelPath, msg)
 	case sqlite.ReactionType:
-		errAnswer = handleChannelReaction(channelPath, msg)
+		err = handleChannelReaction(channelPath, msg)
 	case sqlite.CoinType:
-		errAnswer = handleChannelCoin(channelPath, msg)
+		err = handleChannelCoin(channelPath, msg)
 	case sqlite.FederationType:
-		errAnswer = handleChannelFederation(channelPath, msg)
+		err = handleChannelFederation(channelPath, msg)
 	default:
-		errAnswer = answer.NewInvalidResourceError("unknown channelPath type for %s", channelPath)
+		err = errors.NewInvalidResourceError("unknown channelPath type for %s", channelPath)
 	}
 
-	if errAnswer != nil {
-		return errAnswer.Wrap("HandleChannel")
-	}
-
-	return nil
+	return err
 }
 
 // util for the channels
 
-func verifyMessage(msg message.Message) *answer.Error {
+func verifyMessage(msg message.Message) error {
 	dataBytes, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode data: %v", err)
-		return errAnswer.Wrap("verifyMessage")
+		return errors.NewInvalidMessageFieldError("failed to decode data: %v", err)
 	}
 
 	publicKeySender, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode public key: %v", err)
-		return errAnswer.Wrap("verifyMessage")
+		return errors.NewInvalidMessageFieldError("failed to decode public key: %v", err)
 	}
 
 	signatureBytes, err := base64.URLEncoding.DecodeString(msg.Signature)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode signature: %v", err)
-		return errAnswer.Wrap("verifyMessage")
+		return errors.NewInvalidMessageFieldError("failed to decode signature: %v", err)
 	}
 
 	err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to verify signature : %v", err)
-		return errAnswer.Wrap("verifyMessage")
+		return errors.NewInvalidMessageFieldError("failed to verify signature : %v", err)
 	}
 
 	expectedMessageID := messagedata.Hash(msg.Data, msg.Signature)
 	if expectedMessageID != msg.MessageID {
-		errAnswer := answer.NewInvalidActionError("messageID is wrong: expected %s found %s",
-			expectedMessageID, msg.MessageID)
-		return errAnswer.Wrap("verifyMessage")
+		return errors.NewInvalidActionError("messageID is wrong: expected %s found %s", expectedMessageID, msg.MessageID)
 	}
+
 	return nil
 }
 
@@ -128,17 +119,17 @@ func verifyDataAndGetObjectAction(msg message.Message) (string, string, error) {
 	return messagedata.GetObjectAndAction(jsonData)
 }
 
-func Sign(data []byte) ([]byte, *answer.Error) {
+func sign(data []byte) ([]byte, error) {
 	serverSecretKey, err := config.GetServerSecretKeyInstance()
 	if err != nil {
-		return nil, answer.NewInternalServerError(err.Error())
+		return nil, err
 	}
 
 	signatureBuf, err := schnorr.Sign(crypto.Suite, serverSecretKey, data)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to sign the data: %v", err)
-		return nil, errAnswer.Wrap("Sign")
+		return nil, errors.NewInternalServerError("failed to sign the data: %v", err)
 	}
+
 	return signatureBuf, nil
 }
 
@@ -149,7 +140,7 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	return point, secret
 }
 
-func broadcastToAllClients(msg message.Message, channel string) *answer.Error {
+func broadcastToAllClients(msg message.Message, channel string) error {
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -168,13 +159,12 @@ func broadcastToAllClients(msg message.Message, channel string) *answer.Error {
 
 	buf, err := json.Marshal(&rpcMessage)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to marshal broadcast query: %v", err)
-		return errAnswer.Wrap("broadcastToAllClients")
+		return errors.NewJsonMarshalError("broadcast query: %v", err)
 	}
 
 	err = state.SendToAll(buf, channel)
 	if err != nil {
-		return answer.NewInternalServerError(err.Error())
+		return err
 	}
 
 	return nil

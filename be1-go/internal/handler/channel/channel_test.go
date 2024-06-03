@@ -65,7 +65,7 @@ func Test_handleChannel(t *testing.T) {
 		name:        "Test 1",
 		channelPath: channelPath,
 		message:     msg,
-		contains:    "unknown channelPath type for " + channelPath,
+		contains:    "unknown channelPath type for ",
 	})
 
 	// Test 2: failed to handled message because db is disconnected when querying the channelPath type
@@ -93,7 +93,7 @@ func Test_handleChannel(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 3",
 		message:  msg,
-		contains: "message " + msg.MessageID + " was already received",
+		contains: "was already received",
 	})
 
 	// Test 4: failed to handled message because db is disconnected when querying if the message already exists
@@ -112,13 +112,12 @@ func Test_handleChannel(t *testing.T) {
 	// Test 5: failed to handled message because the format of messageID
 
 	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
-	expectedMsgID := msg.MessageID
 	msg.MessageID = base64.URLEncoding.EncodeToString([]byte("wrong messageID"))
 
 	args = append(args, input{
 		name:     "Test 5",
 		message:  msg,
-		contains: "messageID is wrong: expected " + expectedMsgID + " found " + msg.MessageID,
+		contains: "messageID is wrong",
 	})
 
 	// Test 6: failed to handled message because wrong sender

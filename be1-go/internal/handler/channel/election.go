@@ -132,9 +132,9 @@ func handleVoteCastVote(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleVoteCastVote")
 	}
 
-	errAnswer = broadcastToAllClients(msg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleVoteCastVote")
+	err = broadcastToAllClients(msg, channelPath)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	return nil
@@ -184,9 +184,9 @@ func handleElectionOpen(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleElectionOpen")
 	}
 
-	errAnswer = broadcastToAllClients(msg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleElectionOpen")
+	err = broadcastToAllClients(msg, channelPath)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	return nil
@@ -238,13 +238,13 @@ func handleElectionEnd(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleElectionEnd")
 	}
 
-	errAnswer = broadcastToAllClients(msg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleElectionEnd")
+	err = broadcastToAllClients(msg, channelPath)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
-	errAnswer = broadcastToAllClients(electionResultMsg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleElectionEnd")
+	err = broadcastToAllClients(electionResultMsg, channelPath)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	return nil
@@ -437,9 +437,9 @@ func createElectionResult(questions map[string]types.Question, channelPath strin
 		errAnswer := answer.NewInternalServerError("failed to marshal server public key: %v", err)
 		return message.Message{}, errAnswer.Wrap("createElectionResult")
 	}
-	signatureBuf, errAnswer := Sign(buf)
-	if errAnswer != nil {
-		return message.Message{}, errAnswer.Wrap("createElectionResult")
+	signatureBuf, err := sign(buf)
+	if err != nil {
+		return message.Message{}, answer.NewInternalServerError(err.Error())
 	}
 
 	signature := base64.URLEncoding.EncodeToString(signatureBuf)

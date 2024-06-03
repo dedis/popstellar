@@ -22,9 +22,9 @@ func handlePublish(socket socket.Socket, msg []byte) (*int, error) {
 		return nil, errors.NewJsonUnmarshalError(err.Error())
 	}
 
-	errAnswer := channel.HandleChannel(publish.Params.Channel, publish.Params.Message, false)
-	if errAnswer != nil {
-		return &publish.ID, errAnswer.Wrap("handlePublish")
+	err = channel.HandleChannel(publish.Params.Channel, publish.Params.Message, false)
+	if err != nil {
+		return &publish.ID, err
 	}
 
 	socket.SendResult(publish.ID, nil, nil)

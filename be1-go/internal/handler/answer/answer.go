@@ -142,18 +142,13 @@ func tryToHandleMessages(msgsByChannel map[string]map[string]message.Message, so
 	for _, channelID := range sortedChannelIDs {
 		msgs := msgsByChannel[channelID]
 		for msgID, msg := range msgs {
-			errAnswer := channel.HandleChannel(channelID, msg, false)
-			if errAnswer == nil {
+			err := channel.HandleChannel(channelID, msg, false)
+			if err == nil {
 				delete(msgsByChannel[channelID], msgID)
 				continue
 			}
 
-			if errAnswer.Code == answer.InvalidMessageFieldErrorCode {
-				delete(msgsByChannel[channelID], msgID)
-			}
-
-			errAnswer = errAnswer.Wrap(msgID).Wrap("tryToHandleMessages")
-			logger.Logger.Error().Err(errAnswer)
+			logger.Logger.Error().Err(err)
 		}
 
 		if len(msgsByChannel[channelID]) == 0 {

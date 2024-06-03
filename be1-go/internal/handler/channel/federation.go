@@ -114,9 +114,9 @@ func handleRequestChallenge(msg message.Message, channelPath string) *answer.Err
 		return errAnswer.Wrap("handleFederationRequestChallenge")
 	}
 
-	errAnswer = broadcastToAllClients(challengeMsg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationRequestChallenge")
+	err = broadcastToAllClients(challengeMsg, channelPath)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	return nil
@@ -336,9 +336,9 @@ func handleChallenge(msg message.Message, channelPath string) *answer.Error {
 	}
 
 	// broadcast the FederationResult to the local organizer
-	errAnswer = broadcastToAllClients(resultMsg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationChallenge")
+	err = broadcastToAllClients(resultMsg, channelPath)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	return nil
@@ -353,9 +353,9 @@ func handleResult(msg message.Message, channelPath string) *answer.Error {
 
 	// verify that the embedded challenge is correctly signed,
 	// we compare the sender field of the challenge later
-	errAnswer = verifyMessage(result.ChallengeMsg)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationResult")
+	err := verifyMessage(result.ChallengeMsg)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	if result.Status != "success" {
@@ -408,9 +408,9 @@ func handleResult(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleFederationResult")
 	}
 
-	errAnswer = broadcastToAllClients(msg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationChallenge")
+	err = broadcastToAllClients(msg, channelPath)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	return nil

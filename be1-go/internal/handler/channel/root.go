@@ -215,10 +215,10 @@ func createLaoGreet(organizerBuf []byte, laoID string) (message.Message, *answer
 		return message.Message{}, errAnswer.Wrap("createAndSendLaoGreet")
 	}
 
-	// Sign the data
-	signatureBuf, errAnswer := Sign(dataBuf)
-	if errAnswer != nil {
-		return message.Message{}, errAnswer.Wrap("createAndSendLaoGreet")
+	// sign the data
+	signatureBuf, err := sign(dataBuf)
+	if err != nil {
+		return message.Message{}, answer.NewInternalServerError(err.Error())
 	}
 
 	signature := base64.URLEncoding.EncodeToString(signatureBuf)

@@ -50,9 +50,9 @@ func handleChannelReaction(channelPath string, msg message.Message) *answer.Erro
 		return errAnswer.Wrap("handleChannelReaction")
 	}
 
-	errAnswer = broadcastToAllClients(msg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelReaction")
+	err = broadcastToAllClients(msg, channelPath)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	return nil

@@ -53,14 +53,14 @@ func handleChannelChirp(channelPath string, msg message.Message) *answer.Error {
 		return errAnswer.Wrap("handleChannelChirp")
 	}
 
-	errAnswer = broadcastToAllClients(msg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelChirp")
+	err = broadcastToAllClients(msg, channelPath)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
-	errAnswer = broadcastToAllClients(generalMsg, generalChirpsChannelID)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelChirp")
+	err = broadcastToAllClients(generalMsg, generalChirpsChannelID)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	return nil
@@ -174,10 +174,11 @@ func createChirpNotify(channelID string, msg message.Message) (message.Message, 
 	}
 	pk64 := base64.URLEncoding.EncodeToString(pkBuf)
 
-	signatureBuf, errAnswer := Sign(dataBuf)
-	if errAnswer != nil {
-		return message.Message{}, errAnswer.Wrap("createChirpNotify")
+	signatureBuf, err := sign(dataBuf)
+	if err != nil {
+		return message.Message{}, answer.NewInternalServerError(err.Error())
 	}
+
 	signature64 := base64.URLEncoding.EncodeToString(signatureBuf)
 
 	messageID64 := messagedata.Hash(data64, signature64)

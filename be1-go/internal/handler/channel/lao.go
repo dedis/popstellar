@@ -68,10 +68,11 @@ func handleChannelLao(channelPath string, msg message.Message) *answer.Error {
 		}
 	}
 
-	errAnswer = broadcastToAllClients(msg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelLao")
+	err = broadcastToAllClients(msg, channelPath)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
+
 	return nil
 }
 
@@ -341,11 +342,14 @@ func createElectionKey(electionID string, electionPubKey kyber.Point) (message.M
 		errAnswer := answer.NewInternalServerError("failed to unmarshall server secret key", err)
 		return message.Message{}, errAnswer.Wrap("createAndSendElectionKey")
 	}
-	signatureBuf, errAnswer := Sign(dataBuf)
-	if errAnswer != nil {
-		return message.Message{}, errAnswer.Wrap("createAndSendElectionKey")
+
+	signatureBuf, err := sign(dataBuf)
+	if err != nil {
+		return message.Message{}, answer.NewInternalServerError(err.Error())
 	}
+
 	signature := base64.URLEncoding.EncodeToString(signatureBuf)
+
 	electionKeyMsg := message.Message{
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(serverPubBuf),
@@ -353,6 +357,7 @@ func createElectionKey(electionID string, electionPubKey kyber.Point) (message.M
 		MessageID:         messagedata.Hash(newData64, signature),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
+
 	return electionKeyMsg, nil
 }
 

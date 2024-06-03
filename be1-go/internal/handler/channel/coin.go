@@ -36,9 +36,9 @@ func handleChannelCoin(channelPath string, msg message.Message) *answer.Error {
 		return errAnswer.Wrap("handleChannelCoin")
 	}
 
-	errAnswer = broadcastToAllClients(msg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelCoin")
+	err = broadcastToAllClients(msg, channelPath)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	return nil

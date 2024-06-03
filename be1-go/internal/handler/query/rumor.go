@@ -89,16 +89,15 @@ func tryHandlingMessages(channelPath string, unprocessedMsgs []message.Message) 
 	for i := 0; i < maxRetry; i++ {
 		nbProcessed := 0
 		for index, msg := range unprocessedMsgs {
-			errAnswer := channel.HandleChannel(channelPath, msg, true)
-			if errAnswer == nil {
+			err := channel.HandleChannel(channelPath, msg, true)
+			if err == nil {
 				unprocessedMsgs = removeMessage(index-nbProcessed, unprocessedMsgs)
 				processedMsgs = append(processedMsgs, msg.MessageID)
 				nbProcessed++
 				continue
 			}
 
-			errAnswer = errAnswer.Wrap(msg.MessageID).Wrap("tryHandlingMessages")
-			logger.Logger.Error().Err(errAnswer)
+			logger.Logger.Error().Err(err)
 		}
 
 		if len(unprocessedMsgs) == 0 {
