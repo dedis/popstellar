@@ -85,8 +85,7 @@ func Test_handleGreetServer(t *testing.T) {
 		t.Run(arg.name, func(t *testing.T) {
 			err := handleGreetServer(&arg.socket, arg.message)
 			if arg.isError {
-				require.NotNil(t, err)
-				require.Contains(t, err.Error(), arg.contains)
+				require.Error(t, err, arg.contains)
 			} else if arg.needGreet {
 				require.NoError(t, err)
 				require.NotNil(t, arg.socket.Msg)
