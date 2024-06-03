@@ -2,7 +2,7 @@ package messagedata
 
 import (
 	"encoding/base64"
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
 	"strconv"
 	"strings"
 )
@@ -18,12 +18,10 @@ type RollCallOpen struct {
 	OpenedAt int64 `json:"opened_at"`
 }
 
-func (message RollCallOpen) Verify(laoPath string) *answer.Error {
-	var errAnswer *answer.Error
+func (message RollCallOpen) Verify(laoPath string) error {
 	_, err := base64.URLEncoding.DecodeString(message.UpdateID)
 	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode roll call update ID: %v", err)
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("failed to decode roll call update ID: %v", err)
 	}
 	expectedID := Hash(
 		RollCallFlag,
@@ -31,21 +29,20 @@ func (message RollCallOpen) Verify(laoPath string) *answer.Error {
 		message.Opens,
 		strconv.Itoa(int(message.OpenedAt)),
 	)
+
 	if message.UpdateID != expectedID {
-		errAnswer = answer.NewInvalidMessageFieldError("roll call update id is %s, should be %s", message.UpdateID, expectedID)
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("roll call update id is %s, should be %s", message.UpdateID, expectedID)
 	}
 
 	_, err = base64.URLEncoding.DecodeString(message.Opens)
 	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode roll call opens: %v", err)
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("failed to decode roll call opens: %v", err)
 	}
 
 	if message.OpenedAt < 0 {
-		errAnswer = answer.NewInvalidMessageFieldError("roll call opened at is %d, should be minimum 0", message.OpenedAt)
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("roll call opened at is %d, should be minimum 0", message.OpenedAt)
 	}
+
 	return nil
 }
 
