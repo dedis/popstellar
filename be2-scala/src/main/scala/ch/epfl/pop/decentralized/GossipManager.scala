@@ -33,7 +33,6 @@ final case class GossipManager(
   private var activeGossipProtocol: Map[JsonRpcRequest, List[ServerInfos]] = Map.empty
   private var jsonId = 0
   private var rumorId = 0
-  private var stateId = 0
   private var publicKey: Option[PublicKey] = None
 
   private val periodicRumorStateKey = 0
@@ -154,9 +153,10 @@ final case class GossipManager(
                 RpcValidator.JSON_RPC_VERSION,
                 rumor_state,
                 rumorState,
-                Some(stateId)
+                Some(jsonId)
               ))
             )
+            jsonId += 1
       case _ =>
         log.info(s"Actor $self received an unexpected message waiting for a random peer")
     }
