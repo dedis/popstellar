@@ -549,9 +549,9 @@ namespace STRINGS {
   export const linked_organizations_description = 'Here you can find all linked organizations.';
   export const linked_organizations_addlinkedorg_title = 'Add Linked Organization';
   export const linked_organizations_addlinkedorg_info =
-    'To link two organizations, one organizer has to first join the other organization by generating a QR Code (Join Organization), which other one links to his organization by scanning the QR Code (Link Organization). Subsequent to scanning the first QR Code, the other QR Code will appear. After the first QR Code was scanned, the other scanner for the second QR Code can be opened by clicking the “Next” button.';
-  export const linked_organizations_addlinkedorg_genQRCode = 'Join Organization';
-  export const linked_organizations_addlinkedorg_scanQRCode = 'Link Organization';
+    'To link two organizations, one organizer has to first invite the other organization by generating a QR Code (Invite an Organization). The other organizer joins this invitation, by scanning the QR Code (Join an Invitation). Subsequent to scanning the first QR Code, the other QR Code will appear. After the first QR Code was scanned, the other scanner for the second QR Code can be opened by clicking the “Next” button.';
+  export const linked_organizations_addlinkedorg_genQRCode = 'Invite an Organization';
+  export const linked_organizations_addlinkedorg_scanQRCode = 'Join an Invitation';
   export const linked_organizations_addlinkedorg_Scanner_info =
     'Scan the QR Code from the other organizers device.';
   export const linked_organizations_addlinkedorg_QRCode_info =

@@ -804,7 +804,7 @@ exports[`LinkedOrganizationsScreen manual input of correct organization details 
                                   }
                                 }
                               >
-                                Join Organization
+                                Invite an Organization
                               </Text>
                               <View
                                 accessible={true}
@@ -1820,7 +1820,7 @@ exports[`LinkedOrganizationsScreen manual input of wrong organization details 1`
                                   }
                                 }
                               >
-                                Link Organization
+                                Join an Invitation
                               </Text>
                               <View
                                 accessible={true}
@@ -2845,7 +2845,7 @@ exports[`LinkedOrganizationsScreen opens modal on press join org 1`] = `
                                   }
                                 }
                               >
-                                Join Organization
+                                Invite an Organization
                               </Text>
                               <View
                                 accessible={true}
@@ -3861,7 +3861,7 @@ exports[`LinkedOrganizationsScreen opens modal on press link org 1`] = `
                                   }
                                 }
                               >
-                                Link Organization
+                                Join an Invitation
                               </Text>
                               <View
                                 accessible={true}
@@ -4903,7 +4903,7 @@ exports[`LinkedOrganizationsScreen opens modal on press next 1`] = `
                                   }
                                 }
                               >
-                                Link Organization
+                                Join an Invitation
                               </Text>
                               <View
                                 accessible={true}
