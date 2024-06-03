@@ -35,9 +35,9 @@ func handleHeartbeat(socket socket.Socket, byteMessage []byte) *answer.Error {
 		return nil
 	}
 
-	queryId, errAnswer := state.GetNextID()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleHeartbeat")
+	queryId, err := state.GetNextID()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	getMessagesById := method.GetMessagesById{
@@ -59,9 +59,9 @@ func handleHeartbeat(socket socket.Socket, byteMessage []byte) *answer.Error {
 
 	socket.Send(buf)
 
-	errAnswer = state.AddQuery(queryId, getMessagesById)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleHeartbeat")
+	err = state.AddQuery(queryId, getMessagesById)
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	return nil

@@ -19,12 +19,12 @@ const (
 	InvalidResourceErrorMsg     = "invalid resource: "
 	DuplicateResourceErrorMsg   = "duplicate resource: "
 	InvalidMessageFieldErrorMsg = "invalid message field: "
-	JsonUnmarshalErrorMsg       = "failed to unmarshal JSON: "
-	JsonMarshalErrorMsg         = "failed to marshal JSON: "
+	JsonUnmarshalErrorMsg       = InvalidMessageFieldErrorMsg + "failed to unmarshal JSON: "
+	JsonMarshalErrorMsg         = InvalidMessageFieldErrorMsg + "failed to marshal JSON: "
 	AccessDeniedErrorMsg        = "access denied: "
 	InternalServerErrorMsg      = "internal server error: "
-	QueryDatabaseErrorMsg       = "failed to query from database: "
-	StoreDatabaseErrorMsg       = "failed to store inside database: "
+	QueryDatabaseErrorMsg       = InternalServerErrorMsg + "failed to query from database: "
+	StoreDatabaseErrorMsg       = InternalServerErrorMsg + "failed to store inside database: "
 )
 
 // PopError defines a custom error type that includes a stack trace.
