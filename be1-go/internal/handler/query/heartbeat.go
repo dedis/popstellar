@@ -26,7 +26,7 @@ func handleHeartbeat(socket socket.Socket, byteMessage []byte) error {
 
 	result, err := db.GetParamsForGetMessageByID(heartbeat.Params)
 	if err != nil {
-		return errors.NewQueryDatabaseError("params for get messages by id: %v", err)
+		return err
 	}
 
 	if len(result) == 0 {

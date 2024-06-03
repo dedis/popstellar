@@ -23,7 +23,7 @@ func handleGetMessagesByID(socket socket.Socket, msg []byte) (*int, error) {
 
 	result, err := db.GetResultForGetMessagesByID(getMessagesById.Params)
 	if err != nil {
-		return &getMessagesById.ID, errors.NewQueryDatabaseError("result for get messages by id: %v", err)
+		return &getMessagesById.ID, err
 	}
 
 	socket.SendResult(getMessagesById.ID, nil, result)

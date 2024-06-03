@@ -36,9 +36,6 @@ const (
 	DatabaseCreateTableErrorMsg       = InternalServerErrorMsg + "failed to create table: "
 	DatabseInternalErrorMsg           = InternalServerErrorMsg + "internal database error: "
 
-	QueryDatabaseErrorMsg = InternalServerErrorMsg + "failed to query from database: "
-	StoreDatabaseErrorMsg = InternalServerErrorMsg + "failed to store inside database: "
-
 	KeyMarshalErrorMsg   = InternalServerErrorMsg + "failed to marshal key: "
 	KeyUnmarshalErrorMsg = InternalServerErrorMsg + "failed to unmarshal key: "
 )
@@ -129,16 +126,6 @@ func NewAccessDeniedError(format string, a ...interface{}) error {
 // NewInternalServerError returns an error with the code -6 when there is an internal server error
 func NewInternalServerError(format string, a ...interface{}) error {
 	return NewPopError(InternalServerErrorCode, InternalServerErrorMsg+format, a)
-}
-
-// NewQueryDatabaseError returns an error with the code -6 when there is an error with a database query
-func NewQueryDatabaseError(format string, a ...interface{}) error {
-	return NewPopError(InternalServerErrorCode, QueryDatabaseErrorMsg+format, a...)
-}
-
-// NewStoreDatabaseError returns an error with the code -6 when there is an error with a database store
-func NewStoreDatabaseError(format string, a ...interface{}) error {
-	return NewPopError(InternalServerErrorCode, StoreDatabaseErrorMsg+format, a...)
 }
 
 // NewDatabaseInsertErrorMsg returns an error with the code -6 when there is an error with a database insert

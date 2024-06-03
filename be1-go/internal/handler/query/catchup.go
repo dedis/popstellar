@@ -24,7 +24,7 @@ func handleCatchUp(socket socket.Socket, msg []byte) (*int, error) {
 
 	result, err := db.GetAllMessagesFromChannel(catchup.Params.Channel)
 	if err != nil {
-		return &catchup.ID, errors.NewQueryDatabaseError("all message from channel %s: %v", catchup.Params.Channel, err)
+		return &catchup.ID, err
 	}
 
 	socket.SendResult(catchup.ID, result, nil)
