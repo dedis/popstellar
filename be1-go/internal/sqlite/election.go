@@ -20,7 +20,7 @@ func (s *SQLite) GetLAOOrganizerPubKey(electionPath string) (kyber.Point, error)
 
 	tx, err := s.database.Begin()
 	if err != nil {
-		return nil, poperrors.NewDatabaseTransactionBeginErrorMsg("%v", err)
+		return nil, poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
 	}
 	defer tx.Rollback()
 
@@ -39,7 +39,7 @@ func (s *SQLite) GetLAOOrganizerPubKey(electionPath string) (kyber.Point, error)
 
 	err = tx.Commit()
 	if err != nil {
-		return nil, poperrors.NewDatabaseTransactionCommitErrorMsg("%v", err)
+		return nil, poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 	}
 
 	return organizerPubKey, nil
@@ -196,7 +196,7 @@ func (s *SQLite) GetElectionQuestions(electionPath string) (map[string]types.Que
 
 	tx, err := s.database.Begin()
 	if err != nil {
-		return nil, poperrors.NewDatabaseTransactionBeginErrorMsg("%v", err)
+		return nil, poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
 
 	}
 	defer tx.Rollback()
@@ -213,7 +213,7 @@ func (s *SQLite) GetElectionQuestions(electionPath string) (map[string]types.Que
 
 	err = tx.Commit()
 	if err != nil {
-		return nil, poperrors.NewDatabaseTransactionCommitErrorMsg("%v", err)
+		return nil, poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 
 	}
 	return questions, nil
@@ -225,7 +225,7 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 
 	tx, err := s.database.Begin()
 	if err != nil {
-		return nil, poperrors.NewDatabaseTransactionBeginErrorMsg("%v", err)
+		return nil, poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
 	}
 	defer tx.Rollback()
 
@@ -266,7 +266,7 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 	}
 	err = tx.Commit()
 	if err != nil {
-		return nil, poperrors.NewDatabaseTransactionCommitErrorMsg("%v", err)
+		return nil, poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 	}
 	return questions, nil
 }
@@ -316,7 +316,7 @@ func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionRes
 
 	tx, err := s.database.Begin()
 	if err != nil {
-		return poperrors.NewDatabaseTransactionBeginErrorMsg("%v", err)
+		return poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
 	}
 	defer tx.Rollback()
 
@@ -358,7 +358,7 @@ func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionRes
 	err = tx.Commit()
 
 	if err != nil {
-		return poperrors.NewDatabaseTransactionCommitErrorMsg("%v", err)
+		return poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 	}
 
 	return err

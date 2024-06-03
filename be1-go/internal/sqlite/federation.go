@@ -42,12 +42,12 @@ func (s *SQLite) RemoveChallenge(challenge messagedata.FederationChallenge) erro
 		messagedata.FederationActionChallenge, challenge.Value,
 		challenge.ValidUntil)
 	if err != nil {
-		return poperrors.NewDatabaseDeleteErrorMsg("federation challenge: %v", err)
+		return poperrors.NewDatabaseDeleteErrorMsg(err.Error())
 	}
 
 	nb, err := result.RowsAffected()
 	if err != nil {
-		return poperrors.NewDatabaseRowsAffectedErrorMsg("federation challenge: %v", err)
+		return poperrors.NewDatabaseRowsAffectedErrorMsg(err.Error())
 	}
 
 	if nb != 1 {

@@ -14,7 +14,7 @@ func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, general
 
 	tx, err := s.database.Begin()
 	if err != nil {
-		return poperrors.NewDatabaseTransactionBeginErrorMsg("%v", err)
+		return poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
 	}
 	defer tx.Rollback()
 
@@ -55,7 +55,7 @@ func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, general
 
 	err = tx.Commit()
 	if err != nil {
-		return poperrors.NewDatabaseTransactionCommitErrorMsg("%v", err)
+		return poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 	}
 
 	return nil

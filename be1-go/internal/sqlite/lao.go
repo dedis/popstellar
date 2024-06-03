@@ -19,7 +19,7 @@ func (s *SQLite) GetRollCallState(channelPath string) (string, error) {
 	var state string
 	err := s.database.QueryRow(selectLastRollCallMessage, messagedata.RollCallObject, channelPath).Scan(&state)
 	if err != nil {
-		return "", poperrors.NewDatabaseSelectErrorMsg("%v", err)
+		return "", poperrors.NewDatabaseSelectErrorMsg(err.Error())
 	}
 	return state, nil
 }
@@ -120,7 +120,7 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg messa
 
 	tx, err := s.database.Begin()
 	if err != nil {
-		return poperrors.NewDatabaseTransactionBeginErrorMsg("%v", err)
+		return poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
 	}
 	defer tx.Rollback()
 
@@ -146,7 +146,7 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg messa
 	if len(channels) == 0 {
 		err = tx.Commit()
 		if err != nil {
-			return poperrors.NewDatabaseTransactionCommitErrorMsg("%v", err)
+			return poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 		}
 		return nil
 	}
@@ -159,7 +159,7 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg messa
 	}
 	err = tx.Commit()
 	if err != nil {
-		return poperrors.NewDatabaseTransactionCommitErrorMsg("%v", err)
+		return poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 	}
 	return nil
 
@@ -226,7 +226,7 @@ func (s *SQLite) StoreElection(
 
 	tx, err := s.database.Begin()
 	if err != nil {
-		return poperrors.NewDatabaseTransactionBeginErrorMsg("%v", err)
+		return poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
 	}
 	defer tx.Rollback()
 
@@ -239,7 +239,7 @@ func (s *SQLite) StoreElection(
 
 	err = tx.Commit()
 	if err != nil {
-		return poperrors.NewDatabaseTransactionCommitErrorMsg("%v", err)
+		return poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 	}
 	return nil
 }
@@ -255,7 +255,7 @@ func (s *SQLite) StoreElectionWithElectionKey(
 
 	tx, err := s.database.Begin()
 	if err != nil {
-		return poperrors.NewDatabaseTransactionBeginErrorMsg("%v", err)
+		return poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
 	}
 	defer tx.Rollback()
 
@@ -286,7 +286,7 @@ func (s *SQLite) StoreElectionWithElectionKey(
 
 	err = tx.Commit()
 	if err != nil {
-		return poperrors.NewDatabaseTransactionCommitErrorMsg("%v", err)
+		return poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 	}
 	return nil
 }

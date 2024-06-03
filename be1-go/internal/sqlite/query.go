@@ -27,7 +27,7 @@ func (s *SQLite) GetAllMessagesFromChannel(channelPath string) ([]message.Messag
 	for rows.Next() {
 		var messageByte []byte
 		if err = rows.Scan(&messageByte); err != nil {
-			return nil, poperrors.NewDatabaseScanErrorMsg("%v", err)
+			return nil, poperrors.NewDatabaseScanErrorMsg(err.Error())
 		}
 		var msg message.Message
 		if err = json.Unmarshal(messageByte, &msg); err != nil {
@@ -37,7 +37,7 @@ func (s *SQLite) GetAllMessagesFromChannel(channelPath string) ([]message.Messag
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, poperrors.NewDatabaseIteratorErrorMsg("%v", err)
+		return nil, poperrors.NewDatabaseIteratorErrorMsg(err.Error())
 	}
 
 	return messages, nil
@@ -74,7 +74,7 @@ func (s *SQLite) GetResultForGetMessagesByID(params map[string][]string) (map[st
 		var messageByte []byte
 		var channelPath string
 		if err = rows.Scan(&messageByte, &channelPath); err != nil {
-			return nil, poperrors.NewDatabaseScanErrorMsg("%v", err)
+			return nil, poperrors.NewDatabaseScanErrorMsg(err.Error())
 		}
 		var msg message.Message
 		if err = json.Unmarshal(messageByte, &msg); err != nil {
@@ -84,7 +84,7 @@ func (s *SQLite) GetResultForGetMessagesByID(params map[string][]string) (map[st
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, poperrors.NewDatabaseIteratorErrorMsg("%v", err)
+		return nil, poperrors.NewDatabaseIteratorErrorMsg(err.Error())
 	}
 
 	return result, nil
@@ -121,13 +121,13 @@ func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[str
 		var messageID string
 		var channelPath string
 		if err = rows.Scan(&messageID, &channelPath); err != nil {
-			return nil, poperrors.NewDatabaseScanErrorMsg("%v", err)
+			return nil, poperrors.NewDatabaseScanErrorMsg(err.Error())
 		}
 		result[messageID] = struct{}{}
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, poperrors.NewDatabaseIteratorErrorMsg("%v", err)
+		return nil, poperrors.NewDatabaseIteratorErrorMsg(err.Error())
 	}
 
 	missingIDs := make(map[string][]string)
@@ -175,7 +175,7 @@ func (s *SQLite) StoreRumor(rumorID int, sender string, unprocessed map[string][
 
 	tx, err := s.database.Begin()
 	if err != nil {
-		return poperrors.NewDatabaseTransactionBeginErrorMsg("%v", err)
+		return poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
 	}
 
 	_, err = tx.Exec(insertRumor, rumorID, sender)
@@ -205,7 +205,7 @@ func (s *SQLite) StoreRumor(rumorID int, sender string, unprocessed map[string][
 
 	err = tx.Commit()
 	if err != nil {
-		return poperrors.NewDatabaseTransactionCommitErrorMsg("%v", err)
+		return poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 	}
 	return nil
 }
@@ -243,7 +243,7 @@ func (s *SQLite) AddMessageToMyRumor(messageID string) (int, error) {
 
 	tx, err := s.database.Begin()
 	if err != nil {
-		return -1, poperrors.NewDatabaseTransactionBeginErrorMsg("%v", err)
+		return -1, poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
 	}
 	defer tx.Rollback()
 
@@ -259,7 +259,7 @@ func (s *SQLite) AddMessageToMyRumor(messageID string) (int, error) {
 
 	err = tx.Commit()
 	if err != nil {
-		return -1, poperrors.NewDatabaseTransactionCommitErrorMsg("%v", err)
+		return -1, poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 	}
 	return count, nil
 }
@@ -270,7 +270,7 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
 
 	tx, err := s.database.Begin()
 	if err != nil {
-		return false, method.Rumor{}, poperrors.NewDatabaseTransactionBeginErrorMsg("%v", err)
+		return false, method.Rumor{}, poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
 	}
 	defer tx.Rollback()
 
@@ -285,12 +285,12 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
 		var msgBytes []byte
 		var channelPath string
 		if err = rows.Scan(&msgBytes, &channelPath); err != nil {
-			return false, method.Rumor{}, poperrors.NewDatabaseScanErrorMsg("%v", err)
+			return false, method.Rumor{}, poperrors.NewDatabaseScanErrorMsg(err.Error())
 		}
 
 		var msg message.Message
 		if err = json.Unmarshal(msgBytes, &msg); err != nil {
-			return false, method.Rumor{}, poperrors.NewInternalServerError("failed to unmarshal message: %v", err)
+			return false, method.Rumor{}, poperrors.NewInternalServerError("failed to unmarshal current rumor message: %v", err)
 		}
 
 		messages[channelPath] = append(messages[channelPath], msg)
@@ -316,7 +316,7 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
 
 	err = tx.Commit()
 	if err != nil {
-		return false, method.Rumor{}, poperrors.NewDatabaseTransactionCommitErrorMsg("%v", err)
+		return false, method.Rumor{}, poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 	}
 
 	return true, rumor, nil
