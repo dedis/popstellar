@@ -57,7 +57,7 @@ func Test_handleQuery(t *testing.T) {
 			fakeSocket := mock.FakeSocket{Id: "fakesocket"}
 			err := HandleQuery(&fakeSocket, arg.message)
 			if arg.isError {
-				require.Contains(t, err.Error(), arg.contains)
+				require.Error(t, err, arg.contains)
 			} else {
 				require.NoError(t, err)
 			}
