@@ -2,23 +2,21 @@ package ch.epfl.pop.decentralized
 
 import akka.NotUsed
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import akka.event.slf4j.Logger
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.decentralized.{ConnectionMediator, GossipManager}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType}
-import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey, RumorData}
+import ch.epfl.pop.model.objects.{Channel, PublicKey, RumorData}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.{DbActorAck, DbActorReadRumor, DbActorReadRumorData}
+import ch.epfl.pop.storage.DbActor.{DbActorAck, DbActorReadRumorData}
 
 import scala.concurrent.Await
-import scala.util.{Failure, Random, Success}
+import scala.util.Random
 
 final case class GossipManager(
     dbActorRef: AskableActorRef,
@@ -174,12 +172,12 @@ object GossipManager extends AskPatternConstants {
     case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"GossipManager received an unexpected message:$graphMessage while monitoring responses", None))
   }
 
-  def startGossip(gossipManager: AskableActorRef, actorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+  def startGossip(gossipManager: AskableActorRef, clientRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcRequest: JsonRpcRequest) =>
       jsonRpcRequest.getParamsMessage match
         case Some(message) =>
           // Start gossiping only if message comes from a real actor (and not from processing pipeline)
-          if (actorRef != Actor.noSender)
+          if (clientRef != Actor.noSender)
             gossipManager ? StartGossip(Map(jsonRpcRequest.getParamsChannel -> List(message)))
         case None => /* Do nothing */
       Right(jsonRpcRequest)
