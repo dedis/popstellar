@@ -306,10 +306,8 @@ object MessageValidator {
     }
 
     /** Helper method to check that a string list is sorted */
-    fun stringListIsSorted(list: List<String>, field: String): MessageValidatorBuilder {
-      for (i in 0 until list.size - 1) {
-        require(list[i + 1] >= list[i]) { "$field must be sorted" }
-      }
+    fun stringListIsSorted(list: List<*>, field: String): MessageValidatorBuilder {
+      require(list == list.sortedBy{it.toString()}) { "$field must be sorted" }
       return this
     }
 

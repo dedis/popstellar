@@ -33,11 +33,11 @@ class CloseRollCall(
 
   init {
     verify()
-        .stringListIsSorted(attendees.map { toString() }, "attendees")
+        .stringListIsSorted(attendees, "attendees")
         .validPastTimes(closedAt)
+        .greaterOrEqualThan(closedAt, 0, "closedAt")
         .isNotEmptyBase64(laoId, "laoId")
         .isNotEmptyBase64(closes, "closes")
-        .greaterOrEqualThan(closedAt, 0, "closedAt")
 
     this.updateId = generateCloseRollCallId(laoId, closes, closedAt)
     this.attendees = ArrayList(attendees)

@@ -128,11 +128,12 @@ constructor(
 
     val currentAttendees: Set<PublicKey>
     if (closeRollCall.attendees.containsAll(existingRollCall.attendees)) {
-        // closeRollCall.attendees is sorted, so we prefer to use it if we can
+      // closeRollCall.attendees is sorted, so we prefer to use it if we can
       currentAttendees = closeRollCall.attendees.toMutableSet()
     } else {
-        // if both lists have different attendees, we merge them even though we lose the order
-        // We are not ordering it because it is important to keep the order that we received to know if we face de-anonymization
+      // if both lists have different attendees, we merge them even though we lose the order
+      // We are not ordering it because it is important to keep the order that we received to know
+      // if we face de-anonymization
       currentAttendees = existingRollCall.attendees
       currentAttendees.addAll(closeRollCall.attendees)
     }
