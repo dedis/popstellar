@@ -69,7 +69,7 @@ func (s *SQLite) GetOrganizerPubKey(laoPath string) (kyber.Point, error) {
 func (s *SQLite) insertMessageHelper(tx *sql.Tx, messageID string, msg, messageData []byte, storedTime int64) error {
 	_, err := tx.Exec(insertMessage, messageID, msg, messageData, storedTime)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("message: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg(err.Error())
 
 	}
 	_, err = tx.Exec(tranferUnprocessedMessageRumor, messageID)
@@ -105,7 +105,7 @@ func (s *SQLite) StoreMessageAndData(channelPath string, msg message.Message) er
 
 	msgByte, err := json.Marshal(msg)
 	if err != nil {
-		return poperrors.NewJsonMarshalError("message: %v", err)
+		return poperrors.NewJsonMarshalError(err.Error())
 	}
 	err = s.insertMessageHelper(tx, msg.MessageID, msgByte, messageData, time.Now().UnixNano())
 	if err != nil {
@@ -154,12 +154,12 @@ func (s *SQLite) GetMessagesByID(IDs []string) (map[string]message.Message, erro
 		var messageID string
 		var messageByte []byte
 		if err = rows.Scan(&messageID, &messageByte); err != nil {
-			return nil, poperrors.NewDatabaseScanErrorMsg("message: %v", err)
+			return nil, poperrors.NewDatabaseScanErrorMsg(err.Error())
 		}
 
 		var msg message.Message
 		if err = json.Unmarshal(messageByte, &msg); err != nil {
-			return nil, poperrors.NewJsonUnmarshalError("message: %v", err)
+			return nil, poperrors.NewJsonUnmarshalError(err.Error())
 		}
 		messagesByID[messageID] = msg
 	}
@@ -178,12 +178,12 @@ func (s *SQLite) GetMessageByID(ID string) (message.Message, error) {
 	var messageByte []byte
 	err := s.database.QueryRow(selectMessage, ID).Scan(&messageByte)
 	if err != nil {
-		return message.Message{}, poperrors.NewDatabaseSelectErrorMsg("message: %v", err)
+		return message.Message{}, poperrors.NewDatabaseSelectErrorMsg(err.Error())
 	}
 
 	var msg message.Message
 	if err = json.Unmarshal(messageByte, &msg); err != nil {
-		return message.Message{}, poperrors.NewJsonUnmarshalError("message: %v", err)
+		return message.Message{}, poperrors.NewJsonUnmarshalError(err.Error())
 	}
 	return msg, nil
 }
