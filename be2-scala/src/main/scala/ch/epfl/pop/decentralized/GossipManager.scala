@@ -2,30 +2,29 @@ package ch.epfl.pop.decentralized
 
 import akka.NotUsed
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import akka.event.slf4j.Logger
-import akka.pattern.AskableActorRef
+import akka.pattern.{AskableActorRef, ask}
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.decentralized.{ConnectionMediator, GossipManager}
+import ch.epfl.pop.model.network.method.Rumor
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.{GreetServer, Rumor, RumorState}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType}
-import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey, RumorData}
+import ch.epfl.pop.model.objects.{Channel, PublicKey, RumorData}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.{DbActorAck, DbActorReadRumor, DbActorReadRumorData}
-import akka.pattern.ask
+import ch.epfl.pop.storage.DbActor.{DbActorAck, DbActorReadRumorData}
 
 import scala.concurrent.Await
-import scala.util.{Failure, Random, Success}
+import scala.util.Random
 
-final case class GossipManager(
-    dbActorRef: AskableActorRef,
-    monitorRef: ActorRef,
-    stopProbability: Double = 0.5
-) extends Actor with AskPatternConstants with ActorLogging {
+/** This class is responsible of managing the gossiping of rumors across the network
+  * @param dbActorRef
+  *   reference to the database actor
+  * @param stopProbability
+  *   probability with which we stop the gossipping in case of error response
+  */
+final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Double = 0.5) extends Actor with AskPatternConstants with ActorLogging {
 
   private var activeGossipProtocol: Map[JsonRpcRequest, Set[ActorRef]] = Map.empty
   private var rumorMap: Map[PublicKey, Int] = Map.empty
@@ -50,36 +49,6 @@ final case class GossipManager(
           case DbActorReadRumorData(foundRumorIds: RumorData) => rumorMap.updated(pk, foundRumorIds.lastRumorId())
           case failure                                        => Map.empty
       case None => Map.empty
-
-  monitorRef ! GossipManager.Ping()
-
-  private def peersAlreadyReceived(jsonRpcRequest: JsonRpcRequest): Set[ActorRef] = {
-    val activeGossip = activeGossipProtocol.get(jsonRpcRequest)
-    activeGossip match
-      case Some(peersInfosList) => peersInfosList
-      case None                 => Set.empty
-  }
-
-  private def prepareRumor(rumor: Rumor): JsonRpcRequest = {
-    val request = JsonRpcRequest(
-      RpcValidator.JSON_RPC_VERSION,
-      MethodType.rumor,
-      rumor,
-      Some(jsonId)
-    )
-    jsonId += 1
-    request
-  }
-
-  private def isNextRumor(publicKey: PublicKey, rumorId: Int): Boolean = {
-    rumorMap.get(publicKey) match
-      case None               => rumorId == 0
-      case Some(localRumorId) => localRumorId == rumorId - 1
-  }
-
-  private def incrementMap(publicKey: PublicKey): Unit = {
-    rumorMap = rumorMap.updated(publicKey, rumorMap.getOrElse(publicKey, -1) + 1)
-  }
 
   /** Does a step of gossipping protocol for given rpc. Tries to find a random peer that hasn't already received this msg If such a peer is found, sends message and updates table accordingly. If no peer is found, ends the protocol.
     * @param rumorRpc
@@ -168,6 +137,34 @@ final case class GossipManager(
       log.info(s"Actor (gossip) $self will not be able to start rumors because it has no publicKey")
   }
 
+  private def peersAlreadyReceived(jsonRpcRequest: JsonRpcRequest): Set[ActorRef] = {
+    val activeGossip = activeGossipProtocol.get(jsonRpcRequest)
+    activeGossip match
+      case Some(peersInfosList) => peersInfosList
+      case None                 => Set.empty
+  }
+
+  private def prepareRumor(rumor: Rumor): JsonRpcRequest = {
+    val request = JsonRpcRequest(
+      RpcValidator.JSON_RPC_VERSION,
+      MethodType.rumor,
+      rumor,
+      Some(jsonId)
+    )
+    jsonId += 1
+    request
+  }
+
+  private def isNextRumor(publicKey: PublicKey, rumorId: Int): Boolean = {
+    rumorMap.get(publicKey) match
+      case None               => rumorId == 0
+      case Some(localRumorId) => localRumorId == rumorId - 1
+  }
+
+  private def incrementMap(publicKey: PublicKey): Unit = {
+    rumorMap = rumorMap.updated(publicKey, rumorMap.getOrElse(publicKey, -1) + 1)
+  }
+
   override def receive: Receive = {
     case GossipManager.HandleRumor(jsonRpcRequest: JsonRpcRequest, clientActorRef: ActorRef) =>
       handleRumor(jsonRpcRequest, clientActorRef)
@@ -190,7 +187,7 @@ final case class GossipManager(
 
 object GossipManager extends AskPatternConstants {
   def props(dbActorRef: AskableActorRef, monitorRef: ActorRef): Props =
-    Props(new GossipManager(dbActorRef, monitorRef))
+    Props(new GossipManager(dbActorRef))
 
   /** When receiving a rumor, gossip manager handles the rumor by relaying
     *
@@ -247,8 +244,4 @@ object GossipManager extends AskPatternConstants {
   final case class HandleRumor(jsonRpcRequest: JsonRpcRequest, clientActorRef: ActorRef)
   final case class ManageGossipResponse(jsonRpcResponse: JsonRpcResponse)
   final case class StartGossip(messages: Map[Channel, List[Message]])
-
-  sealed trait GossipManagerMessage
-  final case class Ping() extends GossipManagerMessage
-
 }
