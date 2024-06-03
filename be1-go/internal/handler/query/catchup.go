@@ -17,9 +17,9 @@ func handleCatchUp(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return nil, errAnswer.Wrap("handleCatchUp")
 	}
 
-	db, errAnswer := database.GetQueryRepositoryInstance()
-	if errAnswer != nil {
-		return &catchup.ID, errAnswer.Wrap("handleCatchUp")
+	db, err := database.GetQueryRepositoryInstance()
+	if err != nil {
+		return &catchup.ID, answer.NewInternalServerError(err.Error())
 	}
 
 	result, err := db.GetAllMessagesFromChannel(catchup.Params.Channel)

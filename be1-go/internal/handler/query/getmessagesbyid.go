@@ -17,9 +17,9 @@ func handleGetMessagesByID(socket socket.Socket, msg []byte) (*int, *answer.Erro
 		return nil, errAnswer.Wrap("handleGetMessageByID")
 	}
 
-	db, errAnswer := database.GetQueryRepositoryInstance()
-	if errAnswer != nil {
-		return &getMessagesById.ID, errAnswer.Wrap("handleGetMessageByID")
+	db, err := database.GetQueryRepositoryInstance()
+	if err != nil {
+		return &getMessagesById.ID, answer.NewInternalServerError(err.Error())
 	}
 
 	result, err := db.GetResultForGetMessagesByID(getMessagesById.Params)

@@ -42,9 +42,9 @@ func handleChannelChirp(channelPath string, msg message.Message) *answer.Error {
 		return errAnswer.Wrap("handleChannelChirp")
 	}
 
-	db, errAnswer := database.GetChirpRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelChirp")
+	db, err := database.GetChirpRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	err = db.StoreChirpMessages(channelPath, generalChirpsChannelID, msg, generalMsg)
@@ -93,9 +93,9 @@ func handleChirpDelete(channelID string, msg message.Message) *answer.Error {
 		return errAnswer.Wrap("handleChirpDelete")
 	}
 
-	db, errAnswer := database.GetChirpRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChirpDelete")
+	db, err := database.GetChirpRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	msgToDeleteExists, err := db.HasMessage(data.ChirpID)

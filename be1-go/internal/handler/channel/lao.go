@@ -56,12 +56,12 @@ func handleChannelLao(channelPath string, msg message.Message) *answer.Error {
 	}
 
 	if storeMessage {
-		db, errAnswer := database.GetLAORepositoryInstance()
-		if errAnswer != nil {
-			return errAnswer.Wrap("handleChannelLao")
+		db, err := database.GetLAORepositoryInstance()
+		if err != nil {
+			return answer.NewInternalServerError(err.Error())
 		}
 
-		err := db.StoreMessageAndData(channelPath, msg)
+		err = db.StoreMessageAndData(channelPath, msg)
 		if err != nil {
 			errAnswer = answer.NewStoreDatabaseError("message: %v", err)
 			return errAnswer.Wrap("handleChannelLao")
@@ -102,9 +102,9 @@ func handleRollCallOpen(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleRollCallOpen")
 	}
 
-	db, errAnswer := database.GetLAORepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleRollCallOpen")
+	db, err := database.GetLAORepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	ok, err := db.CheckPrevCreateOrCloseID(channelPath, rollCallOpen.Opens)
@@ -145,9 +145,9 @@ func handleRollCallClose(msg message.Message, channelPath string) *answer.Error 
 		return errAnswer.Wrap("handleRollCallClose")
 	}
 
-	db, errAnswer := database.GetLAORepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleRollCallClose")
+	db, err := database.GetLAORepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	ok, err := db.CheckPrevOpenOrReopenID(channelPath, rollCallClose.Closes)
@@ -252,19 +252,19 @@ func verifySenderLao(channelPath string, msg message.Message) *answer.Error {
 		return errAnswer
 	}
 
-	db, errAnswer := database.GetLAORepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer
+	db, err := database.GetLAORepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	organizePubKey, err := db.GetOrganizerPubKey(channelPath)
 	if err != nil {
-		errAnswer = answer.NewQueryDatabaseError("organizer public key: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("organizer public key: %v", err)
 		return errAnswer
 	}
 
 	if !organizePubKey.Equal(senderPubKey) {
-		errAnswer = answer.NewAccessDeniedError("sender public key does not match organizer public key: %s != %s",
+		errAnswer := answer.NewAccessDeniedError("sender public key does not match organizer public key: %s != %s",
 			senderPubKey, organizePubKey)
 		return errAnswer
 	}
@@ -279,9 +279,9 @@ func storeElection(msg message.Message, electionSetup messagedata.ElectionSetup,
 	var electionKeyMsg message.Message
 	electionPath := channelPath + "/" + electionSetup.ID
 
-	db, errAnswer := database.GetLAORepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer
+	db, err := database.GetLAORepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	if electionSetup.Version == messagedata.SecretBallot {
@@ -363,9 +363,9 @@ func handleLaoState(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleLaoState")
 	}
 
-	db, errAnswer := database.GetLAORepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleLaoState")
+	db, err := database.GetLAORepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	ok, err := db.HasMessage(laoState.ModificationID)

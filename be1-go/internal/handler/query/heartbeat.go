@@ -2,6 +2,8 @@ package query
 
 import (
 	"encoding/json"
+
+	"popstellar/internal/errors"
 	"popstellar/internal/message"
 	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query"
@@ -11,18 +13,16 @@ import (
 	"popstellar/internal/singleton/state"
 )
 
-func handleHeartbeat(socket socket.Socket, byteMessage []byte) *answer.Error {
+func handleHeartbeat(socket socket.Socket, byteMessage []byte) error {
 	var heartbeat method.Heartbeat
-
 	err := json.Unmarshal(byteMessage, &heartbeat)
 	if err != nil {
-		errAnswer := answer.NewJsonUnmarshalError(err.Error())
-		return errAnswer.Wrap("handleHeartbeat")
+		return errors.NewJsonUnmarshalError(err.Error())
 	}
 
-	db, errAnswer := database.GetQueryRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleHeartbeat")
+	db, err := database.GetQueryRepositoryInstance()
+	if err != nil {
+		return err
 	}
 
 	result, err := db.GetParamsForGetMessageByID(heartbeat.Params)

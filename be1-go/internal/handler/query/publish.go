@@ -34,9 +34,9 @@ func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return nil, nil
 	}
 
-	db, errAnswer := database.GetRumorSenderRepositoryInstance()
-	if errAnswer != nil {
-		logger.Logger.Error().Err(errAnswer)
+	db, err := database.GetRumorSenderRepositoryInstance()
+	if err != nil {
+		logger.Logger.Error().Err(err)
 		return nil, nil
 	}
 

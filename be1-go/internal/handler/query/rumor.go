@@ -28,9 +28,9 @@ func handleRumor(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	logger.Logger.Debug().Msgf("received rumor %s-%d from query %d",
 		rumor.Params.SenderID, rumor.Params.RumorID, rumor.ID)
 
-	db, errAnswer := database.GetQueryRepositoryInstance()
-	if errAnswer != nil {
-		return &rumor.ID, errAnswer.Wrap("handleRumor")
+	db, err := database.GetQueryRepositoryInstance()
+	if err != nil {
+		return &rumor.ID, answer.NewInternalServerError(err.Error())
 	}
 
 	ok, err := db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID)

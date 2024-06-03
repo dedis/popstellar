@@ -46,12 +46,12 @@ func handleChannelElection(channelPath string, msg message.Message) *answer.Erro
 	}
 
 	if storeMessage {
-		db, errAnswer := database.GetElectionRepositoryInstance()
-		if errAnswer != nil {
-			return errAnswer.Wrap("handleChannelElection")
+		db, err := database.GetElectionRepositoryInstance()
+		if err != nil {
+			return answer.NewInternalServerError(err.Error())
 		}
 
-		err := db.StoreMessageAndData(channelPath, msg)
+		err = db.StoreMessageAndData(channelPath, msg)
 		if err != nil {
 			errAnswer = answer.NewStoreDatabaseError(err.Error())
 			return errAnswer.Wrap("handleChannelElection")
@@ -79,9 +79,9 @@ func handleVoteCastVote(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleVoteCastVote")
 	}
 
-	db, errAnswer := database.GetElectionRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleVoteCastVote")
+	db, err := database.GetElectionRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	if voteCastVote.CreatedAt < 0 {
@@ -158,9 +158,9 @@ func handleElectionOpen(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleElectionOpen")
 	}
 
-	db, errAnswer := database.GetElectionRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleElectionOpen")
+	db, err := database.GetElectionRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	// verify if the election was already started or terminated
@@ -209,9 +209,9 @@ func handleElectionEnd(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleElectionEnd")
 	}
 
-	db, errAnswer := database.GetElectionRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleElectionEnd")
+	db, err := database.GetElectionRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	questions, err := db.GetElectionQuestionsWithValidVotes(channelPath)
@@ -258,9 +258,9 @@ func verifyElectionEnd(electionEnd messagedata.ElectionEnd, channelPath string) 
 
 	}
 
-	db, errAnswer := database.GetElectionRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleElectionEnd")
+	db, err := database.GetElectionRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	// verify if the election is started
@@ -301,9 +301,9 @@ func verifySenderElection(msg message.Message, channelPath string, onlyOrganizer
 		return errAnswer.Wrap("verifySender")
 	}
 
-	db, errAnswer := database.GetElectionRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("verifySender")
+	db, err := database.GetElectionRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	organizerPubKey, err := db.GetLAOOrganizerPubKey(channelPath)
@@ -337,9 +337,9 @@ func verifySenderElection(msg message.Message, channelPath string, onlyOrganizer
 }
 
 func verifyVote(vote messagedata.Vote, channelPath, electionID string) *answer.Error {
-	db, errAnswer := database.GetElectionRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleElectionOpen")
+	db, err := database.GetElectionRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	questions, err := db.GetElectionQuestions(channelPath)
@@ -457,9 +457,9 @@ func createElectionResult(questions map[string]types.Question, channelPath strin
 
 func computeElectionResult(questions map[string]types.Question, channelPath string) (
 	messagedata.ElectionResult, *answer.Error) {
-	db, errAnswer := database.GetElectionRepositoryInstance()
-	if errAnswer != nil {
-		return messagedata.ElectionResult{}, errAnswer.Wrap("computeElectionResult")
+	db, err := database.GetElectionRepositoryInstance()
+	if err != nil {
+		return messagedata.ElectionResult{}, answer.NewInternalServerError(err.Error())
 	}
 
 	electionType, err := db.GetElectionType(channelPath)
@@ -548,9 +548,9 @@ func decryptVote(vote, channelPath string) (int, *answer.Error) {
 		return -1, errAnswer.Wrap("decryptVote")
 	}
 
-	db, errAnswer := database.GetElectionRepositoryInstance()
-	if errAnswer != nil {
-		return -1, errAnswer.Wrap("decryptVote")
+	db, err := database.GetElectionRepositoryInstance()
+	if err != nil {
+		return -1, answer.NewInternalServerError(err.Error())
 	}
 
 	electionSecretKey, err := db.GetElectionSecretKey(channelPath)

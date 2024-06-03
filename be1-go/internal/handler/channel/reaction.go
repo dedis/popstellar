@@ -14,9 +14,9 @@ func handleChannelReaction(channelPath string, msg message.Message) *answer.Erro
 		return answer.NewInternalServerError(err.Error())
 	}
 
-	db, errAnswer := database.GetReactionRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelReaction")
+	db, err := database.GetReactionRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	laoPath, _ := strings.CutSuffix(channelPath, Social+Reactions)
@@ -29,6 +29,8 @@ func handleChannelReaction(channelPath string, msg message.Message) *answer.Erro
 		errAnswer := answer.NewAccessDeniedError("user not inside roll-call")
 		return errAnswer.Wrap("handleChannelReaction")
 	}
+
+	var errAnswer *answer.Error
 
 	switch object + "#" + action {
 	case messagedata.ReactionObject + "#" + messagedata.ReactionActionAdd:
@@ -86,9 +88,9 @@ func handleReactionDelete(msg message.Message) *answer.Error {
 		return errAnswer.Wrap("handleReactionDelete")
 	}
 
-	db, errAnswer := database.GetReactionRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleReactionDelete")
+	db, err := database.GetReactionRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 	reactSender, err := db.GetReactionSender(delReactMsg.ReactionID)
 	if err != nil {

@@ -102,9 +102,9 @@ func handleRequestChallenge(msg message.Message, channelPath string) *answer.Err
 		return errAnswer.Wrap("handleFederationRequestChallenge")
 	}
 
-	db, errAnswer := database.GetFederationRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationRequestChallenge")
+	db, err := database.GetFederationRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	// store the generated challenge message, not the challenge request
@@ -154,9 +154,9 @@ func handleExpect(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleFederationExpect")
 	}
 
-	db, errAnswer := database.GetFederationRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationExpect")
+	db, err := database.GetFederationRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	serverPk, errAnswer := getServerPk()
@@ -164,7 +164,7 @@ func handleExpect(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleFederationExpect")
 	}
 
-	err := db.IsChallengeValid(serverPk, challenge, channelPath)
+	err = db.IsChallengeValid(serverPk, challenge, channelPath)
 	if err != nil {
 		errAnswer = answer.NewQueryDatabaseError("No valid challenge: %v", err)
 		return errAnswer.Wrap("handleFederationExpect")
@@ -215,12 +215,12 @@ func handleInit(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleFederationInit")
 	}
 
-	db, errAnswer := database.GetFederationRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
+	db, err := database.GetFederationRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
-	err := db.StoreMessageAndData(channelPath, msg)
+	err = db.StoreMessageAndData(channelPath, msg)
 	if err != nil {
 		errAnswer = answer.NewStoreDatabaseError(err.Error())
 		return errAnswer.Wrap("handleFederationInit")
@@ -278,9 +278,9 @@ func handleChallenge(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleFederationChallenge")
 	}
 
-	db, errAnswer := database.GetFederationRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationChallenge")
+	db, err := database.GetFederationRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	organizerPk, errAnswer := getOrganizerPk(channelPath)
@@ -364,9 +364,9 @@ func handleResult(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleFederationResult")
 	}
 
-	db, errAnswer := database.GetFederationRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationResult")
+	db, err := database.GetFederationRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	organizerPk, errAnswer := getOrganizerPk(channelPath)
@@ -394,7 +394,7 @@ func handleResult(msg message.Message, channelPath string) *answer.Error {
 
 	// try to get a matching FederationInit, if found then we know that
 	// the local organizer was waiting this result
-	_, err := db.GetFederationInit(organizerPk,
+	_, err = db.GetFederationInit(organizerPk,
 		result.ChallengeMsg.Sender, federationChallenge, channelPath)
 	if err != nil {
 		errAnswer = answer.NewQueryDatabaseError(
@@ -417,22 +417,22 @@ func handleResult(msg message.Message, channelPath string) *answer.Error {
 }
 
 func getOrganizerPk(federationChannel string) (string, *answer.Error) {
-	db, errAnswer := database.GetFederationRepositoryInstance()
-	if errAnswer != nil {
-		return "", errAnswer.Wrap("getOrganizerPk")
+	db, err := database.GetFederationRepositoryInstance()
+	if err != nil {
+		return "", answer.NewInternalServerError(err.Error())
 	}
 
 	laoChannel := strings.TrimSuffix(federationChannel, "/federation")
 
 	organizerPk, err := db.GetOrganizerPubKey(laoChannel)
 	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to get key")
+		errAnswer := answer.NewInternalServerError("failed to get key")
 		return "", errAnswer.Wrap("getOrganizerPk")
 	}
 
 	organizerPkBytes, err := organizerPk.MarshalBinary()
 	if err != nil {
-		errAnswer = answer.NewInternalServerError(
+		errAnswer := answer.NewInternalServerError(
 			"failed to marshal organizer key: %v", err)
 		return "", errAnswer.Wrap("getOrganizerPk")
 	}
@@ -441,21 +441,21 @@ func getOrganizerPk(federationChannel string) (string, *answer.Error) {
 }
 
 func getServerPk() (string, *answer.Error) {
-	db, errAnswer := database.GetFederationRepositoryInstance()
-	if errAnswer != nil {
-		return "", errAnswer.Wrap("getServerPk")
+	db, err := database.GetFederationRepositoryInstance()
+	if err != nil {
+		return "", answer.NewInternalServerError(err.Error())
 	}
 
 	serverPk, _, err := db.GetServerKeys()
 	if err != nil {
-		errAnswer = answer.NewInternalServerError(
+		errAnswer := answer.NewInternalServerError(
 			"Failed to get server keys: %v", err)
 		return "", errAnswer.Wrap("getServerPk")
 	}
 
 	serverPkBytes, err := serverPk.MarshalBinary()
 	if err != nil {
-		errAnswer = answer.NewInternalServerError(
+		errAnswer := answer.NewInternalServerError(
 			"failed to marshal server pk: %v", err)
 		return "", errAnswer.Wrap("getServerPk")
 	}
@@ -517,14 +517,14 @@ func connectTo(serverAddress string) (socket.Socket, *answer.Error) {
 }
 
 func createMessage(data messagedata.MessageData) (message.Message, *answer.Error) {
-	db, errAnswer := database.GetFederationRepositoryInstance()
-	if errAnswer != nil {
-		return message.Message{}, errAnswer.Wrap("createMessage")
+	db, err := database.GetFederationRepositoryInstance()
+	if err != nil {
+		return message.Message{}, answer.NewInternalServerError(err.Error())
 	}
 
 	dataBytes, err := json.Marshal(data)
 	if err != nil {
-		errAnswer = answer.NewInternalServerError(
+		errAnswer := answer.NewInternalServerError(
 			"failed to marshal %v: %v", data, err)
 		return message.Message{}, errAnswer.Wrap("createMessage")
 	}
@@ -532,14 +532,14 @@ func createMessage(data messagedata.MessageData) (message.Message, *answer.Error
 
 	serverPk, serverSk, err := db.GetServerKeys()
 	if err != nil {
-		errAnswer = answer.NewInternalServerError(
+		errAnswer := answer.NewInternalServerError(
 			"Failed to get server keys: %v", err)
 		return message.Message{}, errAnswer.Wrap("createMessage")
 	}
 
 	senderBytes, err := serverPk.MarshalBinary()
 	if err != nil {
-		errAnswer = answer.NewInternalServerError(
+		errAnswer := answer.NewInternalServerError(
 			"failed to marshal key: %v", err)
 		return message.Message{}, errAnswer.Wrap("createMessage")
 	}
@@ -547,7 +547,7 @@ func createMessage(data messagedata.MessageData) (message.Message, *answer.Error
 
 	signatureBytes, err := schnorr.Sign(crypto.Suite, serverSk, dataBytes)
 	if err != nil {
-		errAnswer = answer.NewInternalServerError(
+		errAnswer := answer.NewInternalServerError(
 			"failed to sign message: %v", err)
 		return message.Message{}, errAnswer.Wrap("createMessage")
 	}

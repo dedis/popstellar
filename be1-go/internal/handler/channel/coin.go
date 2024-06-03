@@ -25,9 +25,9 @@ func handleChannelCoin(channelPath string, msg message.Message) *answer.Error {
 		return errAnswer.Wrap("handleChannelCoin")
 	}
 
-	db, errAnswer := database.GetCoinRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelCoin")
+	db, err := database.GetCoinRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	err = db.StoreMessageAndData(channelPath, msg)

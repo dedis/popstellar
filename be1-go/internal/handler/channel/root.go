@@ -71,9 +71,9 @@ func handleLaoCreate(msg message.Message) *answer.Error {
 }
 
 func verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, *answer.Error) {
-	db, errAnswer := database.GetRootRepositoryInstance()
-	if errAnswer != nil {
-		return nil, errAnswer.Wrap("verifyLAOCreation")
+	db, err := database.GetRootRepositoryInstance()
+	if err != nil {
+		return nil, answer.NewInternalServerError(err.Error())
 	}
 
 	ok, err := db.HasChannel(laoPath)
@@ -148,12 +148,12 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 		laoPath + Federation:         sqlite.FederationType,
 	}
 
-	db, errAnswer := database.GetRootRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("createLaoAndSubChannels")
+	db, err := database.GetRootRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
-	err := db.StoreLaoWithLaoGreet(channels, laoPath, organizerPubBuf, msg, laoGreetMsg)
+	err = db.StoreLaoWithLaoGreet(channels, laoPath, organizerPubBuf, msg, laoGreetMsg)
 	if err != nil {
 		errAnswer := answer.NewStoreDatabaseError("lao and sub channels: %v", err)
 		return errAnswer.Wrap("createLaoAndSubChannels")

@@ -26,9 +26,9 @@ func HandleChannel(channelPath string, msg message.Message, fromRumor bool) *ans
 		return errAnswer.Wrap("HandleChannel")
 	}
 
-	db, errAnswer := database.GetChannelRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("HandleChannel")
+	db, err := database.GetChannelRepositoryInstance()
+	if err != nil {
+		return answer.NewInternalServerError(err.Error())
 	}
 
 	msgAlreadyExists, err := db.HasMessage(msg.MessageID)
