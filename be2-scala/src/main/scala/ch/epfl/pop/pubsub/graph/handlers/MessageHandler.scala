@@ -70,7 +70,6 @@ trait MessageHandler extends AskPatternConstants {
   def dbAskWritePropagate(rpcRequest: JsonRpcRequest): Future[GraphMessage] = {
     rpcRequest.getParamsMessage match
       case Some(m) =>
-        println(s"dbActorWriteAndPropagate : ${dbActor.actorRef}")
         val askWritePropagate = dbActor ? DbActor.WriteAndPropagate(rpcRequest.getParamsChannel, m)
         askWritePropagate.transformWith {
           case Success(_) => Future(Right(rpcRequest))
