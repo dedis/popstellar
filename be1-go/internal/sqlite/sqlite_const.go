@@ -94,14 +94,6 @@ const (
 	    		PRIMARY KEY (channelPath, messageID)
 	            )`
 
-	createPendingSignatures = `
-	CREATE TABLE IF NOT EXISTS pendingSignatures (
-	    		messageID TEXT,
-	    		witness TEXT,
-	    		signature TEXT UNIQUE,
-	    		PRIMARY KEY (messageID, witness)
-	            )`
-
 	createRumor = `
 	CREATE TABLE IF NOT EXISTS rumor ( 
     			ID INTEGER, 
@@ -184,8 +176,6 @@ const (
     JOIN channelMessage ON message.messageID = channelMessage.messageID
     WHERE channelMessage.channelPath = ?
     ORDER BY message.storedTime DESC`
-
-	selectBaseChannelMessages = `SELECT messageID, channelPath FROM channelMessage WHERE isBaseChannel = ?`
 
 	selectChannelPath = `SELECT channelPath FROM channel WHERE channelPath = ?`
 
