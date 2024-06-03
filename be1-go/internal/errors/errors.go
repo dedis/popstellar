@@ -30,6 +30,8 @@ const (
 	DatabaseTransactionCommitErrorMsg = InternalServerErrorMsg + "failed to commit database transaction: "
 	QueryDatabaseErrorMsg             = InternalServerErrorMsg + "failed to query from database: "
 	StoreDatabaseErrorMsg             = InternalServerErrorMsg + "failed to store inside database: "
+	KeyMarshalErrorMsg                = InternalServerErrorMsg + "failed to marshal key: "
+	KeyUnmarshalErrorMsg              = InternalServerErrorMsg + "failed to unmarshal key: "
 )
 
 // PopError defines a custom error type that includes a stack trace.
@@ -148,4 +150,14 @@ func NewDatabaseTransactionBeginErrorMsg(format string, a ...interface{}) error 
 // NewDatabaseTransactionCommitErrorMsg returns an error with the code -6 when there is an error with a database transaction
 func NewDatabaseTransactionCommitErrorMsg(format string, a ...interface{}) error {
 	return NewPopError(InternalServerErrorCode, DatabaseTransactionCommitErrorMsg+format, a...)
+}
+
+// NewKeyMarshalError returns an error with the code -6 when it is impossible to marshal a key
+func NewKeyMarshalError(format string, a ...interface{}) error {
+	return NewPopError(InternalServerErrorCode, KeyMarshalErrorMsg+format, a...)
+}
+
+// NewKeyUnmarshalError returns an error with the code -6 when it is impossible to unmarshal a key
+func NewKeyUnmarshalError(format string, a ...interface{}) error {
+	return NewPopError(InternalServerErrorCode, KeyUnmarshalErrorMsg+format, a...)
 }

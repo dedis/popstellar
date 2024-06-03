@@ -184,32 +184,32 @@ func (s *SQLite) storeElectionHelper(
 
 	electionPubBuf, err := electionPubKey.MarshalBinary()
 	if err != nil {
-		return err
+		return poperrors.NewKeyMarshalError("election public key: %v", err)
 	}
 	electionSecretBuf, err := electionSecretKey.MarshalBinary()
 	if err != nil {
-		return err
+		return poperrors.NewKeyMarshalError("election secret key: %v", err)
 	}
 
 	err = s.insertMessageHelper(tx, msg.MessageID, msgBytes, messageData, storedTime)
 	if err != nil {
-		return err
+		return poperrors.NewDatabaseInsertErrorMsg("election create message: %v", err)
 	}
 	_, err = tx.Exec(insertChannelMessage, laoPath, msg.MessageID, true)
 	if err != nil {
-		return err
+		return poperrors.NewDatabaseInsertErrorMsg("association of election create message with lao channel: %v", err)
 	}
 	_, err = tx.Exec(insertChannel, electionPath, channelTypeToID[ElectionType], laoPath)
 	if err != nil {
-		return err
+		return poperrors.NewDatabaseInsertErrorMsg("election channel: %v", err)
 	}
 	_, err = tx.Exec(insertChannelMessage, electionPath, msg.MessageID, false)
 	if err != nil {
-		return err
+		return poperrors.NewDatabaseInsertErrorMsg("association of election create message with election channel: %v", err)
 	}
 	_, err = tx.Exec(insertKeys, electionPath, electionPubBuf, electionSecretBuf)
 	if err != nil {
-		return err
+		return poperrors.NewDatabaseInsertErrorMsg("election keys: %v", err)
 	}
 
 	return nil
@@ -226,7 +226,7 @@ func (s *SQLite) StoreElection(
 
 	tx, err := s.database.Begin()
 	if err != nil {
-		return err
+		return poperrors.NewDatabaseTransactionBeginErrorMsg("%v", err)
 	}
 	defer tx.Rollback()
 
@@ -237,7 +237,11 @@ func (s *SQLite) StoreElection(
 		return err
 	}
 
-	return tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		return poperrors.NewDatabaseTransactionCommitErrorMsg("%v", err)
+	}
+	return nil
 }
 
 func (s *SQLite) StoreElectionWithElectionKey(
@@ -251,7 +255,7 @@ func (s *SQLite) StoreElectionWithElectionKey(
 
 	tx, err := s.database.Begin()
 	if err != nil {
-		return err
+		return poperrors.NewDatabaseTransactionBeginErrorMsg("%v", err)
 	}
 	defer tx.Rollback()
 
@@ -264,20 +268,20 @@ func (s *SQLite) StoreElectionWithElectionKey(
 
 	electionKey, err := base64.URLEncoding.DecodeString(electionKeyMsg.Data)
 	if err != nil {
-		return err
+		return poperrors.NewDecodeStringError("failed to decode election key message data: %v", err)
 	}
 	electionKeyMsgBytes, err := json.Marshal(electionKeyMsg)
 	if err != nil {
-		return err
+		return poperrors.NewInternalServerError("failed to marshal election key message: %v", err)
 	}
 
 	_, err = tx.Exec(insertMessage, electionKeyMsg.MessageID, electionKeyMsgBytes, electionKey, storedTime)
 	if err != nil {
-		return err
+		return poperrors.NewDatabaseInsertErrorMsg("election key message: %v", err)
 	}
 	_, err = tx.Exec(insertChannelMessage, electionPath, electionKeyMsg.MessageID, false)
 	if err != nil {
-		return err
+		return poperrors.NewDatabaseInsertErrorMsg("association of election key message with election channel: %v", err)
 	}
 
 	return tx.Commit()
