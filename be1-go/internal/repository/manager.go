@@ -2,8 +2,8 @@ package repository
 
 import (
 	"go.dedis.ch/kyber/v3"
-	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"sync"
 )
@@ -26,12 +26,13 @@ type QueryManager interface {
 }
 
 type SubscriptionManager interface {
-	AddChannel(channel string) *answer.Error
+	AddChannel(channel string) error
 	HasChannel(channel string) bool
-	Subscribe(channel string, socket socket.Socket) *answer.Error
-	Unsubscribe(channel string, socket socket.Socket) *answer.Error
+	Subscribe(channel string, socket socket.Socket) error
+	Unsubscribe(channel string, socket socket.Socket) error
 	UnsubscribeFromAll(socketID string)
-	SendToAll(buf []byte, channel string) *answer.Error
+	SendToAll(buf []byte, channel string) error
+	BroadcastToAllClients(msg message.Message, channel string) error
 }
 
 type PeerManager interface {
@@ -42,10 +43,11 @@ type PeerManager interface {
 }
 
 type ConfigManager interface {
-	GetOwnerPublicKeyInstance() (kyber.Point, *answer.Error)
-	GetServerPublicKeyInstance() (kyber.Point, *answer.Error)
-	GetServerSecretKeyInstance() (kyber.Scalar, *answer.Error)
-	GetServerInfo() (string, string, string, *answer.Error)
+	GetOwnerPublicKeyInstance() (kyber.Point, error)
+	GetServerPublicKeyInstance() (kyber.Point, error)
+	GetServerSecretKeyInstance() (kyber.Scalar, error)
+	GetServerInfo() (string, string, string, error)
+	Sign(data []byte) ([]byte, error)
 }
 
 type HubManager interface {
