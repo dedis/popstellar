@@ -38,7 +38,7 @@ class RumorHandlerSuite extends TestKitBase with AnyFunSuiteLike with AskPattern
   private val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)), "dbRumor")
   private val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(RuntimeEnvironment.securityPath)), "securityRumor")
   private val monitorRef: ActorRef = system.actorOf(Monitor.props(dbActorRef), "monitorRumor")
-  private val gossipRef: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef))
+  private val gossipRef: ActorRef = system.actorOf(GossipManager.props(dbActorRef))
   private var connectionMediatorRef: AskableActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipRef, messageRegistry), "connMediatorRumor")
   private val rumorHandler: Flow[GraphMessage, GraphMessage, NotUsed] = ParamsHandler.rumorHandler(dbActorRef, messageRegistry)
 

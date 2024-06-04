@@ -50,7 +50,7 @@ object Server {
 
       // Create necessary actors for server-server communications
       val monitorRef: ActorRef = system.actorOf(Monitor.props(dbActorRef))
-      val gossipManagerRef: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef))
+      val gossipManagerRef: ActorRef = system.actorOf(GossipManager.props(dbActorRef))
       val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipManagerRef, messageRegistry))
 
       // Setup routes

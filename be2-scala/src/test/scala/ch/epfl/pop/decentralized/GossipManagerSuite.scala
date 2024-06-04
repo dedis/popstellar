@@ -14,15 +14,16 @@ import akka.stream.scaladsl.{Flow, Sink, Source}
 import ch.epfl.pop.IOHelper.readJsonFromPath
 import ch.epfl.pop.model.network.MethodType.rumor
 import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
-import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
+import ch.epfl.pop.model.network.method.{GreetServer, Rumor, RumorState}
 import ch.epfl.pop.model.objects.{Base64Data, PublicKey, RumorData}
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.GraphMessage
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import ch.epfl.pop.storage.DbActor.DbActorReadRumorData
+import ch.epfl.pop.storage.DbActor.{DbActorAck, DbActorReadRumorData}
 import org.scalatest.BeforeAndAfterEach
 
 import scala.concurrent.Await
+import concurrent.duration.DurationInt
 
 class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSystem")) with AnyFunSuiteLike with AskPatternConstants with Matchers with BeforeAndAfterEach {
 
@@ -63,7 +64,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
   val rumor: Rumor = rumorRequest.getParams.asInstanceOf[Rumor]
 
   test("When receiving a message, gossip manager should create and send a rumor") {
-    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef))
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef))
     connectionMediatorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipManager, messageRegistry))
     val sender = TestProbe("a")
     val gossip = GossipManager.startGossip(gossipManager, sender.ref)
@@ -98,7 +99,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
   }
 
   test("Gossip manager increments jsonRpcId and rumorID when starting a gossip from message") {
-    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef))
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef))
     connectionMediatorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipManager, messageRegistry))
     val sender = TestProbe("b")
     val gossip = GossipManager.startGossip(gossipManager, sender.ref)
@@ -127,7 +128,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
   }
 
   test("Gossip manager should increment jsonRpcId but not rumor when starting gossip from rumor") {
-    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef))
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef))
     connectionMediatorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipManager, messageRegistry))
     val sender = TestProbe("c")
     val gossipHandler = GossipManager.gossipHandler(gossipManager, sender.ref)
@@ -157,13 +158,13 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
   }
 
   test("Gossip should stop when there is no peers left") {
-    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef))
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef))
     val sender = TestProbe("d")
     val gossip = GossipManager.startGossip(gossipManager, sender.ref)
     connectionMediatorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipManager, messageRegistry))
 
     val peerServer = TestProbe()
-    val gossipMonitor = GossipManager.monitorResponse(gossipManager, peerServer.ref)
+    val gossipMonitor = GossipManager.monitorResponse(gossipManager)
 
     // registers a new server
     connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer.ref, GreetServer(PublicKey(Base64Data.encode("publicKey")), "", ""))
@@ -194,7 +195,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
   }
 
   test("Gossip should write in memory new rumors sent") {
-    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef))
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef))
     val sender = TestProbe()
     val gossip = GossipManager.startGossip(gossipManager, sender.ref)
     connectionMediatorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipManager, messageRegistry))
@@ -227,7 +228,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
   test("gossip handler should forward a rumor to a random server") {
 
-    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef))
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef))
     connectionMediatorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipManager, messageRegistry))
     val sender = TestProbe()
     val gossipHandler = GossipManager.gossipHandler(gossipManager, sender.ref)
@@ -251,7 +252,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
   }
 
   test("gossip handler should send to only one server if multiples are present") {
-    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef))
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef))
     connectionMediatorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipManager, messageRegistry))
     val sender = TestProbe()
     val gossipHandler = GossipManager.gossipHandler(gossipManager, sender.ref)
@@ -278,12 +279,12 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
   }
 
   test("gossip handler should send rumor if there is an ongoing gossip protocol") {
-    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef))
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef))
     connectionMediatorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipManager, messageRegistry))
     val sender = TestProbe()
     val gossipHandler = GossipManager.gossipHandler(gossipManager, sender.ref)
 
-    val gossipMonitor = GossipManager.monitorResponse(gossipManager, sender.ref)
+    val gossipMonitor = GossipManager.monitorResponse(gossipManager)
 
     val peerServer1 = TestProbe()
     val peerServer2 = TestProbe()
@@ -339,14 +340,23 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
   }
 
   test("Gossip sends rumor state when there is one server connected") {
-    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, pullRate = 2.seconds))
+    connectionMediatorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipManager, messageRegistry))
     val watcher = TestProbe()
     val server = TestProbe()
 
+    val writeRumor = dbActorRef ? DbActor.WriteRumor(rumor)
+    Await.result(writeRumor, duration) shouldBe DbActorAck()
+
     connectionMediatorRef ? ConnectionMediator.NewServerConnected(server.ref, GreetServer(PublicKey(Base64Data.encode("publickey")), "client", "server"))
+    checkPeersWritten(connectionMediatorRef)
 
-    server.receiveOne(duration) shouldBe a[Right[Nothing, JsonRpcRequest]]
-
+    server.receiveOne(5.seconds) match
+      case ClientAnswer(Right(jsonRpcRequest: JsonRpcRequest)) =>
+        jsonRpcRequest.id shouldBe Some(0)
+        jsonRpcRequest.method shouldBe MethodType.rumor_state
+        val rumorState = jsonRpcRequest.getParams.asInstanceOf[RumorState]
+        rumorState.state shouldBe Map(rumor.senderPk -> rumor.rumorId)
   }
 
 }

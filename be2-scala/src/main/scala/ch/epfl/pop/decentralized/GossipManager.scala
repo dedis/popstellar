@@ -30,9 +30,7 @@ import scala.util.Random
   * @param stopProbability
   *   probability with which we stop the gossipping in case of error response
   */
-final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Double = 0.5,
-    pullRate: FiniteDuration = 15.seconds
-) extends Actor with AskPatternConstants with ActorLogging with Timers {
+final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Double = 0.5, pullRate: FiniteDuration = 15.seconds) extends Actor with AskPatternConstants with ActorLogging with Timers {
 
   private var activeGossipProtocol: Map[JsonRpcRequest, Set[ActorRef]] = Map.empty
   private var rumorMap: Map[PublicKey, Int] = Map.empty
@@ -148,10 +146,10 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
   }
 
   private def sendRumorState(): Unit = {
-    val randomPeer = connectionMediator ? ConnectionMediator.GetRandomPeer()
+    val randomPeer = connectionMediatorRef ? ConnectionMediator.GetRandomPeer()
     Await.result(randomPeer, duration) match {
       case ConnectionMediator.GetRandomPeerAck(serverRef, greetServer) =>
-        val rumorStateGet = dbActorRef ? GetRumorState
+        val rumorStateGet = dbActorRef ? GetRumorState()
         Await.result(rumorStateGet, duration) match
           case DbActorGetRumorStateAck(rumorState) =>
             serverRef ! ClientAnswer(
@@ -226,8 +224,8 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
 }
 
 object GossipManager extends AskPatternConstants {
-  def props(dbActorRef: AskableActorRef, monitorRef: ActorRef): Props =
-    Props(new GossipManager(dbActorRef))
+  def props(dbActorRef: AskableActorRef, pullRate: FiniteDuration = 15.seconds): Props =
+    Props(new GossipManager(dbActorRef, pullRate = pullRate))
 
   /** When receiving a rumor, gossip manager handles the rumor by relaying
     *
@@ -250,11 +248,9 @@ object GossipManager extends AskPatternConstants {
   /** Monitors responses to check if one is related to a rumor we sent
     * @param gossipManager
     *   reference to the gossip manager of the server
-    * @param clientActorRef
-    *   reference to the client who sent the message.
     * @return
     */
-  def monitorResponse(gossipManager: AskableActorRef, clientActorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+  def monitorResponse(gossipManager: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcResponse: JsonRpcResponse) =>
       gossipManager ? ManageGossipResponse(jsonRpcResponse)
       Right(jsonRpcResponse)

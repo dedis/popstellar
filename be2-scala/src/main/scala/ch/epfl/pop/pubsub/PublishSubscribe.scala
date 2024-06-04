@@ -75,8 +75,6 @@ object PublishSubscribe {
         val requestPartition = builder.add(validateRequests(clientActorRef, messageRegistry))
 
         val responsePartitionGraph = builder.add(responsePartition(messageRegistry, gossipManager))
-        val gossipMonitorPartition = builder.add(GossipManager.monitorResponse(gossipManager, clientActorRef))
-        val getMsgByIdResponsePartition = builder.add(ProcessMessagesHandler.getMsgByIdResponseHandler(messageRegistry))
 
         // ResponseHandler messages do not go in the merger
         val merger = builder.add(Merge[GraphMessage](totalPorts - 1))
