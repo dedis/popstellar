@@ -6,6 +6,7 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.model.objects.Lao
 import com.github.dedis.popstellar.model.objects.RollCall
 import com.github.dedis.popstellar.model.objects.RollCall.Companion.closeRollCall
@@ -19,6 +20,7 @@ import com.github.dedis.popstellar.testutils.Base64DataUtils
 import com.github.dedis.popstellar.testutils.BundleBuilder
 import com.github.dedis.popstellar.testutils.MessageSenderHelper
 import com.github.dedis.popstellar.testutils.MockitoKotlinHelpers
+import com.github.dedis.popstellar.testutils.UITestUtils
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule
 import com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject
 import com.github.dedis.popstellar.testutils.pages.lao.event.rollcall.RollCallFragmentPageObject
@@ -29,15 +31,11 @@ import com.github.dedis.popstellar.utility.Constants
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import com.github.dedis.popstellar.utility.error.keys.KeyException
 import com.github.dedis.popstellar.utility.security.KeyManager
+import com.google.android.gms.common.util.CollectionUtils.listOf
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.subjects.BehaviorSubject
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import javax.inject.Inject
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
@@ -48,6 +46,12 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoTestRule
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.Collections
+import java.util.Date
+import java.util.Locale
+import javax.inject.Inject
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -61,9 +65,9 @@ class RollCallFragmentTest {
       ROLL_CALL_START,
       ROLL_CALL_END,
       EventState.CREATED,
-      HashSet(),
+      LinkedHashSet(),
       LOCATION,
-      ROLL_CALL_EMPTY_DESC
+      ROLL_CALL_EMPTY_DESC,
     )
   private val ROLL_CALL_2 =
     RollCall(
@@ -74,9 +78,37 @@ class RollCallFragmentTest {
       ROLL_CALL_START + 3,
       ROLL_CALL_END + 3,
       EventState.CREATED,
-      HashSet(),
+      LinkedHashSet(),
       LOCATION,
-      ROLL_CALL_DESC
+      ROLL_CALL_DESC,
+    )
+
+  private val ROLL_CALL_SORTED_ATTENDEES =
+    RollCall(
+      LAO.id + "3",
+      LAO.id + "3",
+      ROLL_CALL_TITLE + "3",
+      CREATION,
+      ROLL_CALL_START,
+      ROLL_CALL_END,
+      EventState.OPENED,
+      validAttendees,
+      LOCATION,
+      ROLL_CALL_EMPTY_DESC,
+    )
+
+  private val ROLL_CALL_UNSORTED_ATTENDEES =
+    RollCall(
+      LAO.id + "4",
+      LAO.id + "4",
+      ROLL_CALL_TITLE + "4",
+      CREATION,
+      ROLL_CALL_START,
+      ROLL_CALL_END,
+      EventState.OPENED,
+      LinkedHashSet(unSortedAttendees),
+      LOCATION,
+      ROLL_CALL_EMPTY_DESC,
     )
 
   @Inject lateinit var rollCallRepo: RollCallRepository
@@ -108,6 +140,8 @@ class RollCallFragmentTest {
         Mockito.`when`(laoRepo.getLaoView(MockitoKotlinHelpers.any())).thenAnswer { LaoView(LAO) }
         rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL)
         rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL_2)
+        rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL_SORTED_ATTENDEES)
+        rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL_UNSORTED_ATTENDEES)
 
         Mockito.`when`(keyManager.mainPublicKey).thenReturn(SENDER)
         Mockito.`when`(networkManager.messageSender).thenReturn(messageSenderHelper.mockedSender)
@@ -488,6 +522,42 @@ class RollCallFragmentTest {
       )
   }
 
+  @Test
+  fun sortedAttendeeListShowsNoToast() {
+    rollCallRepo.updateRollCall(LAO_ID, closeRollCall(ROLL_CALL_SORTED_ATTENDEES))
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+    openRollCallWithDescription(ROLL_CALL_SORTED_ATTENDEES)
+
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+    RollCallFragmentPageObject.rollCallListAttendees()
+      .check(
+        ViewAssertions.matches(
+          ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
+        )
+      )
+
+    UITestUtils.assertToastDisplayedHasNotText(R.string.roll_call_attendees_list_not_sorted)
+  }
+
+  @Test
+  fun unSortedAttendeeListShowsToast() {
+    rollCallRepo.updateRollCall(LAO_ID, closeRollCall(ROLL_CALL_UNSORTED_ATTENDEES))
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+    openRollCallWithDescription(ROLL_CALL_UNSORTED_ATTENDEES)
+
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+    RollCallFragmentPageObject.rollCallListAttendees()
+      .check(
+        ViewAssertions.matches(
+          ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
+        )
+      )
+
+    UITestUtils.assertToastIsDisplayedWithText(R.string.roll_call_attendees_list_not_sorted)
+  }
+
   /** Utility function to create a LAO when the user is not the organizer */
   @Throws(UnknownLaoException::class)
   private fun fakeClientLao() {
@@ -495,14 +565,20 @@ class RollCallFragmentTest {
     Mockito.`when`(laoRepo.getLaoView(MockitoKotlinHelpers.any())).thenAnswer { LaoView(LAO_2) }
     rollCallRepo.updateRollCall(LAO_ID2, ROLL_CALL)
     rollCallRepo.updateRollCall(LAO_ID2, ROLL_CALL_2)
+    rollCallRepo.updateRollCall(LAO_ID2, ROLL_CALL_SORTED_ATTENDEES)
+    rollCallRepo.updateRollCall(LAO_ID2, ROLL_CALL_UNSORTED_ATTENDEES)
     Mockito.`when`(keyManager.mainPublicKey).thenReturn(SENDER_2)
   }
 
   /** Utility function to open the fragment of an alternative roll call */
   private fun openRollCallWithDescription() {
+    openRollCallWithDescription(ROLL_CALL_2)
+  }
+
+  private fun openRollCallWithDescription(rollCall: RollCall) {
     activityScenarioRule.scenario.onActivity { activity: LaoActivity ->
       setCurrentFragment(activity.supportFragmentManager, RollCallFragmentPageObject.fragmentId()) {
-        newInstance(ROLL_CALL_2.persistentId)
+        newInstance(rollCall.persistentId)
       }
     }
   }
@@ -527,5 +603,22 @@ class RollCallFragmentTest {
     private val laoSubject2 = BehaviorSubject.createDefault(LaoView(LAO_2))
     private val DATE_FORMAT: DateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH)
     private val POP_TOKEN = Base64DataUtils.generatePoPToken()
+
+    private val attendees = listOf(
+      Base64DataUtils.generatePublicKey(),
+      Base64DataUtils.generatePublicKey(),
+      Base64DataUtils.generatePublicKey(),
+      Base64DataUtils.generatePublicKey(),
+      Base64DataUtils.generatePublicKey(),
+      Base64DataUtils.generatePublicKey()
+    )
+
+    private val validAttendees = LinkedHashSet(attendees.sortedBy { it.toString() })
+
+    private val unSortedAttendees =  ArrayList(validAttendees).toMutableList().apply {  }
+
+    init {
+      Collections.swap(unSortedAttendees, 0, 1)
+    }
   }
 }

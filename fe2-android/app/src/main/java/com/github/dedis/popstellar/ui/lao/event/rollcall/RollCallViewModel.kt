@@ -37,6 +37,7 @@ import java.util.TreeSet
 import java.util.stream.Collectors
 import javax.inject.Inject
 import timber.log.Timber
+import java.util.ArrayList
 
 @HiltViewModel
 class RollCallViewModel
@@ -262,6 +263,7 @@ constructor(
     nbScanned.postValue(attendees.size)
   }
 
+    @Inject
   fun getAttendees(): Set<PublicKey> {
     return attendees
   }

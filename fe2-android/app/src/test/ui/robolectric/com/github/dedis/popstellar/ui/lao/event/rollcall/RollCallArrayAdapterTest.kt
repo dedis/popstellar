@@ -51,14 +51,14 @@ class RollCallArrayAdapterTest {
     }
 
     @Test
-    fun verify_our_token_is_highlighted() {
+    fun verifyOurTokenIsHighlighted() {
         val view = adapter.getView(0, mockView, mock(ViewGroup::class.java)) as TextView
         val color = ContextCompat.getColor(context, R.color.colorAccent)
         Assert.assertEquals(color, view.currentTextColor)
     }
 
     @Test
-    fun verify_other_token_is_not_highlighted() {
+    fun verifyOtherTokenIsNotHighlighted() {
         val view = adapter.getView(1, mockView, mock(ViewGroup::class.java)) as TextView
         val color = ContextCompat.getColor(context, R.color.textOnBackground)
         Assert.assertEquals(color, view.currentTextColor)

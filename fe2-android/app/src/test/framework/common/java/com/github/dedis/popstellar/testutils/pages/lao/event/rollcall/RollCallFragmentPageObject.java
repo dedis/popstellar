@@ -17,7 +17,6 @@ public class RollCallFragmentPageObject {
   public static ViewInteraction rollCallTitle() {
     return onView(withId(R.id.roll_call_fragment_title));
   }
-
   public static ViewInteraction rollCallStatusText() {
     return onView(withId(R.id.roll_call_status));
   }

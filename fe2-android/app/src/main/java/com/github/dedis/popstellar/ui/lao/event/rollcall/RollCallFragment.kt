@@ -30,6 +30,7 @@ import com.github.dedis.popstellar.utility.ActivityUtils.getQRCodeColor
 import com.github.dedis.popstellar.utility.ActivityUtils.handleExpandArrow
 import com.github.dedis.popstellar.utility.Constants.ID_NULL
 import com.github.dedis.popstellar.utility.Constants.ROLL_CALL_ID
+import com.github.dedis.popstellar.utility.error.ErrorUtils
 import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException
@@ -263,10 +264,10 @@ class RollCallFragment : AbstractEventFragment {
               resources.getString(R.string.roll_call_scanned),
               rollCallViewModel.getAttendees().size)
     } else if (rollCall.isClosed) {
-      attendeesList =
-          rollCall.attendees.stream().map(PublicKey::encoded).collect(Collectors.toList())
+        val orderedAttendees: MutableSet<PublicKey> = LinkedHashSet(rollCall.attendees)
+        attendeesList = orderedAttendees.stream().map(PublicKey::encoded).collect(Collectors.toList())
 
-      // Show the list of attendees if the roll call has ended
+        // Show the list of attendees if the roll call has ended
       binding.rollCallAttendeesText.text =
           String.format(resources.getString(R.string.roll_call_attendees), rollCall.attendees.size)
     }
@@ -358,7 +359,8 @@ class RollCallFragment : AbstractEventFragment {
     }
 
     fun isAttendeeListSorted(attendeesList: List<String>, context: Context): Boolean {
-      if (attendeesList != attendeesList.sorted() && deAnonymizationWarned.value == false) {
+
+      if (attendeesList.isNotEmpty() && attendeesList != attendeesList.sorted() && deAnonymizationWarned.value == false) {
         deAnonymizationWarned.value = true
         logAndShow(context, TAG, R.string.roll_call_attendees_list_not_sorted)
         return false

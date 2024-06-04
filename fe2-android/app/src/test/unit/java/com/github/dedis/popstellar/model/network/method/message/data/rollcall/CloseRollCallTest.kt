@@ -10,6 +10,7 @@ import com.github.dedis.popstellar.model.objects.security.Base64URLData
 import com.github.dedis.popstellar.testutils.Base64DataUtils
 import com.github.dedis.popstellar.utility.MessageValidator
 import com.github.dedis.popstellar.utility.security.HashSHA256.hash
+import com.google.android.gms.common.util.CollectionUtils.listOf
 import junit.framework.TestCase.assertNotNull
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
@@ -17,6 +18,7 @@ import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.Instant
+import java.util.ArrayList
 import java.util.Collections
 
 @RunWith(AndroidJUnit4::class)
@@ -94,9 +96,7 @@ class CloseRollCallTest {
   @Test(expected = IllegalArgumentException::class)
   fun constructorFailsWhenAttendeesNotSorted() {
     val unsortedAttendees = ArrayList(attendees).toMutableList()
-    if (unsortedAttendees[0].toString() > unsortedAttendees[1].toString()) {
-      Collections.swap(unsortedAttendees, 0, 1)
-    }
+    Collections.swap(unsortedAttendees, 0, 1)
 
     CloseRollCall(validBase64LaoId, validBase64Closes, pastTime, unsortedAttendees)
   }
