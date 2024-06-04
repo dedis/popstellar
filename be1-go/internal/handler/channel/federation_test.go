@@ -33,9 +33,9 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	federationHandler := createFederationHandler(db, subs, socket, hub, schema)
 
-	organizerPk, organizerSk := generateKeys()
-	organizer2Pk, organizer2Sk := generateKeys()
-	notOrganizerPk, notOrganizerSk := generateKeys()
+	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
+	organizer2Pk, _, organizer2Sk, _ := generator.GenerateKeyPair(t)
+	notOrganizerPk, _, notOrganizerSk, _ := generator.GenerateKeyPair(t)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)
@@ -300,7 +300,7 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			err = federationHandler.handleChannelFederation(arg.channelPath, arg.msg)
+			err = federationHandler.handle(arg.channelPath, arg.msg)
 			if arg.isError {
 				require.Error(t, err, arg.contains)
 			} else {
@@ -320,8 +320,8 @@ func Test_handleRequestChallenge(t *testing.T) {
 
 	federationHandler := createFederationHandler(db, subs, socket, hub, schema)
 
-	organizerPk, organizerSk := generateKeys()
-	serverPk, serverSk := generateKeys()
+	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
+	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)
@@ -372,9 +372,9 @@ func Test_handleFederationExpect(t *testing.T) {
 
 	federationHandler := createFederationHandler(db, subs, socket, hub, schema)
 
-	organizerPk, organizerSk := generateKeys()
-	organizer2Pk, _ := generateKeys()
-	serverPk, serverSk := generateKeys()
+	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
+	organizer2Pk, _, _, _ := generator.GenerateKeyPair(t)
+	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)
@@ -429,8 +429,8 @@ func Test_handleFederationInit(t *testing.T) {
 
 	federationHandler := createFederationHandler(db, subs, socket, hub, schema)
 
-	organizerPk, organizerSk := generateKeys()
-	organizer2Pk, _ := generateKeys()
+	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
+	organizer2Pk, _, _, _ := generator.GenerateKeyPair(t)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)
@@ -508,9 +508,9 @@ func Test_handleFederationChallenge(t *testing.T) {
 
 	federationHandler := createFederationHandler(db, subs, socket, hub, schema)
 
-	organizerPk, organizerSk := generateKeys()
-	organizer2Pk, organizer2Sk := generateKeys()
-	serverPk, serverSk := generateKeys()
+	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
+	organizer2Pk, _, organizer2Sk, _ := generator.GenerateKeyPair(t)
+	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)
@@ -612,8 +612,8 @@ func Test_handleFederationResult(t *testing.T) {
 
 	federationHandler := createFederationHandler(db, subs, socket, hub, schema)
 
-	organizerPk, organizerSk := generateKeys()
-	organizer2Pk, organizer2Sk := generateKeys()
+	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
+	organizer2Pk, _, organizer2Sk, _ := generator.GenerateKeyPair(t)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)

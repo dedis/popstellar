@@ -43,11 +43,11 @@ func Test_handleMessagesByChannel(t *testing.T) {
 		expected map[string]map[string]message.Message
 	}
 
-	keypair := generator.GenerateKeyPair(t)
+	_, publicBuf, private, _ := generator.GenerateKeyPair(t)
 	now := time.Now().Unix()
 	name := "LAO X"
 
-	laoID := message.Hash(base64.URLEncoding.EncodeToString(keypair.PublicBuf), fmt.Sprintf("%d", now), name)
+	laoID := message.Hash(base64.URLEncoding.EncodeToString(publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := messagedata.LaoCreate{
 		Object:    messagedata.LAOObject,
@@ -55,13 +55,13 @@ func Test_handleMessagesByChannel(t *testing.T) {
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
-		Organizer: base64.URLEncoding.EncodeToString(keypair.PublicBuf),
+		Organizer: base64.URLEncoding.EncodeToString(publicBuf),
 		Witnesses: []string{},
 	}
 
 	dataBuf, err := json.Marshal(data)
 	require.NoError(t, err)
-	signature, err := schnorr.Sign(crypto.Suite, keypair.Private, dataBuf)
+	signature, err := schnorr.Sign(crypto.Suite, private, dataBuf)
 	require.NoError(t, err)
 
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
@@ -69,7 +69,7 @@ func Test_handleMessagesByChannel(t *testing.T) {
 
 	msgValid := message.Message{
 		Data:              dataBase64,
-		Sender:            base64.URLEncoding.EncodeToString(keypair.PublicBuf),
+		Sender:            base64.URLEncoding.EncodeToString(publicBuf),
 		Signature:         signatureBase64,
 		MessageID:         message.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []message.WitnessSignature{},

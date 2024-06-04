@@ -102,7 +102,7 @@ func Test_handleChannelRoot(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			err = rootHandler.handleChannelRoot(arg.msg)
+			err = rootHandler.handle("", arg.msg)
 			if arg.isError {
 				require.Error(t, err, arg.contains)
 			} else {

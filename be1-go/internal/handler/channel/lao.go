@@ -232,7 +232,7 @@ func (l *laoHandler) verifySenderLao(channelPath string, msg message.Message) er
 }
 
 func (l *laoHandler) storeElection(msg message.Message, electionSetup messagedata.ElectionSetup, channelPath string) error {
-	electionPubKey, electionSecretKey := generateKeys()
+	electionPubKey, electionSecretKey := l.generateKeys()
 	electionPath := channelPath + "/" + electionSetup.ID
 
 	if electionSetup.Version == messagedata.SecretBallot {
@@ -295,4 +295,11 @@ func (l *laoHandler) createElectionKey(electionID string, electionPubKey kyber.P
 	}
 
 	return electionKeyMsg, nil
+}
+
+// generateKeys generates and returns a key pair
+func (laoHandler) generateKeys() (kyber.Point, kyber.Scalar) {
+	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+	point := crypto.Suite.Point().Mul(secret, nil)
+	return point, secret
 }

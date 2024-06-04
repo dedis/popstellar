@@ -42,7 +42,7 @@ func createRootHandler(config repository.ConfigManager, db repository.RootReposi
 	}
 }
 
-func (h *rootHandler) handleChannelRoot(msg message.Message) error {
+func (h *rootHandler) handle(_ string, msg message.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return errors.NewDecodeStringError("failed to decode message data: %v", err)

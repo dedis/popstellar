@@ -1,12 +1,9 @@
 package channel
 
 import (
-	"go.dedis.ch/kyber/v3"
-	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/repository"
-	"popstellar/internal/validation"
 )
 
 const (
@@ -23,49 +20,39 @@ const (
 	FederationType   = "federation"
 )
 
-type channelHandler struct {
-	db     repository.ChannelRepository
-	schema *validation.SchemaValidator
-
-	root       *rootHandler
-	lao        *laoHandler
-	election   *electionHandler
-	chirp      *chirpHandler
-	reaction   *reactionHandler
-	coin       *coinHandler
-	federation *federationHandler
+type channelSubHandler interface {
+	handle(channelPath string, msg message.Message) error
 }
 
-func createChannelHandler(conf repository.ConfigManager, subs repository.SubscriptionManager, peers repository.PeerManager,
-	socket repository.SocketManager, db repository.Repository, hub repository.HubManager, schema *validation.SchemaValidator) *channelHandler {
-	root := createRootHandler(conf, db, subs, peers, schema)
-	lao := createLaoHandler(conf, subs, db, schema)
-	election := createElectionHandler(conf, subs, db, schema)
-	chirp := createChripHandler(conf, subs, db, schema)
-	reaction := createReactionHandler(subs, db, schema)
-	coin := createCoinHandler(subs, db, schema)
-	federation := createFederationHandler(db, subs, socket, hub, schema)
+type channelSubHandlers struct {
+	root       channelSubHandler
+	lao        channelSubHandler
+	election   channelSubHandler
+	chirp      channelSubHandler
+	reaction   channelSubHandler
+	coin       channelSubHandler
+	federation channelSubHandler
+}
 
-	return &channelHandler{
-		db:         db,
-		schema:     schema,
-		root:       root,
-		lao:        lao,
-		election:   election,
-		chirp:      chirp,
-		reaction:   reaction,
-		coin:       coin,
-		federation: federation,
+type Handler struct {
+	db       repository.ChannelRepository
+	handlers channelSubHandlers
+}
+
+func CreateHandler(db repository.Repository, handlers channelSubHandlers) *Handler {
+	return &Handler{
+		db:       db,
+		handlers: handlers,
 	}
 }
 
-func (c *channelHandler) Handle(channelPath string, msg message.Message, fromRumor bool) error {
+func (h *Handler) Handle(channelPath string, msg message.Message, fromRumor bool) error {
 	err := msg.VerifyMessage()
 	if err != nil {
 		return err
 	}
 
-	msgAlreadyExists, err := c.db.HasMessage(msg.MessageID)
+	msgAlreadyExists, err := h.db.HasMessage(msg.MessageID)
 	if err != nil {
 		return err
 	}
@@ -76,38 +63,29 @@ func (c *channelHandler) Handle(channelPath string, msg message.Message, fromRum
 		return errors.NewDuplicateResourceError("message %s was already received", msg.MessageID)
 	}
 
-	channelType, err := c.db.GetChannelType(channelPath)
+	channelType, err := h.db.GetChannelType(channelPath)
 	if err != nil {
 		return err
 	}
 
 	switch channelType {
 	case RootType:
-		err = c.root.handleChannelRoot(msg)
+		err = h.handlers.root.handle(channelPath, msg)
 	case LaoType:
-		err = c.lao.handle(channelPath, msg)
+		err = h.handlers.lao.handle(channelPath, msg)
 	case ElectionType:
-		err = c.election.handle(channelPath, msg)
+		err = h.handlers.election.handle(channelPath, msg)
 	case ChirpType:
-		err = c.chirp.handle(channelPath, msg)
+		err = h.handlers.chirp.handle(channelPath, msg)
 	case ReactionType:
-		err = c.reaction.handle(channelPath, msg)
+		err = h.handlers.reaction.handle(channelPath, msg)
 	case CoinType:
-		err = c.coin.handle(channelPath, msg)
+		err = h.handlers.coin.handle(channelPath, msg)
 	case FederationType:
-		err = c.federation.handleChannelFederation(channelPath, msg)
+		err = h.handlers.federation.handle(channelPath, msg)
 	default:
 		err = errors.NewInvalidResourceError("unknown channelPath type for %s", channelPath)
 	}
 
 	return err
-}
-
-// util for the channels
-
-// generateKeys generates and returns a key pair
-func generateKeys() (kyber.Point, kyber.Scalar) {
-	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-	point := crypto.Suite.Point().Mul(secret, nil)
-	return point, secret
 }

@@ -46,7 +46,7 @@ func createFederationHandler(db repository.FederationRepository, subs repository
 	}
 }
 
-func (h *federationHandler) handleChannelFederation(channelPath string, msg message.Message) error {
+func (h *federationHandler) handle(channelPath string, msg message.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
