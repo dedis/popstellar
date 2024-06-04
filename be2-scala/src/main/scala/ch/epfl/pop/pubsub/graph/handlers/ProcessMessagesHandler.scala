@@ -53,11 +53,10 @@ object ProcessMessagesHandler extends AskPatternConstants {
     case msg @ Right(JsonRpcResponse(_, Some(resultObject), None, jsonId)) =>
       resultObject.resultRumor match
         case Some(rumorList) =>
-          val mergedMsg = rumorList.flatMap(rumor => rumor.messages)
-            .map((channel, msgList) => (channel, msgList.toSet))
-            .foldLeft(Map.empty[Channel, Set[Message]]) { case (acc, (key, values)) =>
-              acc.updated(key, acc.getOrElse(key, Set.empty[Message]) ++ values)
-            }
+          val mergedMsg = rumorList
+            .flatMap(_.messages)
+            .groupBy(_._1)
+            .view.mapValues(_.flatMap(_._2).toSet).toMap
           processMsgMap(mergedMsg, messageRegistry)
           msg
         case _ => Left(PipelineError(
