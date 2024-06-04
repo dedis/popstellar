@@ -46,13 +46,13 @@ func Test_handleChannelLao(t *testing.T) {
 	err = subs.AddChannel(laoID)
 	require.NoError(t, err)
 
-	// Test 1:Success For LaoState message
+	// Test 1:Failed For LaoState message
 	args = append(args, input{
 		name:        "Test 1",
 		msg:         newLaoStateMsg(t, ownerPubBuf64, laoID, db),
 		channelPath: laoID,
-		isError:     false,
-		contains:    "",
+		isError:     true,
+		contains:    "failed to handle lao#state, invalid object#action",
 	})
 
 	creation := time.Now().Unix()
@@ -270,13 +270,6 @@ func newLaoStateMsg(t *testing.T, organizer, laoID string, mockRepository *mock2
 	lastModified := time.Now().Unix()
 
 	msg := generator.NewLaoStateMsg(t, organizer, laoID, name, modificationID, creation, lastModified, nil)
-
-	mockRepository.On("HasMessage", modificationID).
-		Return(true, nil)
-	mockRepository.On("GetLaoWitnesses", laoID).
-		Return(map[string]struct{}{}, nil)
-	mockRepository.On("StoreMessageAndData", laoID, msg).
-		Return(nil)
 
 	return msg
 }
