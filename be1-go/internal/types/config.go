@@ -17,8 +17,8 @@ type Config struct {
 }
 
 func CreateConfig(ownerPubKey, serverPubKey kyber.Point, serverSecretKey kyber.Scalar,
-	clientServerAddress, serverServerAddress string) Config {
-	return Config{
+	clientServerAddress, serverServerAddress string) *Config {
+	return &Config{
 		ownerPubKey:         ownerPubKey,
 		serverPubKey:        serverPubKey,
 		serverSecretKey:     serverSecretKey,
