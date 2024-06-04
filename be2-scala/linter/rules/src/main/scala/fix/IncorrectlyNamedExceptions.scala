@@ -8,17 +8,9 @@ import scalafix.lint.LintSeverity
 import scala.meta._
 import scalafix.v1._
 
-case class IncorrectlyNamedExceptionsDiag(exception: Tree) extends Diagnostic {
-  override def message: String = "Incorrectly named exceptions"
-
-  override def severity: LintSeverity = LintSeverity.Error
-
-  override def explanation: String = "Class named exception does not derive from Exception / class derived from Exception is not named *Exception."
-
-  override def position: Position = exception.pos
-}
-
 class IncorrectlyNamedExceptions extends SemanticRule("IncorrectlyNamedExceptions") {
+
+  private def diag(pos: Position) = Diagnostic("", "Incorrectly named exceptions", pos, "Class named exception does not derive from Exception / class derived from Exception is not named *Exception.", LintSeverity.Error)
 
   private def inheritsFromException(symbol: Symbol)(implicit doc: SemanticDocument): Boolean = {
     symbol.info match {
@@ -45,7 +37,7 @@ class IncorrectlyNamedExceptions extends SemanticRule("IncorrectlyNamedException
         cl.symbol.info.get.signature match {
           case ClassSignature(_, parents, _, _) =>
             if (!name.contains("Exception") && parents.map(_.asInstanceOf[TypeRef].symbol).exists(inheritsFromException))
-              Patch.lint(IncorrectlyNamedExceptionsDiag(cl))
+              Patch.lint(diag(cl.pos))
             else Patch.empty
           case _ => Patch.empty
         }

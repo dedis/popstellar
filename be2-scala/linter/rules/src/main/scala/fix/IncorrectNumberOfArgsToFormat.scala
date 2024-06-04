@@ -9,17 +9,9 @@ import scalafix.v1._
 
 import scala.meta._
 
-case class IncorrectNumberOfArgsToFormatDiag(string: Tree) extends Diagnostic {
-  override def message: String = "Incorrect number of arguments to format"
-
-  override def severity: LintSeverity = LintSeverity.Error
-
-  override def explanation: String = "The number of arguments passed to String.format doesn't correspond to the number of fields in the format string."
-
-  override def position: Position = string.pos
-}
-
 class IncorrectNumberOfArgsToFormat extends SemanticRule("IncorrectNumberOfArgsToFormat") {
+
+  private def diag(pos: Position) = Diagnostic("", "Incorrect number of arguments to format", pos, "The number of arguments passed to String.format doesn't correspond to the number of fields in the format string.", LintSeverity.Error)
 
   private val argRegex = "%((\\d+\\$)?[-#+ 0,(\\<]*?\\d?(\\.\\d+)?[tT]?[a-zA-Z]|%)".r
 
@@ -29,7 +21,7 @@ class IncorrectNumberOfArgsToFormat extends SemanticRule("IncorrectNumberOfArgsT
       .matchData
       .count(m => !doesNotTakeArguments(m.matched))
 
-    if (argCount != args.size) Patch.lint(IncorrectNumberOfArgsToFormatDiag(t)) else Patch.empty
+    if (argCount != args.size) Patch.lint(diag(t.pos)) else Patch.empty
   }
 
   override def fix(implicit doc: SemanticDocument): Patch = {

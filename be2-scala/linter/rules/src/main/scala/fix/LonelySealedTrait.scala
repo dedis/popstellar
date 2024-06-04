@@ -10,17 +10,9 @@ import scalafix.v1._
 
 import scala.collection.mutable
 
-case class LonelySealedTraitDiag(t: Tree) extends Diagnostic {
-  override def message: String = "Lonely sealed trait"
-
-  override def severity: LintSeverity = LintSeverity.Error
-
-  override def explanation: String = "A sealed trait that is not extended is considered dead code."
-
-  override def position: Position = t.pos
-}
-
 class LonelySealedTrait extends SemanticRule("LonelySealedTrait") {
+
+  private def diag(pos: Position) = Diagnostic("", "Lonely sealed trait", pos, "A sealed trait that is not extended is considered dead code.", LintSeverity.Error)
 
   private def findBaseClasses(parent: String, sealedTraitsHierarchy: mutable.Map[String, Set[String]]): Set[String] = {
     sealedTraitsHierarchy.get(parent) match {
@@ -64,7 +56,7 @@ class LonelySealedTrait extends SemanticRule("LonelySealedTrait") {
 
     sealedTraits.collect({
       case (name, cl) if !parents.contains(name)
-        && parents.intersect(findBaseClasses(name,sealedTraitsHierarchy)).isEmpty => Patch.lint(LonelySealedTraitDiag(cl))
+        && parents.intersect(findBaseClasses(name,sealedTraitsHierarchy)).isEmpty => Patch.lint(diag(cl.pos))
       //Either this sealed trait is directly extended or one of its sealed base classes / traits is being extended
       case _ => Patch.empty
     }).asPatch

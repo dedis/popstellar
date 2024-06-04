@@ -11,23 +11,15 @@ import scalafix.v1._
 
 import java.util.{IllegalFormatException, MissingFormatArgumentException, UnknownFormatConversionException}
 
-case class IllegalFormatStringDiag(string: Tree) extends Diagnostic {
-  override def message: String = "Illegal format string"
-
-  override def severity: LintSeverity = LintSeverity.Error
-
-  override def explanation: String = "An unchecked exception will be thrown when a format string contains an illegal syntax or a format specifier that is incompatible with the given arguments"
-
-  override def position: Position = string.pos
-}
-
 class IllegalFormatString extends SemanticRule("IllegalFormatString") {
 
+  private def diag(pos: Position) = Diagnostic("", "Illegal format string", pos, "An unchecked exception will be thrown when a format string contains an illegal syntax or a format specifier that is incompatible with the given arguments", LintSeverity.Error)
+
   //Term parameter is simply used to display the rule at the correct place
-  private def rule(term: Term, value: String, args: List[Any]): Patch = {
+  private def rule(t: Term, value: String, args: List[Any]): Patch = {
     try value.format(args: _*)
     catch {
-      case _: IllegalFormatException | _: MissingFormatArgumentException | _: UnknownFormatConversionException => return Patch.lint(IllegalFormatStringDiag(term))
+      case _: IllegalFormatException | _: MissingFormatArgumentException | _: UnknownFormatConversionException => return Patch.lint(diag(t.pos))
     }
     Patch.empty
   }

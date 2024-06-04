@@ -8,17 +8,9 @@ import scalafix.lint.LintSeverity
 import scala.meta._
 import scalafix.v1._
 
-case class ImpossibleOptionSizeConditionDiag(option: Tree) extends Diagnostic {
-  override def message: String = "Impossible Option.size condition"
-
-  override def severity: LintSeverity = LintSeverity.Error
-
-  override def explanation: String = "Option.size > 1 can never be true, did you mean to use Option.nonEmpty instead?"
-
-  override def position: Position = option.pos
-}
-
 class ImpossibleOptionSizeCondition extends SemanticRule("ImpossibleOptionSizeCondition") {
+
+  private def diag(pos: Position) = Diagnostic("", "Impossible Option.size condition", pos, "Option.size > 1 can never be true, did you mean to use Option.nonEmpty instead?", LintSeverity.Error)
 
   override def fix(implicit doc: SemanticDocument): Patch = {
 
@@ -27,7 +19,7 @@ class ImpossibleOptionSizeCondition extends SemanticRule("ImpossibleOptionSizeCo
       _, Term.ArgClause(List(comparedValue), _))
         if Util.matchType(qual, "scala/Option", "scala/Some") =>
         comparedValue match {
-          case Lit.Int(actualValue) if actualValue >= 1 => Patch.lint(ImpossibleOptionSizeConditionDiag(t))
+          case Lit.Int(actualValue) if actualValue >= 1 => Patch.lint(diag(t.pos))
           case _          => Patch.empty
         }
       case _ => Patch.empty

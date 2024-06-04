@@ -8,17 +8,9 @@ import scalafix.lint.LintSeverity
 import scala.meta._
 import scalafix.v1._
 
-case class ComparingFloatingTypesDiag(floats: Tree) extends Diagnostic {
-  override def message: String = "Floating type comparison"
-
-  override def severity: LintSeverity = LintSeverity.Error
-
-  override def explanation: String = "Due to minor rounding errors, it is not advisable to compare floating-point numbers using the == operator. Either use a threshold based comparison, or switch to a BigDecimal."
-
-  override def position: Position = floats.pos
-}
-
 class ComparingFloatingTypes extends SemanticRule("ComparingFloatingTypes") {
+
+  private def diag(pos: Position) = Diagnostic("", "Floating type comparison", pos, "Due to minor rounding errors, it is not advisable to compare floating-point numbers using the == operator. Either use a threshold based comparison, or switch to a BigDecimal.", LintSeverity.Error)
 
   override def fix(implicit doc: SemanticDocument): Patch = {
 
@@ -30,7 +22,7 @@ class ComparingFloatingTypes extends SemanticRule("ComparingFloatingTypes") {
       case t @ Term.ApplyInfix.After_4_6_0(lhs, op, _, Term.ArgClause(List(right), _)) =>
         if (isFloatOrDouble(lhs) && isFloatOrDouble(right)) {
           op match {
-            case Term.Name("==") | Term.Name("!=") => Patch.lint(ComparingFloatingTypesDiag(t))
+            case Term.Name("==") | Term.Name("!=") => Patch.lint(diag(t.pos))
             case _                                   => Patch.empty
           }
         } else {
@@ -38,7 +30,7 @@ class ComparingFloatingTypes extends SemanticRule("ComparingFloatingTypes") {
         }
       case t @ Term.Apply.After_4_6_0(Term.Select(lhs, Term.Name("equals")), Term.ArgClause(List(right), _)) =>
         if (isFloatOrDouble(lhs) && isFloatOrDouble(right)) {
-          Patch.lint(ComparingFloatingTypesDiag(t))
+          Patch.lint(diag(t.pos))
         } else {
           Patch.empty
         }

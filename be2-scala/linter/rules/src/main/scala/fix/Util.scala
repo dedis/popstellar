@@ -5,7 +5,7 @@ import scalafix.v1._
 import scala.meta._
 
 object Util {
-  def getType(term: Term)(implicit doc: SemanticDocument): Symbol = {
+  def getType(term: Stat)(implicit doc: SemanticDocument): Symbol = {
     term.symbol.info match {
       case Some(symInfo) => symInfo.signature match {
         case ValueSignature(TypeRef(_, symbol, _)) => symbol
@@ -15,7 +15,7 @@ object Util {
     }
   }
 
-  def matchType(term: Term, symbols: String*)(implicit doc: SemanticDocument): Boolean = {
+  def matchType(term: Stat, symbols: String*)(implicit doc: SemanticDocument): Boolean = {
     val symbolMatcher = SymbolMatcher.normalized(symbols: _*)
     symbolMatcher.matches(term.symbol) || symbolMatcher.matches(getType(term))
     // Checks the term symbol matches that of the symbol (i.e. when we use the type directly),
