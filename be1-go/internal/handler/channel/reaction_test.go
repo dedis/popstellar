@@ -21,7 +21,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	reaction := createReactionHandler(subs, db, schema)
+	reactionHandler := createReactionHandler(subs, db, schema)
 
 	sender := "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
 	//wrongSender := "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sK="
@@ -193,7 +193,7 @@ func Test_handleChannelReaction(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			err := reaction.handle(arg.channelPath, arg.msg)
+			err := reactionHandler.handle(arg.channelPath, arg.msg)
 			if arg.isError {
 				require.Error(t, err, arg.contains)
 			} else {

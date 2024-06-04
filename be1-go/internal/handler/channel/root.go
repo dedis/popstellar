@@ -3,14 +3,15 @@ package channel
 import (
 	"encoding/base64"
 	"encoding/json"
-
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/repository"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/state"
+	"popstellar/internal/validation"
 )
 
 const (
@@ -25,15 +26,40 @@ const (
 	Federation = "/federation"
 )
 
-func handleChannelRoot(msg message.Message) error {
-	object, action, err := verifyDataAndGetObjectAction(msg)
+type rootHandler struct {
+	config repository.ConfigManager
+	db     repository.RootRepository
+	schema *validation.SchemaValidator
+}
+
+func createRootHandler(config repository.ConfigManager, db repository.RootRepository,
+	schema *validation.SchemaValidator) *rootHandler {
+	return &rootHandler{
+		config: config,
+		db:     db,
+		schema: schema,
+	}
+}
+
+func (h *rootHandler) handleChannelRoot(msg message.Message) error {
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return errors.NewDecodeStringError("failed to decode message data: %v", err)
+	}
+
+	err = h.schema.VerifyJSON(jsonData, validation.Data)
+	if err != nil {
+		return err
+	}
+
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
 
 	switch object + "#" + action {
 	case messagedata.LAOObject + "#" + messagedata.LAOActionCreate:
-		err = handleLaoCreate(msg)
+		err = h.handleLaoCreate(msg)
 	default:
 		err = errors.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -41,7 +67,7 @@ func handleChannelRoot(msg message.Message) error {
 	return err
 }
 
-func handleLaoCreate(msg message.Message) error {
+func (h *rootHandler) handleLaoCreate(msg message.Message) error {
 	var laoCreate messagedata.LaoCreate
 	err := msg.UnmarshalData(&laoCreate)
 	if err != nil {
@@ -50,20 +76,20 @@ func handleLaoCreate(msg message.Message) error {
 
 	laoPath := RootPrefix + laoCreate.ID
 
-	organizerPubBuf, err := verifyLaoCreation(msg, laoCreate, laoPath)
+	organizerPubBuf, err := h.verifyLaoCreation(msg, laoCreate, laoPath)
 	if err != nil {
 		return err
 	}
 
-	laoGreetMsg, err := createLaoGreet(organizerPubBuf, laoCreate.ID)
+	laoGreetMsg, err := h.createLaoGreet(organizerPubBuf, laoCreate.ID)
 	if err != nil {
 		return err
 	}
 
-	return createLaoAndChannels(msg, laoGreetMsg, organizerPubBuf, laoPath)
+	return h.createLaoAndChannels(msg, laoGreetMsg, organizerPubBuf, laoPath)
 }
 
-func verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, error) {
+func (h *rootHandler) verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, error) {
 	db, err := database.GetRootRepositoryInstance()
 	if err != nil {
 		return nil, err
@@ -122,7 +148,7 @@ func verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, lao
 	return organizerPubBuf, nil
 }
 
-func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []byte, laoPath string) error {
+func (h *rootHandler) createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []byte, laoPath string) error {
 	channels := map[string]string{
 		laoPath:                      LaoType,
 		laoPath + Social + Chirps:    ChirpType,
@@ -153,7 +179,7 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 	return nil
 }
 
-func createLaoGreet(organizerBuf []byte, laoID string) (message.Message, error) {
+func (h *rootHandler) createLaoGreet(organizerBuf []byte, laoID string) (message.Message, error) {
 	peersInfo, err := state.GetAllPeersInfo()
 	if err != nil {
 		return message.Message{}, err
@@ -198,7 +224,7 @@ func createLaoGreet(organizerBuf []byte, laoID string) (message.Message, error) 
 	}
 
 	// sign the data
-	signatureBuf, err := sign(dataBuf)
+	signatureBuf, err := h.config.Sign(dataBuf)
 	if err != nil {
 		return message.Message{}, err
 	}

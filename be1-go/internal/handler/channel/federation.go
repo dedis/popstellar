@@ -17,8 +17,9 @@ import (
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
+	"popstellar/internal/repository"
 	"popstellar/internal/singleton/database"
-	state "popstellar/internal/singleton/state"
+	"popstellar/internal/validation"
 	"strings"
 	"time"
 )
@@ -27,8 +28,35 @@ const (
 	channelPattern = "/root/%s/federation"
 )
 
-func handleChannelFederation(channelPath string, msg message.Message) error {
-	object, action, err := verifyDataAndGetObjectAction(msg)
+type federationHandler struct {
+	db     repository.FederationRepository
+	subs   repository.SubscriptionManager
+	socket repository.SocketManager
+	hub    repository.HubManager
+	schema *validation.SchemaValidator
+}
+
+func createFederationHandler(db repository.FederationRepository, subs repository.SubscriptionManager,
+	socket repository.SocketManager) *federationHandler {
+	return &federationHandler{
+		db:     db,
+		subs:   subs,
+		socket: socket,
+	}
+}
+
+func (h *federationHandler) handleChannelFederation(channelPath string, msg message.Message) error {
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
+	}
+
+	err = h.schema.VerifyJSON(jsonData, validation.Data)
+	if err != nil {
+		return err
+	}
+
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
@@ -39,15 +67,15 @@ func handleChannelFederation(channelPath string, msg message.Message) error {
 
 	switch action {
 	case messagedata.FederationActionChallengeRequest:
-		err = handleRequestChallenge(msg, channelPath)
+		err = h.handleRequestChallenge(msg, channelPath)
 	case messagedata.FederationActionInit:
-		err = handleInit(msg, channelPath)
+		err = h.handleInit(msg, channelPath)
 	case messagedata.FederationActionExpect:
-		err = handleExpect(msg, channelPath)
+		err = h.handleExpect(msg, channelPath)
 	case messagedata.FederationActionChallenge:
-		err = handleChallenge(msg, channelPath)
+		err = h.handleChallenge(msg, channelPath)
 	case messagedata.FederationActionResult:
-		err = handleResult(msg, channelPath)
+		err = h.handleResult(msg, channelPath)
 	default:
 		err = errors.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -58,14 +86,14 @@ func handleChannelFederation(channelPath string, msg message.Message) error {
 // handleRequestChallenge expects the sender to be the organizer of the lao,
 // a challenge message is then stored and broadcast on the same channelPath.
 // The FederationChallengeRequest message is neither stored nor broadcast
-func handleRequestChallenge(msg message.Message, channelPath string) error {
+func (h *federationHandler) handleRequestChallenge(msg message.Message, channelPath string) error {
 	var requestChallenge messagedata.FederationChallengeRequest
 	err := msg.UnmarshalData(&requestChallenge)
 	if err != nil {
 		return err
 	}
 
-	err = verifyLocalOrganizer(msg, channelPath)
+	err = h.verifyLocalOrganizer(msg, channelPath)
 	if err != nil {
 		return err
 	}
@@ -87,7 +115,7 @@ func handleRequestChallenge(msg message.Message, channelPath string) error {
 
 	// The challenge sent to the organizer is signed by the server but should
 	// not be confused with the challenge that will be signed by the organizer
-	challengeMsg, err := createMessage(federationChallenge)
+	challengeMsg, err := h.createMessage(federationChallenge)
 	if err != nil {
 		return err
 	}
@@ -103,26 +131,26 @@ func handleRequestChallenge(msg message.Message, channelPath string) error {
 		return err
 	}
 
-	return broadcastToAllClients(challengeMsg, channelPath)
+	return h.subs.BroadcastToAllClients(challengeMsg, channelPath)
 }
 
 // handleExpect checks that the message is from the local organizer and that
 // it contains a valid challenge, then stores the msg
-func handleExpect(msg message.Message, channelPath string) error {
+func (h *federationHandler) handleExpect(msg message.Message, channelPath string) error {
 	var federationExpect messagedata.FederationExpect
 	err := msg.UnmarshalData(&federationExpect)
 	if err != nil {
 		return err
 	}
 
-	err = verifyLocalOrganizer(msg, channelPath)
+	err = h.verifyLocalOrganizer(msg, channelPath)
 	if err != nil {
 		return err
 	}
 
 	// Both the FederationExpect and the embedded FederationChallenge need to
 	// be signed by the local organizer
-	err = verifyLocalOrganizer(federationExpect.ChallengeMsg, channelPath)
+	err = h.verifyLocalOrganizer(federationExpect.ChallengeMsg, channelPath)
 	if err != nil {
 		return err
 	}
@@ -143,7 +171,7 @@ func handleExpect(msg message.Message, channelPath string) error {
 		return err
 	}
 
-	serverPk, err := getServerPk()
+	serverPk, err := h.getServerPk()
 	if err != nil {
 		return err
 	}
@@ -154,7 +182,7 @@ func handleExpect(msg message.Message, channelPath string) error {
 	}
 
 	remoteChannel := fmt.Sprintf(channelPattern, federationExpect.LaoId)
-	_ = state.AddChannel(remoteChannel)
+	_ = h.subs.AddChannel(remoteChannel)
 
 	return db.StoreMessageAndData(channelPath, msg)
 }
@@ -162,21 +190,21 @@ func handleExpect(msg message.Message, channelPath string) error {
 // handleInit checks that the message is from the local organizer and that
 // it contains a valid challenge, then stores the msg,
 // connect to the server and send the embedded challenge
-func handleInit(msg message.Message, channelPath string) error {
+func (h *federationHandler) handleInit(msg message.Message, channelPath string) error {
 	var federationInit messagedata.FederationInit
 	err := msg.UnmarshalData(&federationInit)
 	if err != nil {
 		return err
 	}
 
-	err = verifyLocalOrganizer(msg, channelPath)
+	err = h.verifyLocalOrganizer(msg, channelPath)
 	if err != nil {
 		return err
 	}
 
 	// Both the FederationInit and the embedded FederationChallenge need to
 	// be signed by the local organizer
-	err = verifyLocalOrganizer(federationInit.ChallengeMsg, channelPath)
+	err = h.verifyLocalOrganizer(federationInit.ChallengeMsg, channelPath)
 	if err != nil {
 		return err
 	}
@@ -202,15 +230,15 @@ func handleInit(msg message.Message, channelPath string) error {
 		return err
 	}
 
-	remote, err := connectTo(federationInit.ServerAddress)
+	remote, err := h.connectTo(federationInit.ServerAddress)
 	if err != nil {
 		return err
 	}
 
 	//Force the remote server to be subscribed to /root/<remote_lao>/federation
 	remoteChannel := fmt.Sprintf(channelPattern, federationInit.LaoId)
-	_ = state.AddChannel(remoteChannel)
-	err = state.Subscribe(remote, remoteChannel)
+	_ = h.subs.AddChannel(remoteChannel)
+	err = h.subs.Subscribe(remoteChannel, remote)
 	if err != nil {
 		return err
 	}
@@ -231,38 +259,33 @@ func handleInit(msg message.Message, channelPath string) error {
 	}
 
 	// Subscribe to /root/<local_lao>/federation on the remote server
-	err = state.SendToAll(subscribeBytes, remoteChannel)
+	err = h.subs.SendToAll(subscribeBytes, remoteChannel)
 	if err != nil {
 		return err
 	}
 
 	// send the challenge to a channelPath where the remote server is subscribed to
-	return publishTo(federationInit.ChallengeMsg, remoteChannel)
+	return h.publishTo(federationInit.ChallengeMsg, remoteChannel)
 }
 
-func handleChallenge(msg message.Message, channelPath string) error {
+func (h *federationHandler) handleChallenge(msg message.Message, channelPath string) error {
 	var federationChallenge messagedata.FederationChallenge
 	err := msg.UnmarshalData(&federationChallenge)
 	if err != nil {
 		return err
 	}
 
-	db, err := database.GetFederationRepositoryInstance()
+	organizerPk, err := h.getOrganizerPk(channelPath)
 	if err != nil {
 		return err
 	}
 
-	organizerPk, err := getOrganizerPk(channelPath)
+	federationExpect, err := h.db.GetFederationExpect(organizerPk, msg.Sender, federationChallenge, channelPath)
 	if err != nil {
 		return err
 	}
 
-	federationExpect, err := db.GetFederationExpect(organizerPk, msg.Sender, federationChallenge, channelPath)
-	if err != nil {
-		return err
-	}
-
-	err = db.RemoveChallenge(federationChallenge)
+	err = h.db.RemoveChallenge(federationChallenge)
 	if err != nil {
 		return err
 	}
@@ -280,28 +303,28 @@ func handleChallenge(msg message.Message, channelPath string) error {
 		ChallengeMsg: federationExpect.ChallengeMsg,
 	}
 
-	resultMsg, err := createMessage(result)
+	resultMsg, err := h.createMessage(result)
 	if err != nil {
 		return err
 	}
 
-	err = db.StoreMessageAndData(channelPath, resultMsg)
+	err = h.db.StoreMessageAndData(channelPath, resultMsg)
 	if err != nil {
 		return err
 	}
 
 	// publish the FederationResult to the other server
 	remoteChannel := fmt.Sprintf(channelPattern, federationExpect.LaoId)
-	err = publishTo(resultMsg, remoteChannel)
+	err = h.publishTo(resultMsg, remoteChannel)
 	if err != nil {
 		return err
 	}
 
 	// broadcast the FederationResult to the local organizer
-	return broadcastToAllClients(resultMsg, channelPath)
+	return h.subs.BroadcastToAllClients(resultMsg, channelPath)
 }
 
-func handleResult(msg message.Message, channelPath string) error {
+func (h *federationHandler) handleResult(msg message.Message, channelPath string) error {
 	var result messagedata.FederationResult
 	err := msg.UnmarshalData(&result)
 	if err != nil {
@@ -319,12 +342,7 @@ func handleResult(msg message.Message, channelPath string) error {
 		return errors.NewInternalServerError("failed to establish federated connection: %s", result.Reason)
 	}
 
-	db, err := database.GetFederationRepositoryInstance()
-	if err != nil {
-		return err
-	}
-
-	organizerPk, err := getOrganizerPk(channelPath)
+	organizerPk, err := h.getOrganizerPk(channelPath)
 	if err != nil {
 		return err
 	}
@@ -347,28 +365,23 @@ func handleResult(msg message.Message, channelPath string) error {
 
 	// try to get a matching FederationInit, if found then we know that
 	// the local organizer was waiting this result
-	_, err = db.GetFederationInit(organizerPk, result.ChallengeMsg.Sender, federationChallenge, channelPath)
+	_, err = h.db.GetFederationInit(organizerPk, result.ChallengeMsg.Sender, federationChallenge, channelPath)
 	if err != nil {
 		return err
 	}
 
-	err = db.StoreMessageAndData(channelPath, msg)
+	err = h.db.StoreMessageAndData(channelPath, msg)
 	if err != nil {
 		return err
 	}
 
-	return broadcastToAllClients(msg, channelPath)
+	return h.subs.BroadcastToAllClients(msg, channelPath)
 }
 
-func getOrganizerPk(federationChannel string) (string, error) {
-	db, err := database.GetFederationRepositoryInstance()
-	if err != nil {
-		return "", err
-	}
-
+func (h *federationHandler) getOrganizerPk(federationChannel string) (string, error) {
 	laoChannel := strings.TrimSuffix(federationChannel, "/federation")
 
-	organizerPk, err := db.GetOrganizerPubKey(laoChannel)
+	organizerPk, err := h.db.GetOrganizerPubKey(laoChannel)
 	if err != nil {
 		return "", err
 	}
@@ -381,13 +394,8 @@ func getOrganizerPk(federationChannel string) (string, error) {
 	return base64.URLEncoding.EncodeToString(organizerPkBytes), nil
 }
 
-func getServerPk() (string, error) {
-	db, err := database.GetFederationRepositoryInstance()
-	if err != nil {
-		return "", err
-	}
-
-	serverPk, _, err := db.GetServerKeys()
+func (h *federationHandler) getServerPk() (string, error) {
+	serverPk, _, err := h.db.GetServerKeys()
 	if err != nil {
 		return "", err
 	}
@@ -400,8 +408,8 @@ func getServerPk() (string, error) {
 	return base64.URLEncoding.EncodeToString(serverPkBytes), nil
 }
 
-func verifyLocalOrganizer(msg message.Message, channelPath string) error {
-	organizePk, err := getOrganizerPk(channelPath)
+func (h *federationHandler) verifyLocalOrganizer(msg message.Message, channelPath string) error {
+	organizePk, err := h.getOrganizerPk(channelPath)
 	if err != nil {
 		return err
 	}
@@ -413,31 +421,16 @@ func verifyLocalOrganizer(msg message.Message, channelPath string) error {
 	return nil
 }
 
-func connectTo(serverAddress string) (socket.Socket, error) {
+func (h *federationHandler) connectTo(serverAddress string) (socket.Socket, error) {
 	ws, _, err := websocket.DefaultDialer.Dial(serverAddress, nil)
 	if err != nil {
 		return nil, errors.NewInternalServerError("failed to connect to server %s: %v", serverAddress, err)
 	}
 
-	messageChan, err := state.GetMessageChan()
-	if err != nil {
-		return nil, err
-	}
-
-	closedSockets, err := state.GetClosedSockets()
-	if err != nil {
-		return nil, err
-	}
-
-	wg, err := state.GetWaitGroup()
-	if err != nil {
-		return nil, err
-	}
-
-	stopChan, err := state.GetStopChan()
-	if err != nil {
-		return nil, err
-	}
+	messageChan := h.hub.GetMessageChan()
+	closedSockets := h.hub.GetClosedSockets()
+	wg := h.hub.GetWaitGroup()
+	stopChan := h.hub.GetStopChan()
 
 	client := socket.NewClientSocket(messageChan, closedSockets, ws, wg, stopChan, logger.Logger)
 
@@ -449,11 +442,7 @@ func connectTo(serverAddress string) (socket.Socket, error) {
 	return client, nil
 }
 
-func createMessage(data messagedata.MessageData) (message.Message, error) {
-	db, err := database.GetFederationRepositoryInstance()
-	if err != nil {
-		return message.Message{}, err
-	}
+func (h *federationHandler) createMessage(data messagedata.MessageData) (message.Message, error) {
 
 	dataBytes, err := json.Marshal(data)
 	if err != nil {
@@ -461,7 +450,7 @@ func createMessage(data messagedata.MessageData) (message.Message, error) {
 	}
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBytes)
 
-	serverPk, serverSk, err := db.GetServerKeys()
+	serverPk, serverSk, err := h.db.GetServerKeys()
 	if err != nil {
 		return message.Message{}, err
 	}
@@ -489,7 +478,7 @@ func createMessage(data messagedata.MessageData) (message.Message, error) {
 	return msg, nil
 }
 
-func publishTo(msg message.Message, channelPath string) error {
+func (h *federationHandler) publishTo(msg message.Message, channelPath string) error {
 	publishMsg := method.Publish{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -508,5 +497,5 @@ func publishTo(msg message.Message, channelPath string) error {
 		return errors.NewJsonMarshalError(err.Error())
 	}
 
-	return state.SendToAll(publishBytes, channelPath)
+	return h.subs.SendToAll(publishBytes, channelPath)
 }

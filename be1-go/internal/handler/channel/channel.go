@@ -1,15 +1,11 @@
 package channel
 
 import (
-	"encoding/base64"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/singleton/database"
-	"popstellar/internal/singleton/utils"
-	"popstellar/internal/validation"
 )
 
 const (
@@ -76,21 +72,6 @@ func HandleChannel(channelPath string, msg message.Message, fromRumor bool) erro
 }
 
 // util for the channels
-
-func verifyDataAndGetObjectAction(msg message.Message) (string, string, error) {
-	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
-	if err != nil {
-		return "", "", errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
-	}
-
-	// validate message data against the json schema
-	err = utils.VerifyJSON(jsonData, validation.Data)
-	if err != nil {
-		return "", "", err
-	}
-
-	return messagedata.GetObjectAndAction(jsonData)
-}
 
 // generateKeys generates and returns a key pair
 func generateKeys() (kyber.Point, kyber.Scalar) {

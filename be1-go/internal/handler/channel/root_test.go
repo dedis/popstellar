@@ -9,10 +9,8 @@ import (
 	"popstellar/internal/message/query/method/message"
 	mock2 "popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/singleton/config"
-	"popstellar/internal/singleton/database"
-	"popstellar/internal/singleton/state"
 	"popstellar/internal/types"
+	"popstellar/internal/validation"
 	"testing"
 	"time"
 )
@@ -33,12 +31,6 @@ type input struct {
 }
 
 func Test_handleChannelRoot(t *testing.T) {
-	subs := types.NewSubscribers()
-	queries := types.NewQueries(&noLog)
-	peers := types.NewPeers()
-	hubParams := types.NewHubParams()
-
-	state.SetState(subs, peers, queries, hubParams)
 
 	organizerBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
 	require.NoError(t, err)
@@ -50,11 +42,16 @@ func Test_handleChannelRoot(t *testing.T) {
 	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
 
-	config.SetConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
+	conf := types.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey,
+		"clientAddress", "serverAddress")
+	db := mock2.NewRepository(t)
+
+	schema, err := validation.NewSchemaValidator()
+	require.NoError(t, err)
+
+	rootHandler := createRootHandler(conf, db, schema)
 
 	var args []input
-	mockRepository := mock2.NewRepository(t)
-	database.SetDatabase(mockRepository)
 
 	ownerPubBuf, err := ownerPublicKey.MarshalBinary()
 	require.NoError(t, err)
@@ -63,7 +60,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	// Test 1: error when different organizer and sender keys
 	args = append(args, input{
 		name:     "Test 1",
-		msg:      newLaoCreateMsg(t, owner, wrongSender, goodLaoName, mockRepository, true),
+		msg:      newLaoCreateMsg(t, owner, wrongSender, goodLaoName, db, true),
 		isError:  true,
 		contains: "sender's public key does not match the organizer public key",
 	})
@@ -71,7 +68,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	// Test 2: error when different sender and owner keys
 	args = append(args, input{
 		name:     "Test 2",
-		msg:      newLaoCreateMsg(t, wrongSender, wrongSender, goodLaoName, mockRepository, true),
+		msg:      newLaoCreateMsg(t, wrongSender, wrongSender, goodLaoName, db, true),
 		isError:  true,
 		contains: "sender's public key does not match the owner public key",
 	})
@@ -79,7 +76,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	// Test 3: error when the lao name is not the same as the one used for the laoID
 	args = append(args, input{
 		name:     "Test 3",
-		msg:      newLaoCreateMsg(t, owner, owner, wrongLaoName, mockRepository, true),
+		msg:      newLaoCreateMsg(t, owner, owner, wrongLaoName, db, true),
 		isError:  true,
 		contains: "invalid message field: lao id",
 	})
@@ -95,14 +92,14 @@ func Test_handleChannelRoot(t *testing.T) {
 	// Test 5: success
 	args = append(args, input{
 		name:     "Test 5",
-		msg:      newLaoCreateMsg(t, owner, owner, goodLaoName, mockRepository, false),
+		msg:      newLaoCreateMsg(t, owner, owner, goodLaoName, db, false),
 		isError:  false,
 		contains: "",
 	})
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			err = handleChannelRoot(arg.msg)
+			err = rootHandler.handleChannelRoot(arg.msg)
 			if arg.isError {
 				require.Error(t, err, arg.contains)
 			} else {
