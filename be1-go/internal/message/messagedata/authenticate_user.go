@@ -3,8 +3,8 @@ package messagedata
 import (
 	"encoding/base64"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/xerrors"
 	"popstellar/internal/crypto"
+	"popstellar/internal/errors"
 )
 
 // AuthenticateUser is a message containing the user authentication information
@@ -30,21 +30,21 @@ func (msg AuthenticateUser) NewEmpty() MessageData {
 func (msg AuthenticateUser) Verify() error {
 	id, err := base64.URLEncoding.DecodeString(msg.Identifier)
 	if err != nil {
-		return xerrors.Errorf("Identifier is %s, should be base64URL encoded", msg.Identifier)
+		return errors.NewInvalidMessageFieldError("Identifier is %s, should be base64URL encoded", msg.Identifier)
 	}
 	idProof, err := base64.URLEncoding.DecodeString(msg.IdentifierProof)
 	if err != nil {
-		return xerrors.Errorf("Identifier Proof is %s, should be base64URL encoded", msg.IdentifierProof)
+		return errors.NewInvalidMessageFieldError("Identifier Proof is %s, should be base64URL encoded", msg.IdentifierProof)
 	}
 	nonce, err := base64.URLEncoding.DecodeString(msg.Nonce)
 	if err != nil {
-		return xerrors.Errorf("Nonce is %s, should be base64URL encoded", msg.Nonce)
+		return errors.NewInvalidMessageFieldError("Nonce is %s, should be base64URL encoded", msg.Nonce)
 	}
 
 	// check that the identifier proof is valid
 	err = schnorr.VerifyWithChecks(crypto.Suite, id, nonce, idProof)
 	if err != nil {
-		return xerrors.Errorf("Identifier proof has invalid signature: %v", err)
+		return errors.NewInvalidMessageFieldError("Identifier proof has invalid signature: %v", err)
 	}
 
 	return nil

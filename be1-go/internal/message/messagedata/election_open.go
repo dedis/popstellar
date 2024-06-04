@@ -2,8 +2,9 @@ package messagedata
 
 import (
 	"encoding/base64"
-	"popstellar/internal/message/answer"
 	"strings"
+
+	"popstellar/internal/errors"
 )
 
 // ElectionOpen defines a message data
@@ -32,48 +33,40 @@ func (ElectionOpen) NewEmpty() MessageData {
 	return &ElectionOpen{}
 }
 
-func (message ElectionOpen) Verify(electionPath string) *answer.Error {
-	var errAnswer *answer.Error
+func (message ElectionOpen) Verify(electionPath string) error {
 	_, err := base64.URLEncoding.DecodeString(message.Lao)
 	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode lao: %v", err)
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("failed to decode lao: %v", err)
 	}
 
 	_, err = base64.URLEncoding.DecodeString(message.Election)
 	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode election: %v", err)
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("failed to decode election: %v", err)
 	}
 	noRoot := strings.ReplaceAll(electionPath, RootPrefix, "")
 
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to split channel: %v", electionPath)
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("failed to split channel: %v", electionPath)
 	}
+
 	laoID := IDs[0]
 	electionID := IDs[1]
 
 	// verify if lao id is the same as the channel
 	if message.Lao != laoID {
-		errAnswer = answer.NewInvalidMessageFieldError("lao id is not the same as the channel")
-		errAnswer = errAnswer.Wrap("handleElectionOpen")
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("lao id is not the same as the channel")
 	}
 
 	// verify if election id is the same as the channel
 	if message.Election != electionID {
-		errAnswer = answer.NewInvalidMessageFieldError("election id is not the same as the channel")
-		errAnswer = errAnswer.Wrap("handleElectionOpen")
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("election id is not the same as the channel")
 	}
 
 	// verify opened at is positive
 	if message.OpenedAt < 0 {
-		errAnswer = answer.NewInvalidMessageFieldError("opened at is negative")
-		errAnswer = errAnswer.Wrap("handleElectionOpen")
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("opened at is negative")
 	}
+
 	return nil
 }

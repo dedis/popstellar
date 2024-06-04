@@ -6,7 +6,7 @@
 package types
 
 import (
-	"errors"
+	"popstellar/internal/errors"
 )
 
 // Uint53 defines the internal representation in this implementation
@@ -24,11 +24,11 @@ func InRange(a Uint53) bool {
 // the sum is too large.
 func SafePlus(a, b Uint53) (Uint53, error) {
 	if !InRange(a) || !InRange(b) {
-		return 0, errors.New("Uint53.SafePlus: argument out of range")
+		return 0, errors.NewInvalidMessageFieldError("Uint53.SafePlus: argument out of range")
 	}
 	r := a + b
 	if !InRange(r) {
-		return 0, errors.New("uint53 addition overflow")
+		return 0, errors.NewInvalidMessageFieldError("uint53 addition overflow")
 	}
 
 	return r, nil

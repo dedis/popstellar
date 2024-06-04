@@ -3,6 +3,7 @@ package lao
 import (
 	"encoding/base64"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/query/method/message"
 	"strconv"
 	"strings"
 
@@ -99,7 +100,7 @@ func (c *Channel) verifyMessageRollCallCreate(rollCallCreate *messagedata.RollCa
 	}
 
 	// verify roll call create message id
-	expectedID := messagedata.Hash(
+	expectedID := message.Hash(
 		rollCallFlag,
 		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
 		strconv.Itoa(int(rollCallCreate.Creation)),
@@ -164,7 +165,7 @@ func (c *Channel) verifyMessageRollCallOpen(rollCallOpen messagedata.RollCallOpe
 	}
 
 	// verify roll call open message update id
-	expectedID := messagedata.Hash(
+	expectedID := message.Hash(
 		rollCallFlag,
 		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
 		rollCallOpen.Opens,
@@ -205,7 +206,7 @@ func (c *Channel) verifyMessageRollCallClose(rollCallClose *messagedata.RollCall
 	}
 
 	// verify roll call close message update id
-	expectedID := messagedata.Hash(
+	expectedID := message.Hash(
 		rollCallFlag,
 		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
 		rollCallClose.Closes,
@@ -263,7 +264,7 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup messagedata.ElectionS
 	}
 
 	// verify election setup message id
-	expectedID := messagedata.Hash(
+	expectedID := message.Hash(
 		electionFlag,
 		laoID,
 		strconv.Itoa(int(electionSetup.CreatedAt)),
@@ -361,7 +362,7 @@ func verifyElectionSetupQuestion(question messagedata.ElectionSetupQuestion,
 	}
 
 	// verify question id
-	expectedID := messagedata.Hash(
+	expectedID := message.Hash(
 		questionFlag,
 		electionID,
 		question.Question,

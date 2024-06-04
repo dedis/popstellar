@@ -2,30 +2,27 @@ package query
 
 import (
 	"encoding/json"
+	"popstellar/internal/errors"
 	"popstellar/internal/handler/channel"
-	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/singleton/state"
 )
 
-func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
+func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, error) {
 	var unsubscribe method.Unsubscribe
-
 	err := json.Unmarshal(msg, &unsubscribe)
 	if err != nil {
-		errAnswer := answer.NewJsonUnmarshalError(err.Error())
-		return nil, errAnswer.Wrap("handleUnsubscribe")
+		return nil, errors.NewJsonUnmarshalError(err.Error())
 	}
 
 	if channel.Root == unsubscribe.Params.Channel {
-		errAnswer := answer.NewInvalidActionError("cannot Unsubscribe from root channel")
-		return &unsubscribe.ID, errAnswer.Wrap("handleUnsubscribe")
+		return &unsubscribe.ID, errors.NewAccessDeniedError("cannot Unsubscribe from root channel")
 	}
 
-	errAnswer := state.Unsubscribe(socket, unsubscribe.Params.Channel)
-	if errAnswer != nil {
-		return &unsubscribe.ID, errAnswer.Wrap("handleUnsubscribe")
+	err = state.Unsubscribe(socket, unsubscribe.Params.Channel)
+	if err != nil {
+		return &unsubscribe.ID, err
 	}
 
 	socket.SendResult(unsubscribe.ID, nil, nil)

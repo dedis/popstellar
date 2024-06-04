@@ -269,7 +269,7 @@ func constructRedirectURIParams(c *Channel, data *messagedata.AuthenticateUser, 
 	}
 
 	// create ppid for the identifier
-	ppid := base64.URLEncoding.EncodeToString([]byte(messagedata.Hash(data.Identifier)))
+	ppid := base64.URLEncoding.EncodeToString([]byte(message.Hash(data.Identifier)))
 
 	// add the ppid entry for tracking the given identifier
 	c.addPPIDEntry(identifier(data.Identifier), identifier(ppid))

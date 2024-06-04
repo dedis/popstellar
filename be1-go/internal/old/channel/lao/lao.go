@@ -754,7 +754,7 @@ func (c *Channel) createAndSendLAOGreet() error {
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(skBuf),
 		Signature:         signature,
-		MessageID:         messagedata.Hash(newData64, signature),
+		MessageID:         message.Hash(newData64, signature),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 

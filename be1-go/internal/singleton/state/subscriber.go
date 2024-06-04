@@ -1,67 +1,67 @@
 package state
 
 import (
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
 	"popstellar/internal/network/socket"
 )
 
 type Subscriber interface {
-	AddChannel(channel string) *answer.Error
-	HasChannel(channel string) bool
-	Subscribe(channel string, socket socket.Socket) *answer.Error
-	Unsubscribe(channel string, socket socket.Socket) *answer.Error
+	AddChannel(channelPath string) error
+	HasChannel(channelPath string) bool
+	Subscribe(channelPath string, socket socket.Socket) error
+	Unsubscribe(channelPath string, socket socket.Socket) error
 	UnsubscribeFromAll(socketID string)
-	SendToAll(buf []byte, channel string) *answer.Error
+	SendToAll(buf []byte, channelPath string) error
 }
 
-func getSubs() (Subscriber, *answer.Error) {
+func getSubs() (Subscriber, error) {
 	if instance == nil || instance.subs == nil {
-		return nil, answer.NewInternalServerError("subscriber was not instantiated")
+		return nil, errors.NewInternalServerError("subscriber was not instantiated")
 	}
 
 	return instance.subs, nil
 }
 
-func AddChannel(channel string) *answer.Error {
-	subs, errAnswer := getSubs()
-	if errAnswer != nil {
-		return errAnswer
+func AddChannel(channelPath string) error {
+	subs, err := getSubs()
+	if err != nil {
+		return err
 	}
 
-	return subs.AddChannel(channel)
+	return subs.AddChannel(channelPath)
 }
 
-func HasChannel(channel string) (bool, *answer.Error) {
-	subs, errAnswer := getSubs()
-	if errAnswer != nil {
-		return false, errAnswer
+func HasChannel(channelPath string) (bool, error) {
+	subs, err := getSubs()
+	if err != nil {
+		return false, err
 	}
 
-	return subs.HasChannel(channel), nil
+	return subs.HasChannel(channelPath), nil
 }
 
-func Subscribe(socket socket.Socket, channel string) *answer.Error {
-	subs, errAnswer := getSubs()
-	if errAnswer != nil {
-		return errAnswer
+func Subscribe(socket socket.Socket, channelPath string) error {
+	subs, err := getSubs()
+	if err != nil {
+		return err
 	}
 
-	return subs.Subscribe(channel, socket)
+	return subs.Subscribe(channelPath, socket)
 }
 
-func Unsubscribe(socket socket.Socket, channel string) *answer.Error {
-	subs, errAnswer := getSubs()
-	if errAnswer != nil {
-		return errAnswer
+func Unsubscribe(socket socket.Socket, channelPath string) error {
+	subs, err := getSubs()
+	if err != nil {
+		return err
 	}
 
-	return subs.Unsubscribe(channel, socket)
+	return subs.Unsubscribe(channelPath, socket)
 }
 
-func UnsubscribeFromAll(socketID string) *answer.Error {
-	subs, errAnswer := getSubs()
-	if errAnswer != nil {
-		return errAnswer
+func UnsubscribeFromAll(socketID string) error {
+	subs, err := getSubs()
+	if err != nil {
+		return err
 	}
 
 	subs.UnsubscribeFromAll(socketID)
@@ -69,11 +69,11 @@ func UnsubscribeFromAll(socketID string) *answer.Error {
 	return nil
 }
 
-func SendToAll(buf []byte, channel string) *answer.Error {
-	subs, errAnswer := getSubs()
-	if errAnswer != nil {
-		return errAnswer
+func SendToAll(buf []byte, channelPath string) error {
+	subs, err := getSubs()
+	if err != nil {
+		return err
 	}
 
-	return subs.SendToAll(buf, channel)
+	return subs.SendToAll(buf, channelPath)
 }

@@ -6,14 +6,12 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/crypto"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	mock2 "popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/state"
-	"popstellar/internal/sqlite"
 	"popstellar/internal/types"
 	"testing"
 	"time"
@@ -83,7 +81,7 @@ func Test_handleChannelRoot(t *testing.T) {
 		name:     "Test 3",
 		msg:      newLaoCreateMsg(t, owner, owner, wrongLaoName, mockRepository, true),
 		isError:  true,
-		contains: "failed to verify message data: invalid message field: lao id",
+		contains: "invalid message field: lao id",
 	})
 
 	// Test 4: error when message data is not lao_create
@@ -104,12 +102,11 @@ func Test_handleChannelRoot(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := handleChannelRoot(arg.msg)
+			err = handleChannelRoot(arg.msg)
 			if arg.isError {
-				require.NotNil(t, errAnswer)
-				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.Error(t, err, arg.contains)
 			} else {
-				require.Nil(t, errAnswer)
+				require.NoError(t, err)
 			}
 		})
 	}
@@ -117,7 +114,7 @@ func Test_handleChannelRoot(t *testing.T) {
 
 func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepository *mock2.Repository, isError bool) message.Message {
 	creation := time.Now().Unix()
-	laoID := messagedata.Hash(
+	laoID := message.Hash(
 		organizer,
 		fmt.Sprintf("%d", creation),
 		goodLaoName,
@@ -131,13 +128,13 @@ func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockReposi
 		organizerBuf, err := base64.URLEncoding.DecodeString(organizer)
 		require.NoError(t, err)
 		channels := map[string]string{
-			laoPath:                      sqlite.LaoType,
-			laoPath + Social + Chirps:    sqlite.ChirpType,
-			laoPath + Social + Reactions: sqlite.ReactionType,
-			laoPath + Consensus:          sqlite.ConsensusType,
-			laoPath + Coin:               sqlite.CoinType,
-			laoPath + Auth:               sqlite.AuthType,
-			laoPath + Federation:         sqlite.FederationType,
+			laoPath:                      LaoType,
+			laoPath + Social + Chirps:    ChirpType,
+			laoPath + Social + Reactions: ReactionType,
+			laoPath + Consensus:          ConsensusType,
+			laoPath + Coin:               CoinType,
+			laoPath + Auth:               AuthType,
+			laoPath + Federation:         FederationType,
 		}
 		mockRepository.On("StoreLaoWithLaoGreet",
 			channels,

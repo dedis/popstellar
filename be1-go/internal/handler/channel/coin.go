@@ -1,60 +1,48 @@
 package channel
 
 import (
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/singleton/database"
 )
 
-func handleChannelCoin(channelPath string, msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelCoin")
+func handleChannelCoin(channelPath string, msg message.Message) error {
+	object, action, err := verifyDataAndGetObjectAction(msg)
+	if err != nil {
+		return err
 	}
 
 	switch object + "#" + action {
 	case messagedata.CoinObject + "#" + messagedata.CoinActionPostTransaction:
-		errAnswer = handleCoinPostTransaction(msg)
+		err = handleCoinPostTransaction(msg)
 	default:
-		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
-	}
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelCoin")
+		err = errors.NewInvalidActionError("failed to handle %s#%s, invalid object#action", object, action)
 	}
 
-	db, errAnswer := database.GetCoinRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelCoin")
-	}
-
-	err := db.StoreMessageAndData(channelPath, msg)
 	if err != nil {
-		errAnswer = answer.NewStoreDatabaseError(err.Error())
-		return errAnswer.Wrap("handleChannelCoin")
+		return err
 	}
 
-	errAnswer = broadcastToAllClients(msg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelCoin")
+	db, err := database.GetCoinRepositoryInstance()
+	if err != nil {
+		return err
 	}
 
-	return nil
+	err = db.StoreMessageAndData(channelPath, msg)
+	if err != nil {
+		return err
+	}
+
+	return broadcastToAllClients(msg, channelPath)
 }
 
-func handleCoinPostTransaction(msg message.Message) *answer.Error {
+func handleCoinPostTransaction(msg message.Message) error {
 	var data messagedata.PostTransaction
-
-	errAnswer := msg.UnmarshalMsgData(&data)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleCoinPostTransaction")
-	}
-
-	err := data.Verify()
+	err := msg.UnmarshalData(&data)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("invalid data: %v", err)
-		return errAnswer.Wrap("handleCoinPostTransaction")
+		return err
 	}
 
-	return nil
+	return data.Verify()
 }

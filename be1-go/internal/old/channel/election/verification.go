@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"popstellar/internal/message/answer"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/query/method/message"
 	"sort"
 	"strings"
 
@@ -241,7 +242,7 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 	sort.Strings(voteIDs)
 
 	// hash all valid vote ids
-	validVotesHash := messagedata.Hash(voteIDs...)
+	validVotesHash := message.Hash(voteIDs...)
 
 	// compare registered votes with local saved votes
 	if electionEnd.RegisteredVotes != validVotesHash {
@@ -284,7 +285,7 @@ func (c *Channel) verifyVote(vote messagedata.Vote, electionID string) error {
 		}
 	}
 
-	hash := messagedata.Hash("Vote", electionID, string(qs.ID), vs)
+	hash := message.Hash("Vote", electionID, string(qs.ID), vs)
 	if vote.ID != hash {
 		return xerrors.Errorf("vote ID is incorrect")
 	}

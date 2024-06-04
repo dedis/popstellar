@@ -3,145 +3,133 @@ package channel
 import (
 	"encoding/base64"
 	"encoding/json"
-	"popstellar/internal/message/answer"
+	"strings"
+
+	"popstellar/internal/errors"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/singleton/config"
 	"popstellar/internal/singleton/database"
-	"strings"
 )
 
-func handleChannelChirp(channelPath string, msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelChirp")
+func handleChannelChirp(channelPath string, msg message.Message) error {
+	object, action, err := verifyDataAndGetObjectAction(msg)
+	if err != nil {
+		return err
 	}
 
 	switch object + "#" + action {
 	case messagedata.ChirpObject + "#" + messagedata.ChirpActionAdd:
-		errAnswer = handleChirpAdd(channelPath, msg)
+		err = handleChirpAdd(channelPath, msg)
 	case messagedata.ChirpObject + "#" + messagedata.ChirpActionDelete:
-		errAnswer = handleChirpDelete(channelPath, msg)
+		err = handleChirpDelete(channelPath, msg)
 	default:
-		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
-	}
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelChirp")
+		err = errors.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
 
-	generalMsg, errAnswer := createChirpNotify(channelPath, msg)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelChirp")
+	if err != nil {
+		return err
+	}
+
+	generalMsg, err := createChirpNotify(channelPath, msg)
+	if err != nil {
+		return err
 	}
 
 	generalChirpsChannelID, ok := strings.CutSuffix(channelPath, Social+"/"+msg.Sender)
 	if !ok {
-		errAnswer := answer.NewInvalidMessageFieldError("invalid channelPath path %s", channelPath)
-		return errAnswer.Wrap("handleChannelChirp")
+		return errors.NewInvalidMessageFieldError("invalid channelPath path %s", channelPath)
 	}
 
-	db, errAnswer := database.GetChirpRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelChirp")
-	}
-
-	err := db.StoreChirpMessages(channelPath, generalChirpsChannelID, msg, generalMsg)
+	db, err := database.GetChirpRepositoryInstance()
 	if err != nil {
-		errAnswer = answer.NewStoreDatabaseError(err.Error())
-		return errAnswer.Wrap("handleChannelChirp")
+		return err
 	}
 
-	errAnswer = broadcastToAllClients(msg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelChirp")
+	err = db.StoreChirpMessages(channelPath, generalChirpsChannelID, msg, generalMsg)
+	if err != nil {
+		return err
 	}
 
-	errAnswer = broadcastToAllClients(generalMsg, generalChirpsChannelID)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannelChirp")
+	err = broadcastToAllClients(msg, channelPath)
+	if err != nil {
+		return err
+	}
+
+	err = broadcastToAllClients(generalMsg, generalChirpsChannelID)
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func handleChirpAdd(channelID string, msg message.Message) *answer.Error {
+func handleChirpAdd(channelID string, msg message.Message) error {
 	var data messagedata.ChirpAdd
-	errAnswer := msg.UnmarshalMsgData(&data)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChirpAdd")
+	err := msg.UnmarshalData(&data)
+	if err != nil {
+		return err
 	}
 
-	errAnswer = verifyChirpMessage(channelID, msg, data)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChirpAdd")
-	}
-
-	return nil
+	return verifyChirpMessage(channelID, msg, data)
 }
 
-func handleChirpDelete(channelID string, msg message.Message) *answer.Error {
+func handleChirpDelete(channelID string, msg message.Message) error {
 	var data messagedata.ChirpDelete
-	errAnswer := msg.UnmarshalMsgData(&data)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChirpDelete")
+	err := msg.UnmarshalData(&data)
+	if err != nil {
+		return err
 	}
 
-	errAnswer = verifyChirpMessage(channelID, msg, data)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChirpDelete")
+	err = verifyChirpMessage(channelID, msg, data)
+	if err != nil {
+		return err
 	}
 
-	db, errAnswer := database.GetChirpRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleChirpDelete")
+	db, err := database.GetChirpRepositoryInstance()
+	if err != nil {
+		return err
 	}
 
 	msgToDeleteExists, err := db.HasMessage(data.ChirpID)
 	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("if message exists: %v", err)
-		return errAnswer.Wrap("handleChirpDelete")
+		return err
 	}
 	if !msgToDeleteExists {
-		errAnswer := answer.NewInvalidResourceError("cannot delete unknown chirp")
-		return errAnswer.Wrap("handleChirpDelete")
+		return errors.NewInvalidResourceError("cannot delete unknown chirp")
 	}
 
 	return nil
 }
 
-func verifyChirpMessage(channelID string, msg message.Message, chirpMsg messagedata.Verifiable) *answer.Error {
+func verifyChirpMessage(channelID string, msg message.Message, chirpMsg messagedata.Verifiable) error {
 	err := chirpMsg.Verify()
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("invalid message: %v", err)
-		return errAnswer.Wrap("verifyChirpMessage")
+		return err
 	}
 
 	if !strings.HasSuffix(channelID, msg.Sender) {
-		errAnswer := answer.NewAccessDeniedError("only the owner of the channelPath can post chirps")
-		return errAnswer.Wrap("verifyChirpMessage")
+		return errors.NewAccessDeniedError("only the owner of the channelPath can post chirps")
 	}
 
 	return nil
 }
 
-func createChirpNotify(channelID string, msg message.Message) (message.Message, *answer.Error) {
+func createChirpNotify(channelID string, msg message.Message) (message.Message, error) {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode the data: %v", err)
-		return message.Message{}, errAnswer.Wrap("createChirpNotify")
+		return message.Message{}, errors.NewInvalidMessageFieldError("failed to decode the data: %v", err)
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	action = "notify_" + action
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to read the data: %v", err)
-		return message.Message{}, errAnswer.Wrap("createChirpNotify")
+		return message.Message{}, err
 	}
 
 	timestamp, err := messagedata.GetTime(jsonData)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to read the data: %v", err)
-		return message.Message{}, errAnswer.Wrap("createChirpNotify")
+		return message.Message{}, err
 	}
 
 	newData := messagedata.ChirpBroadcast{
@@ -154,31 +142,31 @@ func createChirpNotify(channelID string, msg message.Message) (message.Message, 
 
 	dataBuf, err := json.Marshal(newData)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to marshal: %v", err)
-		return message.Message{}, errAnswer.Wrap("createChirpNotify")
+		return message.Message{}, errors.NewJsonMarshalError(err.Error())
 	}
 
 	data64 := base64.URLEncoding.EncodeToString(dataBuf)
 
-	serverPublicKey, errAnswer := config.GetServerPublicKeyInstance()
-	if errAnswer != nil {
-		return message.Message{}, errAnswer.Wrap("createChirpNotify")
+	serverPublicKey, err := config.GetServerPublicKeyInstance()
+	if err != nil {
+		return message.Message{}, err
 	}
 
 	pkBuf, err := serverPublicKey.MarshalBinary()
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to unmarshall server public key", err)
-		return message.Message{}, errAnswer.Wrap("createChirpNotify")
+		return message.Message{}, errors.NewJsonMarshalError(err.Error())
 	}
+
 	pk64 := base64.URLEncoding.EncodeToString(pkBuf)
 
-	signatureBuf, errAnswer := Sign(dataBuf)
-	if errAnswer != nil {
-		return message.Message{}, errAnswer.Wrap("createChirpNotify")
+	signatureBuf, err := sign(dataBuf)
+	if err != nil {
+		return message.Message{}, err
 	}
+
 	signature64 := base64.URLEncoding.EncodeToString(signatureBuf)
 
-	messageID64 := messagedata.Hash(data64, signature64)
+	messageID64 := message.Hash(data64, signature64)
 
 	newMsg := message.Message{
 		Data:              data64,

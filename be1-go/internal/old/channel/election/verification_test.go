@@ -340,7 +340,7 @@ func TestVerify_ElectionEnd(t *testing.T) {
 		Data:              buf64,
 		Sender:            pkOrganizer,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         message.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -445,7 +445,7 @@ func TestVerifyRegisteredVotes_Badly_Sorted(t *testing.T) {
 	}
 
 	// votes must be sorted by by vote id
-	expected := messagedata.Hash("vote1.1", "vote2.1", "vote2.2", "vote1.2")
+	expected := message.Hash("vote1.1", "vote2.1", "vote2.2", "vote1.2")
 
 	end := messagedata.ElectionEnd{
 		RegisteredVotes: expected,
@@ -484,7 +484,7 @@ func TestVerifyRegisteredVotes_OK(t *testing.T) {
 	}
 
 	// votes must be sorted by by vote id
-	expected := messagedata.Hash("vote1.1", "vote1.2", "vote2.1", "vote2.2")
+	expected := message.Hash("vote1.1", "vote1.2", "vote2.1", "vote2.2")
 
 	end := messagedata.ElectionEnd{
 		RegisteredVotes: expected,

@@ -1,51 +1,42 @@
 package sqlite
 
+import (
+	"popstellar/internal/handler/channel"
+)
+
 const (
-	DefaultPath    = "sqlite.db"
 	serverKeysPath = "server_keys"
 )
 
-const (
-	RootType         = "root"
-	LaoType          = "lao"
-	ElectionType     = "election"
-	ChirpType        = "chirp"
-	ReactionType     = "reaction"
-	ConsensusType    = "consensus"
-	CoinType         = "coin"
-	AuthType         = "auth"
-	PopChaType       = "popcha"
-	GeneralChirpType = "generalChirp"
-	FederationType   = "federation"
-)
-
 var channelTypeToID = map[string]string{
-	RootType:         "1",
-	LaoType:          "2",
-	ElectionType:     "3",
-	ChirpType:        "4",
-	ReactionType:     "5",
-	ConsensusType:    "6",
-	PopChaType:       "7",
-	CoinType:         "8",
-	AuthType:         "9",
-	GeneralChirpType: "10",
-	FederationType:   "11",
+	channel.RootType:         "1",
+	channel.LaoType:          "2",
+	channel.ElectionType:     "3",
+	channel.ChirpType:        "4",
+	channel.ReactionType:     "5",
+	channel.ConsensusType:    "6",
+	channel.PopChaType:       "7",
+	channel.CoinType:         "8",
+	channel.AuthType:         "9",
+	channel.GeneralChirpType: "10",
+	channel.FederationType:   "11",
 }
 
 var channelTypes = []string{
-	RootType,
-	LaoType,
-	ElectionType,
-	ChirpType,
-	ReactionType,
-	ConsensusType,
-	PopChaType,
-	CoinType,
-	AuthType,
-	GeneralChirpType,
-	FederationType,
+	channel.RootType,
+	channel.LaoType,
+	channel.ElectionType,
+	channel.ChirpType,
+	channel.ReactionType,
+	channel.ConsensusType,
+	channel.PopChaType,
+	channel.CoinType,
+	channel.AuthType,
+	channel.GeneralChirpType,
+	channel.FederationType,
 }
+
+const foreignKeyOff = `PRAGMA foreign_keys = OFF;`
 
 const (
 	createMessage = `
@@ -93,14 +84,6 @@ const (
 	    		PRIMARY KEY (channelPath, messageID)
 	            )`
 
-	createPendingSignatures = `
-	CREATE TABLE IF NOT EXISTS pendingSignatures (
-	    		messageID TEXT,
-	    		witness TEXT,
-	    		signature TEXT UNIQUE,
-	    		PRIMARY KEY (messageID, witness)
-	            )`
-
 	createRumor = `
 	CREATE TABLE IF NOT EXISTS rumor ( 
     			ID INTEGER, 
@@ -142,9 +125,9 @@ const (
 	insertMessage                  = `INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)`
 	insertChannel                  = `INSERT INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
 	insertOrIgnoreChannel          = `INSERT OR IGNORE INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
+	insertChannelType              = `INSERT INTO channelType (type) VALUES (?)`
 	insertKeys                     = `INSERT INTO key (channelPath, publicKey, secretKey) VALUES (?, ?, ?)`
 	insertPublicKey                = `INSERT INTO key (channelPath, publicKey) VALUES (?, ?)`
-	insertPendingSignatures        = `INSERT INTO pendingSignatures (messageID, witness, signature) VALUES (?, ?, ?)`
 	insertRumor                    = `INSERT INTO rumor (ID, sender) VALUES (?, ?)`
 	insertUnprocessedMessage       = `INSERT INTO unprocessedMessage (messageID, channelPath, message) VALUES (?, ?, ?)`
 	insertUnprocessedMessageRumor  = `INSERT INTO unprocessedMessageRumor (messageID, rumorID, sender) VALUES (?, ?, ?)`
@@ -171,8 +154,6 @@ const (
 
 	selectSecretKey = `SELECT secretKey FROM key WHERE channelPath = ?`
 
-	selectPendingSignatures = `SELECT witness, signature FROM pendingSignatures WHERE messageID = ?`
-
 	selectMessage = `SELECT message FROM message WHERE messageID = ?`
 
 	selectAllChannels = `SELECT channelPath FROM channel`
@@ -185,8 +166,6 @@ const (
     JOIN channelMessage ON message.messageID = channelMessage.messageID
     WHERE channelMessage.channelPath = ?
     ORDER BY message.storedTime DESC`
-
-	selectBaseChannelMessages = `SELECT messageID, channelPath FROM channelMessage WHERE isBaseChannel = ?`
 
 	selectChannelPath = `SELECT channelPath FROM channel WHERE channelPath = ?`
 
@@ -401,11 +380,6 @@ const (
 )
 
 const (
-	deletePendingSignatures       = `DELETE FROM pendingSignatures WHERE messageID = ?`
 	deleteUnprocessedMessage      = `DELETE FROM unprocessedMessage WHERE messageID = ?`
 	deleteUnprocessedMessageRumor = `DELETE FROM unprocessedMessageRumor WHERE messageID = ?`
-)
-
-const (
-	updateMsg = `UPDATE OR IGNORE message SET message = json_insert(message,'$.witness_signatures[#]', json(?)) WHERE messageID = ?`
 )

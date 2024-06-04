@@ -1,7 +1,7 @@
 package state
 
 import (
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
 	"popstellar/internal/network/socket"
 )
 
@@ -12,18 +12,18 @@ type Socketer interface {
 	Delete(ID string) bool
 }
 
-func getSockets() (Socketer, *answer.Error) {
+func getSockets() (Socketer, error) {
 	if instance == nil || instance.sockets == nil {
-		return nil, answer.NewInternalServerError("sockets was not instantiated")
+		return nil, errors.NewInternalServerError("sockets was not instantiated")
 	}
 
 	return instance.sockets, nil
 }
 
-func SendToAllServer(buf []byte) *answer.Error {
-	sockets, errAnswer := getSockets()
-	if errAnswer != nil {
-		return errAnswer
+func SendToAllServer(buf []byte) error {
+	sockets, err := getSockets()
+	if err != nil {
+		return err
 	}
 
 	sockets.SendToAll(buf)
@@ -31,10 +31,10 @@ func SendToAllServer(buf []byte) *answer.Error {
 	return nil
 }
 
-func SendRumor(socket socket.Socket, senderID string, rumorID int, buf []byte) *answer.Error {
-	sockets, errAnswer := getSockets()
-	if errAnswer != nil {
-		return errAnswer
+func SendRumor(socket socket.Socket, senderID string, rumorID int, buf []byte) error {
+	sockets, err := getSockets()
+	if err != nil {
+		return err
 	}
 
 	sockets.SendRumor(socket, senderID, rumorID, buf)
@@ -43,10 +43,10 @@ func SendRumor(socket socket.Socket, senderID string, rumorID int, buf []byte) *
 }
 
 // Upsert upserts a socket into the Sockets store.
-func Upsert(socket socket.Socket) *answer.Error {
-	sockets, errAnswer := getSockets()
-	if errAnswer != nil {
-		return errAnswer
+func Upsert(socket socket.Socket) error {
+	sockets, err := getSockets()
+	if err != nil {
+		return err
 	}
 
 	sockets.Upsert(socket)
@@ -57,10 +57,10 @@ func Upsert(socket socket.Socket) *answer.Error {
 // Delete deletes a socket from the store. Returns false
 // if the socket is not present in the store and true
 // on success.
-func Delete(ID string) (bool, *answer.Error) {
-	sockets, errAnswer := getSockets()
-	if errAnswer != nil {
-		return false, errAnswer
+func Delete(ID string) (bool, error) {
+	sockets, err := getSockets()
+	if err != nil {
+		return false, err
 	}
 
 	return sockets.Delete(ID), nil

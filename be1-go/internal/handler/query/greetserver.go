@@ -2,8 +2,8 @@ package query
 
 import (
 	"encoding/json"
+	"popstellar/internal/errors"
 	"popstellar/internal/message"
-	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
@@ -11,31 +11,29 @@ import (
 	"popstellar/internal/singleton/state"
 )
 
-func handleGreetServer(socket socket.Socket, byteMessage []byte) (*int, *answer.Error) {
+func handleGreetServer(socket socket.Socket, byteMessage []byte) error {
 	var greetServer method.GreetServer
-
 	err := json.Unmarshal(byteMessage, &greetServer)
 	if err != nil {
-		errAnswer := answer.NewJsonUnmarshalError(err.Error())
-		return nil, errAnswer.Wrap("handleGreetServer")
+		return errors.NewJsonUnmarshalError(err.Error())
 	}
 
-	errAnswer := state.AddPeerInfo(socket.ID(), greetServer.Params)
-	if errAnswer != nil {
-		return nil, errAnswer.Wrap("handleGreetServer")
+	err = state.AddPeerInfo(socket.ID(), greetServer.Params)
+	if err != nil {
+		return err
 	}
 
-	isGreeted, errAnswer := state.IsPeerGreeted(socket.ID())
-	if errAnswer != nil {
-		return nil, errAnswer.Wrap("handleGreetServer")
+	isGreeted, err := state.IsPeerGreeted(socket.ID())
+	if err != nil {
+		return err
 	}
 	if isGreeted {
-		return nil, nil
+		return nil
 	}
 
-	serverPublicKey, clientAddress, serverAddress, errAnswer := config.GetServerInfo()
-	if errAnswer != nil {
-		return nil, errAnswer.Wrap("handleGreetServer")
+	serverPublicKey, clientAddress, serverAddress, err := config.GetServerInfo()
+	if err != nil {
+		return err
 	}
 
 	greetServerParams := method.GreetServerParams{
@@ -56,16 +54,10 @@ func handleGreetServer(socket socket.Socket, byteMessage []byte) (*int, *answer.
 
 	buf, err := json.Marshal(serverGreet)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to marshal: %v", err)
-		return nil, errAnswer.Wrap("handleGreetServer")
+		return errors.NewJsonMarshalError(err.Error())
 	}
 
 	socket.Send(buf)
 
-	errAnswer = state.AddPeerGreeted(socket.ID())
-	if errAnswer != nil {
-		return nil, errAnswer.Wrap("handleGreetServer")
-	}
-
-	return nil, nil
+	return state.AddPeerGreeted(socket.ID())
 }

@@ -45,8 +45,8 @@ func Test_handleChannelLao(t *testing.T) {
 	database.SetDatabase(mockRepository)
 
 	laoID := base64.URLEncoding.EncodeToString([]byte("laoID"))
-	errAnswer := subs.AddChannel(laoID)
-	require.Nil(t, errAnswer)
+	err = subs.AddChannel(laoID)
+	require.NoError(t, err)
 
 	// Test 1:Success For LaoState message
 	args = append(args, input{
@@ -119,8 +119,8 @@ func Test_handleChannelLao(t *testing.T) {
 	})
 
 	laoID = base64.URLEncoding.EncodeToString([]byte("laoID2"))
-	errAnswer = subs.AddChannel(laoID)
-	require.Nil(t, errAnswer)
+	err = subs.AddChannel(laoID)
+	require.NoError(t, err)
 
 	// Test 8: Success for RollCallOpen message
 	args = append(args, input{
@@ -153,8 +153,8 @@ func Test_handleChannelLao(t *testing.T) {
 	})
 
 	laoID = base64.URLEncoding.EncodeToString([]byte("laoID3"))
-	errAnswer = subs.AddChannel(laoID)
-	require.Nil(t, errAnswer)
+	err = subs.AddChannel(laoID)
+	require.NoError(t, err)
 
 	// Test 11: Success for RollCallClose message
 	args = append(args, input{
@@ -240,8 +240,8 @@ func Test_handleChannelLao(t *testing.T) {
 	})
 
 	laoID = base64.URLEncoding.EncodeToString([]byte("laoID4"))
-	errAnswer = subs.AddChannel(laoID)
-	require.Nil(t, errAnswer)
+	err = subs.AddChannel(laoID)
+	require.NoError(t, err)
 
 	// Test 19: Success for ElectionSetup message
 	args = append(args, input{
@@ -255,12 +255,11 @@ func Test_handleChannelLao(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := handleChannelLao(arg.channelPath, arg.msg)
+			err := handleChannelLao(arg.channelPath, arg.msg)
 			if arg.isError {
-				require.NotNil(t, errAnswer)
-				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.Error(t, err, arg.contains)
 			} else {
-				require.Nil(t, errAnswer)
+				require.NoError(t, err)
 			}
 		})
 	}
@@ -287,7 +286,7 @@ func newLaoStateMsg(t *testing.T, organizer, laoID string, mockRepository *mock2
 func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation, start, end int64, isError bool,
 	mockRepository *mock2.Repository) message.Message {
 
-	createID := messagedata.Hash(
+	createID := message.Hash(
 		messagedata.RollCallFlag,
 		strings.ReplaceAll(laoID, RootPrefix, ""),
 		strconv.Itoa(int(creation)),
@@ -306,7 +305,7 @@ func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation,
 func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, openedAt int64, isError bool,
 	mockRepository *mock2.Repository) message.Message {
 
-	openID := messagedata.Hash(
+	openID := message.Hash(
 		messagedata.RollCallFlag,
 		strings.ReplaceAll(laoID, RootPrefix, ""),
 		base64.URLEncoding.EncodeToString([]byte("opens")),
@@ -328,7 +327,7 @@ func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, opene
 func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, closedAt int64, isError bool,
 	mockRepository *mock2.Repository) message.Message {
 
-	closeID := messagedata.Hash(
+	closeID := message.Hash(
 		messagedata.RollCallFlag,
 		strings.ReplaceAll(laoID, RootPrefix, ""),
 		base64.URLEncoding.EncodeToString([]byte("closes")),
@@ -358,7 +357,7 @@ func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 	createdAt, start, end int64,
 	isError bool, mockRepository *mock2.Repository) message.Message {
 
-	electionSetupID := messagedata.Hash(
+	electionSetupID := message.Hash(
 		messagedata.ElectionFlag,
 		setupLao,
 		strconv.Itoa(int(createdAt)),
@@ -367,7 +366,7 @@ func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 
 	var questions []messagedata.ElectionSetupQuestion
 	if question != "" {
-		questionID := messagedata.Hash("Question", electionSetupID, "question")
+		questionID := message.Hash("Question", electionSetupID, "question")
 		questions = append(questions, messagedata.ElectionSetupQuestion{
 			ID:            questionID,
 			Question:      question,
@@ -376,7 +375,7 @@ func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 			WriteIn:       false,
 		})
 	} else {
-		questionID := messagedata.Hash("Question", electionSetupID, "")
+		questionID := message.Hash("Question", electionSetupID, "")
 		questions = append(questions, messagedata.ElectionSetupQuestion{
 			ID:            questionID,
 			Question:      "",
