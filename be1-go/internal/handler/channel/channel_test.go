@@ -11,7 +11,6 @@ import (
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/singleton/database"
 	"popstellar/internal/singleton/utils"
 	"popstellar/internal/validation"
 	"testing"
@@ -38,8 +37,9 @@ func TestMain(m *testing.M) {
 }
 
 func Test_handleChannel(t *testing.T) {
-	mockRepository := mock.NewRepository(t)
-	database.SetDatabase(mockRepository)
+	db := mock.NewRepository(t)
+
+	channel := createChannelHandler(nil, nil, nil, db, nil, nil)
 
 	keypair := generator.GenerateKeyPair(t)
 	sender := base64.URLEncoding.EncodeToString(keypair.PublicBuf)
@@ -58,8 +58,8 @@ func Test_handleChannel(t *testing.T) {
 	channelPath := "unknown"
 	msg := generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 
-	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
-	mockRepository.On("GetChannelType", channelPath).Return("", nil)
+	db.On("HasMessage", msg.MessageID).Return(false, nil)
+	db.On("GetChannelType", channelPath).Return("", nil)
 
 	args = append(args, input{
 		name:        "Test 1",
@@ -73,8 +73,8 @@ func Test_handleChannel(t *testing.T) {
 	channelPath = "disconnectedDB"
 	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 
-	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
-	mockRepository.On("GetChannelType", channelPath).
+	db.On("HasMessage", msg.MessageID).Return(false, nil)
+	db.On("GetChannelType", channelPath).
 		Return("", xerrors.Errorf("DB is disconnected"))
 
 	args = append(args, input{
@@ -88,7 +88,7 @@ func Test_handleChannel(t *testing.T) {
 
 	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 
-	mockRepository.On("HasMessage", msg.MessageID).Return(true, nil)
+	db.On("HasMessage", msg.MessageID).Return(true, nil)
 
 	args = append(args, input{
 		name:     "Test 3",
@@ -100,7 +100,7 @@ func Test_handleChannel(t *testing.T) {
 
 	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 
-	mockRepository.On("HasMessage", msg.MessageID).
+	db.On("HasMessage", msg.MessageID).
 		Return(false, xerrors.Errorf("DB is disconnected"))
 
 	args = append(args, input{
@@ -188,7 +188,7 @@ func Test_handleChannel(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			err := HandleChannel(arg.channelPath, arg.message, false)
+			err := channel.Handle(arg.channelPath, arg.message, false)
 			require.Error(t, err, arg.contains)
 		})
 	}

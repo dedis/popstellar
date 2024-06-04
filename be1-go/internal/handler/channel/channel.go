@@ -5,7 +5,8 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/singleton/database"
+	"popstellar/internal/repository"
+	"popstellar/internal/validation"
 )
 
 const (
@@ -22,18 +23,49 @@ const (
 	FederationType   = "federation"
 )
 
-func HandleChannel(channelPath string, msg message.Message, fromRumor bool) error {
+type channelHandler struct {
+	db     repository.ChannelRepository
+	schema *validation.SchemaValidator
+
+	root       *rootHandler
+	lao        *laoHandler
+	election   *electionHandler
+	chirp      *chirpHandler
+	reaction   *reactionHandler
+	coin       *coinHandler
+	federation *federationHandler
+}
+
+func createChannelHandler(conf repository.ConfigManager, subs repository.SubscriptionManager,
+	socket repository.SocketManager, db repository.Repository, hub repository.HubManager, schema *validation.SchemaValidator) *channelHandler {
+	root := createRootHandler(conf, db, schema)
+	lao := createLaoHandler(conf, subs, db, schema)
+	election := createElectionHandler(conf, subs, db, schema)
+	chirp := createChripHandler(conf, subs, db, schema)
+	reaction := createReactionHandler(subs, db, schema)
+	coin := createCoinHandler(subs, db, schema)
+	federation := createFederationHandler(db, subs, socket, hub, schema)
+
+	return &channelHandler{
+		db:         db,
+		schema:     schema,
+		root:       root,
+		lao:        lao,
+		election:   election,
+		chirp:      chirp,
+		reaction:   reaction,
+		coin:       coin,
+		federation: federation,
+	}
+}
+
+func (c *channelHandler) Handle(channelPath string, msg message.Message, fromRumor bool) error {
 	err := msg.VerifyMessage()
 	if err != nil {
 		return err
 	}
 
-	db, err := database.GetChannelRepositoryInstance()
-	if err != nil {
-		return err
-	}
-
-	msgAlreadyExists, err := db.HasMessage(msg.MessageID)
+	msgAlreadyExists, err := c.db.HasMessage(msg.MessageID)
 	if err != nil {
 		return err
 	}
@@ -44,26 +76,26 @@ func HandleChannel(channelPath string, msg message.Message, fromRumor bool) erro
 		return errors.NewDuplicateResourceError("message %s was already received", msg.MessageID)
 	}
 
-	channelType, err := db.GetChannelType(channelPath)
+	channelType, err := c.db.GetChannelType(channelPath)
 	if err != nil {
 		return err
 	}
 
 	switch channelType {
 	case RootType:
-		err = handleChannelRoot(msg)
+		err = c.root.handleChannelRoot(msg)
 	case LaoType:
-		err = handleChannelLao(channelPath, msg)
+		err = c.lao.handle(channelPath, msg)
 	case ElectionType:
-		err = handleChannelElection(channelPath, msg)
+		err = c.election.handle(channelPath, msg)
 	case ChirpType:
-		err = handleChannelChirp(channelPath, msg)
+		err = c.chirp.handle(channelPath, msg)
 	case ReactionType:
-		err = handleChannelReaction(channelPath, msg)
+		err = c.reaction.handle(channelPath, msg)
 	case CoinType:
-		err = handleChannelCoin(channelPath, msg)
+		err = c.coin.handle(channelPath, msg)
 	case FederationType:
-		err = handleChannelFederation(channelPath, msg)
+		err = c.federation.handleChannelFederation(channelPath, msg)
 	default:
 		err = errors.NewInvalidResourceError("unknown channelPath type for %s", channelPath)
 	}
