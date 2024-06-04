@@ -101,9 +101,9 @@ object ParamsHandler extends AskPatternConstants {
             case DbActorGetRumorStateAck(rumorState) =>
               // expected
               rumorState.state.get(rumor.senderPk) match
-                case Some(rumorIdDb) if rumorIdDb+1 == rumor.rumorId =>
+                case Some(rumorIdDb) if rumorIdDb + 1 == rumor.rumorId =>
                   tryProcessExpectedRumor(jsonRpcMessage, dbActorRef, messageRegistry)
-                case None if rumor.rumorId==0 =>
+                case None if rumor.rumorId == 0 =>
                   tryProcessExpectedRumor(jsonRpcMessage, dbActorRef, messageRegistry)
                 // not Expected
                 case _ =>
@@ -113,7 +113,7 @@ object ParamsHandler extends AskPatternConstants {
       }
     case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "RumorHandler received an unexpected message:" + graphMessage, None))
   }
-  
+
   private def tryProcessExpectedRumor(jsonRpcMessage: JsonRpcRequest, dbActorRef: AskableActorRef, messageRegistry: MessageRegistry)(implicit system: ActorSystem): GraphMessage = {
     val rumor: Rumor = jsonRpcMessage.getParams.asInstanceOf[Rumor]
     if (ProcessMessagesHandler.rumorHandler(messageRegistry, rumor)) {

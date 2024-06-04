@@ -17,7 +17,7 @@ import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey}
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
-import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor.{DbActorReadRumor, ReadRumor}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatest.funsuite.AnyFunSuiteLike
@@ -101,21 +101,22 @@ class RumorHandlerSuite extends TestKitBase with AnyFunSuiteLike with AskPattern
 
   }
 
-  test("rumor handler should output a success response if rumor is a new rumor") {
+  test("rumor handler should output a rumor if rumor is a new rumor") {
 
     val output = Source.single(Right(rumorRequest)).via(rumorHandler).runWith(Sink.head)
 
     val outputResult = Await.result(output, processDuration)
 
-    outputResult shouldBe a[Right[_, JsonRpcResponse]]
+    outputResult shouldBe a[Right[_, JsonRpcRequest]]
 
     outputResult match
-      case Right(jsonRpcResponse: JsonRpcResponse) => jsonRpcResponse.result.isDefined shouldBe true
-      case _                                       => 1 shouldBe 0
+      case Right(jsonRpcRequest: JsonRpcRequest) =>
+        jsonRpcRequest.getParams.asInstanceOf[Rumor] shouldBe rumor
+      case _ => 1 shouldBe 0
 
   }
 
-  test("rumor handler should output a error response if rumor is a old rumor") {
+  test("rumor handler should output a left response if rumor is a old rumor") {
     val dbWrite = dbActorRef ? DbActor.WriteRumor(rumor)
     Await.result(dbWrite, processDuration)
 
@@ -123,11 +124,12 @@ class RumorHandlerSuite extends TestKitBase with AnyFunSuiteLike with AskPattern
 
     val outputResult = Await.result(output, duration)
 
-    outputResult shouldBe a[Right[_, JsonRpcResponse]]
+    outputResult shouldBe a[Left[PipelineError, _]]
 
     outputResult match
-      case Right(jsonRpcResponse: JsonRpcResponse) => jsonRpcResponse.error.isDefined shouldBe true
-      case _                                       => 1 shouldBe 0
+      case Left(pipelineError: PipelineError) =>
+        pipelineError.code shouldBe ErrorCodes.ALREADY_EXISTS.id
+      case _ => 1 shouldBe 0
   }
 
   // https://github.com/dedis/popstellar/issues/1870

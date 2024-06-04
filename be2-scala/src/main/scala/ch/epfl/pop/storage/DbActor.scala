@@ -905,9 +905,9 @@ object DbActor {
   final case class GenerateRumorStateAns(rumorState: RumorState) extends Event
 
   /** Requests the db to build out rumorState +
-   */
+    */
   final case class GetRumorState() extends Event
-  
+
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
@@ -1002,8 +1002,9 @@ object DbActor {
   final case class DbActorGenerateRumorStateAns(rumorList: List[Rumor]) extends DbActorMessage
 
   /** Response for a [[GetRumorState]] +
-   */
+    */
   final case class DbActorGetRumorStateAck(rumorState: RumorState) extends DbActorMessage
+
   /** Response for a general db actor ACK
     */
   final case class DbActorAck() extends DbActorMessage
