@@ -18,7 +18,6 @@ import (
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/repository"
-	"popstellar/internal/singleton/database"
 	"popstellar/internal/validation"
 	"strings"
 	"time"
@@ -37,11 +36,13 @@ type federationHandler struct {
 }
 
 func createFederationHandler(db repository.FederationRepository, subs repository.SubscriptionManager,
-	socket repository.SocketManager) *federationHandler {
+	socket repository.SocketManager, hub repository.HubManager, schema *validation.SchemaValidator) *federationHandler {
 	return &federationHandler{
 		db:     db,
 		subs:   subs,
 		socket: socket,
+		hub:    hub,
+		schema: schema,
 	}
 }
 
@@ -120,13 +121,8 @@ func (h *federationHandler) handleRequestChallenge(msg message.Message, channelP
 		return err
 	}
 
-	db, err := database.GetFederationRepositoryInstance()
-	if err != nil {
-		return err
-	}
-
 	// store the generated challenge message, not the challenge request
-	err = db.StoreMessageAndData(channelPath, challengeMsg)
+	err = h.db.StoreMessageAndData(channelPath, challengeMsg)
 	if err != nil {
 		return err
 	}
@@ -166,17 +162,12 @@ func (h *federationHandler) handleExpect(msg message.Message, channelPath string
 		return err
 	}
 
-	db, err := database.GetFederationRepositoryInstance()
-	if err != nil {
-		return err
-	}
-
 	serverPk, err := h.getServerPk()
 	if err != nil {
 		return err
 	}
 
-	err = db.IsChallengeValid(serverPk, challenge, channelPath)
+	err = h.db.IsChallengeValid(serverPk, challenge, channelPath)
 	if err != nil {
 		return err
 	}
@@ -184,7 +175,7 @@ func (h *federationHandler) handleExpect(msg message.Message, channelPath string
 	remoteChannel := fmt.Sprintf(channelPattern, federationExpect.LaoId)
 	_ = h.subs.AddChannel(remoteChannel)
 
-	return db.StoreMessageAndData(channelPath, msg)
+	return h.db.StoreMessageAndData(channelPath, msg)
 }
 
 // handleInit checks that the message is from the local organizer and that
@@ -220,12 +211,7 @@ func (h *federationHandler) handleInit(msg message.Message, channelPath string) 
 		return err
 	}
 
-	db, err := database.GetFederationRepositoryInstance()
-	if err != nil {
-		return err
-	}
-
-	err = db.StoreMessageAndData(channelPath, msg)
+	err = h.db.StoreMessageAndData(channelPath, msg)
 	if err != nil {
 		return err
 	}
