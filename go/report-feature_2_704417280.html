@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>03 Jun 2024, 04:19</td>
+      <td>04 Jun 2024, 04:15</td>
     </tr>
   </tbody>
 </table>
@@ -127,18 +127,18 @@ $(document).ready(function() {
         <tbody>
         <tr>
           <td class="tagname">be/features/election/castVote.feature</td>
-          <td      class="passed"    >143</td>
-          <td      class="failed"    >1</td>
-          <td     class="skipped"   >1</td>
+          <td      class="passed"    >128</td>
+          <td      class="failed"    >6</td>
+          <td     class="skipped"   >11</td>
           <td >0</td>
           <td >0</td>
           <td class="total">145</td>
 
-          <td  class="passed"    >6</td>
-          <td  class="failed"    >1</td>
+          <td  class="passed"    >1</td>
+          <td  class="failed"    >6</td>
           <td class="total">7</td>
 
-          <td class="duration" data-value="67955555684">1:7.955</td>
+          <td class="duration" data-value="43061663730">43.061</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.423</span>
+  <span class="lead-duration duration">5.435</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.260</span>
+  <span class="lead-duration duration">5.265</span>
 
 </div>
 
@@ -342,7 +342,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -396,7 +396,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -477,7 +477,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def election = organizer.generateValidElection(lao)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -531,7 +531,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(openElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.146</span>
+  <span class="lead-duration duration">0.153</span>
 
 </div>
 
@@ -577,11 +577,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-3" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@69b80603&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@5655278d&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@2dd46693&quot;,
-  &quot;election&quot;: &quot;common.model.Election@27107a97&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@eb1e868&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@10230657&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@48a21ea6&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@394e504d&quot;,
+  &quot;election&quot;: &quot;common.model.Election@62ff14cd&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@6ae6a77b&quot;
 }
 </pre>
       </div>
@@ -670,7 +670,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.009</span>
+  <span class="lead-duration duration">5.008</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-4">
@@ -713,7 +713,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">def validCastVote =</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -763,7 +763,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validCastVote, election.channel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -790,7 +790,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validCastVote)</span>
 
-  <span class="lead-duration duration">0.006</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -882,7 +882,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.410</span>
+  <span class="lead-duration duration">5.421</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-7">
@@ -1222,7 +1222,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(openElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.143</span>
+  <span class="lead-duration duration">0.153</span>
 
 </div>
 
@@ -1268,11 +1268,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-9" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@71a7cf7c&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@7f49df25&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@5b29d699&quot;,
-  &quot;election&quot;: &quot;common.model.Election@5a5a973c&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@15c96f24&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@32e9c3af&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@796e2187&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@632d1b1b&quot;,
+  &quot;election&quot;: &quot;common.model.Election@3c2fa57a&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@4027edeb&quot;
 }
 </pre>
       </div>
@@ -1361,12 +1361,12 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.003</span>
+  <span class="lead-duration duration">0.004</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-10">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-10">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Casting a vote on a lao channel should return an error</span>
 
@@ -1377,16 +1377,16 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-10" class="collapse collapsable-details ">
+  <div id="element-10" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-11">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-11">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -1396,7 +1396,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-11" class="inner-level collapse collapsable-details ">
+  <div id="steps-11" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -1477,7 +1477,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And passed">
+<div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validCastVote)</span>
 
@@ -1490,9 +1490,57 @@ $(document).ready(function() {
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-13">
+          <a>js</a>
+      </div>
+      <div id="msg-13" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(validCastVote)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/election/castVote.feature:66</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-14">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-14" class="collapse collapsable-details">
+        <pre>04:11:07.635 classpath:be/features/election/castVote.feature:66
+And json answer = organizer.getBackendResponse(validCastVote)
+js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(validCastVote)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/election/castVote.feature:66
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -1504,7 +1552,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-Then passed">
+<div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
@@ -1531,11 +1579,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And passed">
+<div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
   <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">5.000</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -1573,10 +1621,10 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.405</span>
+  <span class="lead-duration duration">5.407</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-13">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-15">
 
 <div class="brief passed">
   <span class="keyword indention">Background</span>
@@ -1589,14 +1637,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-13" class="collapse collapsable-details ">
+  <div id="element-15" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-14">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-16">
 
 <div class="brief passed">
   <span class="keyword indention">Steps</span>
@@ -1608,7 +1656,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-14" class="inner-level collapse collapsable-details ">
+  <div id="steps-16" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -1616,7 +1664,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1670,7 +1718,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.258</span>
+  <span class="lead-duration duration">5.259</span>
 
 </div>
 
@@ -1913,7 +1961,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(openElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.138</span>
+  <span class="lead-duration duration">0.137</span>
 
 </div>
 
@@ -1954,16 +2002,16 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-15">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-17">
           <a>Doc string</a>
       </div>
-      <div id="msg-15" class="collapse collapsable-details">
+      <div id="msg-17" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@24482a4f&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@3140ad41&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@3f2d2f22&quot;,
-  &quot;election&quot;: &quot;common.model.Election@61c3d7ac&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@4bc9389&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@48cd8e71&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@43b3b1b0&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@2f6d8c9&quot;,
+  &quot;election&quot;: &quot;common.model.Election@7d4135c9&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@59db8216&quot;
 }
 </pre>
       </div>
@@ -2052,10 +2100,10 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.004</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-16">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-18">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -2068,14 +2116,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-16" class="collapse collapsable-details  in ">
+  <div id="element-18" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-17">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-19">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -2087,7 +2135,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-17" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-19" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -2217,10 +2265,10 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-18">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-20">
           <a>Doc string</a>
       </div>
-      <div id="msg-18" class="collapse collapsable-details">
+      <div id="msg-20" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;cast_vote&quot;,
@@ -2253,7 +2301,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validCastVote, newElection.channel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -2280,7 +2328,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validCastVote)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -2318,17 +2366,17 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-19">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-21">
           <a>match</a>
       </div>
-      <div id="msg-19" class="collapse collapsable-details  in ">
+      <div id="msg-21" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1649876873,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;HandleQuery: handlePublish: HandleChannel: failed to query from database: channelPath type: sql: no rows in result set&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1511199608,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
-    {&quot;code&quot;:-6,&quot;description&quot;:&quot;HandleQuery: handlePublish: HandleChannel: failed to query from database: channelPath type: sql: no rows in result set&quot;}
+    {&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}
     {&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}
 
       $.error.code | not equal (NUMBER:NUMBER)
@@ -2345,19 +2393,19 @@ classpath:be/features/election/castVote.feature:97</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-20">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-22">
           <a>Doc string</a>
       </div>
-      <div id="msg-20" class="collapse collapsable-details">
-        <pre>04:13:38.114 classpath:be/features/election/castVote.feature:97
+      <div id="msg-22" class="collapse collapsable-details">
+        <pre>04:11:13.061 classpath:be/features/election/castVote.feature:97
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1649876873,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;HandleQuery: handlePublish: HandleChannel: failed to query from database: channelPath type: sql: no rows in result set&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1511199608,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
-    {&quot;code&quot;:-6,&quot;description&quot;:&quot;HandleQuery: handlePublish: HandleChannel: failed to query from database: channelPath type: sql: no rows in result set&quot;}
+    {&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}
     {&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}
 
       $.error.code | not equal (NUMBER:NUMBER)
@@ -2422,10 +2470,10 @@ classpath:be/features/election/castVote.feature:97
 </div>
 
 
-  <span class="lead-duration duration">5.415</span>
+  <span class="lead-duration duration">5.451</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-21">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-23">
 
 <div class="brief passed">
   <span class="keyword indention">Background</span>
@@ -2438,14 +2486,14 @@ classpath:be/features/election/castVote.feature:97
   </span>
   <div class="description indention"></div>
 
-  <div id="element-21" class="collapse collapsable-details ">
+  <div id="element-23" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-22">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-24">
 
 <div class="brief passed">
   <span class="keyword indention">Steps</span>
@@ -2457,7 +2505,7 @@ classpath:be/features/election/castVote.feature:97
 
   </div>
 
-  <div id="steps-22" class="inner-level collapse collapsable-details ">
+  <div id="steps-24" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -2465,7 +2513,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -2573,7 +2621,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -2762,7 +2810,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">*</span>
   <span class="name">call read(openElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.146</span>
+  <span class="lead-duration duration">0.180</span>
 
 </div>
 
@@ -2803,16 +2851,16 @@ classpath:be/features/election/castVote.feature:97
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-23">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-25">
           <a>Doc string</a>
       </div>
-      <div id="msg-23" class="collapse collapsable-details">
+      <div id="msg-25" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@30221cfa&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@662061e3&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@1921b43c&quot;,
-  &quot;election&quot;: &quot;common.model.Election@79e15c4a&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@59845a40&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@7bb86ac&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@33bf2602&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@4724b2c1&quot;,
+  &quot;election&quot;: &quot;common.model.Election@426a4301&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@193f3306&quot;
 }
 </pre>
       </div>
@@ -2901,12 +2949,12 @@ classpath:be/features/election/castVote.feature:97
 </div>
 
 
-  <span class="lead-duration duration">5.006</span>
+  <span class="lead-duration duration">0.009</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-24">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-26">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Casting a vote with wrong vote id should return an error</span>
 
@@ -2917,16 +2965,16 @@ classpath:be/features/election/castVote.feature:97
   </span>
   <div class="description indention"></div>
 
-  <div id="element-24" class="collapse collapsable-details ">
+  <div id="element-26" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-25">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-27">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -2936,7 +2984,7 @@ classpath:be/features/election/castVote.feature:97
 
   </div>
 
-  <div id="steps-25" class="inner-level collapse collapsable-details ">
+  <div id="steps-27" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -2958,10 +3006,10 @@ classpath:be/features/election/castVote.feature:97
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-26">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-28">
           <a>Doc string</a>
       </div>
-      <div id="msg-26" class="collapse collapsable-details">
+      <div id="msg-28" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;cast_vote&quot;,
@@ -2994,33 +3042,6 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidCastVote, election.channel)</span>
 
-  <span class="lead-duration duration">0.001</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(invalidCastVote)</span>
-
   <span class="lead-duration duration">0.004</span>
 
 </div>
@@ -3044,7 +3065,82 @@ classpath:be/features/election/castVote.feature:97
       <div class="step">
 
 
-<div class="brief step-name-Then passed">
+<div class="brief step-name-And failed">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = organizer.getBackendResponse(invalidCastVote)</span>
+
+  <span class="lead-duration duration">0.004</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-29">
+          <a>js</a>
+      </div>
+      <div id="msg-29" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(invalidCastVote)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/election/castVote.feature:122</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-30">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-30" class="collapse collapsable-details">
+        <pre>04:11:18.538 classpath:be/features/election/castVote.feature:122
+And json answer = organizer.getBackendResponse(invalidCastVote)
+js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(invalidCastVote)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/election/castVote.feature:122
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
@@ -3071,11 +3167,11 @@ classpath:be/features/election/castVote.feature:97
       <div class="step">
 
 
-<div class="brief step-name-And passed">
+<div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
   <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">5.000</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -3113,10 +3209,10 @@ classpath:be/features/election/castVote.feature:97
 </div>
 
 
-  <span class="lead-duration duration">5.414</span>
+  <span class="lead-duration duration">5.433</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-27">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-31">
 
 <div class="brief passed">
   <span class="keyword indention">Background</span>
@@ -3129,14 +3225,14 @@ classpath:be/features/election/castVote.feature:97
   </span>
   <div class="description indention"></div>
 
-  <div id="element-27" class="collapse collapsable-details ">
+  <div id="element-31" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-28">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-32">
 
 <div class="brief passed">
   <span class="keyword indention">Steps</span>
@@ -3148,7 +3244,7 @@ classpath:be/features/election/castVote.feature:97
 
   </div>
 
-  <div id="steps-28" class="inner-level collapse collapsable-details ">
+  <div id="steps-32" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -3156,7 +3252,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -3210,7 +3306,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.258</span>
+  <span class="lead-duration duration">5.262</span>
 
 </div>
 
@@ -3264,7 +3360,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -3453,7 +3549,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">*</span>
   <span class="name">call read(openElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.146</span>
+  <span class="lead-duration duration">0.159</span>
 
 </div>
 
@@ -3494,16 +3590,16 @@ classpath:be/features/election/castVote.feature:97
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-29">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-33">
           <a>Doc string</a>
       </div>
-      <div id="msg-29" class="collapse collapsable-details">
+      <div id="msg-33" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@3c4e17ea&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@285ac40b&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@5b2ade46&quot;,
-  &quot;election&quot;: &quot;common.model.Election@2087c939&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@6c3a7b84&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@537a8915&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@31aa9b01&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@2148b47e&quot;,
+  &quot;election&quot;: &quot;common.model.Election@410f1452&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@463a1f47&quot;
 }
 </pre>
       </div>
@@ -3592,12 +3688,12 @@ classpath:be/features/election/castVote.feature:97
 </div>
 
 
-  <span class="lead-duration duration">5.003</span>
+  <span class="lead-duration duration">0.004</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-30">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-34">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Casting a vote with lao id as vote id should return an error</span>
 
@@ -3608,16 +3704,16 @@ classpath:be/features/election/castVote.feature:97
   </span>
   <div class="description indention"></div>
 
-  <div id="element-30" class="collapse collapsable-details ">
+  <div id="element-34" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-31">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-35">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -3627,7 +3723,7 @@ classpath:be/features/election/castVote.feature:97
 
   </div>
 
-  <div id="steps-31" class="inner-level collapse collapsable-details ">
+  <div id="steps-35" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -3649,10 +3745,10 @@ classpath:be/features/election/castVote.feature:97
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-32">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-36">
           <a>Doc string</a>
       </div>
-      <div id="msg-32" class="collapse collapsable-details">
+      <div id="msg-36" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;cast_vote&quot;,
@@ -3685,7 +3781,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidCastVote, election.channel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -3708,11 +3804,11 @@ classpath:be/features/election/castVote.feature:97
       <div class="step">
 
 
-<div class="brief step-name-And passed">
+<div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidCastVote)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -3721,9 +3817,57 @@ classpath:be/features/election/castVote.feature:97
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-37">
+          <a>js</a>
+      </div>
+      <div id="msg-37" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(invalidCastVote)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/election/castVote.feature:148</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-38">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-38" class="collapse collapsable-details">
+        <pre>04:11:23.995 classpath:be/features/election/castVote.feature:148
+And json answer = organizer.getBackendResponse(invalidCastVote)
+js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(invalidCastVote)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/election/castVote.feature:148
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -3735,7 +3879,7 @@ classpath:be/features/election/castVote.feature:97
       <div class="step">
 
 
-<div class="brief step-name-Then passed">
+<div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
@@ -3762,11 +3906,11 @@ classpath:be/features/election/castVote.feature:97
       <div class="step">
 
 
-<div class="brief step-name-And passed">
+<div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
   <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">5.000</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -3804,10 +3948,10 @@ classpath:be/features/election/castVote.feature:97
 </div>
 
 
-  <span class="lead-duration duration">5.423</span>
+  <span class="lead-duration duration">5.429</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-33">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-39">
 
 <div class="brief passed">
   <span class="keyword indention">Background</span>
@@ -3820,14 +3964,14 @@ classpath:be/features/election/castVote.feature:97
   </span>
   <div class="description indention"></div>
 
-  <div id="element-33" class="collapse collapsable-details ">
+  <div id="element-39" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-34">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-40">
 
 <div class="brief passed">
   <span class="keyword indention">Steps</span>
@@ -3839,7 +3983,7 @@ classpath:be/features/election/castVote.feature:97
 
   </div>
 
-  <div id="steps-34" class="inner-level collapse collapsable-details ">
+  <div id="steps-40" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -3847,7 +3991,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -3901,7 +4045,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.259</span>
+  <span class="lead-duration duration">5.260</span>
 
 </div>
 
@@ -4009,7 +4153,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -4144,7 +4288,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">*</span>
   <span class="name">call read(openElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.153</span>
+  <span class="lead-duration duration">0.159</span>
 
 </div>
 
@@ -4185,16 +4329,16 @@ classpath:be/features/election/castVote.feature:97
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-35">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-41">
           <a>Doc string</a>
       </div>
-      <div id="msg-35" class="collapse collapsable-details">
+      <div id="msg-41" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@123e9094&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@1f6ba47b&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@1bb78ae&quot;,
-  &quot;election&quot;: &quot;common.model.Election@3ee2d546&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@58be583e&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@23ade612&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@47224d5d&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@7e366c6f&quot;,
+  &quot;election&quot;: &quot;common.model.Election@68e094c9&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@243162b1&quot;
 }
 </pre>
       </div>
@@ -4283,12 +4427,12 @@ classpath:be/features/election/castVote.feature:97
 </div>
 
 
-  <span class="lead-duration duration">5.009</span>
+  <span class="lead-duration duration">0.015</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-36">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-42">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Non attendee casting a vote should return an error</span>
 
@@ -4299,16 +4443,16 @@ classpath:be/features/election/castVote.feature:97
   </span>
   <div class="description indention"></div>
 
-  <div id="element-36" class="collapse collapsable-details ">
+  <div id="element-42" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-37">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-43">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -4318,7 +4462,7 @@ classpath:be/features/election/castVote.feature:97
 
   </div>
 
-  <div id="steps-37" class="inner-level collapse collapsable-details ">
+  <div id="steps-43" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -4326,7 +4470,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">Given</span>
   <span class="name">def nonAttendee = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -4367,10 +4511,10 @@ classpath:be/features/election/castVote.feature:97
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-38">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-44">
           <a>Doc string</a>
       </div>
-      <div id="msg-38" class="collapse collapsable-details">
+      <div id="msg-44" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;cast_vote&quot;,
@@ -4426,11 +4570,11 @@ classpath:be/features/election/castVote.feature:97
       <div class="step">
 
 
-<div class="brief step-name-And passed">
+<div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = nonAttendee.getBackendResponse(validCastVote)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -4439,9 +4583,57 @@ classpath:be/features/election/castVote.feature:97
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-45">
+          <a>js</a>
+      </div>
+      <div id="msg-45" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: nonAttendee.getBackendResponse(validCastVote)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/election/castVote.feature:175</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-46">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-46" class="collapse collapsable-details">
+        <pre>04:11:29.456 classpath:be/features/election/castVote.feature:175
+And json answer = nonAttendee.getBackendResponse(validCastVote)
+js failed:
+&gt;&gt;&gt;&gt;
+01: nonAttendee.getBackendResponse(validCastVote)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/election/castVote.feature:175
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -4453,7 +4645,7 @@ classpath:be/features/election/castVote.feature:97
       <div class="step">
 
 
-<div class="brief step-name-Then passed">
+<div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
@@ -4480,11 +4672,11 @@ classpath:be/features/election/castVote.feature:97
       <div class="step">
 
 
-<div class="brief step-name-And passed">
+<div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
   <span class="name">match nonAttendee.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">5.000</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -4522,10 +4714,10 @@ classpath:be/features/election/castVote.feature:97
 </div>
 
 
-  <span class="lead-duration duration">5.419</span>
+  <span class="lead-duration duration">5.428</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-39">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-47">
 
 <div class="brief passed">
   <span class="keyword indention">Background</span>
@@ -4538,14 +4730,14 @@ classpath:be/features/election/castVote.feature:97
   </span>
   <div class="description indention"></div>
 
-  <div id="element-39" class="collapse collapsable-details ">
+  <div id="element-47" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-40">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-48">
 
 <div class="brief passed">
   <span class="keyword indention">Steps</span>
@@ -4557,7 +4749,7 @@ classpath:be/features/election/castVote.feature:97
 
   </div>
 
-  <div id="steps-40" class="inner-level collapse collapsable-details ">
+  <div id="steps-48" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -4619,7 +4811,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.259</span>
+  <span class="lead-duration duration">5.260</span>
 
 </div>
 
@@ -4727,7 +4919,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -4862,7 +5054,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">*</span>
   <span class="name">call read(openElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.150</span>
+  <span class="lead-duration duration">0.158</span>
 
 </div>
 
@@ -4903,16 +5095,16 @@ classpath:be/features/election/castVote.feature:97
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-41">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-49">
           <a>Doc string</a>
       </div>
-      <div id="msg-41" class="collapse collapsable-details">
+      <div id="msg-49" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@1a34772e&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@401002ce&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@6870a76f&quot;,
-  &quot;election&quot;: &quot;common.model.Election@42257df7&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@7b11ff9a&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@712c9bcf&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@3c34c491&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@509e4902&quot;,
+  &quot;election&quot;: &quot;common.model.Election@7f958d4a&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@6af29394&quot;
 }
 </pre>
       </div>
@@ -5001,12 +5193,12 @@ classpath:be/features/election/castVote.feature:97
 </div>
 
 
-  <span class="lead-duration duration">5.007</span>
+  <span class="lead-duration duration">0.006</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-42">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-50">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Casting a valid vote before creation time should fail</span>
 
@@ -5017,16 +5209,16 @@ classpath:be/features/election/castVote.feature:97
   </span>
   <div class="description indention"></div>
 
-  <div id="element-42" class="collapse collapsable-details ">
+  <div id="element-50" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-43">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-51">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -5036,7 +5228,7 @@ classpath:be/features/election/castVote.feature:97
 
   </div>
 
-  <div id="steps-43" class="inner-level collapse collapsable-details ">
+  <div id="steps-51" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -5058,10 +5250,10 @@ classpath:be/features/election/castVote.feature:97
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-44">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-52">
           <a>Doc string</a>
       </div>
-      <div id="msg-44" class="collapse collapsable-details">
+      <div id="msg-52" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;cast_vote&quot;,
@@ -5094,7 +5286,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidCastVote, election.channel)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -5117,11 +5309,11 @@ classpath:be/features/election/castVote.feature:97
       <div class="step">
 
 
-<div class="brief step-name-And passed">
+<div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidCastVote)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -5130,9 +5322,57 @@ classpath:be/features/election/castVote.feature:97
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-53">
+          <a>js</a>
+      </div>
+      <div id="msg-53" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(invalidCastVote)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/election/castVote.feature:200</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-54">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-54" class="collapse collapsable-details">
+        <pre>04:11:34.909 classpath:be/features/election/castVote.feature:200
+And json answer = organizer.getBackendResponse(invalidCastVote)
+js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(invalidCastVote)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/election/castVote.feature:200
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -5144,7 +5384,7 @@ classpath:be/features/election/castVote.feature:97
       <div class="step">
 
 
-<div class="brief step-name-Then passed">
+<div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
@@ -5171,11 +5411,11 @@ classpath:be/features/election/castVote.feature:97
       <div class="step">
 
 
-<div class="brief step-name-And passed">
+<div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
   <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">5.000</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 

@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>03 Jun 2024, 04:19</td>
+      <td>04 Jun 2024, 04:15</td>
     </tr>
   </tbody>
 </table>
@@ -127,9 +127,9 @@ $(document).ready(function() {
         <tbody>
         <tr>
           <td class="tagname">@create1</td>
-          <td      class="passed"    >4</td>
+          <td      class="passed"    >3</td>
           <td      class="failed"    >1</td>
-          <td     class="skipped"   >1</td>
+          <td     class="skipped"   >2</td>
           <td >0</td>
           <td >0</td>
           <td class="total">6</td>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >1</td>
           <td class="total">1</td>
 
-          <td class="duration" data-value="135709885">0.135</td>
+          <td class="duration" data-value="143234211">0.143</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -182,7 +182,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.135</span>
+  <span class="lead-duration duration">0.143</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -297,7 +297,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(badLaoReq, rootChannel)</span>
 
-  <span class="lead-duration duration">0.119</span>
+  <span class="lead-duration duration">0.131</span>
 
 </div>
 
@@ -320,38 +320,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And passed">
+<div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(badLaoReq)</span>
 
-  <span class="lead-duration duration">0.005</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then failed">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -363,23 +336,22 @@ $(document).ready(function() {
   <div class="inner-level">
     <div class="message indention">
       <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-4">
-          <a>match</a>
+          <a>js</a>
       </div>
       <div id="msg-4" class="collapse collapsable-details  in ">
-        <pre>match failed: CONTAINS
-  $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:182694600,&quot;error&quot;:{&quot;code&quot;:-1,&quot;description&quot;:&quot;HandleQuery: handlePublish: HandleChannel: handleChannelRoot: handleLaoCreate: verifyLAOCreation: invalid action: failed to verify message data: invalid message field: lao id is eTZEYcCgtX9807Knu5t-JgYohej95HvseHiWsJoNQ2U=, should be 1Fx-tJQBhkCeY1ZXBBlr4ta2W9J67lWAEZ8lcWHeoqE=&quot;}}
-  {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(badLaoReq)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
 
-    $.error | not equal | match failed for name: 'code' (MAP:MAP)
-    {&quot;code&quot;:-1,&quot;description&quot;:&quot;HandleQuery: handlePublish: HandleChannel: handleChannelRoot: handleLaoCreate: verifyLAOCreation: invalid action: failed to verify message data: invalid message field: lao id is eTZEYcCgtX9807Knu5t-JgYohej95HvseHiWsJoNQ2U=, should be 1Fx-tJQBhkCeY1ZXBBlr4ta2W9J67lWAEZ8lcWHeoqE=&quot;}
-    {&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}
-
-      $.error.code | not equal (NUMBER:NUMBER)
-      -1
-      -4
-
-classpath:be/features/LAO/create.feature:30</pre>
+classpath:be/features/LAO/create.feature:29</pre>
       </div>
     </div>
   </div>
@@ -393,26 +365,52 @@ classpath:be/features/LAO/create.feature:30</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-5" class="collapse collapsable-details">
-        <pre>04:08:50.377 classpath:be/features/LAO/create.feature:30
-Then match answer contains INVALID_MESSAGE_FIELD
-match failed: CONTAINS
-  $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:182694600,&quot;error&quot;:{&quot;code&quot;:-1,&quot;description&quot;:&quot;HandleQuery: handlePublish: HandleChannel: handleChannelRoot: handleLaoCreate: verifyLAOCreation: invalid action: failed to verify message data: invalid message field: lao id is eTZEYcCgtX9807Knu5t-JgYohej95HvseHiWsJoNQ2U=, should be 1Fx-tJQBhkCeY1ZXBBlr4ta2W9J67lWAEZ8lcWHeoqE=&quot;}}
-  {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
+        <pre>04:07:00.087 classpath:be/features/LAO/create.feature:29
+And json answer = organizer.getBackendResponse(badLaoReq)
+js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(badLaoReq)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
 
-    $.error | not equal | match failed for name: 'code' (MAP:MAP)
-    {&quot;code&quot;:-1,&quot;description&quot;:&quot;HandleQuery: handlePublish: HandleChannel: handleChannelRoot: handleLaoCreate: verifyLAOCreation: invalid action: failed to verify message data: invalid message field: lao id is eTZEYcCgtX9807Knu5t-JgYohej95HvseHiWsJoNQ2U=, should be 1Fx-tJQBhkCeY1ZXBBlr4ta2W9J67lWAEZ8lcWHeoqE=&quot;}
-    {&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}
-
-      $.error.code | not equal (NUMBER:NUMBER)
-      -1
-      -4
-
-classpath:be/features/LAO/create.feature:30
+classpath:be/features/LAO/create.feature:29
 </pre>
       </div>
     </div>
   </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then skipped">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
 
 
 

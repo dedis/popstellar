@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>03 Jun 2024, 04:19</td>
+      <td>04 Jun 2024, 04:15</td>
     </tr>
   </tbody>
 </table>
@@ -127,19 +127,19 @@ $(document).ready(function() {
         <tbody>
         <tr>
           <td class="tagname">@closeRollCall3</td>
-          <td      class="passed"    >5</td>
-          <td >0</td>
-          <td >0</td>
+          <td      class="passed"    >2</td>
+          <td      class="failed"    >1</td>
+          <td     class="skipped"   >2</td>
           <td >0</td>
           <td >0</td>
           <td class="total">5</td>
 
-          <td  class="passed"    >1</td>
           <td >0</td>
+          <td  class="failed"    >1</td>
           <td class="total">1</td>
 
-          <td class="duration" data-value="5003358631">5.003</td>
-          <td class="passed">Passed</td>
+          <td class="duration" data-value="8717316">0.008</td>
+          <td class="failed">Failed</td>
         </tr>
         </tbody>
 
@@ -182,12 +182,12 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.003</span>
+  <span class="lead-duration duration">0.008</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Close a valid roll call with wrong update_id should return an error message</span>
 
@@ -198,16 +198,16 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-1" class="collapse collapsable-details ">
+  <div id="element-1" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-2">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-2">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -217,7 +217,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-2" class="inner-level collapse collapsable-details ">
+  <div id="steps-2" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -292,11 +292,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And passed">
+<div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidCloseRollCall)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -305,9 +305,57 @@ $(document).ready(function() {
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-4">
+          <a>js</a>
+      </div>
+      <div id="msg-4" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(invalidCloseRollCall)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/rollCall/closeRollCall.feature:75</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-5">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-5" class="collapse collapsable-details">
+        <pre>04:13:40.610 classpath:be/features/rollCall/closeRollCall.feature:75
+And json answer = organizer.getBackendResponse(invalidCloseRollCall)
+js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(invalidCloseRollCall)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/rollCall/closeRollCall.feature:75
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -319,7 +367,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-Then passed">
+<div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
@@ -346,11 +394,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And passed">
+<div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
   <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">5.000</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
