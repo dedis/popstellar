@@ -102,7 +102,7 @@ class RollCallBuilder {
         start,
         end,
         state!!,
-      LinkedHashSet(attendees),
+        LinkedHashSet(attendees),
         location!!,
         description!!)
   }

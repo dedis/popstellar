@@ -140,8 +140,6 @@ class RollCallFragmentTest {
         Mockito.`when`(laoRepo.getLaoView(MockitoKotlinHelpers.any())).thenAnswer { LaoView(LAO) }
         rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL)
         rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL_2)
-        rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL_SORTED_ATTENDEES)
-        rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL_UNSORTED_ATTENDEES)
 
         Mockito.`when`(keyManager.mainPublicKey).thenReturn(SENDER)
         Mockito.`when`(networkManager.messageSender).thenReturn(messageSenderHelper.mockedSender)
@@ -524,6 +522,7 @@ class RollCallFragmentTest {
 
   @Test
   fun sortedAttendeeListShowsNoToast() {
+    rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL_SORTED_ATTENDEES)
     rollCallRepo.updateRollCall(LAO_ID, closeRollCall(ROLL_CALL_SORTED_ATTENDEES))
     InstrumentationRegistry.getInstrumentation().waitForIdleSync()
     openRollCallWithDescription(ROLL_CALL_SORTED_ATTENDEES)
@@ -542,6 +541,7 @@ class RollCallFragmentTest {
 
   @Test
   fun unSortedAttendeeListShowsToast() {
+    rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL_UNSORTED_ATTENDEES)
     rollCallRepo.updateRollCall(LAO_ID, closeRollCall(ROLL_CALL_UNSORTED_ATTENDEES))
     InstrumentationRegistry.getInstrumentation().waitForIdleSync()
     openRollCallWithDescription(ROLL_CALL_UNSORTED_ATTENDEES)

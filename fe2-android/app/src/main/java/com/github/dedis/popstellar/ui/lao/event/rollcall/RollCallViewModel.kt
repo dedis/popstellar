@@ -33,11 +33,11 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.time.Instant
+import java.util.ArrayList
 import java.util.TreeSet
 import java.util.stream.Collectors
 import javax.inject.Inject
 import timber.log.Timber
-import java.util.ArrayList
 
 @HiltViewModel
 class RollCallViewModel
@@ -263,7 +263,7 @@ constructor(
     nbScanned.postValue(attendees.size)
   }
 
-    @Inject
+  @Inject
   fun getAttendees(): Set<PublicKey> {
     return attendees
   }
