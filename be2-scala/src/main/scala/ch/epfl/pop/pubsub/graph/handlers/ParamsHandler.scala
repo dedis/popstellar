@@ -5,15 +5,16 @@ import akka.actor.{ActorRef, ActorSystem}
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.decentralized.ConnectionMediator
-import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
+import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject, ResultRumor}
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
+import ch.epfl.pop.model.network.method.{GreetServer, Rumor, RumorState}
 import ch.epfl.pop.model.objects.{Channel, PublicKey}
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, MessageRegistry, PubSubMediator}
-import ch.epfl.pop.storage.DbActor.{DbActorReadRumor, ReadRumor, WriteRumor}
+import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.storage.DbActor.{DbActorGenerateRumorStateAns, DbActorReadRumor, ReadRumor, WriteRumor}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -130,6 +131,21 @@ object ParamsHandler extends AskPatternConstants {
         case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "RumorHandler received a non expected jsonRpcRequest", jsonRpcMessage.id))
       }
     case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "RumorHandler received an unexpected message:" + graphMessage, None))
+
+  }
+
+  def rumorStateHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+    case Right(jsonRpcRequest: JsonRpcRequest) =>
+      jsonRpcRequest.method match
+        case MethodType.rumor_state =>
+          val rumorState = jsonRpcRequest.getParams.asInstanceOf[RumorState]
+          val generateRumorStateAns = dbActorRef ? DbActor.GenerateRumorStateAns(rumorState)
+          Await.result(generateRumorStateAns, duration) match
+            case DbActorGenerateRumorStateAns(rumorList) =>
+              Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, new ResultObject(ResultRumor(rumorList)), jsonRpcRequest.id))
+            case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"RumorStateHandler was not able to generate rumor state answer", jsonRpcRequest.id))
+        case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"RumorStateHandler received a message with unexpected method :$graphMessage", jsonRpcRequest.id))
+    case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"RumorStateHandler received an unexpected message:$graphMessage", None))
 
   }
 

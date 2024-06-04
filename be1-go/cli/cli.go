@@ -7,18 +7,18 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	popstellar "popstellar"
-	"popstellar/crypto"
-	"popstellar/hub"
-	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/config"
-	"popstellar/internal/popserver/database"
-	"popstellar/internal/popserver/database/sqlite"
-	"popstellar/internal/popserver/state"
-	"popstellar/internal/popserver/utils"
-	"popstellar/network"
-	"popstellar/network/socket"
-	"popstellar/validation"
+	"popstellar/internal/crypto"
+	hub2 "popstellar/internal/hub"
+	"popstellar/internal/logger"
+	"popstellar/internal/network"
+	"popstellar/internal/network/socket"
+	"popstellar/internal/old/hub"
+	"popstellar/internal/singleton/config"
+	"popstellar/internal/singleton/database"
+	"popstellar/internal/singleton/state"
+	"popstellar/internal/singleton/utils"
+	"popstellar/internal/sqlite"
+	"popstellar/internal/validation"
 	"sync"
 	"time"
 
@@ -105,7 +105,7 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 		return nil, err
 	}
 
-	utils.InitUtils(l, schemaValidator)
+	utils.InitUtils(schemaValidator)
 
 	state.InitState(l)
 
@@ -131,13 +131,13 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 		}
 	}
 
-	return popserver.NewHub(), nil
+	return hub2.NewHub(), nil
 }
 
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
 // the server
 func Serve(cliCtx *cli.Context) error {
-	poplog := popstellar.Logger
+	poplog := logger.Logger
 
 	configFilePath := cliCtx.String("config-file")
 	var serverConfig ServerConfig
@@ -303,7 +303,7 @@ func connectToServers(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, servers
 func connectToSocket(address string, h hub.Hub,
 	wg *sync.WaitGroup, done chan struct{}) error {
 
-	poplog := popstellar.Logger
+	poplog := logger.Logger
 
 	urlString := fmt.Sprintf("ws://%s/server", address)
 	u, err := url.Parse(urlString)
