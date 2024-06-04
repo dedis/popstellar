@@ -35,28 +35,33 @@ for their use.
 The project is organized into different modules as follows
 
 ```
-.
-├── channel                   # contains the abstract definition of a channel NEED TO BE DELETED
-├── cli                       # command line interface
-├── crypto                    # defines the cryptographic suite
+├── cli                         # command line interface
 ├── docs
-├── hub                       # contains the abstract definition of a hub NEED TO BE DELETED
-├── inbox                     # helper to store messages used by channels NEED TO BE DELETED
-├── internal                  
-│   ├── depgraph              # tool to generate the dependencies graph
-│   └── popserver             # entry point of the messages received by the sockets
-│       ├── config            # singleton with the server config informations and server keys
-│       ├── database          # singleton with the database + implementations of the database
-│       ├── generatortest     # query and message generators only use for the tests
-│       ├── handler           # handlers for each query, answer and channel type (entry point is func HandleIncomingMessage)
-│       ├── state             # singleton with the temporary states of the server (peers, queries, and subscriptions)
-│       ├── type              # every types use in the implementation
-│       └── utils             # singleton with the log instance and the schema validator
-├── message                   # message types and marshaling/unmarshaling logic
-├── network                   # module to set up Websocket connections
-│   └── socket                # module to send/receive data over the wire
-├── popcha                    # HTTP server and back-end logic for PoPCHA NEED TO BE REFACTOR
-└── validation                # module to validate incoming/outgoing messages
+└── internal
+    ├── crypto                  # defines the cryptographic suite
+    ├── docsutils               # utils use for the documentation
+    ├── handler                 # handle the incoming messages
+    │   ├── answer              # handler for the answers
+    │   ├── channel             # handler for the channel
+    │   └── query               # handler for the queries
+    ├── hub                     # entry point of the messages received by the sockets
+    ├── logger                  # logger use inside the implementation
+    ├── message                 # message types and marshaling/unmarshaling logic
+    ├── mocks                   # mocks and utils use inside tests
+    │   └── generator           # query and message generators only use for the tests
+    ├── network                 # module to set up Websocket connections
+    │   └── socket              # module to send/receive data over the wire
+    ├── old                     # old implementation NEED TO BE DELETE
+    ├── popcha                  # HTTP server and back-end logic for PoPCHA NEED TO BE REFACTOR
+    ├── repository              # repository for the database
+    ├── singleton               # NEED TO BE REMOVE AND REPLACE BY REF INJECTION
+    │   ├── config              # server config informations and server keys
+    │   ├── database            # database
+    │   ├── state               # temporary states of the server (peers, queries, and subscriptions)
+    │   └── utils               # singleton with the log instance and the schema validator
+    ├── sqlite                  # sqlite implementation of the repository
+    ├── types                   # types use inside the implementation
+    └── validation              # module to validate incoming/outgoing messages
 ```
 
 The entry point is the `cli` with bulk of the implementation logic in the `popserver` package.
