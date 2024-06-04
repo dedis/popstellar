@@ -31,7 +31,7 @@ func (c *Config) GetOwnerPublicKey() kyber.Point {
 	return c.ownerPubKey
 }
 
-func (c *Config) GetServerPublicKeyInstance() kyber.Point {
+func (c *Config) GetServerPublicKey() kyber.Point {
 	return c.serverPubKey
 }
 

@@ -43,9 +43,9 @@ type PeerManager interface {
 }
 
 type ConfigManager interface {
-	GetOwnerPublicKeyInstance() (kyber.Point, error)
-	GetServerPublicKeyInstance() (kyber.Point, error)
-	GetServerSecretKeyInstance() (kyber.Scalar, error)
+	GetOwnerPublicKey() kyber.Point
+	GetServerPublicKey() kyber.Point
+	GetServerSecretKey() kyber.Scalar
 	GetServerInfo() (string, string, string, error)
 	Sign(data []byte) ([]byte, error)
 }
