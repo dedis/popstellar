@@ -10,10 +10,8 @@ import (
 	"popstellar/internal/message/query/method/message"
 	mock2 "popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/singleton/config"
-	"popstellar/internal/singleton/database"
-	"popstellar/internal/singleton/state"
 	"popstellar/internal/types"
+	"popstellar/internal/validation"
 	"strconv"
 	"strings"
 	"testing"
@@ -22,11 +20,11 @@ import (
 
 func Test_handleChannelLao(t *testing.T) {
 	subs := types.NewSubscribers()
-	queries := types.NewQueries(&noLog)
-	peers := types.NewPeers()
-	hubParams := types.NewHubParams()
 
-	state.SetState(subs, peers, queries, hubParams)
+	db := mock2.NewRepository(t)
+
+	schema, err := validation.NewSchemaValidator()
+	require.NoError(t, err)
 
 	ownerPubBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
 	require.NoError(t, err)
@@ -38,11 +36,11 @@ func Test_handleChannelLao(t *testing.T) {
 	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
 
-	config.SetConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
+	conf := types.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
+
+	lao := createLaoHandler(conf, subs, db, schema)
 
 	var args []input
-	mockRepository := mock2.NewRepository(t)
-	database.SetDatabase(mockRepository)
 
 	laoID := base64.URLEncoding.EncodeToString([]byte("laoID"))
 	err = subs.AddChannel(laoID)
@@ -51,7 +49,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 1:Success For LaoState message
 	args = append(args, input{
 		name:        "Test 1",
-		msg:         newLaoStateMsg(t, ownerPubBuf64, laoID, mockRepository),
+		msg:         newLaoStateMsg(t, ownerPubBuf64, laoID, db),
 		channelPath: laoID,
 		isError:     false,
 		contains:    "",
@@ -64,7 +62,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 2: Error when RollCallCreate ID is not the expected hash
 	args = append(args, input{
 		name:        "Test 2",
-		msg:         newRollCallCreateMsg(t, ownerPubBuf64, laoID, wrongLaoName, creation, start, end, true, mockRepository),
+		msg:         newRollCallCreateMsg(t, ownerPubBuf64, laoID, wrongLaoName, creation, start, end, true, db),
 		channelPath: laoID,
 		isError:     true,
 		contains:    "roll call id is",
@@ -73,7 +71,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 3: Error when RollCallCreate proposed start is before creation
 	args = append(args, input{
 		name:        "Test 3",
-		msg:         newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, creation-1, end, true, mockRepository),
+		msg:         newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, creation-1, end, true, db),
 		channelPath: laoID,
 		isError:     true,
 		contains:    "roll call proposed start time should be greater than creation time",
@@ -82,7 +80,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 4: Error when RollCallCreate proposed end is before proposed start
 	args = append(args, input{
 		name:        "Test 4",
-		msg:         newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, start, start-1, true, mockRepository),
+		msg:         newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, start, start-1, true, db),
 		channelPath: laoID,
 		isError:     true,
 		contains:    "roll call proposed end should be greater than proposed start",
@@ -91,7 +89,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 5: Success for RollCallCreate message
 	args = append(args, input{
 		name:        "Test 5",
-		msg:         newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, start, end, false, mockRepository),
+		msg:         newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, start, end, false, db),
 		channelPath: laoID,
 		isError:     false,
 		contains:    "",
@@ -103,7 +101,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 6: Error when RollCallOpen ID is not the expected hash
 	args = append(args, input{
 		name:        "Test 6",
-		msg:         newRollCallOpenMsg(t, ownerPubBuf64, laoID, wrongOpens, "", time.Now().Unix(), true, mockRepository),
+		msg:         newRollCallOpenMsg(t, ownerPubBuf64, laoID, wrongOpens, "", time.Now().Unix(), true, db),
 		channelPath: laoID,
 		isError:     true,
 		contains:    "roll call update id is",
@@ -112,7 +110,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 7: Error when RollCallOpen opens is not the same as previous RollCallCreate
 	args = append(args, input{
 		name:        "Test 7",
-		msg:         newRollCallOpenMsg(t, ownerPubBuf64, laoID, opens, wrongOpens, time.Now().Unix(), true, mockRepository),
+		msg:         newRollCallOpenMsg(t, ownerPubBuf64, laoID, opens, wrongOpens, time.Now().Unix(), true, db),
 		channelPath: laoID,
 		isError:     true,
 		contains:    "previous id does not exist",
@@ -125,7 +123,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 8: Success for RollCallOpen message
 	args = append(args, input{
 		name:        "Test 8",
-		msg:         newRollCallOpenMsg(t, ownerPubBuf64, laoID, opens, opens, time.Now().Unix(), false, mockRepository),
+		msg:         newRollCallOpenMsg(t, ownerPubBuf64, laoID, opens, opens, time.Now().Unix(), false, db),
 		channelPath: laoID,
 		isError:     false,
 		contains:    "",
@@ -137,7 +135,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 9: Error when RollCallClose ID is not the expected hash
 	args = append(args, input{
 		name:        "Test 9",
-		msg:         newRollCallCloseMsg(t, ownerPubBuf64, laoID, wrongCloses, "", time.Now().Unix(), true, mockRepository),
+		msg:         newRollCallCloseMsg(t, ownerPubBuf64, laoID, wrongCloses, "", time.Now().Unix(), true, db),
 		channelPath: laoID,
 		isError:     true,
 		contains:    "roll call update id is",
@@ -146,7 +144,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 10: Error when RollCallClose closes is not the same as previous RollCallOpen
 	args = append(args, input{
 		name:        "Test 10",
-		msg:         newRollCallCloseMsg(t, ownerPubBuf64, laoID, closes, wrongCloses, time.Now().Unix(), true, mockRepository),
+		msg:         newRollCallCloseMsg(t, ownerPubBuf64, laoID, closes, wrongCloses, time.Now().Unix(), true, db),
 		channelPath: laoID,
 		isError:     true,
 		contains:    "previous id does not exist",
@@ -159,7 +157,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 11: Success for RollCallClose message
 	args = append(args, input{
 		name:        "Test 11",
-		msg:         newRollCallCloseMsg(t, ownerPubBuf64, laoID, closes, closes, time.Now().Unix(), false, mockRepository),
+		msg:         newRollCallCloseMsg(t, ownerPubBuf64, laoID, closes, closes, time.Now().Unix(), false, db),
 		channelPath: laoID,
 		isError:     false,
 		contains:    "",
@@ -172,7 +170,7 @@ func Test_handleChannelLao(t *testing.T) {
 	args = append(args, input{
 		name: "Test 12",
 		msg: newElectionSetupMsg(t, ownerPublicKey, wrongSender, laoID, laoID, electionsName, question, messagedata.OpenBallot,
-			creation, start, end, true, mockRepository),
+			creation, start, end, true, db),
 		channelPath: laoID,
 		isError:     true,
 		contains:    "sender public key does not match organizer public key",
@@ -183,7 +181,7 @@ func Test_handleChannelLao(t *testing.T) {
 	args = append(args, input{
 		name: "Test 13",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, wrongLaoID, laoID, electionsName, question, messagedata.OpenBallot,
-			creation, start, end, true, mockRepository),
+			creation, start, end, true, db),
 		channelPath: laoID,
 		isError:     true,
 		contains:    "lao id is",
@@ -193,7 +191,7 @@ func Test_handleChannelLao(t *testing.T) {
 	args = append(args, input{
 		name: "Test 14",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, "wrongName", question, messagedata.OpenBallot,
-			creation, start, end, true, mockRepository),
+			creation, start, end, true, db),
 		channelPath: laoID,
 		isError:     true,
 		contains:    "election id is",
@@ -203,7 +201,7 @@ func Test_handleChannelLao(t *testing.T) {
 	args = append(args, input{
 		name: "Test 15",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, question, messagedata.OpenBallot,
-			creation, creation-1, end, true, mockRepository),
+			creation, creation-1, end, true, db),
 		channelPath: laoID,
 		isError:     true,
 		contains:    "election start should be greater that creation time",
@@ -213,7 +211,7 @@ func Test_handleChannelLao(t *testing.T) {
 	args = append(args, input{
 		name: "Test 16",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, question, messagedata.OpenBallot,
-			creation, start, start-1, true, mockRepository),
+			creation, start, start-1, true, db),
 		channelPath: laoID,
 		isError:     true,
 		contains:    "election end should be greater that start time",
@@ -223,7 +221,7 @@ func Test_handleChannelLao(t *testing.T) {
 	args = append(args, input{
 		name: "Test 17",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, "", messagedata.OpenBallot,
-			creation, start, end, true, mockRepository),
+			creation, start, end, true, db),
 		channelPath: laoID,
 		isError:     true,
 		contains:    "Question is empty",
@@ -233,7 +231,7 @@ func Test_handleChannelLao(t *testing.T) {
 	args = append(args, input{
 		name: "Test 18",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, wrongQuestion, messagedata.OpenBallot,
-			creation, start, end, true, mockRepository),
+			creation, start, end, true, db),
 		channelPath: laoID,
 		isError:     true,
 		contains:    "Question id is",
@@ -247,7 +245,7 @@ func Test_handleChannelLao(t *testing.T) {
 	args = append(args, input{
 		name: "Test 19",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, question, messagedata.OpenBallot,
-			creation, start, end, false, mockRepository),
+			creation, start, end, false, db),
 		channelPath: laoID,
 		isError:     false,
 		contains:    "",
@@ -255,7 +253,7 @@ func Test_handleChannelLao(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			err := handleChannelLao(arg.channelPath, arg.msg)
+			err := lao.handle(arg.channelPath, arg.msg)
 			if arg.isError {
 				require.Error(t, err, arg.contains)
 			} else {

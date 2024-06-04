@@ -1,21 +1,48 @@
 package channel
 
 import (
+	"encoding/base64"
 	"popstellar/internal/errors"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/singleton/database"
+	"popstellar/internal/repository"
+	"popstellar/internal/validation"
 )
 
-func handleChannelCoin(channelPath string, msg message.Message) error {
-	object, action, err := verifyDataAndGetObjectAction(msg)
+type coinHandler struct {
+	subs   repository.SubscriptionManager
+	db     repository.CoinRepository
+	schema *validation.SchemaValidator
+}
+
+func createCoinHandler(subs repository.SubscriptionManager, db repository.CoinRepository,
+	schema *validation.SchemaValidator) *coinHandler {
+	return &coinHandler{
+		subs:   subs,
+		db:     db,
+		schema: schema,
+	}
+}
+
+func (c *coinHandler) handle(channelPath string, msg message.Message) error {
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
+	}
+
+	err = c.schema.VerifyJSON(jsonData, validation.Data)
+	if err != nil {
+		return err
+	}
+
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
 
 	switch object + "#" + action {
 	case messagedata.CoinObject + "#" + messagedata.CoinActionPostTransaction:
-		err = handleCoinPostTransaction(msg)
+		err = c.handleCoinPostTransaction(msg)
 	default:
 		err = errors.NewInvalidActionError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -24,20 +51,15 @@ func handleChannelCoin(channelPath string, msg message.Message) error {
 		return err
 	}
 
-	db, err := database.GetCoinRepositoryInstance()
+	err = c.db.StoreMessageAndData(channelPath, msg)
 	if err != nil {
 		return err
 	}
 
-	err = db.StoreMessageAndData(channelPath, msg)
-	if err != nil {
-		return err
-	}
-
-	return broadcastToAllClients(msg, channelPath)
+	return c.subs.BroadcastToAllClients(msg, channelPath)
 }
 
-func handleCoinPostTransaction(msg message.Message) error {
+func (c *coinHandler) handleCoinPostTransaction(msg message.Message) error {
 	var data messagedata.PostTransaction
 	err := msg.UnmarshalData(&data)
 	if err != nil {

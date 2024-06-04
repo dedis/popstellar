@@ -1,27 +1,48 @@
 package channel
 
 import (
-	"strings"
-
+	"encoding/base64"
 	"popstellar/internal/errors"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/singleton/database"
+	"popstellar/internal/repository"
+	"popstellar/internal/validation"
+	"strings"
 )
 
-func handleChannelReaction(channelPath string, msg message.Message) error {
-	object, action, err := verifyDataAndGetObjectAction(msg)
+type reactionHandler struct {
+	subs   repository.SubscriptionManager
+	db     repository.ReactionRepository
+	schema *validation.SchemaValidator
+}
+
+func createReactionHandler(subs repository.SubscriptionManager, db repository.ReactionRepository,
+	schema *validation.SchemaValidator) *reactionHandler {
+	return &reactionHandler{
+		subs:   subs,
+		db:     db,
+		schema: schema,
+	}
+}
+
+func (r *reactionHandler) handle(channelPath string, msg message.Message) error {
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
+	}
+
+	err = r.schema.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
 		return err
 	}
 
-	db, err := database.GetReactionRepositoryInstance()
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
 
 	laoPath, _ := strings.CutSuffix(channelPath, Social+Reactions)
-	isAttendee, err := db.IsAttendee(laoPath, msg.Sender)
+	isAttendee, err := r.db.IsAttendee(laoPath, msg.Sender)
 	if err != nil {
 		return err
 	}
@@ -31,9 +52,9 @@ func handleChannelReaction(channelPath string, msg message.Message) error {
 
 	switch object + "#" + action {
 	case messagedata.ReactionObject + "#" + messagedata.ReactionActionAdd:
-		err = handleReactionAdd(msg)
+		err = r.handleReactionAdd(msg)
 	case messagedata.ReactionObject + "#" + messagedata.ReactionActionDelete:
-		err = handleReactionDelete(msg)
+		err = r.handleReactionDelete(msg)
 	default:
 		err = errors.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -42,15 +63,15 @@ func handleChannelReaction(channelPath string, msg message.Message) error {
 		return err
 	}
 
-	err = db.StoreMessageAndData(channelPath, msg)
+	err = r.db.StoreMessageAndData(channelPath, msg)
 	if err != nil {
 		return err
 	}
 
-	return broadcastToAllClients(msg, channelPath)
+	return r.subs.BroadcastToAllClients(msg, channelPath)
 }
 
-func handleReactionAdd(msg message.Message) error {
+func (r *reactionHandler) handleReactionAdd(msg message.Message) error {
 	var reactMsg messagedata.ReactionAdd
 	err := msg.UnmarshalData(&reactMsg)
 	if err != nil {
@@ -65,7 +86,7 @@ func handleReactionAdd(msg message.Message) error {
 	return nil
 }
 
-func handleReactionDelete(msg message.Message) error {
+func (r *reactionHandler) handleReactionDelete(msg message.Message) error {
 	var delReactMsg messagedata.ReactionDelete
 	err := msg.UnmarshalData(&delReactMsg)
 	if err != nil {
@@ -77,12 +98,7 @@ func handleReactionDelete(msg message.Message) error {
 		return err
 	}
 
-	db, err := database.GetReactionRepositoryInstance()
-	if err != nil {
-		return err
-	}
-
-	reactSender, err := db.GetReactionSender(delReactMsg.ReactionID)
+	reactSender, err := r.db.GetReactionSender(delReactMsg.ReactionID)
 	if err != nil {
 		return err
 	}

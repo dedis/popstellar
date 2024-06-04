@@ -9,9 +9,9 @@ import (
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/mock"
-	"popstellar/internal/singleton/database"
-	"popstellar/internal/singleton/state"
+	"popstellar/internal/repository"
 	"popstellar/internal/types"
+	"popstellar/internal/validation"
 	"testing"
 )
 
@@ -27,14 +27,13 @@ type inputTestHandleChannelCoin struct {
 
 func Test_handleChannelCoin(t *testing.T) {
 	subs := types.NewSubscribers()
-	queries := types.NewQueries(&noLog)
-	peers := types.NewPeers()
-	hubParams := types.NewHubParams()
 
-	state.SetState(subs, peers, queries, hubParams)
+	db := mock.NewRepository(t)
 
-	mockRepository := mock.NewRepository(t)
-	database.SetDatabase(mockRepository)
+	schema, err := validation.NewSchemaValidator()
+	require.NoError(t, err)
+
+	coin := createCoinHandler(subs, db, schema)
 
 	inputs := make([]inputTestHandleChannelCoin, 0)
 
@@ -43,58 +42,62 @@ func Test_handleChannelCoin(t *testing.T) {
 	inputs = append(inputs, newSuccessTestHandleChannelCoin(t,
 		"post_transaction.json",
 		"send transaction",
-		mockRepository))
+		db, subs))
 
 	// Tests that the channelPath works correctly when it receives a large transaction
 
 	inputs = append(inputs, newSuccessTestHandleChannelCoin(t,
 		"post_transaction_max_amount.json",
 		"send transaction max amount",
-		mockRepository))
+		db, subs))
 
 	// Tests that the channelPath rejects transactions that exceed the maximum amount
 
 	inputs = append(inputs, newFailTestHandleChannelCoin(t,
 		"post_transaction_overflow_amount.json",
-		"send transaction overflow amount"))
+		"send transaction overflow amount",
+		subs))
 
 	// Tests that the channelPath accepts transactions with zero amounts
 
 	inputs = append(inputs, newSuccessTestHandleChannelCoin(t,
 		"post_transaction_zero_amount.json",
 		"send transaction zero amount",
-		mockRepository))
+		db, subs))
 
 	// Tests that the channelPath rejects transactions with negative amounts
 
 	inputs = append(inputs, newFailTestHandleChannelCoin(t,
 		"post_transaction_negative_amount.json",
-		"send transaction negative amount"))
+		"send transaction negative amount",
+		subs))
 
 	// Tests that the channelPath rejects Transaction with wrong id
 
 	inputs = append(inputs, newFailTestHandleChannelCoin(t,
 		"post_transaction_wrong_transaction_id.json",
-		"send transaction wrong id"))
+		"send transaction wrong id",
+		subs))
 
 	// Tests that the channelPath rejects Transaction with bad signature
 
 	inputs = append(inputs, newFailTestHandleChannelCoin(t,
 		"post_transaction_bad_signature.json",
-		"send transaction bad signature"))
+		"send transaction bad signature",
+		subs))
 
 	// Tests that the channelPath works correctly when it receives a transaction
 
 	inputs = append(inputs, newSuccessTestHandleChannelCoin(t,
 		"post_transaction_coinbase.json",
 		"send transaction coinbase",
-		mockRepository))
+		db, subs))
 
 	// Tests all cases
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			err := handleChannelCoin(i.channelID, i.message)
+			err := coin.handle(i.channelID, i.message)
 			if i.hasError {
 				require.Error(t, err)
 			} else {
@@ -115,7 +118,8 @@ func Test_handleChannelCoin(t *testing.T) {
 
 }
 
-func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string, mockRepository *mock.Repository) inputTestHandleChannelCoin {
+func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string, mockRepository *mock.Repository,
+	subs repository.SubscriptionManager) inputTestHandleChannelCoin {
 	laoID := message.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
@@ -143,11 +147,11 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 		{Id: laoID + "3"},
 	}
 
-	err = state.AddChannel(channelID)
+	err = subs.AddChannel(channelID)
 	require.NoError(t, err)
 
 	for _, s := range sockets {
-		err = state.Subscribe(s, channelID)
+		err = subs.Subscribe(channelID, s)
 		require.NoError(t, err)
 	}
 
@@ -160,7 +164,8 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 	}
 }
 
-func newFailTestHandleChannelCoin(t *testing.T, filename string, name string) inputTestHandleChannelCoin {
+func newFailTestHandleChannelCoin(t *testing.T, filename string, name string,
+	subs repository.SubscriptionManager) inputTestHandleChannelCoin {
 	laoID := message.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
@@ -179,7 +184,7 @@ func newFailTestHandleChannelCoin(t *testing.T, filename string, name string) in
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	err = state.AddChannel(channelID)
+	err = subs.AddChannel(channelID)
 	require.NoError(t, err)
 
 	return inputTestHandleChannelCoin{
