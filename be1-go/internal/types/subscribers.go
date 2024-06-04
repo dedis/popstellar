@@ -1,8 +1,14 @@
 package types
 
 import (
+	"encoding/json"
 	"popstellar/internal/errors"
+	jsonrpc "popstellar/internal/message"
+	"popstellar/internal/message/query"
+	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
+	"popstellar/internal/singleton/state"
 	"sync"
 )
 
@@ -116,4 +122,34 @@ func (s *Subscribers) IsSubscribed(channelPath string, socket socket.Socket) (bo
 	}
 
 	return true, nil
+}
+
+func (s *Subscribers) broadcastToAllClients(msg message.Message, channel string) error {
+	rpcMessage := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "broadcast",
+		},
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			channel,
+			msg,
+		},
+	}
+
+	buf, err := json.Marshal(&rpcMessage)
+	if err != nil {
+		return errors.NewJsonMarshalError("broadcast query: %v", err)
+	}
+
+	err = state.SendToAll(buf, channel)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
