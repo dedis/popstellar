@@ -266,19 +266,18 @@ final case class DbActor(
 
     readGreetLao(channel) match {
       case Some(msg) => msg :: catchupList
-      case None => catchupList
+      case None      => catchupList
     }
   }
 
   private def updateNumberOfNewChirpsReactions(channel: Channel, resetToZero: Boolean): Unit = {
     val newReactionsChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/top_chirps/number_of_new_reactions")
-    if(!checkChannelExistence(newReactionsChannel)) {
-      val numberOfReactions : JsonString = "0"
+    if (!checkChannelExistence(newReactionsChannel)) {
+      val numberOfReactions: JsonString = "0"
       val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfReactions)
       storage.write(pair)
-    }
-    else {
-      if(resetToZero) {
+    } else {
+      if (resetToZero) {
         val numberOfReactionsInt = 0
         val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfReactionsInt.toString)
         storage.write(pair)
@@ -311,18 +310,17 @@ final case class DbActor(
     val topChirpsPattern: Regex = "^/root(/[^/]+)/social/top_chirps$".r
 
     if (topChirpsPattern.findFirstMatchIn(channel.toString).isDefined) {
-      if(!checkChannelExistence(channel) || readChannelData(channel).messages.isEmpty) {
+      if (!checkChannelExistence(channel) || readChannelData(channel).messages.isEmpty) {
         getTopChirps(channel, buildCatchupList)
-      }
-      else {
+      } else {
         val newReactionsChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/top_chirps/number_of_new_reactions")
         var numberOfNewChirpsReactionsInt = 0
-        if(checkChannelExistence(newReactionsChannel)) {
+        if (checkChannelExistence(newReactionsChannel)) {
           val numberOfNewChirpsReactions = storage.read(storage.CHANNEL_DATA_KEY + newReactionsChannel.toString)
           numberOfNewChirpsReactionsInt = numberOfNewChirpsReactions.toString.toInt
         }
-        if(LocalDateTime.now().isAfter(topChirpsTimestamp.plusSeconds(5)) || numberOfNewChirpsReactionsInt >= 5) {
-          if(numberOfNewChirpsReactionsInt >= 5) {
+        if (LocalDateTime.now().isAfter(topChirpsTimestamp.plusSeconds(5)) || numberOfNewChirpsReactionsInt >= 5) {
+          if (numberOfNewChirpsReactionsInt >= 5) {
             updateNumberOfNewChirpsReactions(channel, true)
           }
           this.topChirpsTimestamp = LocalDateTime.now()
@@ -1148,10 +1146,10 @@ object DbActor {
   final case class GenerateRumorStateAns(rumorState: RumorState) extends Event
 
   /** Requests the Db for the update the number of chirps reaction events since last top chirps request
-   *
-   * @param channel
-   * Channel containing the number of chirps reaction events since last top chirps request
-   */
+    *
+    * @param channel
+    *   Channel containing the number of chirps reaction events since last top chirps request
+    */
   final case class UpdateNumberOfNewChirpsReactions(channel: Channel) extends Event
 
   // DbActor DbActorMessage correspond to messages the actor may emit
