@@ -48,7 +48,7 @@ func (c *Config) GetServerInfo() (string, string, string, error) {
 	return base64.URLEncoding.EncodeToString(pkBuf), c.clientServerAddress, c.serverServerAddress, nil
 }
 
-func (c *Config) sign(data []byte) ([]byte, error) {
+func (c *Config) Sign(data []byte) ([]byte, error) {
 	signatureBuf, err := schnorr.Sign(crypto.Suite, c.serverSecretKey, data)
 	if err != nil {
 		return nil, errors.NewInternalServerError("failed to sign the data: %v", err)

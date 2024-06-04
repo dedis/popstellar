@@ -8,7 +8,6 @@ import (
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/singleton/state"
 	"sync"
 )
 
@@ -124,7 +123,7 @@ func (s *Subscribers) IsSubscribed(channelPath string, socket socket.Socket) (bo
 	return true, nil
 }
 
-func (s *Subscribers) broadcastToAllClients(msg message.Message, channel string) error {
+func (s *Subscribers) BroadcastToAllClients(msg message.Message, channel string) error {
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -146,7 +145,7 @@ func (s *Subscribers) broadcastToAllClients(msg message.Message, channel string)
 		return errors.NewJsonMarshalError("broadcast query: %v", err)
 	}
 
-	err = state.SendToAll(buf, channel)
+	err = s.SendToAll(buf, channel)
 	if err != nil {
 		return err
 	}
