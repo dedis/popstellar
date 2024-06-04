@@ -1,0 +1,15 @@
+fix.ArraysInFormat
+fix.CatchNpe
+fix.ComparingFloatingTypes
+fix.EmptyInterpolatedString
+fix.ImpossibleOptionSizeCondition
+fix.IllegalFormatString
+fix.IncorrectNumberOfArgsToFormat
+fix.IncorrectlyNamedExceptions
+fix.LonelySealedTrait
+fix.MapGetAndGetOrElse
+fix.NanComparison
+fix.OptionGet
+fix.OptionSize
+fix.StripMarginOnRegex
+fix.TryGet
