@@ -27,6 +27,11 @@ func HandleAnswer(msg []byte) error {
 		return errors.NewJsonUnmarshalError(err.Error())
 	}
 
+	if answerMsg.ID == nil {
+		logger.Logger.Info().Msg("received an answer with a null id")
+		return nil
+	}
+
 	isRumor, err := state.IsRumorQuery(*answerMsg.ID)
 	if err != nil {
 		return err
