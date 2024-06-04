@@ -150,7 +150,7 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
     lazy val dbActorRef = mockDbWithMessages(Nil)
     val message: GraphMessage = new AnswerGenerator(dbActorRef).generateAnswer(Right(rpcPagedCatchupReq))
 
-    def resultObject: ResultObject = new ResultObject(Nil)
+    def resultObject: ResultObject = new ResultObject(ResultMessage(Nil))
 
     val expected = Right(JsonRpcResponse(
       RpcValidator.JSON_RPC_VERSION,
@@ -169,7 +169,7 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
     lazy val dbActorRef = mockDbWithMessages(messages)
     val gmsg: GraphMessage = new AnswerGenerator(dbActorRef).generateAnswer(Right(rpcPagedCatchupReq))
 
-    def resultObject: ResultObject = new ResultObject(messages)
+    def resultObject: ResultObject = new ResultObject(ResultMessage(messages))
 
     val expected = Right(JsonRpcResponse(
       RpcValidator.JSON_RPC_VERSION,
