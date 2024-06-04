@@ -165,8 +165,8 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
    * Set the client to take a timeout of the given length
    * @param timeout the length to timeout
    */
-  public void takeTimeout(long timeout){
-    getBuffer().takeTimeout(timeout);
+  public String takeTimeout(long timeout){
+    return getBuffer().takeTimeout(timeout);
   }
 
   /**
