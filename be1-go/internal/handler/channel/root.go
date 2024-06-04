@@ -8,9 +8,6 @@ import (
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/repository"
-	"popstellar/internal/singleton/config"
-	"popstellar/internal/singleton/database"
-	"popstellar/internal/singleton/state"
 	"popstellar/internal/validation"
 )
 
@@ -29,14 +26,18 @@ const (
 type rootHandler struct {
 	config repository.ConfigManager
 	db     repository.RootRepository
+	subs   repository.SubscriptionManager
+	peers  repository.PeerManager
 	schema *validation.SchemaValidator
 }
 
 func createRootHandler(config repository.ConfigManager, db repository.RootRepository,
-	schema *validation.SchemaValidator) *rootHandler {
+	subs repository.SubscriptionManager, peers repository.PeerManager, schema *validation.SchemaValidator) *rootHandler {
 	return &rootHandler{
 		config: config,
 		db:     db,
+		subs:   subs,
+		peers:  peers,
 		schema: schema,
 	}
 }
@@ -90,12 +91,8 @@ func (h *rootHandler) handleLaoCreate(msg message.Message) error {
 }
 
 func (h *rootHandler) verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, error) {
-	db, err := database.GetRootRepositoryInstance()
-	if err != nil {
-		return nil, err
-	}
 
-	ok, err := db.HasChannel(laoPath)
+	ok, err := h.db.HasChannel(laoPath)
 	if err != nil {
 		return nil, err
 	} else if ok {
@@ -134,10 +131,7 @@ func (h *rootHandler) verifyLaoCreation(msg message.Message, laoCreate messageda
 			senderPubKey, organizerPubKey)
 	}
 
-	ownerPublicKey, err := config.GetOwnerPublicKeyInstance()
-	if err != nil {
-		return nil, err
-	}
+	ownerPublicKey := h.config.GetOwnerPublicKey()
 
 	// Check if the sender of the LAO creation message is the owner
 	if ownerPublicKey != nil && !ownerPublicKey.Equal(senderPubKey) {
@@ -159,18 +153,13 @@ func (h *rootHandler) createLaoAndChannels(msg, laoGreetMsg message.Message, org
 		laoPath + Federation:         FederationType,
 	}
 
-	db, err := database.GetRootRepositoryInstance()
-	if err != nil {
-		return err
-	}
-
-	err = db.StoreLaoWithLaoGreet(channels, laoPath, organizerPubBuf, msg, laoGreetMsg)
+	err := h.db.StoreLaoWithLaoGreet(channels, laoPath, organizerPubBuf, msg, laoGreetMsg)
 	if err != nil {
 		return err
 	}
 
 	for channelPath := range channels {
-		err = state.AddChannel(channelPath)
+		err = h.subs.AddChannel(channelPath)
 		if err != nil {
 			return err
 		}
@@ -180,17 +169,14 @@ func (h *rootHandler) createLaoAndChannels(msg, laoGreetMsg message.Message, org
 }
 
 func (h *rootHandler) createLaoGreet(organizerBuf []byte, laoID string) (message.Message, error) {
-	peersInfo, err := state.GetAllPeersInfo()
-	if err != nil {
-		return message.Message{}, err
-	}
+	peersInfo := h.peers.GetAllPeersInfo()
 
 	knownPeers := make([]messagedata.Peer, 0, len(peersInfo))
 	for _, info := range peersInfo {
 		knownPeers = append(knownPeers, messagedata.Peer{Address: info.ClientAddress})
 	}
 
-	_, clientServerAddress, _, err := config.GetServerInfo()
+	_, clientServerAddress, _, err := h.config.GetServerInfo()
 	if err != nil {
 		return message.Message{}, err
 	}
@@ -212,10 +198,7 @@ func (h *rootHandler) createLaoGreet(organizerBuf []byte, laoID string) (message
 
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
 
-	serverPublicKey, err := config.GetServerPublicKeyInstance()
-	if err != nil {
-		return message.Message{}, err
-	}
+	serverPublicKey := h.config.GetServerPublicKey()
 
 	// Marshall the server public key
 	serverPubBuf, err := serverPublicKey.MarshalBinary()

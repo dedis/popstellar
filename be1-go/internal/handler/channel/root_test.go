@@ -46,10 +46,13 @@ func Test_handleChannelRoot(t *testing.T) {
 		"clientAddress", "serverAddress")
 	db := mock2.NewRepository(t)
 
+	subs := types.NewSubscribers()
+	peers := types.NewPeers()
+
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	rootHandler := createRootHandler(conf, db, schema)
+	rootHandler := createRootHandler(conf, db, subs, peers, schema)
 
 	var args []input
 

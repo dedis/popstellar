@@ -39,7 +39,7 @@ func TestMain(m *testing.M) {
 func Test_handleChannel(t *testing.T) {
 	db := mock.NewRepository(t)
 
-	channel := createChannelHandler(nil, nil, nil, db, nil, nil)
+	channel := createChannelHandler(nil, nil, nil, nil, db, nil, nil)
 
 	keypair := generator.GenerateKeyPair(t)
 	sender := base64.URLEncoding.EncodeToString(keypair.PublicBuf)

@@ -36,9 +36,9 @@ type channelHandler struct {
 	federation *federationHandler
 }
 
-func createChannelHandler(conf repository.ConfigManager, subs repository.SubscriptionManager,
+func createChannelHandler(conf repository.ConfigManager, subs repository.SubscriptionManager, peers repository.PeerManager,
 	socket repository.SocketManager, db repository.Repository, hub repository.HubManager, schema *validation.SchemaValidator) *channelHandler {
-	root := createRootHandler(conf, db, schema)
+	root := createRootHandler(conf, db, subs, peers, schema)
 	lao := createLaoHandler(conf, subs, db, schema)
 	election := createElectionHandler(conf, subs, db, schema)
 	chirp := createChripHandler(conf, subs, db, schema)
