@@ -9,13 +9,13 @@ import (
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/types"
+	"popstellar/internal/state"
 	"testing"
 )
 
 func Test_handleHeartbeat(t *testing.T) {
 	l := zerolog.New(io.Discard)
-	queries := types.NewQueries(&l)
+	queries := state.NewQueries(&l)
 	db := mock.NewRepository(t)
 
 	handler := New(queries, db)

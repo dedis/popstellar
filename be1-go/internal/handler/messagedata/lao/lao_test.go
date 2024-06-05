@@ -11,7 +11,7 @@ import (
 	"popstellar/internal/message/query/method/message"
 	mock2 "popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/types"
+	"popstellar/internal/state"
 	"popstellar/internal/validation"
 	"strconv"
 	"strings"
@@ -35,7 +35,7 @@ func Test_handleChannelLao(t *testing.T) {
 		contains    string
 	}
 
-	subs := types.NewSubscribers()
+	subs := state.NewSubscribers()
 
 	db := mock2.NewRepository(t)
 
@@ -52,7 +52,7 @@ func Test_handleChannelLao(t *testing.T) {
 	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
 
-	conf := types.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
+	conf := state.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
 	lao := New(conf, subs, db, schema)
 

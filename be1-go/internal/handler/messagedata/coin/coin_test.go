@@ -10,7 +10,7 @@ import (
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/mock"
 	"popstellar/internal/repository"
-	"popstellar/internal/types"
+	"popstellar/internal/state"
 	"popstellar/internal/validation"
 	"testing"
 )
@@ -26,7 +26,7 @@ type inputTestHandleChannelCoin struct {
 }
 
 func Test_handleChannelCoin(t *testing.T) {
-	subs := types.NewSubscribers()
+	subs := state.NewSubscribers()
 
 	db := mock.NewRepository(t)
 

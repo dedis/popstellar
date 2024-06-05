@@ -10,7 +10,7 @@ import (
 	"popstellar/internal/message/query/method/message"
 	mock2 "popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/types"
+	"popstellar/internal/state"
 	"popstellar/internal/validation"
 	"testing"
 	"time"
@@ -41,12 +41,12 @@ func Test_handleChannelRoot(t *testing.T) {
 	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
 
-	conf := types.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey,
+	conf := state.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey,
 		"clientAddress", "serverAddress")
 	db := mock2.NewRepository(t)
 
-	subs := types.NewSubscribers()
-	peers := types.NewPeers()
+	subs := state.NewSubscribers()
+	peers := state.NewPeers()
 
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)

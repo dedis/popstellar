@@ -16,7 +16,7 @@ import (
 	"popstellar/internal/message/query/method/message"
 	mock2 "popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/types"
+	"popstellar/internal/state"
 	"popstellar/internal/validation"
 	"testing"
 	"time"
@@ -34,9 +34,9 @@ func Test_handleChannelFederation(t *testing.T) {
 	var args []input
 
 	db := mock2.NewRepository(t)
-	subs := types.NewSubscribers()
-	hub := types.NewHubParams()
-	socket := types.NewSockets()
+	subs := state.NewSubscribers()
+	hub := state.NewHubParams()
+	socket := state.NewSockets()
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
@@ -321,9 +321,9 @@ func Test_handleChannelFederation(t *testing.T) {
 
 func Test_handleRequestChallenge(t *testing.T) {
 	db := mock2.NewRepository(t)
-	subs := types.NewSubscribers()
-	hub := types.NewHubParams()
-	socket := types.NewSockets()
+	subs := state.NewSubscribers()
+	hub := state.NewHubParams()
+	socket := state.NewSockets()
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
@@ -373,9 +373,9 @@ func Test_handleRequestChallenge(t *testing.T) {
 
 func Test_handleFederationExpect(t *testing.T) {
 	db := mock2.NewRepository(t)
-	subs := types.NewSubscribers()
-	hub := types.NewHubParams()
-	socket := types.NewSockets()
+	subs := state.NewSubscribers()
+	hub := state.NewHubParams()
+	socket := state.NewSockets()
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
@@ -430,9 +430,9 @@ func Test_handleFederationExpect(t *testing.T) {
 
 func Test_handleFederationInit(t *testing.T) {
 	db := mock2.NewRepository(t)
-	subs := types.NewSubscribers()
-	hub := types.NewHubParams()
-	socket := types.NewSockets()
+	subs := state.NewSubscribers()
+	hub := state.NewHubParams()
+	socket := state.NewSockets()
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
@@ -509,9 +509,9 @@ func Test_handleFederationInit(t *testing.T) {
 
 func Test_handleFederationChallenge(t *testing.T) {
 	db := mock2.NewRepository(t)
-	subs := types.NewSubscribers()
-	hub := types.NewHubParams()
-	socket := types.NewSockets()
+	subs := state.NewSubscribers()
+	hub := state.NewHubParams()
+	socket := state.NewSockets()
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
@@ -613,9 +613,9 @@ func Test_handleFederationChallenge(t *testing.T) {
 
 func Test_handleFederationResult(t *testing.T) {
 	db := mock2.NewRepository(t)
-	subs := types.NewSubscribers()
-	hub := types.NewHubParams()
-	socket := types.NewSockets()
+	subs := state.NewSubscribers()
+	hub := state.NewHubParams()
+	socket := state.NewSockets()
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 

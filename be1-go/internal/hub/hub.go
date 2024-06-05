@@ -31,7 +31,7 @@ import (
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/repository"
-	"popstellar/internal/types"
+	"popstellar/internal/state"
 	"popstellar/internal/validation"
 	"time"
 )
@@ -72,11 +72,11 @@ type Hub struct {
 func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress string) (*Hub, error) {
 
 	// Initialize the in memory states
-	subs := types.NewSubscribers()
-	peers := types.NewPeers()
-	queries := types.NewQueries(&logger.Logger)
-	hubParams := types.NewHubParams()
-	sockets := types.NewSockets()
+	subs := state.NewSubscribers()
+	peers := state.NewPeers()
+	queries := state.NewQueries(&logger.Logger)
+	hubParams := state.NewHubParams()
+	sockets := state.NewSockets()
 
 	// Initialize the database
 	db, err := sqlite.NewSQLite(dbPath, true)
@@ -98,7 +98,7 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	}
 
 	// Create the in memory configuration state
-	conf := types.CreateConfig(ownerPubKey, serverPublicKey, serverSecretKey, clientAddress, serverAddress)
+	conf := state.CreateConfig(ownerPubKey, serverPublicKey, serverSecretKey, clientAddress, serverAddress)
 
 	// Store the rumor with id 0 associated to the server if the database is empty
 	err = db.StoreFirstRumor()

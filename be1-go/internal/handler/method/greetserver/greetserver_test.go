@@ -7,7 +7,7 @@ import (
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/types"
+	"popstellar/internal/state"
 	"testing"
 )
 
@@ -22,9 +22,9 @@ func Test_handleGreetServer(t *testing.T) {
 	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
 
-	conf := types.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
+	conf := state.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
-	peers := types.NewPeers()
+	peers := state.NewPeers()
 
 	handler := New(conf, peers)
 

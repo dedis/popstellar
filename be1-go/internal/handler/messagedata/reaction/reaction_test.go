@@ -7,7 +7,7 @@ import (
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
 	"popstellar/internal/repository"
-	"popstellar/internal/types"
+	"popstellar/internal/state"
 	"popstellar/internal/validation"
 	"strings"
 	"testing"
@@ -23,7 +23,7 @@ func Test_handleChannelReaction(t *testing.T) {
 		contains    string
 	}
 
-	subs := types.NewSubscribers()
+	subs := state.NewSubscribers()
 
 	db := mock.NewRepository(t)
 

@@ -15,7 +15,7 @@ import (
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/mock/generator"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/types"
+	"popstellar/internal/state"
 	"testing"
 	"time"
 )
@@ -46,7 +46,7 @@ func Test_handleMessagesByChannel(t *testing.T) {
 
 	l := zerolog.New(io.Discard)
 
-	queries := types.NewQueries(&l)
+	queries := state.NewQueries(&l)
 
 	answerHandlers := AnswerHandlers{
 		MessageHandler: &nullMessageHandler{},

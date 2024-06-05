@@ -4,12 +4,12 @@ import (
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/types"
+	"popstellar/internal/state"
 	"testing"
 )
 
 func Test_handleUnsubscribe(t *testing.T) {
-	subs := types.NewSubscribers()
+	subs := state.NewSubscribers()
 
 	handler := New(subs)
 
