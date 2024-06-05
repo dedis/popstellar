@@ -1,4 +1,4 @@
-package query
+package greetserver
 
 import (
 	"encoding/json"
@@ -7,31 +7,39 @@ import (
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/singleton/config"
-	"popstellar/internal/singleton/state"
+	"popstellar/internal/repository"
 )
 
-func handleGreetServer(socket socket.Socket, byteMessage []byte) error {
+type Handler struct {
+	conf  repository.ConfigManager
+	peers repository.PeerManager
+}
+
+func New(conf repository.ConfigManager, peers repository.PeerManager) *Handler {
+	return &Handler{
+		conf:  conf,
+		peers: peers,
+	}
+}
+
+func (h *Handler) Handle(socket socket.Socket, byteMessage []byte) error {
 	var greetServer method.GreetServer
 	err := json.Unmarshal(byteMessage, &greetServer)
 	if err != nil {
 		return errors.NewJsonUnmarshalError(err.Error())
 	}
 
-	err = state.AddPeerInfo(socket.ID(), greetServer.Params)
+	err = h.peers.AddPeerInfo(socket.ID(), greetServer.Params)
 	if err != nil {
 		return err
 	}
 
-	isGreeted, err := state.IsPeerGreeted(socket.ID())
-	if err != nil {
-		return err
-	}
+	isGreeted := h.peers.IsPeerGreeted(socket.ID())
 	if isGreeted {
 		return nil
 	}
 
-	serverPublicKey, clientAddress, serverAddress, err := config.GetServerInfo()
+	serverPublicKey, clientAddress, serverAddress, err := h.conf.GetServerInfo()
 	if err != nil {
 		return err
 	}
@@ -59,5 +67,7 @@ func handleGreetServer(socket socket.Socket, byteMessage []byte) error {
 
 	socket.Send(buf)
 
-	return state.AddPeerGreeted(socket.ID())
+	h.peers.AddPeerGreeted(socket.ID())
+
+	return nil
 }

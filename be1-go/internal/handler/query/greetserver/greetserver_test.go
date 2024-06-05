@@ -1,29 +1,32 @@
-package query
+package greetserver
 
 import (
+	"encoding/base64"
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/singleton/config"
-	"popstellar/internal/singleton/state"
 	"popstellar/internal/types"
 	"testing"
 )
 
 func Test_handleGreetServer(t *testing.T) {
-	subs := types.NewSubscribers()
-	queries := types.NewQueries(&noLog)
-	peers := types.NewPeers()
-	hubParams := types.NewHubParams()
+	ownerPubBuf, err := base64.URLEncoding.DecodeString("3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY=")
+	require.NoError(t, err)
 
-	state.SetState(subs, peers, queries, hubParams)
+	ownerPublicKey := crypto.Suite.Point()
+	err = ownerPublicKey.UnmarshalBinary(ownerPubBuf)
+	require.NoError(t, err)
 
 	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
 
-	config.SetConfig(nil, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
+	conf := types.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
+
+	peers := types.NewPeers()
+
+	handler := New(conf, peers)
 
 	type input struct {
 		name      string
@@ -68,7 +71,7 @@ func Test_handleGreetServer(t *testing.T) {
 
 	fakeSocket = mock.FakeSocket{Id: "3"}
 
-	err := peers.AddPeerInfo(fakeSocket.Id, method.GreetServerParams{})
+	err = peers.AddPeerInfo(fakeSocket.Id, method.GreetServerParams{})
 	require.NoError(t, err)
 
 	args = append(args, input{
@@ -83,7 +86,7 @@ func Test_handleGreetServer(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			err := handleGreetServer(&arg.socket, arg.message)
+			err := handler.Handle(&arg.socket, arg.message)
 			if arg.isError {
 				require.Error(t, err, arg.contains)
 			} else if arg.needGreet {
