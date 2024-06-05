@@ -56,6 +56,7 @@ func (h *Handler) Handle(channelPath string, msg message.Message, fromRumor bool
 	if err != nil {
 		return err
 	}
+	
 	if msgAlreadyExists && fromRumor {
 		return nil
 	}
