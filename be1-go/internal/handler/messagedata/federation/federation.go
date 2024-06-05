@@ -10,6 +10,7 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
+	messageHandler "popstellar/internal/handler/message"
 	"popstellar/internal/logger"
 	jsonrpc "popstellar/internal/message"
 	"popstellar/internal/message/messagedata"
@@ -28,6 +29,7 @@ const (
 )
 
 type Handler struct {
+	messageHandler.MessageDataHandler
 	db     repository.FederationRepository
 	subs   repository.SubscriptionManager
 	socket repository.SocketManager

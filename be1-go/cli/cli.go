@@ -5,6 +5,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog"
+	"golang.org/x/exp/slices"
 	"net/url"
 	"os"
 	"popstellar/internal/crypto"
@@ -13,17 +15,8 @@ import (
 	"popstellar/internal/network"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/hub"
-	"popstellar/internal/singleton/config"
-	"popstellar/internal/singleton/database"
-	"popstellar/internal/singleton/state"
-	"popstellar/internal/singleton/utils"
-	"popstellar/internal/sqlite"
-	"popstellar/internal/validation"
 	"sync"
 	"time"
-
-	"github.com/rs/zerolog"
-	"golang.org/x/exp/slices"
 
 	"github.com/rs/zerolog/log"
 	"go.dedis.ch/kyber/v3"
@@ -71,67 +64,19 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 		s.ServerAddress = fmt.Sprintf("ws://%s:%d/server", s.PublicAddress, s.ServerPort)
 	}
 
-	var point kyber.Point = nil
-	err := ownerKey(s.PublicKey, &point)
+	var ownerPubKey kyber.Point = nil
+	err := ownerKey(s.PublicKey, &ownerPubKey)
 	if err != nil {
 		return nil, err
 	}
 
-	schemaValidator, err := validation.NewSchemaValidator()
+	hub, err := hub2.New(s.DatabasePath, ownerPubKey, s.ClientAddress, s.ServerAddress)
+
 	if err != nil {
 		return nil, err
 	}
 
-	db, err := sqlite.NewSQLite(s.DatabasePath, true)
-	if err != nil {
-		return nil, err
-	}
-
-	database.InitDatabase(&db)
-
-	serverPublicKey, serverSecretKey, err := db.GetServerKeys()
-	if err != nil {
-		serverSecretKey = crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-		serverPublicKey = crypto.Suite.Point().Mul(serverSecretKey, nil)
-
-		err := db.StoreServerKeys(serverPublicKey, serverSecretKey)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	err = db.StoreFirstRumor()
-	if err != nil {
-		return nil, err
-	}
-
-	utils.InitUtils(schemaValidator)
-
-	state.InitState(l)
-
-	config.InitConfig(point, serverPublicKey, serverSecretKey, s.ClientAddress, s.ServerAddress)
-
-	channels, err := db.GetAllChannels()
-	if err != nil {
-		return nil, err
-	}
-
-	for _, channel := range channels {
-		alreadyExist, errAnswer := state.HasChannel(channel)
-		if errAnswer != nil {
-			return nil, errAnswer
-		}
-		if alreadyExist {
-			continue
-		}
-
-		errAnswer = state.AddChannel(channel)
-		if errAnswer != nil {
-			return nil, errAnswer
-		}
-	}
-
-	return hub2.New(), nil
+	return hub, nil
 }
 
 // Serve parses the CLI arguments and spawns a hub and a websocket server for

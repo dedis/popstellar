@@ -15,7 +15,7 @@ import (
 type nullChannelSubHandler struct{}
 
 // handle method for nullChannelSubHandler that always returns nil
-func (n *nullChannelSubHandler) handle(_ string, _ message.Message) error {
+func (n *nullChannelSubHandler) Handle(_ string, _ message.Message) error {
 	return nil
 }
 
@@ -23,13 +23,13 @@ func Test_handleChannel(t *testing.T) {
 	db := mock.NewRepository(t)
 
 	subHandlers := MessageDataHandlers{
-		root:       &nullChannelSubHandler{},
-		lao:        &nullChannelSubHandler{},
-		election:   &nullChannelSubHandler{},
-		chirp:      &nullChannelSubHandler{},
-		reaction:   &nullChannelSubHandler{},
-		coin:       &nullChannelSubHandler{},
-		federation: &nullChannelSubHandler{},
+		Root:       &nullChannelSubHandler{},
+		Lao:        &nullChannelSubHandler{},
+		Election:   &nullChannelSubHandler{},
+		Chirp:      &nullChannelSubHandler{},
+		Reaction:   &nullChannelSubHandler{},
+		Coin:       &nullChannelSubHandler{},
+		Federation: &nullChannelSubHandler{},
 	}
 
 	channel := New(db, subHandlers)

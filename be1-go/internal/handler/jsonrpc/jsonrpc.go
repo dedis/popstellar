@@ -43,6 +43,7 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) error {
 	switch rpcType {
 	case message.RPCTypeQuery:
 		err = h.queryHandler.Handle(socket, msg)
+
 	case message.RPCTypeAnswer:
 		err = h.answerHandler.Handle(msg)
 	default:

@@ -6,15 +6,15 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
-	"popstellar/internal/repository"
-	"popstellar/internal/validation"
-	"sort"
-
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
+	messageHandler "popstellar/internal/handler/message"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/repository"
 	"popstellar/internal/types"
+	"popstellar/internal/validation"
+	"sort"
 )
 
 const (
@@ -22,13 +22,14 @@ const (
 )
 
 type Handler struct {
+	messageHandler.MessageDataHandler
 	conf   repository.ConfigManager
 	subs   repository.SubscriptionManager
 	db     repository.ElectionRepository
 	schema *validation.SchemaValidator
 }
 
-func CreateHandler(conf repository.ConfigManager, subs repository.SubscriptionManager,
+func New(conf repository.ConfigManager, subs repository.SubscriptionManager,
 	db repository.ElectionRepository, schema *validation.SchemaValidator) *Handler {
 	return &Handler{
 		conf:   conf,

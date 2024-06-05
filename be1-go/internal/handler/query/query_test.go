@@ -18,14 +18,14 @@ func (n *nullMethodHandler) Handle(socket socket.Socket, msg []byte) (*int, erro
 
 // Initialize methodHandlers with nullMethodHandler instances
 var methodHandlers = MethodHandlers{
-	catchup:         &nullMethodHandler{},
-	getmessagesbyid: &nullMethodHandler{},
-	greetserver:     &nullMethodHandler{},
-	heartbeat:       &nullMethodHandler{},
-	publish:         &nullMethodHandler{},
-	subscribe:       &nullMethodHandler{},
-	unsubscribe:     &nullMethodHandler{},
-	rumor:           &nullMethodHandler{},
+	Catchup:         &nullMethodHandler{},
+	GetMessagesbyid: &nullMethodHandler{},
+	Greetserver:     &nullMethodHandler{},
+	Heartbeat:       &nullMethodHandler{},
+	Publish:         &nullMethodHandler{},
+	Subscribe:       &nullMethodHandler{},
+	Unsubscribe:     &nullMethodHandler{},
+	Rumor:           &nullMethodHandler{},
 }
 
 func Test_handleQuery(t *testing.T) {

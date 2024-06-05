@@ -25,6 +25,7 @@ type Repository interface {
 	ReactionRepository
 	RumorSenderRepository
 	FederationRepository
+	HubRepository
 
 	// StoreServerKeys stores the keys of the server
 	StoreServerKeys(electionPubKey kyber.Point, electionSecretKey kyber.Scalar) error

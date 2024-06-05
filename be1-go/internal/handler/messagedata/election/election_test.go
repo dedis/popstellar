@@ -51,7 +51,7 @@ func Test_handleChannelElection(t *testing.T) {
 
 	conf := types.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
-	election := CreateHandler(conf, subs, db, schema)
+	election := New(conf, subs, db, schema)
 
 	laoID := base64.URLEncoding.EncodeToString([]byte("laoID"))
 	electionID := base64.URLEncoding.EncodeToString([]byte("electionID"))

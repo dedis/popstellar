@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
-	message2 "popstellar/internal/handler/message"
+	messageHandler "popstellar/internal/handler/message"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/repository"
@@ -25,6 +25,7 @@ const (
 )
 
 type Handler struct {
+	messageHandler.MessageDataHandler
 	config repository.ConfigManager
 	db     repository.RootRepository
 	subs   repository.SubscriptionManager
@@ -44,6 +45,7 @@ func New(config repository.ConfigManager, db repository.RootRepository,
 }
 
 func (h *Handler) Handle(_ string, msg message.Message) error {
+
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return errors.NewDecodeStringError("failed to decode message data: %v", err)
@@ -70,6 +72,7 @@ func (h *Handler) Handle(_ string, msg message.Message) error {
 }
 
 func (h *Handler) handleLaoCreate(msg message.Message) error {
+
 	var laoCreate messagedata.LaoCreate
 	err := msg.UnmarshalData(&laoCreate)
 	if err != nil {
@@ -145,13 +148,13 @@ func (h *Handler) verifyLaoCreation(msg message.Message, laoCreate messagedata.L
 
 func (h *Handler) createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []byte, laoPath string) error {
 	channels := map[string]string{
-		laoPath:                      message2.LaoType,
-		laoPath + Social + Chirps:    message2.ChirpType,
-		laoPath + Social + Reactions: message2.ReactionType,
-		laoPath + Consensus:          message2.ConsensusType,
-		laoPath + Coin:               message2.CoinType,
-		laoPath + Auth:               message2.AuthType,
-		laoPath + Federation:         message2.FederationType,
+		laoPath:                      messageHandler.LaoType,
+		laoPath + Social + Chirps:    messageHandler.ChirpType,
+		laoPath + Social + Reactions: messageHandler.ReactionType,
+		laoPath + Consensus:          messageHandler.ConsensusType,
+		laoPath + Coin:               messageHandler.CoinType,
+		laoPath + Auth:               messageHandler.AuthType,
+		laoPath + Federation:         messageHandler.FederationType,
 	}
 
 	err := h.db.StoreLaoWithLaoGreet(channels, laoPath, organizerPubBuf, msg, laoGreetMsg)

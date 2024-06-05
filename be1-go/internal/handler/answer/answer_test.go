@@ -49,8 +49,8 @@ func Test_handleMessagesByChannel(t *testing.T) {
 	queries := types.NewQueries(&l)
 
 	answerHandlers := AnswerHandlers{
-		messageHandler: &nullMessageHandler{},
-		rumorSender:    &nullRumorSender{},
+		MessageHandler: &nullMessageHandler{},
+		RumorSender:    &nullRumorSender{},
 	}
 
 	handler := New(queries, answerHandlers)

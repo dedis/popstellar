@@ -27,8 +27,8 @@ type RumorSender interface {
 }
 
 type AnswerHandlers struct {
-	messageHandler MessageHandler
-	rumorSender    RumorSender
+	MessageHandler MessageHandler
+	RumorSender    RumorSender
 }
 
 type Handler struct {
@@ -109,7 +109,7 @@ func (h *Handler) handleRumorAnswer(msg answer.Answer) error {
 		return poperrors.NewInternalServerError("rumor query %d doesn't exist", *msg.ID)
 	}
 
-	h.handlers.rumorSender.SendRumor(nil, rumor)
+	h.handlers.RumorSender.SendRumor(nil, rumor)
 
 	return nil
 }
@@ -160,7 +160,7 @@ func (h *Handler) tryToHandleMessages(msgsByChannel map[string]map[string]messag
 	for _, channelID := range sortedChannelIDs {
 		msgs := msgsByChannel[channelID]
 		for msgID, msg := range msgs {
-			err := h.handlers.messageHandler.Handle(channelID, msg, false)
+			err := h.handlers.MessageHandler.Handle(channelID, msg, false)
 			if err == nil {
 				delete(msgsByChannel[channelID], msgID)
 				continue

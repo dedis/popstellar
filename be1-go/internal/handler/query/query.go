@@ -12,14 +12,14 @@ type MethodHandler interface {
 }
 
 type MethodHandlers struct {
-	catchup         MethodHandler
-	getmessagesbyid MethodHandler
-	greetserver     MethodHandler
-	heartbeat       MethodHandler
-	publish         MethodHandler
-	subscribe       MethodHandler
-	unsubscribe     MethodHandler
-	rumor           MethodHandler
+	Catchup         MethodHandler
+	GetMessagesbyid MethodHandler
+	Greetserver     MethodHandler
+	Heartbeat       MethodHandler
+	Publish         MethodHandler
+	Subscribe       MethodHandler
+	Unsubscribe     MethodHandler
+	Rumor           MethodHandler
 }
 
 type Handler struct {
@@ -44,21 +44,21 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) error {
 
 	switch queryBase.Method {
 	case query.MethodCatchUp:
-		id, err = h.handlers.catchup.Handle(socket, msg)
+		id, err = h.handlers.Catchup.Handle(socket, msg)
 	case query.MethodGetMessagesById:
-		id, err = h.handlers.getmessagesbyid.Handle(socket, msg)
+		id, err = h.handlers.GetMessagesbyid.Handle(socket, msg)
 	case query.MethodGreetServer:
-		_, err = h.handlers.greetserver.Handle(socket, msg)
+		_, err = h.handlers.Greetserver.Handle(socket, msg)
 	case query.MethodHeartbeat:
-		_, err = h.handlers.heartbeat.Handle(socket, msg)
+		_, err = h.handlers.Heartbeat.Handle(socket, msg)
 	case query.MethodPublish:
-		id, err = h.handlers.publish.Handle(socket, msg)
+		id, err = h.handlers.Publish.Handle(socket, msg)
 	case query.MethodSubscribe:
-		id, err = h.handlers.subscribe.Handle(socket, msg)
+		id, err = h.handlers.Subscribe.Handle(socket, msg)
 	case query.MethodUnsubscribe:
-		id, err = h.handlers.unsubscribe.Handle(socket, msg)
+		id, err = h.handlers.Unsubscribe.Handle(socket, msg)
 	case query.MethodRumor:
-		id, err = h.handlers.rumor.Handle(socket, msg)
+		id, err = h.handlers.Rumor.Handle(socket, msg)
 	default:
 		err = errors.NewInvalidActionError("unexpected method: '%s'", queryBase.Method)
 	}

@@ -2,14 +2,38 @@ package hub
 
 import (
 	"encoding/json"
+	"go.dedis.ch/kyber/v3"
+	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
+	answerHandler "popstellar/internal/handler/answer"
+	"popstellar/internal/handler/jsonrpc"
+	messageHandler "popstellar/internal/handler/message"
+	"popstellar/internal/handler/messagedata/chirp"
+	"popstellar/internal/handler/messagedata/coin"
+	"popstellar/internal/handler/messagedata/election"
+	"popstellar/internal/handler/messagedata/federation"
+	"popstellar/internal/handler/messagedata/lao"
+	"popstellar/internal/handler/messagedata/reaction"
+	"popstellar/internal/handler/messagedata/root"
+	"popstellar/internal/handler/method/catchup"
+	"popstellar/internal/handler/method/getmessagesbyid"
+	"popstellar/internal/handler/method/greetserver"
+	"popstellar/internal/handler/method/heartbeat"
+	"popstellar/internal/handler/method/publish"
+	"popstellar/internal/handler/method/rumor"
+	"popstellar/internal/handler/method/subscribe"
+	"popstellar/internal/handler/method/unsubscribe"
+	queryHandler "popstellar/internal/handler/query"
 	"popstellar/internal/logger"
-	jsonrpc "popstellar/internal/message"
+	"popstellar/internal/message"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/repository"
 	"popstellar/internal/singleton/state"
+	"popstellar/internal/sqlite"
+	"popstellar/internal/types"
+	"popstellar/internal/validation"
 	"time"
 )
 
@@ -36,9 +60,101 @@ type Hub struct {
 	db             repository.HubRepository
 }
 
-func New(conf repository.ConfigManager, dbPath string) *Hub {
+func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress string) (*Hub, error) {
 
-	return &Hub{}
+	subs := types.NewSubscribers()
+	peers := types.NewPeers()
+	queries := types.NewQueries(&logger.Logger)
+	hubParams := types.NewHubParams()
+	sockets := types.NewSockets()
+
+	db, err := sqlite.NewSQLite(dbPath, true)
+	if err != nil {
+		return nil, err
+	}
+
+	serverPublicKey, serverSecretKey, err := db.GetServerKeys()
+	if err != nil {
+		serverSecretKey = crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+		serverPublicKey = crypto.Suite.Point().Mul(serverSecretKey, nil)
+
+		err := db.StoreServerKeys(serverPublicKey, serverSecretKey)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	conf := types.CreateConfig(ownerPubKey, serverPublicKey, serverSecretKey, clientAddress, serverAddress)
+
+	err = db.StoreFirstRumor()
+	if err != nil {
+		return nil, err
+	}
+
+	channels, err := db.GetAllChannels()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, channel := range channels {
+		alreadyExist := subs.HasChannel(channel)
+		if alreadyExist {
+			continue
+		}
+
+		err = subs.AddChannel(channel)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	schemaValidator, err := validation.NewSchemaValidator()
+	if err != nil {
+		return nil, err
+	}
+
+	dataHandlers := messageHandler.MessageDataHandlers{
+		Root:       root.New(conf, &db, subs, peers, schemaValidator),
+		Lao:        lao.New(conf, subs, &db, schemaValidator),
+		Election:   election.New(conf, subs, &db, schemaValidator),
+		Chirp:      chirp.New(conf, subs, &db, schemaValidator),
+		Reaction:   reaction.New(subs, &db, schemaValidator),
+		Coin:       coin.New(subs, &db, schemaValidator),
+		Federation: federation.New(&db, subs, sockets, hubParams, schemaValidator),
+	}
+
+	messageHandler := messageHandler.New(&db, dataHandlers)
+	rumorSender := rumor.New(queries, sockets, &db, messageHandler)
+
+	queryHandler := queryHandler.New(queryHandler.MethodHandlers{
+		Catchup:         catchup.New(&db),
+		GetMessagesbyid: getmessagesbyid.New(&db),
+		Greetserver:     greetserver.New(conf, peers),
+		Heartbeat:       heartbeat.New(queries, &db),
+		Publish:         publish.New(hubParams, &db, messageHandler),
+		Subscribe:       subscribe.New(subs),
+		Unsubscribe:     unsubscribe.New(subs),
+		Rumor:           rumor.New(queries, sockets, &db, messageHandler),
+	})
+
+	answerHandler := answerHandler.New(queries, answerHandler.AnswerHandlers{
+		MessageHandler: messageHandler,
+		RumorSender:    rumorSender,
+	})
+
+	jsonRpcHandler := jsonrpc.New(schemaValidator, queryHandler, answerHandler)
+
+	hub := &Hub{
+		conf:           conf,
+		control:        hubParams,
+		subs:           subs,
+		sockets:        sockets,
+		jsonRpcHandler: jsonRpcHandler,
+		rumorSender:    rumorSender,
+		db:             &db,
+	}
+
+	return hub, nil
 }
 
 func (h *Hub) NotifyNewServer(socket socket.Socket) {
@@ -79,7 +195,7 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 
 	serverGreet := &method.GreetServer{
 		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPCBase: message.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: query.MethodGreetServer,
@@ -198,7 +314,7 @@ func (h *Hub) runHeartbeat() {
 func (h *Hub) sendHeartbeatToServers() error {
 	heartbeatMessage := method.Heartbeat{
 		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPCBase: message.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: "heartbeat",

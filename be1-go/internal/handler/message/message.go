@@ -21,17 +21,17 @@ const (
 )
 
 type MessageDataHandler interface {
-	handle(channelPath string, msg message.Message) error
+	Handle(channelPath string, msg message.Message) error
 }
 
 type MessageDataHandlers struct {
-	root       MessageDataHandler
-	lao        MessageDataHandler
-	election   MessageDataHandler
-	chirp      MessageDataHandler
-	reaction   MessageDataHandler
-	coin       MessageDataHandler
-	federation MessageDataHandler
+	Root       MessageDataHandler
+	Lao        MessageDataHandler
+	Election   MessageDataHandler
+	Chirp      MessageDataHandler
+	Reaction   MessageDataHandler
+	Coin       MessageDataHandler
+	Federation MessageDataHandler
 }
 
 type Handler struct {
@@ -70,22 +70,21 @@ func (h *Handler) Handle(channelPath string, msg message.Message, fromRumor bool
 
 	switch channelType {
 	case RootType:
-		err = h.handlers.root.handle(channelPath, msg)
+		err = h.handlers.Root.Handle(channelPath, msg)
 	case LaoType:
-		err = h.handlers.lao.handle(channelPath, msg)
+		err = h.handlers.Lao.Handle(channelPath, msg)
 	case ElectionType:
-		err = h.handlers.election.handle(channelPath, msg)
+		err = h.handlers.Election.Handle(channelPath, msg)
 	case ChirpType:
-		err = h.handlers.chirp.handle(channelPath, msg)
+		err = h.handlers.Chirp.Handle(channelPath, msg)
 	case ReactionType:
-		err = h.handlers.reaction.handle(channelPath, msg)
+		err = h.handlers.Reaction.Handle(channelPath, msg)
 	case CoinType:
-		err = h.handlers.coin.handle(channelPath, msg)
+		err = h.handlers.Coin.Handle(channelPath, msg)
 	case FederationType:
-		err = h.handlers.federation.handle(channelPath, msg)
+		err = h.handlers.Federation.Handle(channelPath, msg)
 	default:
 		err = errors.NewInvalidResourceError("unknown channelPath type for %s", channelPath)
 	}
-
 	return err
 }
