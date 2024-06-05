@@ -7,14 +7,7 @@ import (
 	"testing"
 )
 
-type Keypair struct {
-	Public     kyber.Point
-	PublicBuf  []byte
-	Private    kyber.Scalar
-	PrivateBuf []byte
-}
-
-func GenerateKeyPair(t *testing.T) Keypair {
+func GenerateKeyPair(t *testing.T) (kyber.Point, []byte, kyber.Scalar, []byte) {
 	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	point := crypto.Suite.Point().Mul(secret, nil)
 
@@ -23,5 +16,5 @@ func GenerateKeyPair(t *testing.T) Keypair {
 	privateBuf, err := secret.MarshalBinary()
 	require.NoError(t, err)
 
-	return Keypair{point, publicBuf, secret, privateBuf}
+	return point, publicBuf, secret, privateBuf
 }

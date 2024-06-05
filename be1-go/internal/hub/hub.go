@@ -2,18 +2,37 @@ package hub
 
 import (
 	"encoding/json"
+	"go.dedis.ch/kyber/v3"
+	"popstellar/internal/crypto"
+	"popstellar/internal/database/sqlite"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler"
-	query2 "popstellar/internal/handler/query"
+	answerHandler "popstellar/internal/handler/answer"
+	"popstellar/internal/handler/jsonrpc"
+	messageHandler "popstellar/internal/handler/message"
+	"popstellar/internal/handler/messagedata/chirp"
+	"popstellar/internal/handler/messagedata/coin"
+	"popstellar/internal/handler/messagedata/election"
+	"popstellar/internal/handler/messagedata/federation"
+	"popstellar/internal/handler/messagedata/lao"
+	"popstellar/internal/handler/messagedata/reaction"
+	"popstellar/internal/handler/messagedata/root"
+	"popstellar/internal/handler/method/catchup"
+	"popstellar/internal/handler/method/getmessagesbyid"
+	"popstellar/internal/handler/method/greetserver"
+	"popstellar/internal/handler/method/heartbeat"
+	"popstellar/internal/handler/method/publish"
+	"popstellar/internal/handler/method/rumor"
+	"popstellar/internal/handler/method/subscribe"
+	"popstellar/internal/handler/method/unsubscribe"
+	queryHandler "popstellar/internal/handler/query"
 	"popstellar/internal/logger"
-	jsonrpc "popstellar/internal/message"
+	"popstellar/internal/message"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/singleton/config"
-	"popstellar/internal/singleton/database"
-	"popstellar/internal/singleton/state"
-	"sync"
+	"popstellar/internal/repository"
+	"popstellar/internal/state"
+	"popstellar/internal/validation"
 	"time"
 )
 
@@ -22,107 +41,181 @@ const (
 	rumorDelay     = time.Second * 5
 )
 
-type Hub struct {
-	wg            *sync.WaitGroup
-	messageChan   chan socket.IncomingMessage
-	stop          chan struct{}
-	closedSockets chan string
+type JsonRpcHandler interface {
+	Handle(socket socket.Socket, msg []byte) error
 }
 
-func NewHub() *Hub {
-	wg, err := state.GetWaitGroup()
+type GreetServerSender interface {
+	SendGreetServer(socket socket.Socket) error
+}
+
+type RumorSender interface {
+	SendRumor(socket socket.Socket, rumor method.Rumor)
+}
+
+type Hub struct {
+	// in memory states
+	conf    repository.ConfigManager
+	control repository.HubManager
+	subs    repository.SubscriptionManager
+	sockets repository.SocketManager
+
+	// database
+	db repository.HubRepository
+
+	// handlers
+	jsonRpcHandler    JsonRpcHandler
+	greetserverSender GreetServerSender
+	rumorSender       RumorSender
+}
+
+func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress string) (*Hub, error) {
+
+	// Initialize the in memory states
+	subs := state.NewSubscribers()
+	peers := state.NewPeers()
+	queries := state.NewQueries(&logger.Logger)
+	hubParams := state.NewHubParams()
+	sockets := state.NewSockets()
+
+	// Initialize the database
+	db, err := sqlite.NewSQLite(dbPath, true)
 	if err != nil {
-		logger.Logger.Err(err)
-		return nil
+		return nil, err
 	}
 
-	messageChan, err := state.GetMessageChan()
+	// Get the server keys from the database
+	serverPublicKey, serverSecretKey, err := db.GetServerKeys()
 	if err != nil {
-		logger.Logger.Err(err)
-		return nil
+		// If the server keys are not found, generate new ones
+		serverSecretKey = crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+		serverPublicKey = crypto.Suite.Point().Mul(serverSecretKey, nil)
+
+		err := db.StoreServerKeys(serverPublicKey, serverSecretKey)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	stop, err := state.GetStopChan()
+	// Create the in memory configuration state
+	conf := state.CreateConfig(ownerPubKey, serverPublicKey, serverSecretKey, clientAddress, serverAddress)
+
+	// Store the rumor with id 0 associated to the server if the database is empty
+	err = db.StoreFirstRumor()
 	if err != nil {
-		logger.Logger.Err(err)
-		return nil
+		return nil, err
 	}
 
-	closedSockets, err := state.GetClosedSockets()
+	// Get all the channels from the database and add them to the subscribers
+	channels, err := db.GetAllChannels()
 	if err != nil {
-		logger.Logger.Err(err)
-		return nil
+		return nil, err
 	}
 
-	return &Hub{
-		wg:            wg,
-		messageChan:   messageChan,
-		stop:          stop,
-		closedSockets: closedSockets,
+	for _, channel := range channels {
+		alreadyExist := subs.HasChannel(channel)
+		if alreadyExist {
+			continue
+		}
+
+		err = subs.AddChannel(channel)
+		if err != nil {
+			return nil, err
+		}
 	}
+
+	// Create the schema validator
+	schemaValidator, err := validation.NewSchemaValidator()
+	if err != nil {
+		return nil, err
+	}
+
+	// Create the message data handlers
+	dataHandlers := messageHandler.MessageDataHandlers{
+		Root:       root.New(conf, &db, subs, peers, schemaValidator),
+		Lao:        lao.New(conf, subs, &db, schemaValidator),
+		Election:   election.New(conf, subs, &db, schemaValidator),
+		Chirp:      chirp.New(conf, subs, &db, schemaValidator),
+		Reaction:   reaction.New(subs, &db, schemaValidator),
+		Coin:       coin.New(subs, &db, schemaValidator),
+		Federation: federation.New(&db, subs, sockets, hubParams, schemaValidator),
+	}
+
+	// Create the message handler
+	msgHandler := messageHandler.New(&db, dataHandlers)
+
+	// Create the greetserver handler
+	greetserverHandler := greetserver.New(conf, peers)
+
+	// Create the rumor handler
+	rumorHandler := rumor.New(queries, sockets, &db, msgHandler)
+
+	// Create the query handler
+	qHandler := queryHandler.New(queryHandler.MethodHandlers{
+		Catchup:         catchup.New(&db),
+		GetMessagesbyid: getmessagesbyid.New(&db),
+		Greetserver:     greetserverHandler,
+		Heartbeat:       heartbeat.New(queries, &db),
+		Publish:         publish.New(hubParams, &db, msgHandler),
+		Subscribe:       subscribe.New(subs),
+		Unsubscribe:     unsubscribe.New(subs),
+		Rumor:           rumorHandler,
+	})
+
+	// Create the answer handler
+	aHandler := answerHandler.New(queries, answerHandler.AnswerHandlers{
+		MessageHandler: msgHandler,
+		RumorSender:    rumorHandler,
+	})
+
+	// Create the json rpc handler
+	jsonRpcHandler := jsonrpc.New(schemaValidator, qHandler, aHandler)
+
+	// Create the hub
+	hub := &Hub{
+		conf:              conf,
+		control:           hubParams,
+		subs:              subs,
+		sockets:           sockets,
+		jsonRpcHandler:    jsonRpcHandler,
+		greetserverSender: greetserverHandler,
+		rumorSender:       rumorHandler,
+		db:                &db,
+	}
+
+	return hub, nil
 }
 
 func (h *Hub) NotifyNewServer(socket socket.Socket) {
-	err := state.Upsert(socket)
-	if err != nil {
-		logger.Logger.Err(err)
-	}
+	h.sockets.Upsert(socket)
 }
 
 func (h *Hub) Start() {
-	h.wg.Add(3)
+	h.control.GetWaitGroup().Add(3)
 	go h.runHeartbeat()
 	go h.runRumorSender()
 	go h.runMessageReceiver()
 }
 
 func (h *Hub) Stop() {
-	close(h.stop)
-	h.wg.Wait()
+	close(h.control.GetStopChan())
+	h.control.GetWaitGroup().Wait()
 }
 
 func (h *Hub) Receiver() chan<- socket.IncomingMessage {
-	return h.messageChan
+	return h.control.GetMessageChan()
 }
 
 func (h *Hub) OnSocketClose() chan<- string {
-	return h.closedSockets
+	return h.control.GetClosedSockets()
 }
 
 func (h *Hub) SendGreetServer(socket socket.Socket) error {
-	serverPublicKey, clientAddress, serverAddress, err := config.GetServerInfo()
-	if err != nil {
-		return err
-	}
-
-	greetServerParams := method.GreetServerParams{
-		PublicKey:     serverPublicKey,
-		ServerAddress: serverAddress,
-		ClientAddress: clientAddress,
-	}
-
-	serverGreet := &method.GreetServer{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: query.MethodGreetServer,
-		},
-		Params: greetServerParams,
-	}
-
-	buf, err := json.Marshal(serverGreet)
-	if err != nil {
-		return errors.NewJsonMarshalError(err.Error())
-	}
-
-	socket.Send(buf)
-
-	return state.AddPeerGreeted(socket.ID())
+	return h.greetserverSender.SendGreetServer(socket)
 }
 
 func (h *Hub) runMessageReceiver() {
-	defer h.wg.Done()
+	defer h.control.GetWaitGroup().Done()
 	defer logger.Logger.Info().Msg("stopping hub")
 
 	logger.Logger.Info().Msg("starting hub")
@@ -130,21 +223,18 @@ func (h *Hub) runMessageReceiver() {
 	for {
 		logger.Logger.Debug().Msg("waiting for a new message")
 		select {
-		case incomingMessage := <-h.messageChan:
+		case incomingMessage := <-h.control.GetMessageChan():
 			logger.Logger.Debug().Msg("start handling a message")
-			err := handler.HandleIncomingMessage(incomingMessage.Socket, incomingMessage.Message)
+			err := h.jsonRpcHandler.Handle(incomingMessage.Socket, incomingMessage.Message)
 			if err != nil {
 				logger.Logger.Error().Err(err)
 			} else {
 				logger.Logger.Debug().Msg("successfully handled a message")
 			}
-		case socketID := <-h.closedSockets:
+		case socketID := <-h.control.GetClosedSockets():
 			logger.Logger.Debug().Msgf("stopping the Socket " + socketID)
-			err := state.UnsubscribeFromAll(socketID)
-			if err != nil {
-				logger.Logger.Error().Err(err)
-			}
-		case <-h.stop:
+			h.subs.UnsubscribeFromAll(socketID)
+		case <-h.control.GetStopChan():
 			return
 		}
 	}
@@ -153,45 +243,34 @@ func (h *Hub) runMessageReceiver() {
 func (h *Hub) runRumorSender() {
 	ticker := time.NewTicker(rumorDelay)
 	defer ticker.Stop()
-	defer h.wg.Done()
+	defer h.control.GetWaitGroup().Done()
 	defer logger.Logger.Info().Msg("stopping rumor sender")
 
 	logger.Logger.Info().Msg("starting rumor sender")
-
-	reset, err := state.GetResetRumorSender()
-	if err != nil {
-		logger.Logger.Error().Err(err)
-		return
-	}
 
 	for {
 		select {
 		case <-ticker.C:
 			logger.Logger.Debug().Msgf("sender rumor trigerred")
-			err = h.tryToSendRumor()
+			err := h.tryToSendRumor()
 			if err != nil {
 				logger.Logger.Error().Err(err)
 			}
-		case <-reset:
+		case <-h.control.GetResetRumorSender():
 			logger.Logger.Debug().Msgf("sender rumor reset")
 			ticker.Reset(rumorDelay)
-			err = h.tryToSendRumor()
+			err := h.tryToSendRumor()
 			if err != nil {
 				logger.Logger.Error().Err(err)
 			}
-		case <-h.stop:
+		case <-h.control.GetStopChan():
 			return
 		}
 	}
 }
 
 func (h *Hub) tryToSendRumor() error {
-	db, err := database.GetRumorSenderRepositoryInstance()
-	if err != nil {
-		return err
-	}
-
-	ok, rumor, err := db.GetAndIncrementMyRumor()
+	ok, r, err := h.db.GetAndIncrementMyRumor()
 	if err != nil {
 		return err
 	}
@@ -200,7 +279,7 @@ func (h *Hub) tryToSendRumor() error {
 		return nil
 	}
 
-	query2.SendRumor(nil, rumor)
+	h.rumorSender.SendRumor(nil, r)
 
 	return nil
 }
@@ -208,7 +287,7 @@ func (h *Hub) tryToSendRumor() error {
 func (h *Hub) runHeartbeat() {
 	ticker := time.NewTicker(heartbeatDelay)
 	defer ticker.Stop()
-	defer h.wg.Done()
+	defer h.control.GetWaitGroup().Done()
 	defer logger.Logger.Info().Msg("stopping heartbeat sender")
 
 	logger.Logger.Info().Msg("starting heartbeat sender")
@@ -216,21 +295,21 @@ func (h *Hub) runHeartbeat() {
 	for {
 		select {
 		case <-ticker.C:
-			err := h.sendHeartbeatToServers()
+			err := h.sendHeartbeat()
 			if err != nil {
 				logger.Logger.Error().Err(err)
 			}
-		case <-h.stop:
+		case <-h.control.GetStopChan():
 			return
 		}
 	}
 }
 
-// sendHeartbeatToServers sends a heartbeat message to all servers
-func (h *Hub) sendHeartbeatToServers() error {
+// sendHeartbeat sends a heartbeat message to all servers
+func (h *Hub) sendHeartbeat() error {
 	heartbeatMessage := method.Heartbeat{
 		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPCBase: message.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: "heartbeat",
@@ -243,5 +322,7 @@ func (h *Hub) sendHeartbeatToServers() error {
 		return errors.NewJsonMarshalError(err.Error())
 	}
 
-	return state.SendToAllServer(buf)
+	h.sockets.SendToAll(buf)
+
+	return nil
 }

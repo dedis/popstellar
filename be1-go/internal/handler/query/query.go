@@ -2,13 +2,37 @@ package query
 
 import (
 	"encoding/json"
-
 	"popstellar/internal/errors"
 	"popstellar/internal/message/query"
 	"popstellar/internal/network/socket"
 )
 
-func HandleQuery(socket socket.Socket, msg []byte) error {
+type MethodHandler interface {
+	Handle(socket socket.Socket, msg []byte) (*int, error)
+}
+
+type MethodHandlers struct {
+	Catchup         MethodHandler
+	GetMessagesbyid MethodHandler
+	Greetserver     MethodHandler
+	Heartbeat       MethodHandler
+	Publish         MethodHandler
+	Subscribe       MethodHandler
+	Unsubscribe     MethodHandler
+	Rumor           MethodHandler
+}
+
+type Handler struct {
+	handlers MethodHandlers
+}
+
+func New(handlers MethodHandlers) *Handler {
+	return &Handler{
+		handlers: handlers,
+	}
+}
+
+func (h *Handler) Handle(socket socket.Socket, msg []byte) error {
 	var queryBase query.Base
 
 	err := json.Unmarshal(msg, &queryBase)
@@ -20,21 +44,21 @@ func HandleQuery(socket socket.Socket, msg []byte) error {
 
 	switch queryBase.Method {
 	case query.MethodCatchUp:
-		id, err = handleCatchUp(socket, msg)
+		id, err = h.handlers.Catchup.Handle(socket, msg)
 	case query.MethodGetMessagesById:
-		id, err = handleGetMessagesByID(socket, msg)
+		id, err = h.handlers.GetMessagesbyid.Handle(socket, msg)
 	case query.MethodGreetServer:
-		err = handleGreetServer(socket, msg)
+		_, err = h.handlers.Greetserver.Handle(socket, msg)
 	case query.MethodHeartbeat:
-		err = handleHeartbeat(socket, msg)
+		_, err = h.handlers.Heartbeat.Handle(socket, msg)
 	case query.MethodPublish:
-		id, err = handlePublish(socket, msg)
+		id, err = h.handlers.Publish.Handle(socket, msg)
 	case query.MethodSubscribe:
-		id, err = handleSubscribe(socket, msg)
+		id, err = h.handlers.Subscribe.Handle(socket, msg)
 	case query.MethodUnsubscribe:
-		id, err = handleUnsubscribe(socket, msg)
+		id, err = h.handlers.Unsubscribe.Handle(socket, msg)
 	case query.MethodRumor:
-		id, err = handleRumor(socket, msg)
+		id, err = h.handlers.Rumor.Handle(socket, msg)
 	default:
 		err = errors.NewInvalidActionError("unexpected method: '%s'", queryBase.Method)
 	}
