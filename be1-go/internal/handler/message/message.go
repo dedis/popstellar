@@ -56,11 +56,9 @@ func (h *Handler) Handle(channelPath string, msg message.Message, fromRumor bool
 	if err != nil {
 		return err
 	}
-	
 	if msgAlreadyExists && fromRumor {
 		return nil
 	}
-	
 	if msgAlreadyExists {
 		return errors.NewDuplicateResourceError("message %s was already received", msg.MessageID)
 	}
