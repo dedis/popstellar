@@ -43,7 +43,6 @@ final case class Monitor(
   // Monitor is self-contained,
   // To that end it doesn't know the ref of the connectionMediator
   private var connectionMediatorRef = ActorRef.noSender
-  private var gossipManagerRef = ActorRef.noSender
 
   private var fileMonitor: FileMonitor = _
 
@@ -89,10 +88,6 @@ final case class Monitor(
       connectionMediatorRef = sender()
       fileMonitor = new FileMonitor(this.self)
       new Thread(fileMonitor).start()
-
-    case GossipManager.Ping() =>
-      log.info("Received GossipManager Ping")
-      gossipManagerRef = sender()
 
     case msg: ConnectionMediator.ConnectTo =>
       connectionMediatorRef ! msg
