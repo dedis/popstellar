@@ -1,4 +1,4 @@
-package channel
+package election
 
 import (
 	"encoding/base64"
@@ -16,7 +16,20 @@ import (
 	"testing"
 )
 
+const (
+	ownerPubBuf64 = "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
+	wrongSender   = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
+)
+
 func Test_handleChannelElection(t *testing.T) {
+	type input struct {
+		name        string
+		channelPath string
+		msg         message.Message
+		isError     bool
+		contains    string
+	}
+
 	var args []input
 
 	subs := types.NewSubscribers()
@@ -38,7 +51,7 @@ func Test_handleChannelElection(t *testing.T) {
 
 	conf := types.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
-	election := createElectionHandler(conf, subs, db, schema)
+	election := CreateHandler(conf, subs, db, schema)
 
 	laoID := base64.URLEncoding.EncodeToString([]byte("laoID"))
 	electionID := base64.URLEncoding.EncodeToString([]byte("electionID"))
@@ -392,7 +405,7 @@ func Test_handleChannelElection(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			err = election.handle(arg.channelPath, arg.msg)
+			err = election.Handle(arg.channelPath, arg.msg)
 			if arg.isError {
 				require.Error(t, err, arg.contains)
 			} else {

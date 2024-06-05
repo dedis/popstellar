@@ -1,4 +1,4 @@
-package channel
+package root
 
 import (
 	"encoding/base64"
@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/crypto"
+	message2 "popstellar/internal/handler/message"
 	"popstellar/internal/message/query/method/message"
 	mock2 "popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
@@ -16,21 +17,20 @@ import (
 )
 
 const (
-	// wrongSender A public key different from the owner public key
-	wrongSender  = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
-	goodLaoName  = "laoName"
-	wrongLaoName = "wrongLaoName"
+	ownerPubBuf64 = "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
+	wrongSender   = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
+	goodLaoName   = "laoName"
+	wrongLaoName  = "wrongLaoName"
 )
 
-type input struct {
-	name        string
-	channelPath string
-	msg         message.Message
-	isError     bool
-	contains    string
-}
-
 func Test_handleChannelRoot(t *testing.T) {
+	type input struct {
+		name        string
+		channelPath string
+		msg         message.Message
+		isError     bool
+		contains    string
+	}
 
 	organizerBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
 	require.NoError(t, err)
@@ -52,7 +52,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	rootHandler := createRootHandler(conf, db, subs, peers, schema)
+	rootHandler := New(conf, db, subs, peers, schema)
 
 	var args []input
 
@@ -102,7 +102,7 @@ func Test_handleChannelRoot(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			err = rootHandler.handle("", arg.msg)
+			err = rootHandler.Handle("", arg.msg)
 			if arg.isError {
 				require.Error(t, err, arg.contains)
 			} else {
@@ -128,13 +128,13 @@ func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockReposi
 		organizerBuf, err := base64.URLEncoding.DecodeString(organizer)
 		require.NoError(t, err)
 		channels := map[string]string{
-			laoPath:                      LaoType,
-			laoPath + Social + Chirps:    ChirpType,
-			laoPath + Social + Reactions: ReactionType,
-			laoPath + Consensus:          ConsensusType,
-			laoPath + Coin:               CoinType,
-			laoPath + Auth:               AuthType,
-			laoPath + Federation:         FederationType,
+			laoPath:                      message2.LaoType,
+			laoPath + Social + Chirps:    message2.ChirpType,
+			laoPath + Social + Reactions: message2.ReactionType,
+			laoPath + Consensus:          message2.ConsensusType,
+			laoPath + Coin:               message2.CoinType,
+			laoPath + Auth:               message2.AuthType,
+			laoPath + Federation:         message2.FederationType,
 		}
 		mockRepository.On("StoreLaoWithLaoGreet",
 			channels,

@@ -1,4 +1,4 @@
-package channel
+package federation
 
 import (
 	"crypto/rand"
@@ -27,7 +27,7 @@ const (
 	channelPattern = "/root/%s/federation"
 )
 
-type federationHandler struct {
+type Handler struct {
 	db     repository.FederationRepository
 	subs   repository.SubscriptionManager
 	socket repository.SocketManager
@@ -35,9 +35,9 @@ type federationHandler struct {
 	schema *validation.SchemaValidator
 }
 
-func createFederationHandler(db repository.FederationRepository, subs repository.SubscriptionManager,
-	socket repository.SocketManager, hub repository.HubManager, schema *validation.SchemaValidator) *federationHandler {
-	return &federationHandler{
+func New(db repository.FederationRepository, subs repository.SubscriptionManager,
+	socket repository.SocketManager, hub repository.HubManager, schema *validation.SchemaValidator) *Handler {
+	return &Handler{
 		db:     db,
 		subs:   subs,
 		socket: socket,
@@ -46,7 +46,7 @@ func createFederationHandler(db repository.FederationRepository, subs repository
 	}
 }
 
-func (h *federationHandler) handle(channelPath string, msg message.Message) error {
+func (h *Handler) Handle(channelPath string, msg message.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
@@ -78,7 +78,7 @@ func (h *federationHandler) handle(channelPath string, msg message.Message) erro
 	case messagedata.FederationActionResult:
 		err = h.handleResult(msg, channelPath)
 	default:
-		err = errors.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
+		err = errors.NewInvalidMessageFieldError("failed to Handle %s#%s, invalid object#action", object, action)
 	}
 
 	return err
@@ -87,7 +87,7 @@ func (h *federationHandler) handle(channelPath string, msg message.Message) erro
 // handleRequestChallenge expects the sender to be the organizer of the lao,
 // a challenge message is then stored and broadcast on the same channelPath.
 // The FederationChallengeRequest message is neither stored nor broadcast
-func (h *federationHandler) handleRequestChallenge(msg message.Message, channelPath string) error {
+func (h *Handler) handleRequestChallenge(msg message.Message, channelPath string) error {
 	var requestChallenge messagedata.FederationChallengeRequest
 	err := msg.UnmarshalData(&requestChallenge)
 	if err != nil {
@@ -132,7 +132,7 @@ func (h *federationHandler) handleRequestChallenge(msg message.Message, channelP
 
 // handleExpect checks that the message is from the local organizer and that
 // it contains a valid challenge, then stores the msg
-func (h *federationHandler) handleExpect(msg message.Message, channelPath string) error {
+func (h *Handler) handleExpect(msg message.Message, channelPath string) error {
 	var federationExpect messagedata.FederationExpect
 	err := msg.UnmarshalData(&federationExpect)
 	if err != nil {
@@ -181,7 +181,7 @@ func (h *federationHandler) handleExpect(msg message.Message, channelPath string
 // handleInit checks that the message is from the local organizer and that
 // it contains a valid challenge, then stores the msg,
 // connect to the server and send the embedded challenge
-func (h *federationHandler) handleInit(msg message.Message, channelPath string) error {
+func (h *Handler) handleInit(msg message.Message, channelPath string) error {
 	var federationInit messagedata.FederationInit
 	err := msg.UnmarshalData(&federationInit)
 	if err != nil {
@@ -254,7 +254,7 @@ func (h *federationHandler) handleInit(msg message.Message, channelPath string) 
 	return h.publishTo(federationInit.ChallengeMsg, remoteChannel)
 }
 
-func (h *federationHandler) handleChallenge(msg message.Message, channelPath string) error {
+func (h *Handler) handleChallenge(msg message.Message, channelPath string) error {
 	var federationChallenge messagedata.FederationChallenge
 	err := msg.UnmarshalData(&federationChallenge)
 	if err != nil {
@@ -310,7 +310,7 @@ func (h *federationHandler) handleChallenge(msg message.Message, channelPath str
 	return h.subs.BroadcastToAllClients(resultMsg, channelPath)
 }
 
-func (h *federationHandler) handleResult(msg message.Message, channelPath string) error {
+func (h *Handler) handleResult(msg message.Message, channelPath string) error {
 	var result messagedata.FederationResult
 	err := msg.UnmarshalData(&result)
 	if err != nil {
@@ -364,7 +364,7 @@ func (h *federationHandler) handleResult(msg message.Message, channelPath string
 	return h.subs.BroadcastToAllClients(msg, channelPath)
 }
 
-func (h *federationHandler) getOrganizerPk(federationChannel string) (string, error) {
+func (h *Handler) getOrganizerPk(federationChannel string) (string, error) {
 	laoChannel := strings.TrimSuffix(federationChannel, "/federation")
 
 	organizerPk, err := h.db.GetOrganizerPubKey(laoChannel)
@@ -380,7 +380,7 @@ func (h *federationHandler) getOrganizerPk(federationChannel string) (string, er
 	return base64.URLEncoding.EncodeToString(organizerPkBytes), nil
 }
 
-func (h *federationHandler) getServerPk() (string, error) {
+func (h *Handler) getServerPk() (string, error) {
 	serverPk, _, err := h.db.GetServerKeys()
 	if err != nil {
 		return "", err
@@ -394,7 +394,7 @@ func (h *federationHandler) getServerPk() (string, error) {
 	return base64.URLEncoding.EncodeToString(serverPkBytes), nil
 }
 
-func (h *federationHandler) verifyLocalOrganizer(msg message.Message, channelPath string) error {
+func (h *Handler) verifyLocalOrganizer(msg message.Message, channelPath string) error {
 	organizePk, err := h.getOrganizerPk(channelPath)
 	if err != nil {
 		return err
@@ -407,7 +407,7 @@ func (h *federationHandler) verifyLocalOrganizer(msg message.Message, channelPat
 	return nil
 }
 
-func (h *federationHandler) connectTo(serverAddress string) (socket.Socket, error) {
+func (h *Handler) connectTo(serverAddress string) (socket.Socket, error) {
 	ws, _, err := websocket.DefaultDialer.Dial(serverAddress, nil)
 	if err != nil {
 		return nil, errors.NewInternalServerError("failed to connect to server %s: %v", serverAddress, err)
@@ -428,7 +428,7 @@ func (h *federationHandler) connectTo(serverAddress string) (socket.Socket, erro
 	return client, nil
 }
 
-func (h *federationHandler) createMessage(data messagedata.MessageData) (message.Message, error) {
+func (h *Handler) createMessage(data messagedata.MessageData) (message.Message, error) {
 
 	dataBytes, err := json.Marshal(data)
 	if err != nil {
@@ -464,7 +464,7 @@ func (h *federationHandler) createMessage(data messagedata.MessageData) (message
 	return msg, nil
 }
 
-func (h *federationHandler) publishTo(msg message.Message, channelPath string) error {
+func (h *Handler) publishTo(msg message.Message, channelPath string) error {
 	publishMsg := method.Publish{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{

@@ -1,10 +1,11 @@
-package channel
+package chirp
 
 import (
 	"encoding/base64"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/crypto"
+	"popstellar/internal/handler/messageData/root"
 	"popstellar/internal/message/query/method/message"
 	mock2 "popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
@@ -16,7 +17,17 @@ import (
 	"time"
 )
 
+const ownerPubBuf64 = "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
+
 func Test_handleChannelChirp(t *testing.T) {
+	type input struct {
+		name        string
+		channelPath string
+		msg         message.Message
+		isError     bool
+		contains    string
+	}
+
 	subs := types.NewSubscribers()
 
 	db := mock2.NewRepository(t)
@@ -36,7 +47,7 @@ func Test_handleChannelChirp(t *testing.T) {
 
 	conf := types.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
-	chirp := createChripHandler(conf, subs, db, schema)
+	chirp := New(conf, subs, db, schema)
 
 	sender := "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
 	wrongSender := "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sK="
@@ -120,7 +131,7 @@ func Test_handleChannelChirp(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			err = chirp.handle(arg.channelPath, arg.msg)
+			err = chirp.Handle(arg.channelPath, arg.msg)
 			if arg.isError {
 				require.Error(t, err, arg.contains)
 			} else {
@@ -143,7 +154,7 @@ func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int
 		return msg
 	}
 
-	chirpNotifyChannelID, _ := strings.CutSuffix(channelID, Social+"/"+msg.Sender)
+	chirpNotifyChannelID, _ := strings.CutSuffix(channelID, root.Social+"/"+msg.Sender)
 
 	err = subs.AddChannel(chirpNotifyChannelID)
 	require.NoError(t, err)
@@ -168,7 +179,7 @@ func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID st
 
 	db.On("HasMessage", chirpID).Return(true, nil)
 
-	chirpNotifyChannelID, _ := strings.CutSuffix(channelID, Social+"/"+msg.Sender)
+	chirpNotifyChannelID, _ := strings.CutSuffix(channelID, root.Social+"/"+msg.Sender)
 
 	err = subs.AddChannel(chirpNotifyChannelID)
 	require.NoError(t, err)

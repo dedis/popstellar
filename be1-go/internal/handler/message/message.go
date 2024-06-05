@@ -1,4 +1,4 @@
-package channel
+package message
 
 import (
 	"popstellar/internal/errors"
@@ -20,26 +20,26 @@ const (
 	FederationType   = "federation"
 )
 
-type channelSubHandler interface {
+type messageDataHandler interface {
 	handle(channelPath string, msg message.Message) error
 }
 
-type channelSubHandlers struct {
-	root       channelSubHandler
-	lao        channelSubHandler
-	election   channelSubHandler
-	chirp      channelSubHandler
-	reaction   channelSubHandler
-	coin       channelSubHandler
-	federation channelSubHandler
+type messageDataHandlers struct {
+	root       messageDataHandler
+	lao        messageDataHandler
+	election   messageDataHandler
+	chirp      messageDataHandler
+	reaction   messageDataHandler
+	coin       messageDataHandler
+	federation messageDataHandler
 }
 
 type Handler struct {
 	db       repository.ChannelRepository
-	handlers channelSubHandlers
+	handlers messageDataHandlers
 }
 
-func CreateHandler(db repository.Repository, handlers channelSubHandlers) *Handler {
+func New(db repository.Repository, handlers messageDataHandlers) *Handler {
 	return &Handler{
 		db:       db,
 		handlers: handlers,

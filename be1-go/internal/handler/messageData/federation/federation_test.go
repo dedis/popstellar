@@ -1,4 +1,4 @@
-package channel
+package federation
 
 import (
 	"database/sql"
@@ -13,6 +13,7 @@ import (
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/query/method/message"
 	mock2 "popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
 	"popstellar/internal/types"
@@ -22,6 +23,14 @@ import (
 )
 
 func Test_handleChannelFederation(t *testing.T) {
+	type input struct {
+		name        string
+		channelPath string
+		msg         message.Message
+		isError     bool
+		contains    string
+	}
+
 	var args []input
 
 	db := mock2.NewRepository(t)
@@ -31,7 +40,7 @@ func Test_handleChannelFederation(t *testing.T) {
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := createFederationHandler(db, subs, socket, hub, schema)
+	federationHandler := New(db, subs, socket, hub, schema)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, organizer2Sk, _ := generator.GenerateKeyPair(t)
@@ -300,7 +309,7 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			err = federationHandler.handle(arg.channelPath, arg.msg)
+			err = federationHandler.Handle(arg.channelPath, arg.msg)
 			if arg.isError {
 				require.Error(t, err, arg.contains)
 			} else {
@@ -318,7 +327,7 @@ func Test_handleRequestChallenge(t *testing.T) {
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := createFederationHandler(db, subs, socket, hub, schema)
+	federationHandler := New(db, subs, socket, hub, schema)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
@@ -370,7 +379,7 @@ func Test_handleFederationExpect(t *testing.T) {
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := createFederationHandler(db, subs, socket, hub, schema)
+	federationHandler := New(db, subs, socket, hub, schema)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, _, _ := generator.GenerateKeyPair(t)
@@ -427,7 +436,7 @@ func Test_handleFederationInit(t *testing.T) {
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := createFederationHandler(db, subs, socket, hub, schema)
+	federationHandler := New(db, subs, socket, hub, schema)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, _, _ := generator.GenerateKeyPair(t)
@@ -506,7 +515,7 @@ func Test_handleFederationChallenge(t *testing.T) {
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := createFederationHandler(db, subs, socket, hub, schema)
+	federationHandler := New(db, subs, socket, hub, schema)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, organizer2Sk, _ := generator.GenerateKeyPair(t)
@@ -610,7 +619,7 @@ func Test_handleFederationResult(t *testing.T) {
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := createFederationHandler(db, subs, socket, hub, schema)
+	federationHandler := New(db, subs, socket, hub, schema)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, organizer2Sk, _ := generator.GenerateKeyPair(t)

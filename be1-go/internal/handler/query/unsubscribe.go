@@ -3,7 +3,7 @@ package query
 import (
 	"encoding/json"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/channel"
+	"popstellar/internal/handler/messageData/root"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/singleton/state"
@@ -16,7 +16,7 @@ func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, error) {
 		return nil, errors.NewJsonUnmarshalError(err.Error())
 	}
 
-	if channel.Root == unsubscribe.Params.Channel {
+	if root.Root == unsubscribe.Params.Channel {
 		return &unsubscribe.ID, errors.NewAccessDeniedError("cannot Unsubscribe from root channel")
 	}
 

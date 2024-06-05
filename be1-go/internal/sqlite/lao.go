@@ -7,7 +7,7 @@ import (
 	"errors"
 	"go.dedis.ch/kyber/v3"
 	poperrors "popstellar/internal/errors"
-	"popstellar/internal/handler/channel"
+	message2 "popstellar/internal/handler/message"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"time"
@@ -153,7 +153,7 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg messa
 	}
 
 	for _, channelPath := range channels {
-		_, err = tx.Exec(insertChannel, channelPath, channelTypeToID[channel.ChirpType], laoPath)
+		_, err = tx.Exec(insertChannel, channelPath, channelTypeToID[message2.ChirpType], laoPath)
 		if err != nil {
 			return poperrors.NewDatabaseInsertErrorMsg("channel %s: %v", channelPath, err)
 		}
@@ -200,7 +200,7 @@ func (s *SQLite) storeElectionHelper(
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("relation election create message and lao channel: %v", err)
 	}
-	_, err = tx.Exec(insertChannel, electionPath, channelTypeToID[channel.ElectionType], laoPath)
+	_, err = tx.Exec(insertChannel, electionPath, channelTypeToID[message2.ElectionType], laoPath)
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("election channel: %v", err)
 	}

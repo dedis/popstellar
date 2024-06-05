@@ -1,10 +1,11 @@
-package channel
+package root
 
 import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
+	message2 "popstellar/internal/handler/message"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/repository"
@@ -23,7 +24,7 @@ const (
 	Federation = "/federation"
 )
 
-type rootHandler struct {
+type Handler struct {
 	config repository.ConfigManager
 	db     repository.RootRepository
 	subs   repository.SubscriptionManager
@@ -31,9 +32,9 @@ type rootHandler struct {
 	schema *validation.SchemaValidator
 }
 
-func createRootHandler(config repository.ConfigManager, db repository.RootRepository,
-	subs repository.SubscriptionManager, peers repository.PeerManager, schema *validation.SchemaValidator) *rootHandler {
-	return &rootHandler{
+func New(config repository.ConfigManager, db repository.RootRepository,
+	subs repository.SubscriptionManager, peers repository.PeerManager, schema *validation.SchemaValidator) *Handler {
+	return &Handler{
 		config: config,
 		db:     db,
 		subs:   subs,
@@ -42,7 +43,7 @@ func createRootHandler(config repository.ConfigManager, db repository.RootReposi
 	}
 }
 
-func (h *rootHandler) handle(_ string, msg message.Message) error {
+func (h *Handler) Handle(_ string, msg message.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return errors.NewDecodeStringError("failed to decode message data: %v", err)
@@ -62,13 +63,13 @@ func (h *rootHandler) handle(_ string, msg message.Message) error {
 	case messagedata.LAOObject + "#" + messagedata.LAOActionCreate:
 		err = h.handleLaoCreate(msg)
 	default:
-		err = errors.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
+		err = errors.NewInvalidMessageFieldError("failed to Handle %s#%s, invalid object#action", object, action)
 	}
 
 	return err
 }
 
-func (h *rootHandler) handleLaoCreate(msg message.Message) error {
+func (h *Handler) handleLaoCreate(msg message.Message) error {
 	var laoCreate messagedata.LaoCreate
 	err := msg.UnmarshalData(&laoCreate)
 	if err != nil {
@@ -90,7 +91,7 @@ func (h *rootHandler) handleLaoCreate(msg message.Message) error {
 	return h.createLaoAndChannels(msg, laoGreetMsg, organizerPubBuf, laoPath)
 }
 
-func (h *rootHandler) verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, error) {
+func (h *Handler) verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, error) {
 
 	ok, err := h.db.HasChannel(laoPath)
 	if err != nil {
@@ -142,15 +143,15 @@ func (h *rootHandler) verifyLaoCreation(msg message.Message, laoCreate messageda
 	return organizerPubBuf, nil
 }
 
-func (h *rootHandler) createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []byte, laoPath string) error {
+func (h *Handler) createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []byte, laoPath string) error {
 	channels := map[string]string{
-		laoPath:                      LaoType,
-		laoPath + Social + Chirps:    ChirpType,
-		laoPath + Social + Reactions: ReactionType,
-		laoPath + Consensus:          ConsensusType,
-		laoPath + Coin:               CoinType,
-		laoPath + Auth:               AuthType,
-		laoPath + Federation:         FederationType,
+		laoPath:                      message2.LaoType,
+		laoPath + Social + Chirps:    message2.ChirpType,
+		laoPath + Social + Reactions: message2.ReactionType,
+		laoPath + Consensus:          message2.ConsensusType,
+		laoPath + Coin:               message2.CoinType,
+		laoPath + Auth:               message2.AuthType,
+		laoPath + Federation:         message2.FederationType,
 	}
 
 	err := h.db.StoreLaoWithLaoGreet(channels, laoPath, organizerPubBuf, msg, laoGreetMsg)
@@ -168,7 +169,7 @@ func (h *rootHandler) createLaoAndChannels(msg, laoGreetMsg message.Message, org
 	return nil
 }
 
-func (h *rootHandler) createLaoGreet(organizerBuf []byte, laoID string) (message.Message, error) {
+func (h *Handler) createLaoGreet(organizerBuf []byte, laoID string) (message.Message, error) {
 	peersInfo := h.peers.GetAllPeersInfo()
 
 	knownPeers := make([]messagedata.Peer, 0, len(peersInfo))

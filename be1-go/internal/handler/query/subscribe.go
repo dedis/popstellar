@@ -2,9 +2,9 @@ package query
 
 import (
 	"encoding/json"
+	"popstellar/internal/handler/messageData/root"
 
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/channel"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/singleton/state"
@@ -17,7 +17,7 @@ func handleSubscribe(socket socket.Socket, msg []byte) (*int, error) {
 		return nil, errors.NewJsonUnmarshalError(err.Error())
 	}
 
-	if channel.Root == subscribe.Params.Channel {
+	if root.Root == subscribe.Params.Channel {
 		return &subscribe.ID, errors.NewAccessDeniedError("cannot Subscribe to root channel")
 	}
 

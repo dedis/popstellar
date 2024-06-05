@@ -1,7 +1,7 @@
 package sqlite
 
 import (
-	"popstellar/internal/handler/channel"
+	"popstellar/internal/handler/message"
 )
 
 const (
@@ -9,31 +9,31 @@ const (
 )
 
 var channelTypeToID = map[string]string{
-	channel.RootType:         "1",
-	channel.LaoType:          "2",
-	channel.ElectionType:     "3",
-	channel.ChirpType:        "4",
-	channel.ReactionType:     "5",
-	channel.ConsensusType:    "6",
-	channel.PopChaType:       "7",
-	channel.CoinType:         "8",
-	channel.AuthType:         "9",
-	channel.GeneralChirpType: "10",
-	channel.FederationType:   "11",
+	message.RootType:         "1",
+	message.LaoType:          "2",
+	message.ElectionType:     "3",
+	message.ChirpType:        "4",
+	message.ReactionType:     "5",
+	message.ConsensusType:    "6",
+	message.PopChaType:       "7",
+	message.CoinType:         "8",
+	message.AuthType:         "9",
+	message.GeneralChirpType: "10",
+	message.FederationType:   "11",
 }
 
 var channelTypes = []string{
-	channel.RootType,
-	channel.LaoType,
-	channel.ElectionType,
-	channel.ChirpType,
-	channel.ReactionType,
-	channel.ConsensusType,
-	channel.PopChaType,
-	channel.CoinType,
-	channel.AuthType,
-	channel.GeneralChirpType,
-	channel.FederationType,
+	message.RootType,
+	message.LaoType,
+	message.ElectionType,
+	message.ChirpType,
+	message.ReactionType,
+	message.ConsensusType,
+	message.PopChaType,
+	message.CoinType,
+	message.AuthType,
+	message.GeneralChirpType,
+	message.FederationType,
 }
 
 const foreignKeyOff = `PRAGMA foreign_keys = OFF;`

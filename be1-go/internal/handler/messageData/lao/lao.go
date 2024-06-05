@@ -1,4 +1,4 @@
-package channel
+package lao
 
 import (
 	"encoding/base64"
@@ -6,6 +6,7 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
+	"popstellar/internal/handler/messageData/root"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/repository"
@@ -13,16 +14,16 @@ import (
 	"strings"
 )
 
-type laoHandler struct {
+type Handler struct {
 	conf   repository.ConfigManager
 	subs   repository.SubscriptionManager
 	db     repository.LAORepository
 	schema *validation.SchemaValidator
 }
 
-func createLaoHandler(conf repository.ConfigManager, subs repository.SubscriptionManager,
-	db repository.LAORepository, schema *validation.SchemaValidator) *laoHandler {
-	return &laoHandler{
+func New(conf repository.ConfigManager, subs repository.SubscriptionManager,
+	db repository.LAORepository, schema *validation.SchemaValidator) *Handler {
+	return &Handler{
 		conf:   conf,
 		subs:   subs,
 		db:     db,
@@ -30,13 +31,13 @@ func createLaoHandler(conf repository.ConfigManager, subs repository.Subscriptio
 	}
 }
 
-func (l *laoHandler) handle(channelPath string, msg message.Message) error {
+func (h *Handler) Handle(channelPath string, msg message.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
 	}
 
-	err = l.schema.VerifyJSON(jsonData, validation.Data)
+	err = h.schema.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
 		return err
 	}
@@ -50,18 +51,18 @@ func (l *laoHandler) handle(channelPath string, msg message.Message) error {
 	switch object + "#" + action {
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionClose:
 		storeMessage = false
-		err = l.handleRollCallClose(msg, channelPath)
+		err = h.handleRollCallClose(msg, channelPath)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionCreate:
-		err = l.handleRollCallCreate(msg, channelPath)
+		err = h.handleRollCallCreate(msg, channelPath)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionOpen:
-		err = l.handleRollCallOpen(msg, channelPath)
+		err = h.handleRollCallOpen(msg, channelPath)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionReOpen:
-		err = l.handleRollCallReOpen(msg, channelPath)
+		err = h.handleRollCallReOpen(msg, channelPath)
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionSetup:
 		storeMessage = false
-		err = l.handleElectionSetup(msg, channelPath)
+		err = h.handleElectionSetup(msg, channelPath)
 	default:
-		err = errors.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
+		err = errors.NewInvalidMessageFieldError("failed to Handle %s#%s, invalid object#action", object, action)
 	}
 
 	if err != nil {
@@ -69,16 +70,16 @@ func (l *laoHandler) handle(channelPath string, msg message.Message) error {
 	}
 
 	if storeMessage {
-		err = l.db.StoreMessageAndData(channelPath, msg)
+		err = h.db.StoreMessageAndData(channelPath, msg)
 		if err != nil {
 			return err
 		}
 	}
 
-	return l.subs.BroadcastToAllClients(msg, channelPath)
+	return h.subs.BroadcastToAllClients(msg, channelPath)
 }
 
-func (l *laoHandler) handleRollCallCreate(msg message.Message, channelPath string) error {
+func (h *Handler) handleRollCallCreate(msg message.Message, channelPath string) error {
 	var rollCallCreate messagedata.RollCallCreate
 	err := msg.UnmarshalData(&rollCallCreate)
 	if err != nil {
@@ -88,7 +89,7 @@ func (l *laoHandler) handleRollCallCreate(msg message.Message, channelPath strin
 	return rollCallCreate.Verify(channelPath)
 }
 
-func (l *laoHandler) handleRollCallOpen(msg message.Message, channelPath string) error {
+func (h *Handler) handleRollCallOpen(msg message.Message, channelPath string) error {
 	var rollCallOpen messagedata.RollCallOpen
 	err := msg.UnmarshalData(&rollCallOpen)
 	if err != nil {
@@ -100,7 +101,7 @@ func (l *laoHandler) handleRollCallOpen(msg message.Message, channelPath string)
 		return err
 	}
 
-	ok, err := l.db.CheckPrevCreateOrCloseID(channelPath, rollCallOpen.Opens)
+	ok, err := h.db.CheckPrevCreateOrCloseID(channelPath, rollCallOpen.Opens)
 	if err != nil {
 		return err
 	} else if !ok {
@@ -110,17 +111,17 @@ func (l *laoHandler) handleRollCallOpen(msg message.Message, channelPath string)
 	return nil
 }
 
-func (l *laoHandler) handleRollCallReOpen(msg message.Message, channelPath string) error {
+func (h *Handler) handleRollCallReOpen(msg message.Message, channelPath string) error {
 	var rollCallReOpen messagedata.RollCallReOpen
 	err := msg.UnmarshalData(&rollCallReOpen)
 	if err != nil {
 		return err
 	}
 
-	return l.handleRollCallOpen(msg, channelPath)
+	return h.handleRollCallOpen(msg, channelPath)
 }
 
-func (l *laoHandler) handleRollCallClose(msg message.Message, channelPath string) error {
+func (h *Handler) handleRollCallClose(msg message.Message, channelPath string) error {
 	var rollCallClose messagedata.RollCallClose
 	err := msg.UnmarshalData(&rollCallClose)
 	if err != nil {
@@ -132,22 +133,22 @@ func (l *laoHandler) handleRollCallClose(msg message.Message, channelPath string
 		return err
 	}
 
-	ok, err := l.db.CheckPrevOpenOrReopenID(channelPath, rollCallClose.Closes)
+	ok, err := h.db.CheckPrevOpenOrReopenID(channelPath, rollCallClose.Closes)
 	if err != nil {
 		return err
 	} else if !ok {
 		return errors.NewInvalidMessageFieldError("previous id does not exist")
 	}
 
-	newChannels, err := l.createNewAttendeeChannels(channelPath, rollCallClose)
+	newChannels, err := h.createNewAttendeeChannels(channelPath, rollCallClose)
 	if err != nil {
 		return err
 	}
 
-	return l.db.StoreRollCallClose(newChannels, channelPath, msg)
+	return h.db.StoreRollCallClose(newChannels, channelPath, msg)
 }
 
-func (l *laoHandler) createNewAttendeeChannels(channelPath string, rollCallClose messagedata.RollCallClose) ([]string, error) {
+func (h *Handler) createNewAttendeeChannels(channelPath string, rollCallClose messagedata.RollCallClose) ([]string, error) {
 	channels := make([]string, 0, len(rollCallClose.Attendees))
 
 	for _, popToken := range rollCallClose.Attendees {
@@ -156,18 +157,18 @@ func (l *laoHandler) createNewAttendeeChannels(channelPath string, rollCallClose
 			return nil, errors.NewInvalidMessageFieldError("failed to decode poptoken: %v", err)
 		}
 
-		chirpingChannelPath := channelPath + Social + "/" + popToken
+		chirpingChannelPath := channelPath + root.Social + "/" + popToken
 		channels = append(channels, chirpingChannelPath)
 	}
 
 	newChannels := make([]string, 0)
 	for _, channelPath := range channels {
-		alreadyExists := l.subs.HasChannel(channelPath)
+		alreadyExists := h.subs.HasChannel(channelPath)
 		if alreadyExists {
 			continue
 		}
 
-		err := l.subs.AddChannel(channelPath)
+		err := h.subs.AddChannel(channelPath)
 		if err != nil {
 			return nil, err
 		}
@@ -178,19 +179,19 @@ func (l *laoHandler) createNewAttendeeChannels(channelPath string, rollCallClose
 	return newChannels, nil
 }
 
-func (l *laoHandler) handleElectionSetup(msg message.Message, channelPath string) error {
+func (h *Handler) handleElectionSetup(msg message.Message, channelPath string) error {
 	var electionSetup messagedata.ElectionSetup
 	err := msg.UnmarshalData(&electionSetup)
 	if err != nil {
 		return err
 	}
 
-	err = l.verifySenderLao(channelPath, msg)
+	err = h.verifySenderLao(channelPath, msg)
 	if err != nil {
 		return err
 	}
 
-	laoID, _ := strings.CutPrefix(channelPath, RootPrefix)
+	laoID, _ := strings.CutPrefix(channelPath, root.RootPrefix)
 
 	err = electionSetup.Verify(laoID)
 	if err != nil {
@@ -204,10 +205,10 @@ func (l *laoHandler) handleElectionSetup(msg message.Message, channelPath string
 		}
 	}
 
-	return l.storeElection(msg, electionSetup, channelPath)
+	return h.storeElection(msg, electionSetup, channelPath)
 }
 
-func (l *laoHandler) verifySenderLao(channelPath string, msg message.Message) error {
+func (h *Handler) verifySenderLao(channelPath string, msg message.Message) error {
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode sender public key: %v", err)
@@ -219,7 +220,7 @@ func (l *laoHandler) verifySenderLao(channelPath string, msg message.Message) er
 		return errors.NewInvalidMessageFieldError("failed to unmarshal sender public key: %v", err)
 	}
 
-	organizePubKey, err := l.db.GetOrganizerPubKey(channelPath)
+	organizePubKey, err := h.db.GetOrganizerPubKey(channelPath)
 	if err != nil {
 		return err
 	}
@@ -231,31 +232,31 @@ func (l *laoHandler) verifySenderLao(channelPath string, msg message.Message) er
 	return nil
 }
 
-func (l *laoHandler) storeElection(msg message.Message, electionSetup messagedata.ElectionSetup, channelPath string) error {
-	electionPubKey, electionSecretKey := l.generateKeys()
+func (h *Handler) storeElection(msg message.Message, electionSetup messagedata.ElectionSetup, channelPath string) error {
+	electionPubKey, electionSecretKey := h.generateKeys()
 	electionPath := channelPath + "/" + electionSetup.ID
 
 	if electionSetup.Version == messagedata.SecretBallot {
-		electionKeyMsg, err := l.createElectionKey(electionSetup.ID, electionPubKey)
+		electionKeyMsg, err := h.createElectionKey(electionSetup.ID, electionPubKey)
 		if err != nil {
 			return err
 		}
 
-		err = l.db.StoreElectionWithElectionKey(channelPath, electionPath, electionPubKey, electionSecretKey, msg, electionKeyMsg)
+		err = h.db.StoreElectionWithElectionKey(channelPath, electionPath, electionPubKey, electionSecretKey, msg, electionKeyMsg)
 		if err != nil {
 			return err
 		}
 	} else {
-		err := l.db.StoreElection(channelPath, electionPath, electionPubKey, electionSecretKey, msg)
+		err := h.db.StoreElection(channelPath, electionPath, electionPubKey, electionSecretKey, msg)
 		if err != nil {
 			return err
 		}
 	}
 
-	return l.subs.AddChannel(electionPath)
+	return h.subs.AddChannel(electionPath)
 }
 
-func (l *laoHandler) createElectionKey(electionID string, electionPubKey kyber.Point) (message.Message, error) {
+func (h *Handler) createElectionKey(electionID string, electionPubKey kyber.Point) (message.Message, error) {
 	electionPubBuf, err := electionPubKey.MarshalBinary()
 	if err != nil {
 		return message.Message{}, errors.NewInternalServerError("failed to marshal election public key: %v", err)
@@ -274,12 +275,12 @@ func (l *laoHandler) createElectionKey(electionID string, electionPubKey kyber.P
 	}
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
 
-	serverPubBuf, err := l.conf.GetServerPublicKey().MarshalBinary()
+	serverPubBuf, err := h.conf.GetServerPublicKey().MarshalBinary()
 	if err != nil {
 		return message.Message{}, errors.NewInternalServerError("failed to unmarshall server secret key", err)
 	}
 
-	signatureBuf, err := l.conf.Sign(dataBuf)
+	signatureBuf, err := h.conf.Sign(dataBuf)
 	if err != nil {
 		return message.Message{}, err
 	}
@@ -298,7 +299,7 @@ func (l *laoHandler) createElectionKey(electionID string, electionPubKey kyber.P
 }
 
 // generateKeys generates and returns a key pair
-func (laoHandler) generateKeys() (kyber.Point, kyber.Scalar) {
+func (*Handler) generateKeys() (kyber.Point, kyber.Scalar) {
 	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	point := crypto.Suite.Point().Mul(secret, nil)
 	return point, secret

@@ -1,4 +1,4 @@
-package channel
+package coin
 
 import (
 	"encoding/base64"
@@ -15,7 +15,7 @@ import (
 	"testing"
 )
 
-const coinPath string = "../../validation/protocol/examples/messageData/coin"
+const coinPath string = "../../../validation/protocol/examples/messageData/coin"
 
 type inputTestHandleChannelCoin struct {
 	name      string
@@ -33,7 +33,7 @@ func Test_handleChannelCoin(t *testing.T) {
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	coin := createCoinHandler(subs, db, schema)
+	coin := New(subs, db, schema)
 
 	inputs := make([]inputTestHandleChannelCoin, 0)
 
@@ -97,7 +97,7 @@ func Test_handleChannelCoin(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			err := coin.handle(i.channelID, i.message)
+			err := coin.Handle(i.channelID, i.message)
 			if i.hasError {
 				require.Error(t, err)
 			} else {

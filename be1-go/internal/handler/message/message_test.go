@@ -1,4 +1,4 @@
-package channel
+package message
 
 import (
 	"encoding/base64"
@@ -11,10 +11,7 @@ import (
 	"time"
 )
 
-// the public key used in every lao_create json files in the test_data/root folder
-const ownerPubBuf64 = "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
-
-// nullChannelSubHandler is a struct that implements the channelSubHandler interface with no-op methods
+// nullChannelSubHandler is a struct that implements the messageDataHandler interface with no-op methods
 type nullChannelSubHandler struct{}
 
 // handle method for nullChannelSubHandler that always returns nil
@@ -25,7 +22,7 @@ func (n *nullChannelSubHandler) handle(_ string, _ message.Message) error {
 func Test_handleChannel(t *testing.T) {
 	db := mock.NewRepository(t)
 
-	subHandlers := channelSubHandlers{
+	subHandlers := messageDataHandlers{
 		root:       &nullChannelSubHandler{},
 		lao:        &nullChannelSubHandler{},
 		election:   &nullChannelSubHandler{},
@@ -35,7 +32,7 @@ func Test_handleChannel(t *testing.T) {
 		federation: &nullChannelSubHandler{},
 	}
 
-	channel := CreateHandler(db, subHandlers)
+	channel := New(db, subHandlers)
 
 	_, publicBuf, private, _ := generator.GenerateKeyPair(t)
 	sender := base64.URLEncoding.EncodeToString(publicBuf)

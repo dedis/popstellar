@@ -1,4 +1,4 @@
-package channel
+package election
 
 import (
 	"bytes"
@@ -21,16 +21,16 @@ const (
 	voteFlag = "Vote"
 )
 
-type electionHandler struct {
+type Handler struct {
 	conf   repository.ConfigManager
 	subs   repository.SubscriptionManager
 	db     repository.ElectionRepository
 	schema *validation.SchemaValidator
 }
 
-func createElectionHandler(conf repository.ConfigManager, subs repository.SubscriptionManager,
-	db repository.ElectionRepository, schema *validation.SchemaValidator) *electionHandler {
-	return &electionHandler{
+func CreateHandler(conf repository.ConfigManager, subs repository.SubscriptionManager,
+	db repository.ElectionRepository, schema *validation.SchemaValidator) *Handler {
+	return &Handler{
 		conf:   conf,
 		subs:   subs,
 		db:     db,
@@ -38,13 +38,13 @@ func createElectionHandler(conf repository.ConfigManager, subs repository.Subscr
 	}
 }
 
-func (e *electionHandler) handle(channelPath string, msg message.Message) error {
+func (h *Handler) Handle(channelPath string, msg message.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
 	}
 
-	err = e.schema.VerifyJSON(jsonData, validation.Data)
+	err = h.schema.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
 		return err
 	}
@@ -58,14 +58,14 @@ func (e *electionHandler) handle(channelPath string, msg message.Message) error 
 
 	switch object + "#" + action {
 	case messagedata.ElectionObject + "#" + messagedata.VoteActionCastVote:
-		err = e.handleVoteCastVote(msg, channelPath)
+		err = h.handleVoteCastVote(msg, channelPath)
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionOpen:
-		err = e.handleElectionOpen(msg, channelPath)
+		err = h.handleElectionOpen(msg, channelPath)
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionEnd:
-		err = e.handleElectionEnd(msg, channelPath)
+		err = h.handleElectionEnd(msg, channelPath)
 		storeMessage = false
 	default:
-		err = errors.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
+		err = errors.NewInvalidMessageFieldError("failed to Handle %s#%s, invalid object#action", object, action)
 	}
 
 	if err != nil {
@@ -73,7 +73,7 @@ func (e *electionHandler) handle(channelPath string, msg message.Message) error 
 	}
 
 	if storeMessage {
-		err = e.db.StoreMessageAndData(channelPath, msg)
+		err = h.db.StoreMessageAndData(channelPath, msg)
 		if err != nil {
 			return err
 		}
@@ -82,14 +82,14 @@ func (e *electionHandler) handle(channelPath string, msg message.Message) error 
 	return nil
 }
 
-func (e *electionHandler) handleVoteCastVote(msg message.Message, channelPath string) error {
+func (h *Handler) handleVoteCastVote(msg message.Message, channelPath string) error {
 	var voteCastVote messagedata.VoteCastVote
 	err := msg.UnmarshalData(&voteCastVote)
 	if err != nil {
 		return err
 	}
 
-	err = e.verifySenderElection(msg, channelPath, false)
+	err = h.verifySenderElection(msg, channelPath, false)
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,7 @@ func (e *electionHandler) handleVoteCastVote(msg message.Message, channelPath st
 	}
 
 	// verify VoteCastVote created after election createdAt
-	createdAt, err := e.db.GetElectionCreationTime(channelPath)
+	createdAt, err := h.db.GetElectionCreationTime(channelPath)
 	if err != nil {
 		return err
 	}
@@ -116,14 +116,14 @@ func (e *electionHandler) handleVoteCastVote(msg message.Message, channelPath st
 
 	// verify votes
 	for _, vote := range voteCastVote.Votes {
-		err = e.verifyVote(vote, channelPath, voteCastVote.Election)
+		err = h.verifyVote(vote, channelPath, voteCastVote.Election)
 		if err != nil {
 			return err
 		}
 	}
 
 	// Just store the vote cast if the election has ended because will not have any influence on the result
-	ended, err := e.db.IsElectionEnded(channelPath)
+	ended, err := h.db.IsElectionEnded(channelPath)
 	if err != nil {
 		return err
 	}
@@ -132,7 +132,7 @@ func (e *electionHandler) handleVoteCastVote(msg message.Message, channelPath st
 	}
 
 	// verify that the election is open
-	started, err := e.db.IsElectionStarted(channelPath)
+	started, err := h.db.IsElectionStarted(channelPath)
 	if err != nil {
 		return err
 	}
@@ -140,17 +140,17 @@ func (e *electionHandler) handleVoteCastVote(msg message.Message, channelPath st
 		return errors.NewInvalidMessageFieldError("election is not started")
 	}
 
-	return e.subs.BroadcastToAllClients(msg, channelPath)
+	return h.subs.BroadcastToAllClients(msg, channelPath)
 }
 
-func (e *electionHandler) handleElectionOpen(msg message.Message, channelPath string) error {
+func (h *Handler) handleElectionOpen(msg message.Message, channelPath string) error {
 	var electionOpen messagedata.ElectionOpen
 	err := msg.UnmarshalData(&electionOpen)
 	if err != nil {
 		return err
 	}
 
-	err = e.verifySenderElection(msg, channelPath, true)
+	err = h.verifySenderElection(msg, channelPath, true)
 	if err != nil {
 		return err
 	}
@@ -162,7 +162,7 @@ func (e *electionHandler) handleElectionOpen(msg message.Message, channelPath st
 	}
 
 	// verify if the election was already started or terminated
-	ok, err := e.db.IsElectionStartedOrEnded(channelPath)
+	ok, err := h.db.IsElectionStartedOrEnded(channelPath)
 	if err != nil {
 		return err
 	}
@@ -170,7 +170,7 @@ func (e *electionHandler) handleElectionOpen(msg message.Message, channelPath st
 		return errors.NewInvalidMessageFieldError("election is already started or ended")
 	}
 
-	createdAt, err := e.db.GetElectionCreationTime(channelPath)
+	createdAt, err := h.db.GetElectionCreationTime(channelPath)
 	if err != nil {
 		return err
 	}
@@ -178,57 +178,57 @@ func (e *electionHandler) handleElectionOpen(msg message.Message, channelPath st
 		return errors.NewInvalidMessageFieldError("election open cannot have a creation time prior to election setup")
 	}
 
-	return e.subs.BroadcastToAllClients(msg, channelPath)
+	return h.subs.BroadcastToAllClients(msg, channelPath)
 }
 
-func (e *electionHandler) handleElectionEnd(msg message.Message, channelPath string) error {
+func (h *Handler) handleElectionEnd(msg message.Message, channelPath string) error {
 	var electionEnd messagedata.ElectionEnd
 	err := msg.UnmarshalData(&electionEnd)
 	if err != nil {
 		return err
 	}
 
-	err = e.verifySenderElection(msg, channelPath, true)
+	err = h.verifySenderElection(msg, channelPath, true)
 	if err != nil {
 		return err
 	}
 
-	err = e.verifyElectionEnd(electionEnd, channelPath)
+	err = h.verifyElectionEnd(electionEnd, channelPath)
 	if err != nil {
 		return err
 	}
 
-	questions, err := e.db.GetElectionQuestionsWithValidVotes(channelPath)
+	questions, err := h.db.GetElectionQuestionsWithValidVotes(channelPath)
 	if err != nil {
 		return err
 	}
 
 	if len(electionEnd.RegisteredVotes) != 0 {
-		err = e.verifyRegisteredVotes(electionEnd, questions)
+		err = h.verifyRegisteredVotes(electionEnd, questions)
 		if err != nil {
 			return err
 		}
 	}
 
-	electionResultMsg, err := e.createElectionResult(questions, channelPath)
+	electionResultMsg, err := h.createElectionResult(questions, channelPath)
 	if err != nil {
 		return err
 	}
 
-	err = e.db.StoreElectionEndWithResult(channelPath, msg, electionResultMsg)
+	err = h.db.StoreElectionEndWithResult(channelPath, msg, electionResultMsg)
 	if err != nil {
 		return err
 	}
 
-	err = e.subs.BroadcastToAllClients(msg, channelPath)
+	err = h.subs.BroadcastToAllClients(msg, channelPath)
 	if err != nil {
 		return err
 	}
 
-	return e.subs.BroadcastToAllClients(electionResultMsg, channelPath)
+	return h.subs.BroadcastToAllClients(electionResultMsg, channelPath)
 }
 
-func (e *electionHandler) verifyElectionEnd(electionEnd messagedata.ElectionEnd, channelPath string) error {
+func (h *Handler) verifyElectionEnd(electionEnd messagedata.ElectionEnd, channelPath string) error {
 	// verify message data
 	err := electionEnd.Verify(channelPath)
 	if err != nil {
@@ -237,7 +237,7 @@ func (e *electionHandler) verifyElectionEnd(electionEnd messagedata.ElectionEnd,
 	}
 
 	// verify if the election is started
-	started, err := e.db.IsElectionStarted(channelPath)
+	started, err := h.db.IsElectionStarted(channelPath)
 	if err != nil {
 		return err
 	}
@@ -246,7 +246,7 @@ func (e *electionHandler) verifyElectionEnd(electionEnd messagedata.ElectionEnd,
 	}
 
 	// verify if the timestamp is stale
-	createdAt, err := e.db.GetElectionCreationTime(channelPath)
+	createdAt, err := h.db.GetElectionCreationTime(channelPath)
 	if err != nil {
 		return err
 	}
@@ -258,7 +258,7 @@ func (e *electionHandler) verifyElectionEnd(electionEnd messagedata.ElectionEnd,
 	return nil
 }
 
-func (e *electionHandler) verifySenderElection(msg message.Message, channelPath string, onlyOrganizer bool) error {
+func (h *Handler) verifySenderElection(msg message.Message, channelPath string, onlyOrganizer bool) error {
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode sender: %v", err)
@@ -270,7 +270,7 @@ func (e *electionHandler) verifySenderElection(msg message.Message, channelPath 
 		return errors.NewInvalidMessageFieldError("failed to unmarshal sender: %v", err)
 	}
 
-	organizerPubKey, err := e.db.GetLAOOrganizerPubKey(channelPath)
+	organizerPubKey, err := h.db.GetLAOOrganizerPubKey(channelPath)
 	if err != nil {
 		return err
 	}
@@ -283,7 +283,7 @@ func (e *electionHandler) verifySenderElection(msg message.Message, channelPath 
 		return nil
 	}
 
-	attendees, err := e.db.GetElectionAttendees(channelPath)
+	attendees, err := h.db.GetElectionAttendees(channelPath)
 	if err != nil {
 		return err
 	}
@@ -296,8 +296,8 @@ func (e *electionHandler) verifySenderElection(msg message.Message, channelPath 
 	return nil
 }
 
-func (e *electionHandler) verifyVote(vote messagedata.Vote, channelPath, electionID string) error {
-	questions, err := e.db.GetElectionQuestions(channelPath)
+func (h *Handler) verifyVote(vote messagedata.Vote, channelPath, electionID string) error {
+	questions, err := h.db.GetElectionQuestions(channelPath)
 	if err != nil {
 		return err
 	}
@@ -307,7 +307,7 @@ func (e *electionHandler) verifyVote(vote messagedata.Vote, channelPath, electio
 		return errors.NewInvalidMessageFieldError("Question does not exist")
 	}
 
-	electionType, err := e.db.GetElectionType(channelPath)
+	electionType, err := h.db.GetElectionType(channelPath)
 	if err != nil {
 		return err
 	}
@@ -347,7 +347,7 @@ func (e *electionHandler) verifyVote(vote messagedata.Vote, channelPath, electio
 	return nil
 }
 
-func (e *electionHandler) verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
+func (h *Handler) verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 	questions map[string]types.Question) error {
 	var voteIDs []string
 	for _, question := range questions {
@@ -370,8 +370,8 @@ func (e *electionHandler) verifyRegisteredVotes(electionEnd messagedata.Election
 	return nil
 }
 
-func (e *electionHandler) createElectionResult(questions map[string]types.Question, channelPath string) (message.Message, error) {
-	resultElection, err := e.computeElectionResult(questions, channelPath)
+func (h *Handler) createElectionResult(questions map[string]types.Question, channelPath string) (message.Message, error) {
+	resultElection, err := h.computeElectionResult(questions, channelPath)
 	if err != nil {
 		return message.Message{}, err
 	}
@@ -383,12 +383,12 @@ func (e *electionHandler) createElectionResult(questions map[string]types.Questi
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	serverPubBuf, err := e.conf.GetServerPublicKey().MarshalBinary()
+	serverPubBuf, err := h.conf.GetServerPublicKey().MarshalBinary()
 	if err != nil {
 		return message.Message{}, errors.NewInternalServerError("failed to marshal server public key: %v", err)
 	}
 
-	signatureBuf, err := e.conf.Sign(buf)
+	signatureBuf, err := h.conf.Sign(buf)
 	if err != nil {
 		return message.Message{}, err
 	}
@@ -406,8 +406,8 @@ func (e *electionHandler) createElectionResult(questions map[string]types.Questi
 	return electionResultMsg, nil
 }
 
-func (e *electionHandler) computeElectionResult(questions map[string]types.Question, channelPath string) (messagedata.ElectionResult, error) {
-	electionType, err := e.db.GetElectionType(channelPath)
+func (h *Handler) computeElectionResult(questions map[string]types.Question, channelPath string) (messagedata.ElectionResult, error) {
+	electionType, err := h.db.GetElectionType(channelPath)
 	if err != nil {
 		return messagedata.ElectionResult{}, err
 	}
@@ -421,7 +421,7 @@ func (e *electionHandler) computeElectionResult(questions map[string]types.Quest
 
 		votesPerBallotOption := make([]int, len(question.BallotOptions))
 		for _, validVote := range question.ValidVotes {
-			index, ok := e.getVoteIndex(validVote, electionType, channelPath)
+			index, ok := h.getVoteIndex(validVote, electionType, channelPath)
 			if ok && index >= 0 && index < len(question.BallotOptions) {
 				votesPerBallotOption[index]++
 			}
@@ -452,7 +452,7 @@ func (e *electionHandler) computeElectionResult(questions map[string]types.Quest
 	return resultElection, nil
 }
 
-func (e *electionHandler) getVoteIndex(vote types.ValidVote, electionType, channelPath string) (int, bool) {
+func (h *Handler) getVoteIndex(vote types.ValidVote, electionType, channelPath string) (int, bool) {
 	switch electionType {
 	case messagedata.OpenBallot:
 		index, _ := vote.Index.(int)
@@ -460,7 +460,7 @@ func (e *electionHandler) getVoteIndex(vote types.ValidVote, electionType, chann
 
 	case messagedata.SecretBallot:
 		encryptedVote, _ := vote.Index.(string)
-		index, err := e.decryptVote(encryptedVote, channelPath)
+		index, err := h.decryptVote(encryptedVote, channelPath)
 		if err != nil {
 			return index, false
 		}
@@ -469,7 +469,7 @@ func (e *electionHandler) getVoteIndex(vote types.ValidVote, electionType, chann
 	return -1, false
 }
 
-func (e *electionHandler) decryptVote(vote, channelPath string) (int, error) {
+func (h *Handler) decryptVote(vote, channelPath string) (int, error) {
 	voteBuff, err := base64.URLEncoding.DecodeString(vote)
 	if err != nil {
 		return -1, errors.NewInvalidMessageFieldError("failed to decode vote: %v", err)
@@ -492,7 +492,7 @@ func (e *electionHandler) decryptVote(vote, channelPath string) (int, error) {
 		return -1, errors.NewInvalidMessageFieldError("failed to unmarshal C: %v", err)
 	}
 
-	electionSecretKey, err := e.db.GetElectionSecretKey(channelPath)
+	electionSecretKey, err := h.db.GetElectionSecretKey(channelPath)
 	if err != nil {
 		return -1, err
 	}

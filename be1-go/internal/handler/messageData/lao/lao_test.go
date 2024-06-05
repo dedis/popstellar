@@ -1,4 +1,4 @@
-package channel
+package lao
 
 import (
 	"encoding/base64"
@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/crypto"
+	"popstellar/internal/handler/messageData/root"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	mock2 "popstellar/internal/mock"
@@ -18,7 +19,22 @@ import (
 	"time"
 )
 
+const (
+	ownerPubBuf64 = "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
+	goodLaoName   = "laoName"
+	wrongLaoName  = "wrongLaoName"
+	wrongSender   = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
+)
+
 func Test_handleChannelLao(t *testing.T) {
+	type input struct {
+		name        string
+		channelPath string
+		msg         message.Message
+		isError     bool
+		contains    string
+	}
+
 	subs := types.NewSubscribers()
 
 	db := mock2.NewRepository(t)
@@ -38,7 +54,7 @@ func Test_handleChannelLao(t *testing.T) {
 
 	conf := types.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
-	lao := createLaoHandler(conf, subs, db, schema)
+	lao := New(conf, subs, db, schema)
 
 	var args []input
 
@@ -49,10 +65,10 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 1:Failed For LaoState message
 	args = append(args, input{
 		name:        "Test 1",
-		msg:         newLaoStateMsg(t, ownerPubBuf64, laoID, db),
+		msg:         newLaoStateMsg(t, ownerPubBuf64, laoID),
 		channelPath: laoID,
 		isError:     true,
-		contains:    "failed to handle lao#state, invalid object#action",
+		contains:    "failed to Handle lao#state, invalid object#action",
 	})
 
 	creation := time.Now().Unix()
@@ -253,7 +269,7 @@ func Test_handleChannelLao(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			err := lao.handle(arg.channelPath, arg.msg)
+			err := lao.Handle(arg.channelPath, arg.msg)
 			if arg.isError {
 				require.Error(t, err, arg.contains)
 			} else {
@@ -263,7 +279,7 @@ func Test_handleChannelLao(t *testing.T) {
 	}
 }
 
-func newLaoStateMsg(t *testing.T, organizer, laoID string, mockRepository *mock2.Repository) message.Message {
+func newLaoStateMsg(t *testing.T, organizer, laoID string) message.Message {
 	modificationID := base64.URLEncoding.EncodeToString([]byte("modificationID"))
 	name := "laoName"
 	creation := time.Now().Unix()
@@ -279,7 +295,7 @@ func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation,
 
 	createID := message.Hash(
 		messagedata.RollCallFlag,
-		strings.ReplaceAll(laoID, RootPrefix, ""),
+		strings.ReplaceAll(laoID, root.RootPrefix, ""),
 		strconv.Itoa(int(creation)),
 		goodLaoName,
 	)
@@ -298,7 +314,7 @@ func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, opene
 
 	openID := message.Hash(
 		messagedata.RollCallFlag,
-		strings.ReplaceAll(laoID, RootPrefix, ""),
+		strings.ReplaceAll(laoID, root.RootPrefix, ""),
 		base64.URLEncoding.EncodeToString([]byte("opens")),
 		strconv.Itoa(int(openedAt)),
 	)
@@ -320,7 +336,7 @@ func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, clo
 
 	closeID := message.Hash(
 		messagedata.RollCallFlag,
-		strings.ReplaceAll(laoID, RootPrefix, ""),
+		strings.ReplaceAll(laoID, root.RootPrefix, ""),
 		base64.URLEncoding.EncodeToString([]byte("closes")),
 		strconv.Itoa(int(closedAt)),
 	)
@@ -332,7 +348,7 @@ func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, clo
 	if !isError {
 		var channels []string
 		for _, attendee := range attendees {
-			channels = append(channels, laoID+Social+"/"+attendee)
+			channels = append(channels, laoID+root.Social+"/"+attendee)
 		}
 		mockRepository.On("StoreRollCallClose", channels, laoID, msg).Return(nil)
 	}

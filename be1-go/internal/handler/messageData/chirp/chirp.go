@@ -1,8 +1,9 @@
-package channel
+package chirp
 
 import (
 	"encoding/base64"
 	"encoding/json"
+	"popstellar/internal/handler/messageData/root"
 	"popstellar/internal/repository"
 	"popstellar/internal/validation"
 	"strings"
@@ -12,16 +13,16 @@ import (
 	"popstellar/internal/message/query/method/message"
 )
 
-type chirpHandler struct {
+type Handler struct {
 	conf   repository.ConfigManager
 	subs   repository.SubscriptionManager
 	db     repository.ChirpRepository
 	schema *validation.SchemaValidator
 }
 
-func createChripHandler(conf repository.ConfigManager, subs repository.SubscriptionManager,
-	db repository.ChirpRepository, schema *validation.SchemaValidator) *chirpHandler {
-	return &chirpHandler{
+func New(conf repository.ConfigManager, subs repository.SubscriptionManager,
+	db repository.ChirpRepository, schema *validation.SchemaValidator) *Handler {
+	return &Handler{
 		conf:   conf,
 		subs:   subs,
 		db:     db,
@@ -29,13 +30,13 @@ func createChripHandler(conf repository.ConfigManager, subs repository.Subscript
 	}
 }
 
-func (c *chirpHandler) handle(channelPath string, msg message.Message) error {
+func (h *Handler) Handle(channelPath string, msg message.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
 	}
 
-	err = c.schema.VerifyJSON(jsonData, validation.Data)
+	err = h.schema.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
 		return err
 	}
@@ -47,38 +48,38 @@ func (c *chirpHandler) handle(channelPath string, msg message.Message) error {
 
 	switch object + "#" + action {
 	case messagedata.ChirpObject + "#" + messagedata.ChirpActionAdd:
-		err = c.handleChirpAdd(channelPath, msg)
+		err = h.handleChirpAdd(channelPath, msg)
 	case messagedata.ChirpObject + "#" + messagedata.ChirpActionDelete:
-		err = c.handleChirpDelete(channelPath, msg)
+		err = h.handleChirpDelete(channelPath, msg)
 	default:
-		err = errors.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
+		err = errors.NewInvalidMessageFieldError("failed to Handle %s#%s, invalid object#action", object, action)
 	}
 
 	if err != nil {
 		return err
 	}
 
-	generalMsg, err := c.createChirpNotify(channelPath, msg)
+	generalMsg, err := h.createChirpNotify(channelPath, msg)
 	if err != nil {
 		return err
 	}
 
-	generalChirpsChannelID, ok := strings.CutSuffix(channelPath, Social+"/"+msg.Sender)
+	generalChirpsChannelID, ok := strings.CutSuffix(channelPath, root.Social+"/"+msg.Sender)
 	if !ok {
 		return errors.NewInvalidMessageFieldError("invalid channelPath path %s", channelPath)
 	}
 
-	err = c.db.StoreChirpMessages(channelPath, generalChirpsChannelID, msg, generalMsg)
+	err = h.db.StoreChirpMessages(channelPath, generalChirpsChannelID, msg, generalMsg)
 	if err != nil {
 		return err
 	}
 
-	err = c.subs.BroadcastToAllClients(msg, channelPath)
+	err = h.subs.BroadcastToAllClients(msg, channelPath)
 	if err != nil {
 		return err
 	}
 
-	err = c.subs.BroadcastToAllClients(generalMsg, generalChirpsChannelID)
+	err = h.subs.BroadcastToAllClients(generalMsg, generalChirpsChannelID)
 	if err != nil {
 		return err
 	}
@@ -86,29 +87,29 @@ func (c *chirpHandler) handle(channelPath string, msg message.Message) error {
 	return nil
 }
 
-func (c *chirpHandler) handleChirpAdd(channelID string, msg message.Message) error {
+func (h *Handler) handleChirpAdd(channelID string, msg message.Message) error {
 	var data messagedata.ChirpAdd
 	err := msg.UnmarshalData(&data)
 	if err != nil {
 		return err
 	}
 
-	return c.verifyChirpMessage(channelID, msg, data)
+	return h.verifyChirpMessage(channelID, msg, data)
 }
 
-func (c *chirpHandler) handleChirpDelete(channelID string, msg message.Message) error {
+func (h *Handler) handleChirpDelete(channelID string, msg message.Message) error {
 	var data messagedata.ChirpDelete
 	err := msg.UnmarshalData(&data)
 	if err != nil {
 		return err
 	}
 
-	err = c.verifyChirpMessage(channelID, msg, data)
+	err = h.verifyChirpMessage(channelID, msg, data)
 	if err != nil {
 		return err
 	}
 
-	msgToDeleteExists, err := c.db.HasMessage(data.ChirpID)
+	msgToDeleteExists, err := h.db.HasMessage(data.ChirpID)
 	if err != nil {
 		return err
 	}
@@ -119,7 +120,7 @@ func (c *chirpHandler) handleChirpDelete(channelID string, msg message.Message) 
 	return nil
 }
 
-func (c *chirpHandler) verifyChirpMessage(channelID string, msg message.Message, chirpMsg messagedata.Verifiable) error {
+func (h *Handler) verifyChirpMessage(channelID string, msg message.Message, chirpMsg messagedata.Verifiable) error {
 	err := chirpMsg.Verify()
 	if err != nil {
 		return err
@@ -132,7 +133,7 @@ func (c *chirpHandler) verifyChirpMessage(channelID string, msg message.Message,
 	return nil
 }
 
-func (c *chirpHandler) createChirpNotify(channelID string, msg message.Message) (message.Message, error) {
+func (h *Handler) createChirpNotify(channelID string, msg message.Message) (message.Message, error) {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return message.Message{}, errors.NewInvalidMessageFieldError("failed to decode the data: %v", err)
@@ -164,14 +165,14 @@ func (c *chirpHandler) createChirpNotify(channelID string, msg message.Message) 
 
 	data64 := base64.URLEncoding.EncodeToString(dataBuf)
 
-	pkBuf, err := c.conf.GetServerPublicKey().MarshalBinary()
+	pkBuf, err := h.conf.GetServerPublicKey().MarshalBinary()
 	if err != nil {
 		return message.Message{}, errors.NewJsonMarshalError(err.Error())
 	}
 
 	pk64 := base64.URLEncoding.EncodeToString(pkBuf)
 
-	signatureBuf, err := c.conf.Sign(dataBuf)
+	signatureBuf, err := h.conf.Sign(dataBuf)
 	if err != nil {
 		return message.Message{}, err
 	}
