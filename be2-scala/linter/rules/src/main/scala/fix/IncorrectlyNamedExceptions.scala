@@ -39,12 +39,10 @@ class IncorrectlyNamedExceptions extends SemanticRule("IncorrectlyNamedException
       case cl @ Defn.Class.After_4_6_0(_, Type.Name(name), _, _, _) =>
         cl.symbol.info.get.signature match {
           case ClassSignature(_, parents, _, _) =>
+            // We then check the parents: either its direct parent is an Exception or one of its ancestors is an Exception
             if (!name.contains("Exception") && parents.map(_.asInstanceOf[TypeRef].symbol).exists(inheritsFromException))
               Patch.lint(diag(cl.pos))
             else Patch.empty
-          // We then check the parents: either its direct parent is an Exception or one of its ancestors is an Exception
-          case ClassSignature(_, parents, _, _) if !name.contains("Exception") &&
-            parents.map(_.asInstanceOf[TypeRef].symbol).exists(inheritsFromException) => Patch.lint(IncorrectlyNamedExceptionsDiag(cl))
           case _ => Patch.empty
         }
     }.asPatch
