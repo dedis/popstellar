@@ -51,6 +51,11 @@ func (h *Handler) Handle(msg []byte) error {
 		return poperrors.NewJsonUnmarshalError(err.Error())
 	}
 
+	if answerMsg.ID == nil {
+		logger.Logger.Info().Msg("received an answer with a null id")
+		return nil
+	}
+
 	isRumor := h.queries.IsRumorQuery(*answerMsg.ID)
 	if isRumor {
 		return h.handleRumorAnswer(answerMsg)
