@@ -1,27 +1,32 @@
-package query
+package getmessagesbyid
 
 import (
 	"encoding/json"
+	"popstellar/internal/repository"
 
 	"popstellar/internal/errors"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/singleton/database"
 )
 
-func handleGetMessagesByID(socket socket.Socket, msg []byte) (*int, error) {
+type Handler struct {
+	db repository.GetMessagesByIDRepository
+}
+
+func New(db repository.GetMessagesByIDRepository) *Handler {
+	return &Handler{
+		db: db,
+	}
+}
+
+func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 	var getMessagesById method.GetMessagesById
 	err := json.Unmarshal(msg, &getMessagesById)
 	if err != nil {
 		return nil, errors.NewJsonUnmarshalError(err.Error())
 	}
 
-	db, err := database.GetQueryRepositoryInstance()
-	if err != nil {
-		return &getMessagesById.ID, err
-	}
-
-	result, err := db.GetResultForGetMessagesByID(getMessagesById.Params)
+	result, err := h.db.GetResultForGetMessagesByID(getMessagesById.Params)
 	if err != nil {
 		return &getMessagesById.ID, err
 	}

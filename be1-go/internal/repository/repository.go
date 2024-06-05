@@ -10,6 +10,9 @@ import (
 
 type Repository interface {
 	QueryRepository
+	PublishRepository
+	CatchupRepository
+	GetMessagesByIDRepository
 	AnswerRepository
 	ChannelRepository
 	RootRepository
@@ -45,8 +48,6 @@ type RumorSenderRepository interface {
 // ======================= Query ==========================
 
 type QueryRepository interface {
-	GetResultForGetMessagesByID(params map[string][]string) (map[string][]message.Message, error)
-
 	// GetParamsForGetMessageByID returns the params to do the getMessageByID msg in reponse of heartbeat
 	GetParamsForGetMessageByID(params map[string][]string) (map[string][]string, error)
 
@@ -70,6 +71,10 @@ type PublishRepository interface {
 type CatchupRepository interface {
 	// GetAllMessagesFromChannel return all the messages received + sent on a channel
 	GetAllMessagesFromChannel(channelID string) ([]message.Message, error)
+}
+
+type GetMessagesByIDRepository interface {
+	GetResultForGetMessagesByID(params map[string][]string) (map[string][]message.Message, error)
 }
 
 // ======================= Answer ==========================

@@ -1,4 +1,4 @@
-package query
+package getmessagesbyid
 
 import (
 	"github.com/stretchr/testify/require"
@@ -6,22 +6,13 @@ import (
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/singleton/database"
-	"popstellar/internal/singleton/state"
-	"popstellar/internal/types"
 	"testing"
 )
 
 func Test_handleGetMessagesByID(t *testing.T) {
-	subs := types.NewSubscribers()
-	queries := types.NewQueries(&noLog)
-	peers := types.NewPeers()
-	hubParams := types.NewHubParams()
+	db := mock.NewRepository(t)
 
-	state.SetState(subs, peers, queries, hubParams)
-
-	mockRepository := mock.NewRepository(t)
-	database.SetDatabase(mockRepository)
+	handler := New(db)
 
 	type input struct {
 		name     string
@@ -60,7 +51,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 		}
 	}
 
-	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID1).Return(expected1, nil)
+	db.On("GetResultForGetMessagesByID", paramsGetMessagesByID1).Return(expected1, nil)
 
 	args = append(args, input{
 		name:     "Test 1",
@@ -78,7 +69,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 
 	paramsGetMessagesByID2 := make(map[string][]string)
 
-	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID2).
+	db.On("GetResultForGetMessagesByID", paramsGetMessagesByID2).
 		Return(nil, xerrors.Errorf("DB is disconnected"))
 
 	args = append(args, input{
@@ -94,7 +85,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			id, err := handleGetMessagesByID(&arg.socket, arg.message)
+			id, err := handler.Handle(&arg.socket, arg.message)
 			if arg.isError {
 				require.NotNil(t, id)
 				require.Error(t, err, arg.contains)
