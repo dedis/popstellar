@@ -10,11 +10,11 @@ import (
 	"net/url"
 	"os"
 	"popstellar/internal/crypto"
-	hub2 "popstellar/internal/hub"
+	"popstellar/internal/hub"
 	"popstellar/internal/logger"
 	"popstellar/internal/network"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/hub"
+	oldHub "popstellar/internal/old/hub"
 	"sync"
 	"time"
 
@@ -54,7 +54,7 @@ type ServerConfig struct {
 	DatabasePath   string   `json:"database-path"`
 }
 
-func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
+func (s *ServerConfig) newHub(l *zerolog.Logger) (oldHub.Hub, error) {
 	// compute the client server address if it wasn't provided
 	if s.ClientAddress == "" {
 		s.ClientAddress = fmt.Sprintf("ws://%s:%d/client", s.PublicAddress, s.ClientPort)
@@ -70,7 +70,7 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 		return nil, err
 	}
 
-	hub, err := hub2.New(s.DatabasePath, ownerPubKey, s.ClientAddress, s.ServerAddress)
+	hub, err := hub.New(s.DatabasePath, ownerPubKey, s.ClientAddress, s.ServerAddress)
 
 	if err != nil {
 		return nil, err
@@ -188,7 +188,7 @@ func Serve(cliCtx *cli.Context) error {
 
 // serverConnectionLoop tries to connect to the remote servers following an exponential backoff strategy
 // it also listens for updates in the other-servers field and tries to connect to the new servers
-func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, otherServers []string, updatedServersChan chan []string, connectedServers *map[string]bool) {
+func serverConnectionLoop(h oldHub.Hub, wg *sync.WaitGroup, done chan struct{}, otherServers []string, updatedServersChan chan []string, connectedServers *map[string]bool) {
 	// first connection to the servers
 	serversToConnect := otherServers
 	_ = connectToServers(h, wg, done, serversToConnect, connectedServers)
@@ -226,7 +226,7 @@ func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, oth
 
 // connectToServers updates the connection status of the servers and tries to connect to the ones that are not connected
 // it returns an error if at least one connection fails
-func connectToServers(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, servers []string, connectedServers *map[string]bool) error {
+func connectToServers(h oldHub.Hub, wg *sync.WaitGroup, done chan struct{}, servers []string, connectedServers *map[string]bool) error {
 	updateServersState(servers, connectedServers)
 	var returnErr error
 	for serverAddress, connected := range *connectedServers {
@@ -245,7 +245,7 @@ func connectToServers(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, servers
 
 // connectToSocket establishes a connection to another server's server
 // endpoint.
-func connectToSocket(address string, h hub.Hub,
+func connectToSocket(address string, h oldHub.Hub,
 	wg *sync.WaitGroup, done chan struct{}) error {
 
 	poplog := logger.Logger

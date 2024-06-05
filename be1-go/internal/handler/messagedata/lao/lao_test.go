@@ -182,6 +182,7 @@ func Test_handleChannelLao(t *testing.T) {
 	electionsName := "electionName"
 	question := "question"
 	wrongQuestion := "wrongQuestion"
+
 	// Test 12: Error when sender is not the organizer of the lao for ElectionSetup
 	args = append(args, input{
 		name: "Test 12",
@@ -193,6 +194,7 @@ func Test_handleChannelLao(t *testing.T) {
 	})
 
 	wrongLaoID := base64.URLEncoding.EncodeToString([]byte("wrongLaoID"))
+
 	// Test 13: Error when ElectionSetup lao is not the same as the channelPath
 	args = append(args, input{
 		name: "Test 13",
@@ -372,25 +374,22 @@ func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 	)
 
 	var questions []messagedata.ElectionSetupQuestion
+
+	var questionField string
 	if question != "" {
-		questionID := message.Hash("Question", electionSetupID, "question")
-		questions = append(questions, messagedata.ElectionSetupQuestion{
-			ID:            questionID,
-			Question:      question,
-			VotingMethod:  "Plurality",
-			BallotOptions: []string{"Option1", "Option2"},
-			WriteIn:       false,
-		})
+		questionField = "question"
 	} else {
-		questionID := message.Hash("Question", electionSetupID, "")
-		questions = append(questions, messagedata.ElectionSetupQuestion{
-			ID:            questionID,
-			Question:      "",
-			VotingMethod:  "Plurality",
-			BallotOptions: []string{"Option1", "Option2"},
-			WriteIn:       false,
-		})
+		questionField = ""
 	}
+
+	questionID := message.Hash("Question", electionSetupID, questionField)
+	questions = append(questions, messagedata.ElectionSetupQuestion{
+		ID:            questionID,
+		Question:      question,
+		VotingMethod:  "Plurality",
+		BallotOptions: []string{"Option1", "Option2"},
+		WriteIn:       false,
+	})
 
 	msg := generator.NewElectionSetupMsg(t, sender, electionSetupID, setupLao, electionName, version, createdAt, start,
 		end, questions, nil)

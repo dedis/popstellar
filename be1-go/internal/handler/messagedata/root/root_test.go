@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/crypto"
-	message2 "popstellar/internal/handler/message"
+	messageHandler "popstellar/internal/handler/message"
 	"popstellar/internal/message/query/method/message"
 	mock2 "popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
@@ -127,13 +127,13 @@ func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockReposi
 		organizerBuf, err := base64.URLEncoding.DecodeString(organizer)
 		require.NoError(t, err)
 		channels := map[string]string{
-			laoPath:                      message2.LaoType,
-			laoPath + Social + Chirps:    message2.ChirpType,
-			laoPath + Social + Reactions: message2.ReactionType,
-			laoPath + Consensus:          message2.ConsensusType,
-			laoPath + Coin:               message2.CoinType,
-			laoPath + Auth:               message2.AuthType,
-			laoPath + Federation:         message2.FederationType,
+			laoPath:                      messageHandler.LaoType,
+			laoPath + Social + Chirps:    messageHandler.ChirpType,
+			laoPath + Social + Reactions: messageHandler.ReactionType,
+			laoPath + Consensus:          messageHandler.ConsensusType,
+			laoPath + Coin:               messageHandler.CoinType,
+			laoPath + Auth:               messageHandler.AuthType,
+			laoPath + Federation:         messageHandler.FederationType,
 		}
 		mockRepository.On("StoreLaoWithLaoGreet",
 			channels,
