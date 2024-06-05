@@ -1,4 +1,4 @@
-package query
+package unsubscribe
 
 import (
 	"encoding/json"
@@ -6,10 +6,18 @@ import (
 	"popstellar/internal/handler/messagedata/root"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/singleton/state"
+	"popstellar/internal/repository"
 )
 
-func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, error) {
+type Handler struct {
+	subs repository.SubscriptionManager
+}
+
+func New(subs repository.SubscriptionManager) *Handler {
+	return &Handler{subs: subs}
+}
+
+func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 	var unsubscribe method.Unsubscribe
 	err := json.Unmarshal(msg, &unsubscribe)
 	if err != nil {
@@ -20,7 +28,7 @@ func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, error) {
 		return &unsubscribe.ID, errors.NewAccessDeniedError("cannot Unsubscribe from root channel")
 	}
 
-	err = state.Unsubscribe(socket, unsubscribe.Params.Channel)
+	err = h.subs.Unsubscribe(unsubscribe.Params.Channel, socket)
 	if err != nil {
 		return &unsubscribe.ID, err
 	}

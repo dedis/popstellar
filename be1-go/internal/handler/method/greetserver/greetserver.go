@@ -22,26 +22,26 @@ func New(conf repository.ConfigManager, peers repository.PeerManager) *Handler {
 	}
 }
 
-func (h *Handler) Handle(socket socket.Socket, byteMessage []byte) error {
+func (h *Handler) Handle(socket socket.Socket, byteMessage []byte) (*int, error) {
 	var greetServer method.GreetServer
 	err := json.Unmarshal(byteMessage, &greetServer)
 	if err != nil {
-		return errors.NewJsonUnmarshalError(err.Error())
+		return nil, errors.NewJsonUnmarshalError(err.Error())
 	}
 
 	err = h.peers.AddPeerInfo(socket.ID(), greetServer.Params)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	isGreeted := h.peers.IsPeerGreeted(socket.ID())
 	if isGreeted {
-		return nil
+		return nil, nil
 	}
 
 	serverPublicKey, clientAddress, serverAddress, err := h.conf.GetServerInfo()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	greetServerParams := method.GreetServerParams{
@@ -62,12 +62,12 @@ func (h *Handler) Handle(socket socket.Socket, byteMessage []byte) error {
 
 	buf, err := json.Marshal(serverGreet)
 	if err != nil {
-		return errors.NewJsonMarshalError(err.Error())
+		return nil, errors.NewJsonMarshalError(err.Error())
 	}
 
 	socket.Send(buf)
 
 	h.peers.AddPeerGreeted(socket.ID())
 
-	return nil
+	return nil, nil
 }

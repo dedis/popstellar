@@ -13,6 +13,8 @@ type Repository interface {
 	PublishRepository
 	CatchupRepository
 	GetMessagesByIDRepository
+	HeartbeatRepository
+	RumorRepository
 	AnswerRepository
 	ChannelRepository
 	RootRepository
@@ -48,19 +50,7 @@ type RumorSenderRepository interface {
 // ======================= Query ==========================
 
 type QueryRepository interface {
-	// GetParamsForGetMessageByID returns the params to do the getMessageByID msg in reponse of heartbeat
-	GetParamsForGetMessageByID(params map[string][]string) (map[string][]string, error)
-
 	GetParamsHeartbeat() (map[string][]string, error)
-
-	// CheckRumor returns true if the rumor already exists
-	CheckRumor(senderID string, rumorID int) (bool, error)
-
-	// StoreRumor stores the new rumor with its processed and unprocessed messages
-	StoreRumor(rumorID int, sender string, unprocessed map[string][]message.Message, processed []string) error
-
-	// GetUnprocessedMessagesByChannel returns all the unprocessed messages by channel
-	GetUnprocessedMessagesByChannel() (map[string][]message.Message, error)
 }
 
 type PublishRepository interface {
@@ -75,6 +65,22 @@ type CatchupRepository interface {
 
 type GetMessagesByIDRepository interface {
 	GetResultForGetMessagesByID(params map[string][]string) (map[string][]message.Message, error)
+}
+
+type HeartbeatRepository interface {
+	// GetParamsForGetMessageByID returns the params to do the getMessageByID msg in reponse of heartbeat
+	GetParamsForGetMessageByID(params map[string][]string) (map[string][]string, error)
+}
+
+type RumorRepository interface {
+	// CheckRumor returns true if the rumor already exists
+	CheckRumor(senderID string, rumorID int) (bool, error)
+
+	// StoreRumor stores the new rumor with its processed and unprocessed messages
+	StoreRumor(rumorID int, sender string, unprocessed map[string][]message.Message, processed []string) error
+
+	// GetUnprocessedMessagesByChannel returns all the unprocessed messages by channel
+	GetUnprocessedMessagesByChannel() (map[string][]message.Message, error)
 }
 
 // ======================= Answer ==========================

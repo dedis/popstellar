@@ -1,21 +1,17 @@
-package query
+package subscribe
 
 import (
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/singleton/state"
 	"popstellar/internal/types"
 	"testing"
 )
 
 func Test_handleSubscribe(t *testing.T) {
 	subs := types.NewSubscribers()
-	queries := types.NewQueries(&noLog)
-	peers := types.NewPeers()
-	hubParams := types.NewHubParams()
 
-	state.SetState(subs, peers, queries, hubParams)
+	handler := New(subs)
 
 	type input struct {
 		name     string
@@ -83,7 +79,7 @@ func Test_handleSubscribe(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			id, err := handleSubscribe(&arg.socket, arg.message)
+			id, err := handler.Handle(&arg.socket, arg.message)
 			if arg.isError {
 				require.Error(t, err, arg.contains)
 				require.Equal(t, arg.ID, *id)

@@ -86,7 +86,7 @@ func Test_handleGreetServer(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			err := handler.Handle(&arg.socket, arg.message)
+			_, err := handler.Handle(&arg.socket, arg.message)
 			if arg.isError {
 				require.Error(t, err, arg.contains)
 			} else if arg.needGreet {

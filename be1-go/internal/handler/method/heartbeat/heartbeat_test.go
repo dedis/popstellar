@@ -1,28 +1,24 @@
-package query
+package heartbeat
 
 import (
 	"encoding/json"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
+	"io"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/singleton/database"
-	"popstellar/internal/singleton/state"
 	"popstellar/internal/types"
 	"testing"
 )
 
 func Test_handleHeartbeat(t *testing.T) {
-	subs := types.NewSubscribers()
-	queries := types.NewQueries(&noLog)
-	peers := types.NewPeers()
-	hubParams := types.NewHubParams()
+	l := zerolog.New(io.Discard)
+	queries := types.NewQueries(&l)
+	db := mock.NewRepository(t)
 
-	state.SetState(subs, peers, queries, hubParams)
-
-	mockRepository := mock.NewRepository(t)
-	database.SetDatabase(mockRepository)
+	handler := New(queries, db)
 
 	type input struct {
 		name     string
@@ -65,7 +61,7 @@ func Test_handleHeartbeat(t *testing.T) {
 		msgIDs[4],
 	}
 
-	mockRepository.On("GetParamsForGetMessageByID", heartbeatMsgIDs1).Return(expected1, nil)
+	db.On("GetParamsForGetMessageByID", heartbeatMsgIDs1).Return(expected1, nil)
 
 	args = append(args, input{
 		name:     "Test 1",
@@ -86,7 +82,7 @@ func Test_handleHeartbeat(t *testing.T) {
 		msgIDs[2],
 	}
 
-	mockRepository.On("GetParamsForGetMessageByID", heartbeatMsgIDs2).Return(nil, nil)
+	db.On("GetParamsForGetMessageByID", heartbeatMsgIDs2).Return(nil, nil)
 
 	args = append(args, input{
 		name:    "Test 2",
@@ -110,7 +106,7 @@ func Test_handleHeartbeat(t *testing.T) {
 		msgIDs[4],
 	}
 
-	mockRepository.On("GetParamsForGetMessageByID", heartbeatMsgIDs3).
+	db.On("GetParamsForGetMessageByID", heartbeatMsgIDs3).
 		Return(nil, xerrors.Errorf("DB is disconnected"))
 
 	args = append(args, input{
@@ -125,7 +121,7 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			err := handleHeartbeat(&arg.socket, arg.message)
+			_, err := handler.Handle(&arg.socket, arg.message)
 			if arg.isError {
 				require.Error(t, err)
 			} else if arg.expected != nil {

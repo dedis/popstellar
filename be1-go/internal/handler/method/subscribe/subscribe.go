@@ -1,16 +1,24 @@
-package query
+package subscribe
 
 import (
 	"encoding/json"
 	"popstellar/internal/handler/messagedata/root"
+	"popstellar/internal/repository"
 
 	"popstellar/internal/errors"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/singleton/state"
 )
 
-func handleSubscribe(socket socket.Socket, msg []byte) (*int, error) {
+type Handler struct {
+	subs repository.SubscriptionManager
+}
+
+func New(subs repository.SubscriptionManager) *Handler {
+	return &Handler{subs: subs}
+}
+
+func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 	var subscribe method.Subscribe
 	err := json.Unmarshal(msg, &subscribe)
 	if err != nil {
@@ -21,7 +29,7 @@ func handleSubscribe(socket socket.Socket, msg []byte) (*int, error) {
 		return &subscribe.ID, errors.NewAccessDeniedError("cannot Subscribe to root channel")
 	}
 
-	err = state.Subscribe(socket, subscribe.Params.Channel)
+	err = h.subs.Subscribe(subscribe.Params.Channel, socket)
 	if err != nil {
 		return &subscribe.ID, err
 	}
