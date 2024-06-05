@@ -38,9 +38,6 @@ type Repository interface {
 }
 
 type RumorSenderRepository interface {
-	// AddMessageToMyRumor adds the message to the last rumor of the server and returns the current number of message inside the last rumor
-	AddMessageToMyRumor(messageID string) (int, error)
-
 	// GetAndIncrementMyRumor return false if the last rumor is empty otherwise returns the new rumor to send and create the next rumor
 	GetAndIncrementMyRumor() (bool, method.Rumor, error)
 }
@@ -53,9 +50,6 @@ type QueryRepository interface {
 	// GetParamsForGetMessageByID returns the params to do the getMessageByID msg in reponse of heartbeat
 	GetParamsForGetMessageByID(params map[string][]string) (map[string][]string, error)
 
-	// GetAllMessagesFromChannel return all the messages received + sent on a channel
-	GetAllMessagesFromChannel(channelID string) ([]message.Message, error)
-
 	GetParamsHeartbeat() (map[string][]string, error)
 
 	// CheckRumor returns true if the rumor already exists
@@ -66,6 +60,16 @@ type QueryRepository interface {
 
 	// GetUnprocessedMessagesByChannel returns all the unprocessed messages by channel
 	GetUnprocessedMessagesByChannel() (map[string][]message.Message, error)
+}
+
+type PublishRepository interface {
+	// AddMessageToMyRumor adds the message to the last rumor of the server and returns the current number of message inside the last rumor
+	AddMessageToMyRumor(messageID string) (int, error)
+}
+
+type CatchupRepository interface {
+	// GetAllMessagesFromChannel return all the messages received + sent on a channel
+	GetAllMessagesFromChannel(channelID string) ([]message.Message, error)
 }
 
 // ======================= Answer ==========================

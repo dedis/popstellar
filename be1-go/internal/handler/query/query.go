@@ -2,6 +2,7 @@ package query
 
 import (
 	"encoding/json"
+	"popstellar/internal/handler/query/catchup"
 
 	"popstellar/internal/errors"
 	"popstellar/internal/message/query"
@@ -20,7 +21,7 @@ func HandleQuery(socket socket.Socket, msg []byte) error {
 
 	switch queryBase.Method {
 	case query.MethodCatchUp:
-		id, err = handleCatchUp(socket, msg)
+		id, err = catchup.handleCatchUp(socket, msg)
 	case query.MethodGetMessagesById:
 		id, err = handleGetMessagesByID(socket, msg)
 	case query.MethodGreetServer:

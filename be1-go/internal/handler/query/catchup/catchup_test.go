@@ -1,4 +1,4 @@
-package query
+package catchup
 
 import (
 	"github.com/stretchr/testify/require"
@@ -6,22 +6,13 @@ import (
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/singleton/database"
-	"popstellar/internal/singleton/state"
-	"popstellar/internal/types"
 	"testing"
 )
 
 func Test_handleCatchUp(t *testing.T) {
-	subs := types.NewSubscribers()
-	queries := types.NewQueries(&noLog)
-	peers := types.NewPeers()
-	hubParams := types.NewHubParams()
+	db := mock.NewRepository(t)
 
-	state.SetState(subs, peers, queries, hubParams)
-
-	mockRepository := mock.NewRepository(t)
-	database.SetDatabase(mockRepository)
+	handler := New(db)
 
 	type input struct {
 		name     string
@@ -47,7 +38,7 @@ func Test_handleCatchUp(t *testing.T) {
 		generator.NewNothingMsg(t, "sender4", nil),
 	}
 
-	mockRepository.On("GetAllMessagesFromChannel", channel).Return(messagesToCatchUp, nil)
+	db.On("GetAllMessagesFromChannel", channel).Return(messagesToCatchUp, nil)
 
 	args = append(args, input{
 		name:     "Test 1",
@@ -64,7 +55,7 @@ func Test_handleCatchUp(t *testing.T) {
 	ID = 2
 	channel = "/root/lao2"
 
-	mockRepository.On("GetAllMessagesFromChannel", channel).
+	db.On("GetAllMessagesFromChannel", channel).
 		Return(nil, xerrors.Errorf("DB is disconnected"))
 
 	args = append(args, input{
@@ -80,7 +71,7 @@ func Test_handleCatchUp(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			id, err := handleCatchUp(&arg.socket, arg.message)
+			id, err := handler.Handle(&arg.socket, arg.message)
 			if arg.isError {
 				require.Error(t, err, arg.contains)
 				require.NotNil(t, id)
