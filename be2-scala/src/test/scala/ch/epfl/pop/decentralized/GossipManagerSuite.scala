@@ -163,7 +163,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     connectionMediatorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipManager, messageRegistry))
 
     val peerServer = TestProbe()
-    val gossipMonitor = GossipManager.monitorResponse(gossipManager, peerServer.ref)
+    val gossipMonitor = GossipManager.monitorResponse(gossipManager)
 
     // registers a new server
     connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer.ref, GreetServer(PublicKey(Base64Data.encode("publicKey")), "", ""))
@@ -283,7 +283,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     val sender = TestProbe()
     val gossipHandler = GossipManager.gossipHandler(gossipManager, sender.ref)
 
-    val gossipMonitor = GossipManager.monitorResponse(gossipManager, sender.ref)
+    val gossipMonitor = GossipManager.monitorResponse(gossipManager)
 
     val peerServer1 = TestProbe()
     val peerServer2 = TestProbe()

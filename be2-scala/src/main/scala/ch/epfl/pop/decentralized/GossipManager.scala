@@ -193,11 +193,9 @@ object GossipManager extends AskPatternConstants {
   /** Monitors responses to check if one is related to a rumor we sent
     * @param gossipManager
     *   reference to the gossip manager of the server
-    * @param clientActorRef
-    *   reference to the client who sent the message.
     * @return
     */
-  def monitorResponse(gossipManager: AskableActorRef, clientActorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+  def monitorResponse(gossipManager: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcResponse: JsonRpcResponse) =>
       gossipManager ? ManageGossipResponse(jsonRpcResponse)
       Right(jsonRpcResponse)
