@@ -193,7 +193,11 @@ final case class DbActor(
   }
 
   private def getTopChirps(channel: Channel, buildCatchupList: (msgIds: List[Hash], acc: List[Message], fromChannel: Channel) => List[Message]): List[Message] = {
-    val reactionsChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/reactions")
+    val laoID = channel.decodeChannelLaoId match {
+      case Some(id) => id
+      case None => Hash(Base64Data(""))
+    }
+    val reactionsChannel = Channel.apply(s"/root/$laoID/social/reactions")
 
     val channelData: ChannelData = readChannelData(reactionsChannel)
 
@@ -243,7 +247,7 @@ final case class DbActor(
       else if score > chirpScores(third) then
         third = chirpId
 
-    val chirpsChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/chirps")
+    val chirpsChannel = Channel.apply(s"/root/$laoID/social/chirps")
     val topThreeChirps: List[Hash] = List(first, second, third)
     val catchupList = readCreateLao(chirpsChannel) match {
       case Some(msg) =>
@@ -271,7 +275,11 @@ final case class DbActor(
   }
 
   private def updateNumberOfNewChirpsReactions(channel: Channel, resetToZero: Boolean): Unit = {
-    val newReactionsChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/top_chirps/number_of_new_reactions")
+    val laoID = channel.decodeChannelLaoId match {
+      case Some(id) => id
+      case None => Hash(Base64Data(""))
+    }
+    val newReactionsChannel = Channel.apply(s"/root/$laoID/social/top_chirps/number_of_new_reactions")
     if (!checkChannelExistence(newReactionsChannel)) {
       val numberOfReactions: JsonString = "0"
       val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfReactions)
@@ -309,11 +317,16 @@ final case class DbActor(
 
     val topChirpsPattern: Regex = "^/root(/[^/]+)/social/top_chirps$".r
 
+    val laoID = channel.decodeChannelLaoId match {
+      case Some(id) => id
+      case None => Hash(Base64Data(""))
+    }
+
     if (topChirpsPattern.findFirstMatchIn(channel.toString).isDefined) {
       if (!checkChannelExistence(channel) || readChannelData(channel).messages.isEmpty) {
         getTopChirps(channel, buildCatchupList)
       } else {
-        val newReactionsChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/top_chirps/number_of_new_reactions")
+        val newReactionsChannel = Channel.apply(s"/root/$laoID/social/top_chirps/number_of_new_reactions")
         var numberOfNewChirpsReactionsInt = 0
         if (checkChannelExistence(newReactionsChannel)) {
           val numberOfNewChirpsReactions = storage.read(storage.CHANNEL_DATA_KEY + newReactionsChannel.toString)
@@ -372,8 +385,13 @@ final case class DbActor(
 
     val profilePattern: Regex = "^/root(/[^/]+)/social/profile(/[^/]+){2}$".r
 
+    val laoID = channel.decodeChannelLaoId match {
+      case Some(id) => id
+      case None => Hash(Base64Data(""))
+    }
+
     if (chirpsPattern.findFirstMatchIn(channel.toString).isDefined) {
-      val chirpsChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/chirps")
+      val chirpsChannel = Channel.apply(s"/root/$laoID/social/chirps")
 
       val channelData: ChannelData = readChannelData(chirpsChannel)
 
@@ -412,7 +430,7 @@ final case class DbActor(
       }
     } else if (profilePattern.findFirstMatchIn(channel.toString).isDefined) {
       val profilePublicKey = channel.toString.split("/")(5)
-      val profileChannel = Channel.apply(s"/root/${channel.decodeChannelLaoId}/social/$profilePublicKey")
+      val profileChannel = Channel.apply(s"/root/$laoID/social/$profilePublicKey")
 
       val channelData: ChannelData = readChannelData(profileChannel)
 
