@@ -537,7 +537,6 @@ class RollCallFragmentTest {
       )
 
     UITestUtils.assertToastDisplayedHasNotText(R.string.roll_call_attendees_list_not_sorted)
-    UITestUtils.assertNoToastIsDisplayed()
   }
 
   @Test

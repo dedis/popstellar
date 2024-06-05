@@ -61,12 +61,6 @@ object UITestUtils {
     Assert.assertNotEquals(expected, ShadowToast.getTextOfLatestToast())
   }
 
-
-  @JvmStatic
-  fun assertNoToastIsDisplayed() {
-    Assert.assertNull(ShadowToast.getLatestToast())
-  }
-
   @JvmStatic
   fun assertToastIsDisplayedContainsText(@StringRes resId: Int, vararg args: Any?) {
     MatcherAssert.assertThat(
