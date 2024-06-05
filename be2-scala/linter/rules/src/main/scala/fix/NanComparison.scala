@@ -31,16 +31,20 @@ class NanComparison extends SemanticRule("NanComparison") {
       }
     }
 
-    doc.tree.collect {
-      case t @ Term.ApplyInfix.After_4_6_0(lhs, Term.Name("=="), _, Term.ArgClause(List(rhs), _)) =>
-        (lhs,rhs) match {
-          case (Term.Name(_), Term.Name(_)) => Util.findDefinitions(doc.tree, Set(lhs, rhs)) match {
-              case List((_, ld), (_, rd)) => matcher(ld, rd, t)
-              case _ => Patch.empty
-            }
-          // Extract definitions and match in the case both are variables
-          case _ => matcher(lhs, rhs, t)
+    def rule(lhs: Term, rhs: Term, t: Term): Patch = {
+      (lhs,rhs) match {
+        case (Term.Name(_), Term.Name(_)) => Util.findDefinitions(doc.tree, Set(lhs, rhs)) match {
+          case List((_, ld), (_, rd)) => matcher(ld, rd, t)
+          case _ => Patch.empty
         }
+        // Extract definitions and match in the case both are variables
+        case _ => matcher(lhs, rhs, t)
+      }
+    }
+
+    doc.tree.collect {
+      case t @ Term.ApplyInfix.After_4_6_0(lhs, Term.Name("==") | Term.Name("!="), _, Term.ArgClause(List(rhs), _)) => rule(lhs, rhs, t)
+      case t @ Term.Apply.After_4_6_0(Term.Select(lhs, Term.Name("equals")), Term.ArgClause(List(right), _)) => rule(lhs, right, t)
     }.asPatch
   }
 }
