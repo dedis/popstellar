@@ -138,12 +138,6 @@ constructor(
       currentAttendees.addAll(closeRollCall.attendees)
     }
 
-    // log existingRollCall.attendees and closeRollCall.attendees
-    Timber.tag(TAG).d("existingRollCall.attendees: %s", existingRollCall.attendees)
-    Timber.tag(TAG).d("closeRollCall.attendees: %s", closeRollCall.attendees)
-    // log currentAttendees
-    Timber.tag(TAG).d("currentAttendees: %s", currentAttendees)
-
     val builder = RollCallBuilder()
     builder
         .setId(updateId)

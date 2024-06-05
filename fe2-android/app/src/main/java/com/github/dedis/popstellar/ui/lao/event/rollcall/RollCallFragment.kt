@@ -53,7 +53,9 @@ class RollCallFragment : AbstractEventFragment {
   private val managementTextMap = buildManagementTextMap()
   private val managementIconMap = buildManagementIconMap()
 
-  constructor()
+    private val deAnonymizationWarned = MutableLiveData(false)
+
+    constructor()
 
   override fun onCreateView(
       inflater: LayoutInflater,
@@ -278,6 +280,7 @@ class RollCallFragment : AbstractEventFragment {
               android.R.layout.simple_list_item_1,
               attendeesList,
               popToken,
+              this
           )
     }
   }
@@ -338,6 +341,17 @@ class RollCallFragment : AbstractEventFragment {
     return map
   }
 
+    fun isAttendeeListSorted(attendeesList: List<String>, context: Context): Boolean {
+        if (attendeesList.isNotEmpty() &&
+            attendeesList != attendeesList.sorted() &&
+            deAnonymizationWarned.value == false) {
+            deAnonymizationWarned.value = true
+            logAndShow(context, TAG, R.string.roll_call_attendees_list_not_sorted)
+            return false
+        }
+        return true
+    }
+
   @VisibleForTesting(otherwise = VisibleForTesting.NONE)
   constructor(rollCall: RollCall) {
     this.rollCall = rollCall
@@ -345,28 +359,14 @@ class RollCallFragment : AbstractEventFragment {
 
   companion object {
     val TAG: String = RollCallFragment::class.java.simpleName
-    private val deAnonymizationWarned = MutableLiveData(false)
 
     @JvmStatic
     fun newInstance(persistentId: String?): RollCallFragment {
-      deAnonymizationWarned.value = false
       val fragment = RollCallFragment()
       val bundle = Bundle(1)
       bundle.putString(ROLL_CALL_ID, persistentId)
       fragment.arguments = bundle
       return fragment
-    }
-
-    fun isAttendeeListSorted(attendeesList: List<String>, context: Context): Boolean {
-
-      if (attendeesList.isNotEmpty() &&
-          attendeesList != attendeesList.sorted() &&
-          deAnonymizationWarned.value == false) {
-        deAnonymizationWarned.value = true
-        logAndShow(context, TAG, R.string.roll_call_attendees_list_not_sorted)
-        return false
-      }
-      return true
     }
 
     /**

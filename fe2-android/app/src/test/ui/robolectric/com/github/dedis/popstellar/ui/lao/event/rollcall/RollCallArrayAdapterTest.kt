@@ -44,7 +44,7 @@ class RollCallArrayAdapterTest {
         val myToken = PoPToken(MY_PRIVATE_KEY, MY_PUBLIC_KEY)
         val otherToken = PoPToken(OTHER_PRIVATE_KEY, OTHER_PUBLIC_KEY)
         attendeesList = listOf(myToken.publicKey.encoded, otherToken.publicKey.encoded)
-        adapter = RollCallArrayAdapter(context, R.id.valid_token_layout_text, attendeesList, myToken)
+        adapter = RollCallArrayAdapter(context, R.id.valid_token_layout_text, attendeesList, myToken, mock(RollCallFragment::class.java))
         mockView = TextView(context)
         val colorAccent = ContextCompat.getColor(context, R.color.textOnBackground)
         (mockView as TextView).setTextColor(colorAccent)
