@@ -35,7 +35,7 @@ func GetRumorSenderRepositoryInstance() (repository.RumorSenderRepository, error
 	return getInstance()
 }
 
-func GetQueryRepositoryInstance() (repository.QueryRepository, error) {
+func GetQueryRepositoryInstance() (repository.HeartbeatSenderRepository, error) {
 	return getInstance()
 }
 

@@ -9,7 +9,7 @@ import (
 )
 
 type Repository interface {
-	QueryRepository
+	HeartbeatSenderRepository
 	PublishRepository
 	CatchupRepository
 	GetMessagesByIDRepository
@@ -42,16 +42,21 @@ type Repository interface {
 	GetMessageByID(ID string) (message.Message, error)
 }
 
+type HubRepository interface {
+	HeartbeatSenderRepository
+	RumorSenderRepository
+}
+
+type HeartbeatSenderRepository interface {
+	GetParamsHeartbeat() (map[string][]string, error)
+}
+
 type RumorSenderRepository interface {
 	// GetAndIncrementMyRumor return false if the last rumor is empty otherwise returns the new rumor to send and create the next rumor
 	GetAndIncrementMyRumor() (bool, method.Rumor, error)
 }
 
 // ======================= Query ==========================
-
-type QueryRepository interface {
-	GetParamsHeartbeat() (map[string][]string, error)
-}
 
 type PublishRepository interface {
 	// AddMessageToMyRumor adds the message to the last rumor of the server and returns the current number of message inside the last rumor

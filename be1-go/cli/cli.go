@@ -131,7 +131,7 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 		}
 	}
 
-	return hub2.NewHub(), nil
+	return hub2.New(), nil
 }
 
 // Serve parses the CLI arguments and spawns a hub and a websocket server for

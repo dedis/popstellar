@@ -3,16 +3,13 @@ package hub
 import (
 	"encoding/json"
 	"popstellar/internal/errors"
-	query2 "popstellar/internal/handler/method/rumor"
 	"popstellar/internal/logger"
 	jsonrpc "popstellar/internal/message"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/singleton/config"
-	"popstellar/internal/singleton/database"
+	"popstellar/internal/repository"
 	"popstellar/internal/singleton/state"
-	"sync"
 	"time"
 )
 
@@ -21,75 +18,55 @@ const (
 	rumorDelay     = time.Second * 5
 )
 
-type Hub struct {
-	wg            *sync.WaitGroup
-	messageChan   chan socket.IncomingMessage
-	stop          chan struct{}
-	closedSockets chan string
+type JsonRpcHandler interface {
+	Handle(socket socket.Socket, msg []byte) error
 }
 
-func NewHub() *Hub {
-	wg, err := state.GetWaitGroup()
-	if err != nil {
-		logger.Logger.Err(err)
-		return nil
-	}
+type RumorSender interface {
+	SendRumor(socket socket.Socket, rumor method.Rumor)
+}
 
-	messageChan, err := state.GetMessageChan()
-	if err != nil {
-		logger.Logger.Err(err)
-		return nil
-	}
+type Hub struct {
+	conf           repository.ConfigManager
+	control        repository.HubManager
+	subs           repository.SubscriptionManager
+	sockets        repository.SocketManager
+	jsonRpcHandler JsonRpcHandler
+	rumorSender    RumorSender
+	db             repository.HubRepository
+}
 
-	stop, err := state.GetStopChan()
-	if err != nil {
-		logger.Logger.Err(err)
-		return nil
-	}
+func New(conf repository.ConfigManager, dbPath string) *Hub {
 
-	closedSockets, err := state.GetClosedSockets()
-	if err != nil {
-		logger.Logger.Err(err)
-		return nil
-	}
-
-	return &Hub{
-		wg:            wg,
-		messageChan:   messageChan,
-		stop:          stop,
-		closedSockets: closedSockets,
-	}
+	return &Hub{}
 }
 
 func (h *Hub) NotifyNewServer(socket socket.Socket) {
-	err := state.Upsert(socket)
-	if err != nil {
-		logger.Logger.Err(err)
-	}
+	h.sockets.Upsert(socket)
 }
 
 func (h *Hub) Start() {
-	h.wg.Add(3)
+	h.control.GetWaitGroup().Add(3)
 	go h.runHeartbeat()
 	go h.runRumorSender()
 	go h.runMessageReceiver()
 }
 
 func (h *Hub) Stop() {
-	close(h.stop)
-	h.wg.Wait()
+	close(h.control.GetStopChan())
+	h.control.GetWaitGroup().Wait()
 }
 
 func (h *Hub) Receiver() chan<- socket.IncomingMessage {
-	return h.messageChan
+	return h.control.GetMessageChan()
 }
 
 func (h *Hub) OnSocketClose() chan<- string {
-	return h.closedSockets
+	return h.control.GetClosedSockets()
 }
 
 func (h *Hub) SendGreetServer(socket socket.Socket) error {
-	serverPublicKey, clientAddress, serverAddress, err := config.GetServerInfo()
+	serverPublicKey, clientAddress, serverAddress, err := h.conf.GetServerInfo()
 	if err != nil {
 		return err
 	}
@@ -121,7 +98,7 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 }
 
 func (h *Hub) runMessageReceiver() {
-	defer h.wg.Done()
+	defer h.control.GetWaitGroup().Done()
 	defer logger.Logger.Info().Msg("stopping hub")
 
 	logger.Logger.Info().Msg("starting hub")
@@ -129,21 +106,18 @@ func (h *Hub) runMessageReceiver() {
 	for {
 		logger.Logger.Debug().Msg("waiting for a new message")
 		select {
-		case incomingMessage := <-h.messageChan:
+		case incomingMessage := <-h.control.GetMessageChan():
 			logger.Logger.Debug().Msg("start handling a message")
-			err := HandleIncomingMessage(incomingMessage.Socket, incomingMessage.Message)
+			err := h.jsonRpcHandler.Handle(incomingMessage.Socket, incomingMessage.Message)
 			if err != nil {
 				logger.Logger.Error().Err(err)
 			} else {
 				logger.Logger.Debug().Msg("successfully handled a message")
 			}
-		case socketID := <-h.closedSockets:
+		case socketID := <-h.control.GetClosedSockets():
 			logger.Logger.Debug().Msgf("stopping the Socket " + socketID)
-			err := state.UnsubscribeFromAll(socketID)
-			if err != nil {
-				logger.Logger.Error().Err(err)
-			}
-		case <-h.stop:
+			h.subs.UnsubscribeFromAll(socketID)
+		case <-h.control.GetStopChan():
 			return
 		}
 	}
@@ -152,7 +126,7 @@ func (h *Hub) runMessageReceiver() {
 func (h *Hub) runRumorSender() {
 	ticker := time.NewTicker(rumorDelay)
 	defer ticker.Stop()
-	defer h.wg.Done()
+	defer h.control.GetWaitGroup().Done()
 	defer logger.Logger.Info().Msg("stopping rumor sender")
 
 	logger.Logger.Info().Msg("starting rumor sender")
@@ -178,19 +152,14 @@ func (h *Hub) runRumorSender() {
 			if err != nil {
 				logger.Logger.Error().Err(err)
 			}
-		case <-h.stop:
+		case <-h.control.GetStopChan():
 			return
 		}
 	}
 }
 
 func (h *Hub) tryToSendRumor() error {
-	db, err := database.GetRumorSenderRepositoryInstance()
-	if err != nil {
-		return err
-	}
-
-	ok, rumor, err := db.GetAndIncrementMyRumor()
+	ok, rumor, err := h.db.GetAndIncrementMyRumor()
 	if err != nil {
 		return err
 	}
@@ -199,7 +168,7 @@ func (h *Hub) tryToSendRumor() error {
 		return nil
 	}
 
-	query2.SendRumor(nil, rumor)
+	h.rumorSender.SendRumor(nil, rumor)
 
 	return nil
 }
@@ -207,7 +176,7 @@ func (h *Hub) tryToSendRumor() error {
 func (h *Hub) runHeartbeat() {
 	ticker := time.NewTicker(heartbeatDelay)
 	defer ticker.Stop()
-	defer h.wg.Done()
+	defer h.control.GetWaitGroup().Done()
 	defer logger.Logger.Info().Msg("stopping heartbeat sender")
 
 	logger.Logger.Info().Msg("starting heartbeat sender")
@@ -219,7 +188,7 @@ func (h *Hub) runHeartbeat() {
 			if err != nil {
 				logger.Logger.Error().Err(err)
 			}
-		case <-h.stop:
+		case <-h.control.GetStopChan():
 			return
 		}
 	}
@@ -242,5 +211,7 @@ func (h *Hub) sendHeartbeatToServers() error {
 		return errors.NewJsonMarshalError(err.Error())
 	}
 
-	return state.SendToAllServer(buf)
+	h.sockets.SendToAll(buf)
+
+	return nil
 }

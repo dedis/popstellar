@@ -1,29 +1,25 @@
-package hub
+package jsonrpc
 
 import (
 	"encoding/base64"
-	"fmt"
 	"github.com/stretchr/testify/require"
-	"os"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/singleton/utils"
+	"popstellar/internal/network/socket"
 	"popstellar/internal/validation"
 	"testing"
 )
 
-func TestMain(m *testing.M) {
-	schemaValidator, err := validation.NewSchemaValidator()
-	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
-	}
+type nullQueryHandler struct{}
 
-	utils.InitUtils(schemaValidator)
+func (n *nullQueryHandler) Handle(socket socket.Socket, msg []byte) error {
+	return nil
+}
 
-	exitVal := m.Run()
+type nullAnswerHandler struct{}
 
-	os.Exit(exitVal)
+func (n *nullAnswerHandler) Handle(msg []byte) error {
+	return nil
 }
 
 func Test_handleIncomingMessage(t *testing.T) {
@@ -32,6 +28,14 @@ func Test_handleIncomingMessage(t *testing.T) {
 		message  []byte
 		contains string
 	}
+
+	schema, err := validation.NewSchemaValidator()
+	require.NoError(t, err)
+
+	queryHandler := &nullQueryHandler{}
+	answerHandler := &nullAnswerHandler{}
+
+	handler := New(schema, queryHandler, answerHandler)
 
 	args := make([]input, 0)
 
@@ -59,7 +63,7 @@ func Test_handleIncomingMessage(t *testing.T) {
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
 			fakeSocket := mock.FakeSocket{Id: "1"}
-			err := HandleIncomingMessage(&fakeSocket, arg.message)
+			err := handler.Handle(&fakeSocket, arg.message)
 			require.Error(t, err, arg.contains)
 		})
 	}

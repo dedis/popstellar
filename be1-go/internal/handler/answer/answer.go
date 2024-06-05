@@ -43,7 +43,7 @@ func New(queries repository.QueryManager, handlers AnswerHandlers) *Handler {
 	}
 }
 
-func (h *Handler) HandleAnswer(msg []byte) error {
+func (h *Handler) Handle(msg []byte) error {
 	var answerMsg answer.Answer
 
 	err := json.Unmarshal(msg, &answerMsg)
