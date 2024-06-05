@@ -16,6 +16,8 @@ import java.util.Map;
 
 /** Websocket client capable of creating lao, roll call, and election objects and issuing coins */
 public class MockClient extends MultiMsgWebSocketClient {
+  private int requestIdCounter = 1;
+
   public MockClient(String wsURL) {
     super(new WebSocketOptions(wsURL), new Logger(), new MessageQueue());
     System.out.println("Client is connecting to URL: " + wsURL);
@@ -131,6 +133,46 @@ public class MockClient extends MultiMsgWebSocketClient {
   public RollCall createRollCall(Lao lao) {
     RollCall rollCall = generateValidRollCall(lao);
     return createRollCall(lao, rollCall);
+  }
+
+  /**
+   * Subscribes to a channel.
+   * @param channel the channel to subscribe to
+   * @return the subscription request
+   */
+  public Map<String, Object> subscribeToChannel(String channel) {
+    Map<String, Object> params = new HashMap<>();
+    params.put("channel", channel);
+
+    Map<String, Object> req = new HashMap<>();
+    req.put("method", "subscribe");
+    req.put("id", requestIdCounter++);
+    req.put("params", params);
+    req.put("jsonrpc", "2.0");
+
+    this.send(req);
+
+    return req;
+  }
+
+  /**
+   * Catches up to a channel.
+   * @param channel the channel to catch up to
+   * @return the catchup request
+   */
+  public Map<String, Object> catchupToChannel(String channel) {
+    Map<String, Object> params = new HashMap<>();
+    params.put("channel", channel);
+
+    Map<String, Object> req = new HashMap<>();
+    req.put("method", "catchup");
+    req.put("id", requestIdCounter++);
+    req.put("params", params);
+    req.put("jsonrpc", "2.0");
+
+    this.send(req);
+
+    return req;
   }
 
   /**
