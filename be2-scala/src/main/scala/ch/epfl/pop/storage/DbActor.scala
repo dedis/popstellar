@@ -195,7 +195,7 @@ final case class DbActor(
   private def getTopChirps(channel: Channel, buildCatchupList: (msgIds: List[Hash], acc: List[Message], fromChannel: Channel) => List[Message]): List[Message] = {
     val laoID = channel.decodeChannelLaoId match {
       case Some(id) => id
-      case None => Hash(Base64Data(""))
+      case None     => Hash(Base64Data(""))
     }
     val reactionsChannel = Channel.apply(s"/root/$laoID/social/reactions")
 
@@ -277,7 +277,7 @@ final case class DbActor(
   private def updateNumberOfNewChirpsReactions(channel: Channel, resetToZero: Boolean): Unit = {
     val laoID = channel.decodeChannelLaoId match {
       case Some(id) => id
-      case None => Hash(Base64Data(""))
+      case None     => Hash(Base64Data(""))
     }
     val newReactionsChannel = Channel.apply(s"/root/$laoID/social/top_chirps/number_of_new_reactions")
     if (!checkChannelExistence(newReactionsChannel)) {
@@ -319,7 +319,7 @@ final case class DbActor(
 
     val laoID = channel.decodeChannelLaoId match {
       case Some(id) => id
-      case None => Hash(Base64Data(""))
+      case None     => Hash(Base64Data(""))
     }
 
     if (topChirpsPattern.findFirstMatchIn(channel.toString).isDefined) {
@@ -387,7 +387,7 @@ final case class DbActor(
 
     val laoID = channel.decodeChannelLaoId match {
       case Some(id) => id
-      case None => Hash(Base64Data(""))
+      case None     => Hash(Base64Data(""))
     }
 
     if (chirpsPattern.findFirstMatchIn(channel.toString).isDefined) {
