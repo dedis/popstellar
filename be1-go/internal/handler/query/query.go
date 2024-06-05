@@ -2,14 +2,37 @@ package query
 
 import (
 	"encoding/json"
-	"popstellar/internal/handler/query/catchup"
-
 	"popstellar/internal/errors"
 	"popstellar/internal/message/query"
 	"popstellar/internal/network/socket"
 )
 
-func HandleQuery(socket socket.Socket, msg []byte) error {
+type MethodHandler interface {
+	Handle(socket socket.Socket, msg []byte) (*int, error)
+}
+
+type MethodHandlers struct {
+	catchup         MethodHandler
+	getmessagesbyid MethodHandler
+	greetserver     MethodHandler
+	heartbeat       MethodHandler
+	publish         MethodHandler
+	subscribe       MethodHandler
+	unsubscribe     MethodHandler
+	rumor           MethodHandler
+}
+
+type Handler struct {
+	handlers MethodHandlers
+}
+
+func New(handlers MethodHandlers) *Handler {
+	return &Handler{
+		handlers: handlers,
+	}
+}
+
+func (h *Handler) Handle(socket socket.Socket, msg []byte) error {
 	var queryBase query.Base
 
 	err := json.Unmarshal(msg, &queryBase)
@@ -21,21 +44,21 @@ func HandleQuery(socket socket.Socket, msg []byte) error {
 
 	switch queryBase.Method {
 	case query.MethodCatchUp:
-		id, err = catchup.handleCatchUp(socket, msg)
+		id, err = h.handlers.catchup.Handle(socket, msg)
 	case query.MethodGetMessagesById:
-		id, err = handleGetMessagesByID(socket, msg)
+		id, err = h.handlers.getmessagesbyid.Handle(socket, msg)
 	case query.MethodGreetServer:
-		err = handleGreetServer(socket, msg)
+		_, err = h.handlers.greetserver.Handle(socket, msg)
 	case query.MethodHeartbeat:
-		err = handleHeartbeat(socket, msg)
+		_, err = h.handlers.heartbeat.Handle(socket, msg)
 	case query.MethodPublish:
-		id, err = handlePublish(socket, msg)
+		id, err = h.handlers.publish.Handle(socket, msg)
 	case query.MethodSubscribe:
-		id, err = handleSubscribe(socket, msg)
+		id, err = h.handlers.subscribe.Handle(socket, msg)
 	case query.MethodUnsubscribe:
-		id, err = handleUnsubscribe(socket, msg)
+		id, err = h.handlers.unsubscribe.Handle(socket, msg)
 	case query.MethodRumor:
-		id, err = handleRumor(socket, msg)
+		id, err = h.handlers.rumor.Handle(socket, msg)
 	default:
 		err = errors.NewInvalidActionError("unexpected method: '%s'", queryBase.Method)
 	}

@@ -6,8 +6,6 @@ import (
 	"sort"
 
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/channel"
-	"popstellar/internal/handler/query"
 	"popstellar/internal/logger"
 	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query/method/message"
@@ -91,7 +89,7 @@ func handleRumorAnswer(msg answer.Answer) error {
 		return errors.NewInternalServerError("rumor query %d doesn't exist", *msg.ID)
 	}
 
-	query.SendRumor(nil, rumor)
+	rumor.SendRumor(nil, rumor)
 
 	return nil
 }

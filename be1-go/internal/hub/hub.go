@@ -3,8 +3,7 @@ package hub
 import (
 	"encoding/json"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler"
-	query2 "popstellar/internal/handler/query"
+	query2 "popstellar/internal/handler/method/rumor"
 	"popstellar/internal/logger"
 	jsonrpc "popstellar/internal/message"
 	"popstellar/internal/message/query"
@@ -132,7 +131,7 @@ func (h *Hub) runMessageReceiver() {
 		select {
 		case incomingMessage := <-h.messageChan:
 			logger.Logger.Debug().Msg("start handling a message")
-			err := handler.HandleIncomingMessage(incomingMessage.Socket, incomingMessage.Message)
+			err := HandleIncomingMessage(incomingMessage.Socket, incomingMessage.Message)
 			if err != nil {
 				logger.Logger.Error().Err(err)
 			} else {
