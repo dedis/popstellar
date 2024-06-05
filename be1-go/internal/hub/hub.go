@@ -123,26 +123,26 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 		Federation: federation.New(&db, subs, sockets, hubParams, schemaValidator),
 	}
 
-	messageHandler := messageHandler.New(&db, dataHandlers)
-	rumorSender := rumor.New(queries, sockets, &db, messageHandler)
+	msgHandler := messageHandler.New(&db, dataHandlers)
+	rumorHandler := rumor.New(queries, sockets, &db, msgHandler)
 
-	queryHandler := queryHandler.New(queryHandler.MethodHandlers{
+	qHandler := queryHandler.New(queryHandler.MethodHandlers{
 		Catchup:         catchup.New(&db),
 		GetMessagesbyid: getmessagesbyid.New(&db),
 		Greetserver:     greetserver.New(conf, peers),
 		Heartbeat:       heartbeat.New(queries, &db),
-		Publish:         publish.New(hubParams, &db, messageHandler),
+		Publish:         publish.New(hubParams, &db, msgHandler),
 		Subscribe:       subscribe.New(subs),
 		Unsubscribe:     unsubscribe.New(subs),
-		Rumor:           rumor.New(queries, sockets, &db, messageHandler),
+		Rumor:           rumor.New(queries, sockets, &db, msgHandler),
 	})
 
-	answerHandler := answerHandler.New(queries, answerHandler.AnswerHandlers{
-		MessageHandler: messageHandler,
-		RumorSender:    rumorSender,
+	aHandler := answerHandler.New(queries, answerHandler.AnswerHandlers{
+		MessageHandler: msgHandler,
+		RumorSender:    rumorHandler,
 	})
 
-	jsonRpcHandler := jsonrpc.New(schemaValidator, queryHandler, answerHandler)
+	jsonRpcHandler := jsonrpc.New(schemaValidator, qHandler, aHandler)
 
 	hub := &Hub{
 		conf:           conf,
@@ -150,7 +150,7 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 		subs:           subs,
 		sockets:        sockets,
 		jsonRpcHandler: jsonRpcHandler,
-		rumorSender:    rumorSender,
+		rumorSender:    rumorHandler,
 		db:             &db,
 	}
 
@@ -275,7 +275,7 @@ func (h *Hub) runRumorSender() {
 }
 
 func (h *Hub) tryToSendRumor() error {
-	ok, rumor, err := h.db.GetAndIncrementMyRumor()
+	ok, r, err := h.db.GetAndIncrementMyRumor()
 	if err != nil {
 		return err
 	}
@@ -284,7 +284,7 @@ func (h *Hub) tryToSendRumor() error {
 		return nil
 	}
 
-	h.rumorSender.SendRumor(nil, rumor)
+	h.rumorSender.SendRumor(nil, r)
 
 	return nil
 }
