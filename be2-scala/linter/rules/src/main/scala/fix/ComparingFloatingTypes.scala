@@ -27,21 +27,14 @@ class ComparingFloatingTypes extends SemanticRule("ComparingFloatingTypes") {
     }
 
     doc.tree.collect {
-      case t @ Term.ApplyInfix.After_4_6_0(lhs, op, _, Term.ArgClause(List(right), _)) =>
-        if (isFloatOrDouble(lhs) && isFloatOrDouble(right)) {
-          op match {
-            case Term.Name("==") | Term.Name("!=") => Patch.lint(ComparingFloatingTypesDiag(t))
-            case _                                   => Patch.empty
-          }
-        } else {
-          Patch.empty
-        }
-      case t @ Term.Apply.After_4_6_0(Term.Select(lhs, Term.Name("equals")), Term.ArgClause(List(right), _)) =>
-        if (isFloatOrDouble(lhs) && isFloatOrDouble(right)) {
-          Patch.lint(ComparingFloatingTypesDiag(t))
-        } else {
-          Patch.empty
-        }
+      // Corresponds to lhs == rhs or lhs != rhs
+      // We then check if both of the operands are a Float or a Double and if so, we lint
+      case t @ Term.ApplyInfix.After_4_6_0(lhs, Term.Name("==") | Term.Name("!="), _, Term.ArgClause(List(right), _))
+        if isFloatOrDouble(lhs) && isFloatOrDouble(right) => Patch.lint(ComparingFloatingTypesDiag(t))
+      // Corresponds to lhs.equals(rhs)
+      case t @ Term.Apply.After_4_6_0(Term.Select(lhs, Term.Name("equals")), Term.ArgClause(List(right), _))
+        if isFloatOrDouble(lhs) && isFloatOrDouble(right) => Patch.lint(ComparingFloatingTypesDiag(t))
+      case _ => Patch.empty
     }
   }.asPatch
 }

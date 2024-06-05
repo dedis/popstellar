@@ -21,6 +21,7 @@ case class CatchNpeDiag(catch_tree: Tree) extends Diagnostic {
 class CatchNpe extends SemanticRule("CatchNpe") {
   override def fix(implicit doc: SemanticDocument): Patch = {
     doc.tree.collect {
+      // Corresponds to try { ... } catch { case e: NullPointerException => ... }
       case Term.Try(_, catches, _) => catches.collect {
           case Case(pat, _, _) => pat match {
               case Pat.Typed(_, tpe) if tpe.toString().equals("NullPointerException") => Patch.lint(CatchNpeDiag(pat))
