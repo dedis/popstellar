@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-// nullChannelSubHandler is a struct that implements the messageDataHandler interface with no-op methods
+// nullChannelSubHandler is a struct that implements the MessageDataHandler interface with no-op methods
 type nullChannelSubHandler struct{}
 
 // handle method for nullChannelSubHandler that always returns nil
@@ -22,7 +22,7 @@ func (n *nullChannelSubHandler) handle(_ string, _ message.Message) error {
 func Test_handleChannel(t *testing.T) {
 	db := mock.NewRepository(t)
 
-	subHandlers := messageDataHandlers{
+	subHandlers := MessageDataHandlers{
 		root:       &nullChannelSubHandler{},
 		lao:        &nullChannelSubHandler{},
 		election:   &nullChannelSubHandler{},

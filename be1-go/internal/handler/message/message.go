@@ -20,26 +20,26 @@ const (
 	FederationType   = "federation"
 )
 
-type messageDataHandler interface {
+type MessageDataHandler interface {
 	handle(channelPath string, msg message.Message) error
 }
 
-type messageDataHandlers struct {
-	root       messageDataHandler
-	lao        messageDataHandler
-	election   messageDataHandler
-	chirp      messageDataHandler
-	reaction   messageDataHandler
-	coin       messageDataHandler
-	federation messageDataHandler
+type MessageDataHandlers struct {
+	root       MessageDataHandler
+	lao        MessageDataHandler
+	election   MessageDataHandler
+	chirp      MessageDataHandler
+	reaction   MessageDataHandler
+	coin       MessageDataHandler
+	federation MessageDataHandler
 }
 
 type Handler struct {
 	db       repository.ChannelRepository
-	handlers messageDataHandlers
+	handlers MessageDataHandlers
 }
 
-func New(db repository.Repository, handlers messageDataHandlers) *Handler {
+func New(db repository.Repository, handlers MessageDataHandlers) *Handler {
 	return &Handler{
 		db:       db,
 		handlers: handlers,
