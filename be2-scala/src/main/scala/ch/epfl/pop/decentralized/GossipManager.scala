@@ -42,7 +42,7 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
 
   /** Does a step of gossipping protocol for given rpc. Tries to find a random peer that hasn't already received this msg If such a peer is found, sends message and updates table accordingly. If no peer is found, ends the protocol.
     * @param rumorRpc
-    *   Rpc that must be spreac
+    *   Rpc that must be spread
     */
   private def updateGossip(rumorRpc: JsonRpcRequest): Unit = {
     // checks the peers to which we already forwarded the message
@@ -67,8 +67,11 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
     }
   }
 
-  /** When receiving a rumor that must be relayed, empacks a rumor in a new jsonRPC and tries to do a step of gossipping protocol
+  /** When receiving a rumor that must be relayed, packs a rumor in a new jsonRPC and tries to do a step of gossipping protocol
     * @param request
+    *   Received rumor request that has already been processed.
+    * @param serverActorRef
+    *   Actor reference of the server that send the request
     */
   private def handleRumor(request: JsonRpcRequest, serverActorRef: ActorRef): Unit = {
     val rcvRumor = request.getParams.asInstanceOf[Rumor]
@@ -77,7 +80,7 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
     updateGossip(newRumorRequest)
   }
 
-  /** Processes a response. If a response matches a active gossip protocol, uses the reponse to decide how to continue gossipping If response is Positive (Result(0)), tries to do another step of gossipping If response is Negative (Error(-3)), considers stop gossiping
+  /** Processes a response. If a response matches an active gossip protocol, uses the response to decide how to continue gossipping If response is Positive (Result(0)), tries to do another step of gossipping If response is Negative (Error(-3)), considers stop gossiping
     * @param response
     *   Received response
     */
