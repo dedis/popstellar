@@ -25,11 +25,10 @@ const (
 
 func Test_handleChannelRoot(t *testing.T) {
 	type input struct {
-		name        string
-		channelPath string
-		msg         message.Message
-		isError     bool
-		contains    string
+		name     string
+		msg      message.Message
+		isError  bool
+		contains string
 	}
 
 	organizerBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)

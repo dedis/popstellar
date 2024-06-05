@@ -25,7 +25,6 @@ const (
 )
 
 type Handler struct {
-	messageHandler.MessageDataHandler
 	config repository.ConfigManager
 	db     repository.RootRepository
 	subs   repository.SubscriptionManager

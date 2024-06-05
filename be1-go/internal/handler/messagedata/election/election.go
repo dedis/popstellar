@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
-	messageHandler "popstellar/internal/handler/message"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/repository"
@@ -22,7 +21,6 @@ const (
 )
 
 type Handler struct {
-	messageHandler.MessageDataHandler
 	conf   repository.ConfigManager
 	subs   repository.SubscriptionManager
 	db     repository.ElectionRepository

@@ -51,30 +51,39 @@ type RumorSender interface {
 }
 
 type Hub struct {
-	conf           repository.ConfigManager
-	control        repository.HubManager
-	subs           repository.SubscriptionManager
-	sockets        repository.SocketManager
+	// in memory states
+	conf    repository.ConfigManager
+	control repository.HubManager
+	subs    repository.SubscriptionManager
+	sockets repository.SocketManager
+
+	// database
+	db repository.HubRepository
+
+	// handlers
 	jsonRpcHandler JsonRpcHandler
 	rumorSender    RumorSender
-	db             repository.HubRepository
 }
 
 func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress string) (*Hub, error) {
 
+	// Initialize the in memory states
 	subs := types.NewSubscribers()
 	peers := types.NewPeers()
 	queries := types.NewQueries(&logger.Logger)
 	hubParams := types.NewHubParams()
 	sockets := types.NewSockets()
 
+	// Initialize the database
 	db, err := sqlite.NewSQLite(dbPath, true)
 	if err != nil {
 		return nil, err
 	}
 
+	// Get the server keys from the database
 	serverPublicKey, serverSecretKey, err := db.GetServerKeys()
 	if err != nil {
+		// If the server keys are not found, generate new ones
 		serverSecretKey = crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 		serverPublicKey = crypto.Suite.Point().Mul(serverSecretKey, nil)
 
@@ -84,13 +93,16 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 		}
 	}
 
+	// Create the in memory configuration state
 	conf := types.CreateConfig(ownerPubKey, serverPublicKey, serverSecretKey, clientAddress, serverAddress)
 
+	// Store the rumor with id 0 associated to the server if the database is empty
 	err = db.StoreFirstRumor()
 	if err != nil {
 		return nil, err
 	}
 
+	// Get all the channels from the database and add them to the subscribers
 	channels, err := db.GetAllChannels()
 	if err != nil {
 		return nil, err
@@ -108,11 +120,13 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 		}
 	}
 
+	// Create the schema validator
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
 		return nil, err
 	}
 
+	// Create the message data handlers
 	dataHandlers := messageHandler.MessageDataHandlers{
 		Root:       root.New(conf, &db, subs, peers, schemaValidator),
 		Lao:        lao.New(conf, subs, &db, schemaValidator),
@@ -123,9 +137,13 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 		Federation: federation.New(&db, subs, sockets, hubParams, schemaValidator),
 	}
 
+	// Create the message handler
 	msgHandler := messageHandler.New(&db, dataHandlers)
+
+	// Create the rumor handler
 	rumorHandler := rumor.New(queries, sockets, &db, msgHandler)
 
+	// Create the query handler
 	qHandler := queryHandler.New(queryHandler.MethodHandlers{
 		Catchup:         catchup.New(&db),
 		GetMessagesbyid: getmessagesbyid.New(&db),
@@ -137,13 +155,16 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 		Rumor:           rumor.New(queries, sockets, &db, msgHandler),
 	})
 
+	// Create the answer handler
 	aHandler := answerHandler.New(queries, answerHandler.AnswerHandlers{
 		MessageHandler: msgHandler,
 		RumorSender:    rumorHandler,
 	})
 
+	// Create the json rpc handler
 	jsonRpcHandler := jsonrpc.New(schemaValidator, qHandler, aHandler)
 
+	// Create the hub
 	hub := &Hub{
 		conf:           conf,
 		control:        hubParams,

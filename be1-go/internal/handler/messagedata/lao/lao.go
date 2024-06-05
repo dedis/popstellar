@@ -6,7 +6,6 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
-	messageHandler "popstellar/internal/handler/message"
 	"popstellar/internal/handler/messagedata/root"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
@@ -16,7 +15,6 @@ import (
 )
 
 type Handler struct {
-	messageHandler.MessageDataHandler
 	conf   repository.ConfigManager
 	subs   repository.SubscriptionManager
 	db     repository.LAORepository

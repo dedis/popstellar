@@ -3,7 +3,6 @@ package reaction
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
-	messageHandler "popstellar/internal/handler/message"
 	"popstellar/internal/handler/messagedata/root"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
@@ -13,7 +12,6 @@ import (
 )
 
 type Handler struct {
-	messageHandler.MessageDataHandler
 	subs   repository.SubscriptionManager
 	db     repository.ReactionRepository
 	schema *validation.SchemaValidator

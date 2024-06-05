@@ -3,7 +3,6 @@ package chirp
 import (
 	"encoding/base64"
 	"encoding/json"
-	messageHandler "popstellar/internal/handler/message"
 	"popstellar/internal/handler/messagedata/root"
 	"popstellar/internal/repository"
 	"popstellar/internal/validation"
@@ -15,7 +14,6 @@ import (
 )
 
 type Handler struct {
-	messageHandler.MessageDataHandler
 	conf   repository.ConfigManager
 	subs   repository.SubscriptionManager
 	db     repository.ChirpRepository
