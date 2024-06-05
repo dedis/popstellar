@@ -30,7 +30,6 @@ import (
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/repository"
-	"popstellar/internal/singleton/state"
 	"popstellar/internal/sqlite"
 	"popstellar/internal/types"
 	"popstellar/internal/validation"
@@ -44,6 +43,10 @@ const (
 
 type JsonRpcHandler interface {
 	Handle(socket socket.Socket, msg []byte) error
+}
+
+type GreetServerSender interface {
+	SendGreetServer(socket socket.Socket) error
 }
 
 type RumorSender interface {
@@ -61,8 +64,9 @@ type Hub struct {
 	db repository.HubRepository
 
 	// handlers
-	jsonRpcHandler JsonRpcHandler
-	rumorSender    RumorSender
+	jsonRpcHandler    JsonRpcHandler
+	greetserverSender GreetServerSender
+	rumorSender       RumorSender
 }
 
 func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress string) (*Hub, error) {
@@ -140,6 +144,9 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	// Create the message handler
 	msgHandler := messageHandler.New(&db, dataHandlers)
 
+	// Create the greetserver handler
+	greetserverHandler := greetserver.New(conf, peers)
+
 	// Create the rumor handler
 	rumorHandler := rumor.New(queries, sockets, &db, msgHandler)
 
@@ -147,12 +154,12 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	qHandler := queryHandler.New(queryHandler.MethodHandlers{
 		Catchup:         catchup.New(&db),
 		GetMessagesbyid: getmessagesbyid.New(&db),
-		Greetserver:     greetserver.New(conf, peers),
+		Greetserver:     greetserverHandler,
 		Heartbeat:       heartbeat.New(queries, &db),
 		Publish:         publish.New(hubParams, &db, msgHandler),
 		Subscribe:       subscribe.New(subs),
 		Unsubscribe:     unsubscribe.New(subs),
-		Rumor:           rumor.New(queries, sockets, &db, msgHandler),
+		Rumor:           rumorHandler,
 	})
 
 	// Create the answer handler
@@ -166,13 +173,14 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 
 	// Create the hub
 	hub := &Hub{
-		conf:           conf,
-		control:        hubParams,
-		subs:           subs,
-		sockets:        sockets,
-		jsonRpcHandler: jsonRpcHandler,
-		rumorSender:    rumorHandler,
-		db:             &db,
+		conf:              conf,
+		control:           hubParams,
+		subs:              subs,
+		sockets:           sockets,
+		jsonRpcHandler:    jsonRpcHandler,
+		greetserverSender: greetserverHandler,
+		rumorSender:       rumorHandler,
+		db:                &db,
 	}
 
 	return hub, nil
@@ -203,35 +211,7 @@ func (h *Hub) OnSocketClose() chan<- string {
 }
 
 func (h *Hub) SendGreetServer(socket socket.Socket) error {
-	serverPublicKey, clientAddress, serverAddress, err := h.conf.GetServerInfo()
-	if err != nil {
-		return err
-	}
-
-	greetServerParams := method.GreetServerParams{
-		PublicKey:     serverPublicKey,
-		ServerAddress: serverAddress,
-		ClientAddress: clientAddress,
-	}
-
-	serverGreet := &method.GreetServer{
-		Base: query.Base{
-			JSONRPCBase: message.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: query.MethodGreetServer,
-		},
-		Params: greetServerParams,
-	}
-
-	buf, err := json.Marshal(serverGreet)
-	if err != nil {
-		return errors.NewJsonMarshalError(err.Error())
-	}
-
-	socket.Send(buf)
-
-	return state.AddPeerGreeted(socket.ID())
+	return h.greetserverSender.SendGreetServer(socket)
 }
 
 func (h *Hub) runMessageReceiver() {
@@ -315,7 +295,7 @@ func (h *Hub) runHeartbeat() {
 	for {
 		select {
 		case <-ticker.C:
-			err := h.sendHeartbeatToServers()
+			err := h.sendHeartbeat()
 			if err != nil {
 				logger.Logger.Error().Err(err)
 			}
@@ -325,8 +305,8 @@ func (h *Hub) runHeartbeat() {
 	}
 }
 
-// sendHeartbeatToServers sends a heartbeat message to all servers
-func (h *Hub) sendHeartbeatToServers() error {
+// sendHeartbeat sends a heartbeat message to all servers
+func (h *Hub) sendHeartbeat() error {
 	heartbeatMessage := method.Heartbeat{
 		Base: query.Base{
 			JSONRPCBase: message.JSONRPCBase{

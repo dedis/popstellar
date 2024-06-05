@@ -39,9 +39,18 @@ func (h *Handler) Handle(socket socket.Socket, byteMessage []byte) (*int, error)
 		return nil, nil
 	}
 
-	serverPublicKey, clientAddress, serverAddress, err := h.conf.GetServerInfo()
+	err = h.SendGreetServer(socket)
 	if err != nil {
 		return nil, err
+	}
+
+	return nil, nil
+}
+
+func (h *Handler) SendGreetServer(socket socket.Socket) error {
+	serverPublicKey, clientAddress, serverAddress, err := h.conf.GetServerInfo()
+	if err != nil {
+		return err
 	}
 
 	greetServerParams := method.GreetServerParams{
@@ -62,12 +71,12 @@ func (h *Handler) Handle(socket socket.Socket, byteMessage []byte) (*int, error)
 
 	buf, err := json.Marshal(serverGreet)
 	if err != nil {
-		return nil, errors.NewJsonMarshalError(err.Error())
+		return errors.NewJsonMarshalError(err.Error())
 	}
 
 	socket.Send(buf)
 
 	h.peers.AddPeerGreeted(socket.ID())
 
-	return nil, nil
+	return nil
 }
