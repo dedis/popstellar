@@ -66,7 +66,7 @@ class ElectionFragmentTest {
       START,
       END,
       EventState.CLOSED,
-      HashSet(),
+      LinkedHashSet(),
       LOCATION,
       ROLL_CALL_DESC
     )
