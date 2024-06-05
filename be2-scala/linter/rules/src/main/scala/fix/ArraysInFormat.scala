@@ -21,7 +21,10 @@ class ArraysInFormat extends SemanticRule("ArraysInFormat") {
 
   override def fix(implicit doc: SemanticDocument): Patch = {
     doc.tree.collect {
+      // Corresponds to String.format(formatString, args), myStr.format(args) and "str".format(args)
       case Term.Apply.After_4_6_0(Term.Select(_, Term.Name("format")), Term.ArgClause(args, _)) => rule(args)
+      // Corresponds to f"str $args" and s"str $args"
+      // Args in Term.Interpolate come in Term.Block requiring to extract the stats
       case Term.Interpolate(_, _, args) => args.collect { case Term.Block(stats) => rule(stats) }.asPatch
       case _ => Patch.empty
     }.asPatch

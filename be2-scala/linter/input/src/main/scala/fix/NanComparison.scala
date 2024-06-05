@@ -9,6 +9,8 @@ object NanComparison {
     val d = 0.5d
     d == Double.NaN // assert: NanComparison
     Double.NaN == d // assert: NanComparison
+    d.equals(Double.NaN) // assert: NanComparison
+    Double.NaN.equals(d) // assert: NanComparison
 
     val f = 0.5f
     f == Double.NaN // assert: NanComparison
@@ -20,6 +22,8 @@ object NanComparison {
 
     d == g // assert: NanComparison
     g == d // assert: NanComparison
+    d.equals(g) // assert: NanComparison
+    g.equals(d) // assert: NanComparison
   }
 
 }

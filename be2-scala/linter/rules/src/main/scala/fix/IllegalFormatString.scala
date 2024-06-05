@@ -15,6 +15,7 @@ class IllegalFormatString extends SemanticRule("IllegalFormatString") {
 
   private def diag(pos: Position) = Diagnostic("", "Illegal format string", pos, "An unchecked exception will be thrown when a format string contains an illegal syntax or a format specifier that is incompatible with the given arguments", LintSeverity.Error)
 
+  // Rule tries to format the string to check if it ends in an exception, and if so lints
   //Term parameter is simply used to display the rule at the correct place
   private def rule(t: Term, value: String, args: List[Any]): Patch = {
     try value.format(args: _*)
@@ -26,6 +27,7 @@ class IllegalFormatString extends SemanticRule("IllegalFormatString") {
 
   override def fix(implicit doc: SemanticDocument): Patch = {
 
+    // Method to get the args with their corresponding definitions
     def getMappedArgs(args: List[Term]): List[Any] = {
       (findDefinitionsOrdered(doc.tree, args) ++ args).collect { case Lit(value) => value }
     }
