@@ -13,6 +13,7 @@ class TryGet extends SemanticRule("TryGet") {
 
   override def fix(implicit doc: SemanticDocument): Patch = {
     doc.tree.collect {
+      // Corresponds to Try{_}.get or t.get
       case t @ Term.Select(qual, Term.Name("get")) if Util.matchType(qual, "scala/util/Try") => Patch.lint(diag(t.pos))
       case _ => Patch.empty
     }.asPatch

@@ -13,7 +13,16 @@ class StripMarginOnRegex extends SemanticRule("StripMarginOnRegex") {
 
   override def fix(implicit doc: SemanticDocument): Patch = {
     doc.tree.collect {
-      case t @ Term.Select(Term.Select(Lit.String(string), Term.Name("stripMargin")), Term.Name("r")) if string.contains('|') => Patch.lint(diag(t.pos))
+      // Corresponds to "regex".stripMargin.r or myRegex.stripMargin.r
+      case t @ Term.Select(Term.Select(qual, Term.Name("stripMargin")), Term.Name("r")) =>
+        qual match {
+          case name @ Term.Name(_) => Util.findDefinition(doc.tree, name) match {
+            case Lit.String(value) if value.contains('|') => Patch.lint(diag(t.pos))
+            case _ => Patch.empty
+          }
+          case Lit.String(value) if value.contains('|') => Patch.lint(diag(t.pos))
+          case _ => Patch.empty
+        }
       case _ => Patch.empty
     }.asPatch
   }

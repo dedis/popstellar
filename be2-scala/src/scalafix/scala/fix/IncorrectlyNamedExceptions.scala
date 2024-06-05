@@ -12,6 +12,7 @@ class IncorrectlyNamedExceptions extends SemanticRule("IncorrectlyNamedException
 
   private def diag(pos: Position) = Diagnostic("", "Incorrectly named exceptions", pos, "Class named exception does not derive from Exception / class derived from Exception is not named *Exception.", LintSeverity.Error)
 
+  // Helper function to check if a class inherits from Exception, going through the ancestors
   private def inheritsFromException(symbol: Symbol)(implicit doc: SemanticDocument): Boolean = {
     symbol.info match {
       case Some(info) =>
@@ -33,9 +34,12 @@ class IncorrectlyNamedExceptions extends SemanticRule("IncorrectlyNamedException
 
   override def fix(implicit doc: SemanticDocument): Patch = {
     doc.tree.collect {
+      // In this rule, we check if there is an exception class that does not inherit from Exception
+      // Corresponds to a class declaration
       case cl @ Defn.Class.After_4_6_0(_, Type.Name(name), _, _, _) =>
         cl.symbol.info.get.signature match {
           case ClassSignature(_, parents, _, _) =>
+            // We then check the parents: either its direct parent is an Exception or one of its ancestors is an Exception
             if (!name.contains("Exception") && parents.map(_.asInstanceOf[TypeRef].symbol).exists(inheritsFromException))
               Patch.lint(diag(cl.pos))
             else Patch.empty
