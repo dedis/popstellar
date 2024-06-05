@@ -21,7 +21,7 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
 
   final val pathCatchupJson = "../protocol/examples/query/catchup/catchup.json"
   final val pathPagedCatchupJson = "../protocol/examples/query/paged_catchup/paged_catchup.json"
-  final val pathPagedCatchupNonChirpsChannelJson = "../protocol/examples/query/paged_catchup/paged_catchup_non_chirps_channel.json"
+  final val pathPagedCatchupNonChirpsChannelJson = "src/test/scala/util/examples/json/paged_catchup/paged_catchup_non_chirps_channel.json"
   final val pathPublishJson = "../protocol/examples/query/publish/publish.json"
   final val pathBroadcastJson = "../protocol/examples/query/broadcast/broadcast.json"
 
