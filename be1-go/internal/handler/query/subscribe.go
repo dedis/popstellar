@@ -2,7 +2,7 @@ package query
 
 import (
 	"encoding/json"
-	"popstellar/internal/handler/messageData/root"
+	"popstellar/internal/handler/messagedata/root"
 
 	"popstellar/internal/errors"
 	"popstellar/internal/message/query/method"

@@ -3,7 +3,7 @@ package query
 import (
 	"encoding/json"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/messageData/root"
+	"popstellar/internal/handler/messagedata/root"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/singleton/state"

@@ -6,7 +6,7 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/messageData/root"
+	"popstellar/internal/handler/messagedata/root"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/repository"

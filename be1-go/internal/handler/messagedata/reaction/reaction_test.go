@@ -2,7 +2,7 @@ package reaction
 
 import (
 	"github.com/stretchr/testify/require"
-	"popstellar/internal/handler/messageData/root"
+	"popstellar/internal/handler/messagedata/root"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"

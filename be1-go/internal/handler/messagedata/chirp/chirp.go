@@ -3,7 +3,7 @@ package chirp
 import (
 	"encoding/base64"
 	"encoding/json"
-	"popstellar/internal/handler/messageData/root"
+	"popstellar/internal/handler/messagedata/root"
 	"popstellar/internal/repository"
 	"popstellar/internal/validation"
 	"strings"
