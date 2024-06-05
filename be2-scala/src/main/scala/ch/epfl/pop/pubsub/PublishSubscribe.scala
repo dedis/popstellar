@@ -131,9 +131,9 @@ object PublishSubscribe {
                       case Some(ResultRumor(_)) => portRumorAns
                       case _                    => portError
                   case None if m.error.isDefined => portResponseMonitor
-                  case _ => portError
+                  case _                         => portError
                 }
-              case _ => portError 
+              case _ => portError
             }
           ))
 
@@ -145,8 +145,8 @@ object PublishSubscribe {
 
           /* glue the components together */
           input ~> responsePartitioner
-          
-          responsePartitioner.out(portResponseMonitor) ~> gossipMonitorPartition  ~> merger
+
+          responsePartitioner.out(portResponseMonitor) ~> gossipMonitorPartition ~> merger
           responsePartitioner.out(portGetMsgById) ~> getMsgByIdResponsePartition ~> merger
           responsePartitioner.out(portRumorAns) ~> rumorStateAnsPartition ~> merger
           responsePartitioner.out(portError) ~> merger
