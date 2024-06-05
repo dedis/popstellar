@@ -55,5 +55,6 @@ type HubManager interface {
 	GetMessageChan() chan socket.IncomingMessage
 	GetStopChan() chan struct{}
 	GetClosedSockets() chan string
+	GetResetRumorSender() chan struct{}
 	NotifyResetRumorSender() error
 }

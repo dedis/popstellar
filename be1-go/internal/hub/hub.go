@@ -247,24 +247,18 @@ func (h *Hub) runRumorSender() {
 
 	logger.Logger.Info().Msg("starting rumor sender")
 
-	reset, err := state.GetResetRumorSender()
-	if err != nil {
-		logger.Logger.Error().Err(err)
-		return
-	}
-
 	for {
 		select {
 		case <-ticker.C:
 			logger.Logger.Debug().Msgf("sender rumor trigerred")
-			err = h.tryToSendRumor()
+			err := h.tryToSendRumor()
 			if err != nil {
 				logger.Logger.Error().Err(err)
 			}
-		case <-reset:
+		case <-h.control.GetResetRumorSender():
 			logger.Logger.Debug().Msgf("sender rumor reset")
 			ticker.Reset(rumorDelay)
-			err = h.tryToSendRumor()
+			err := h.tryToSendRumor()
 			if err != nil {
 				logger.Logger.Error().Err(err)
 			}

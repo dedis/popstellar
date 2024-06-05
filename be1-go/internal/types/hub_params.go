@@ -38,6 +38,10 @@ func (h *HubParams) GetClosedSockets() chan string {
 	return h.closedSockets
 }
 
+func (h *HubParams) GetResetRumorSender() chan struct{} {
+	return h.resetRumorSender
+}
+
 func (h *HubParams) NotifyResetRumorSender() error {
 	select {
 	case h.resetRumorSender <- struct{}{}:

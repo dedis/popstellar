@@ -2,6 +2,7 @@ package query
 
 import (
 	"encoding/json"
+	"fmt"
 	"popstellar/internal/errors"
 	"popstellar/internal/message/query"
 	"popstellar/internal/network/socket"
@@ -35,6 +36,8 @@ func New(handlers MethodHandlers) *Handler {
 func (h *Handler) Handle(socket socket.Socket, msg []byte) error {
 	var queryBase query.Base
 
+	fmt.Println("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy42")
+
 	err := json.Unmarshal(msg, &queryBase)
 	if err != nil {
 		return errors.NewJsonUnmarshalError(err.Error())
@@ -62,6 +65,8 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) error {
 	default:
 		err = errors.NewInvalidActionError("unexpected method: '%s'", queryBase.Method)
 	}
+
+	fmt.Println("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy69")
 
 	if err != nil && id != nil {
 		socket.SendPopError(id, err)
