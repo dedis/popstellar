@@ -4,38 +4,56 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"os"
+	"io"
 	"popstellar/internal/crypto"
+	"popstellar/internal/errors"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/singleton/database"
-	"popstellar/internal/singleton/utils"
-	"popstellar/internal/validation"
+	"popstellar/internal/network/socket"
+	"popstellar/internal/state"
 	"testing"
 	"time"
 )
 
-func TestMain(m *testing.M) {
-	schemaValidator, err := validation.NewSchemaValidator()
-	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
+const (
+	wrongData      = "wrong data"
+	wrongSender    = "wrong sender"
+	wrongSignature = "wrong signature"
+	wrongMessageID = "wrong messageID"
+)
+
+type nullMessageHandler struct{}
+
+func (n *nullMessageHandler) Handle(channelPath string, msg message.Message, fromRumor bool) error {
+	if msg.MessageID == wrongMessageID {
+		return errors.NewInvalidMessageFieldError("Wrong messageID")
+	} else {
+		return nil
 	}
+}
 
-	utils.InitUtils(schemaValidator)
+type nullRumorSender struct{}
 
-	exitVal := m.Run()
-
-	os.Exit(exitVal)
+func (n *nullRumorSender) SendRumor(socket socket.Socket, rumor method.Rumor) {
 }
 
 func Test_handleMessagesByChannel(t *testing.T) {
-	mockRepository := mock.NewRepository(t)
-	database.SetDatabase(mockRepository)
+
+	l := zerolog.New(io.Discard)
+
+	queries := state.NewQueries(&l)
+
+	answerHandlers := AnswerHandlers{
+		MessageHandler: &nullMessageHandler{},
+		RumorSender:    &nullRumorSender{},
+	}
+
+	handler := New(queries, answerHandlers)
 
 	type input struct {
 		name     string
@@ -43,11 +61,11 @@ func Test_handleMessagesByChannel(t *testing.T) {
 		expected map[string]map[string]message.Message
 	}
 
-	keypair := generator.GenerateKeyPair(t)
+	_, publicBuf, private, _ := generator.GenerateKeyPair(t)
 	now := time.Now().Unix()
 	name := "LAO X"
 
-	laoID := message.Hash(base64.URLEncoding.EncodeToString(keypair.PublicBuf), fmt.Sprintf("%d", now), name)
+	laoID := message.Hash(base64.URLEncoding.EncodeToString(publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := messagedata.LaoCreate{
 		Object:    messagedata.LAOObject,
@@ -55,13 +73,13 @@ func Test_handleMessagesByChannel(t *testing.T) {
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
-		Organizer: base64.URLEncoding.EncodeToString(keypair.PublicBuf),
+		Organizer: base64.URLEncoding.EncodeToString(publicBuf),
 		Witnesses: []string{},
 	}
 
 	dataBuf, err := json.Marshal(data)
 	require.NoError(t, err)
-	signature, err := schnorr.Sign(crypto.Suite, keypair.Private, dataBuf)
+	signature, err := schnorr.Sign(crypto.Suite, private, dataBuf)
 	require.NoError(t, err)
 
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
@@ -69,17 +87,17 @@ func Test_handleMessagesByChannel(t *testing.T) {
 
 	msgValid := message.Message{
 		Data:              dataBase64,
-		Sender:            base64.URLEncoding.EncodeToString(keypair.PublicBuf),
+		Sender:            base64.URLEncoding.EncodeToString(publicBuf),
 		Signature:         signatureBase64,
 		MessageID:         message.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
 	msgWithInvalidField := message.Message{
-		Data:              "wrong data",
-		Sender:            "wrong sender",
-		Signature:         "wrong signature",
-		MessageID:         "wrong messageID",
+		Data:              wrongData,
+		Sender:            wrongSender,
+		Signature:         wrongSignature,
+		MessageID:         wrongMessageID,
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -97,13 +115,12 @@ func Test_handleMessagesByChannel(t *testing.T) {
 
 	expected := make(map[string]map[string]message.Message)
 	expected["/root"] = make(map[string]message.Message)
-	expected["/root"][msgValid.MessageID] = msgValid
+	expected["/root"][msgWithInvalidField.MessageID] = msgWithInvalidField
 	expected["/root/lao1"] = make(map[string]message.Message)
-	expected["/root/lao1"][msgValid.MessageID] = msgValid
+	expected["/root/lao1"][msgWithInvalidField.MessageID] = msgWithInvalidField
 
-	mockRepository.On("HasMessage", msgValid.MessageID).Return(false, nil)
-	mockRepository.On("GetChannelType", "/root").Return("", nil)
-	mockRepository.On("GetChannelType", "/root/lao1").Return("", nil)
+	fmt.Println(messages)
+	fmt.Println(expected)
 
 	inputs = append(inputs, input{
 		name:     "blacklist without invalid field error",
@@ -113,10 +130,11 @@ func Test_handleMessagesByChannel(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			handleMessagesByChannel(i.messages)
+			handler.handleMessagesByChannel(i.messages)
 
 			for k0, v0 := range i.expected {
 				for k1 := range v0 {
+					fmt.Println(i.messages[k0][k1])
 					require.Equal(t, i.expected[k0][k1], i.messages[k0][k1])
 				}
 			}
