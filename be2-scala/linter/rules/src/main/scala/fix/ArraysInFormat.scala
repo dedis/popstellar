@@ -14,7 +14,7 @@ class ArraysInFormat extends SemanticRule("ArraysInFormat") {
 
   def rule(args: List[Stat])(implicit doc: SemanticDocument): Patch = {
     args.collect {
-      case a if Util.matchType(a, "scala/Array") => Patch.lint(diag(a.pos))
+      case a if Util.matchType(a, "scala/Array", "scala/Array.empty") => Patch.lint(diag(a.pos))
       case _ => Patch.empty
     }.asPatch
   }

@@ -14,8 +14,10 @@ class EmptyInterpolatedString extends SemanticRule("EmptyInterpolatedString") {
 
   override def fix(implicit doc: SemanticDocument): Patch = {
     doc.tree.collect {
-      // Corresponds to String.format(formatString, _) and "str".format(_)
-      case t @ Term.Apply.After_4_6_0(Term.Select(_, Term.Name("format")), Term.ArgClause(List(Lit.String(_)), _) | Term.ArgClause(Nil, _)) => Patch.lint(diag(t.pos))
+      // Corresponds to String.format(formatString, _) and String.format(), str.format()
+      case t @ Term.Apply.After_4_6_0(Term.Select(Term.Name("String"), Term.Name("format")), Term.ArgClause(List(Lit.String(_)), _) | Term.ArgClause(Nil, _)) => Patch.lint(diag(t.pos))
+      // Corresponds to "str".format()
+      case t @ Term.Apply.After_4_6_0(Term.Select(Lit.String(_) | Term.Name(_), Term.Name("format")), Term.ArgClause(Nil, _)) => Patch.lint(diag(t.pos))
       // Corresponds to f"str" and s"str"
       case t @ Term.Interpolate(_, _, Nil)                                                                         => Patch.lint(diag(t.pos))
     }.asPatch

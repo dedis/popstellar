@@ -17,6 +17,8 @@ object ArraysInFormat {
     Array passed to format / interpolate string
      */
 
+    String.format("Here are my cool elements %d", Array.empty[Int]) // assert: ArraysInFormat
+
     "Here are my cool elements %d".format(13) // scalafix: ok;
   }
 

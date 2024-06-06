@@ -10,6 +10,8 @@ object IllegalFormatString {
     val illegalFormatString1 = "%s is %d years old, %d"
     String.format(illegalFormatString1, name, age) // assert: IllegalFormatString
 
+    String.format("%d is %d years old", age, name) // assert: IllegalFormatString
+
     illegalFormatString1.format(name, age) // assert: IllegalFormatString
 
     "%s is %d years old, %d".format(name, age) // assert: IllegalFormatString
