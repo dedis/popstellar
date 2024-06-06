@@ -9,49 +9,50 @@ import java.io.IOException;
 
 public class LinearServerNetwork {
   private final List<Server> servers;
-  private final MockClient inputNodeClient;
-  private final MockClient outputNodeClient;
+  private static int nextAvailablePort = 8000;
 
-  private LinearServerNetwork(List<Server> servers, MockClient inputNodeClient, MockClient outputNodeClient) {
-    this.servers = servers;
-    this.inputNodeClient = inputNodeClient;
-    this.outputNodeClient = outputNodeClient;
+  /**
+   * Create a linear network of servers with the given servers.
+   * @param servers the servers in the network. The first server is the input node and the last server is the output node. The servers should not be paired.
+   */
+  private LinearServerNetwork(List<Server> servers) {
+    this.servers = List.copyOf(servers);
+
+    for (int i = 0; i < servers.size() - 1; i++) {
+      servers.get(i).pairWith(servers.get(i + 1));
+    }
   }
 
-  public static LinearServerNetwork withOnlyGoServers(int numServers) throws IOException, InterruptedException {
-    int availablePort = 8000;
+  public static LinearServerNetwork withOnlyGoServers(int numServers) {
     List<Server> servers = new ArrayList<>();
 
     for (int i = 0; i < numServers; i++) {
-      servers.add(new GoServer("127.0.0.1", availablePort++, availablePort++, availablePort++, null, null));
+      servers.add(new GoServer("127.0.0.1", nextAvailablePort++, nextAvailablePort++, nextAvailablePort++, null, null));
     }
 
-    for (int i = 0; i < numServers - 1; i++) {
-      servers.get(i).pairWith(servers.get(i + 1));
+    return new LinearServerNetwork(servers);
+  }
+
+  public static LinearServerNetwork withOnlyScalaServers(int numServers) throws IOException, InterruptedException {
+    List<Server> servers = new ArrayList<>();
+
+    for (int i = 0; i < numServers; i++) {
+      servers.add(new ScalaServer("127.0.0.1", nextAvailablePort++, null, null));
     }
 
-    for (Server server : servers) {
-      server.start();
-    }
-
-    // Wait for all servers to start
-    Thread.sleep(5000);
-
-    MockClient inputNodeClient = new MockClient(servers.get(0).getWsClientURL());
-    MockClient outputNodeClient = new MockClient(servers.get(numServers - 1).getWsClientURL());
-    return new LinearServerNetwork(servers, inputNodeClient, outputNodeClient);
+    return new LinearServerNetwork(servers);
   }
 
   public List<Server> getServers() {
-    return servers;
+    return List.copyOf(servers);
   }
 
-  public MockClient getInputNodeClient() {
-    return inputNodeClient;
+  public MockClient createInputNodeClient() {
+    return new MockClient(getInputNode().getWsClientURL());
   }
 
-  public MockClient getOutputNodeClient() {
-    return outputNodeClient;
+  public MockClient createOutputNodeClient() {
+    return new MockClient(getOutputNode().getWsClientURL());
   }
 
   public Server getInputNode() {
@@ -60,6 +61,12 @@ public class LinearServerNetwork {
 
   public Server getOutputNode() {
     return servers.get(servers.size() - 1);
+  }
+
+  public void startAll() throws IOException {
+    for (Server server : servers) {
+      server.start();
+    }
   }
 
   public void stopAll() {

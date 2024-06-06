@@ -3,8 +3,10 @@ Feature: Rumor
   Background:
     * def LinearServerNetwork = Java.type("be.utils.LinearServerNetwork")
     * def network = LinearServerNetwork.withOnlyGoServers(2)
-    * def inputClient = network.getInputNodeClient()
-    * def outputClient = network.getOutputNodeClient()
+    * network.startAll()
+    * java.lang.Thread.sleep(2000)
+    * def inputClient = network.createInputNodeClient()
+    * def outputClient = network.createOutputNodeClient()
     * configure afterScenario =
       """
         function() {
@@ -18,7 +20,7 @@ Feature: Rumor
   @name=rumor_simple
   Scenario:
     * def lao = inputClient.createLao()
-    * java.lang.Thread.sleep(5000)
+    * java.lang.Thread.sleep(2000)
     * def subscribeRequest = outputClient.subscribeToChannel(lao.channel)
     * karate.log("subscribe request:\n", karate.pretty(subscribeRequest))
     * def subscribeResponse = outputClient.takeTimeout(timeout)
