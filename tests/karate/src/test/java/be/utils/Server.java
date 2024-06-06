@@ -62,6 +62,26 @@ public abstract class Server implements Runnable {
   }
 
   /**
+   * Removes a peer from the server
+   *
+   * @param peer server to remove as peer
+   */
+  public void removePeer(Server peer) {
+    peers.remove(peer.host + ":" + peer.serverPort);
+  }
+
+  /**
+   * Unpair two servers.
+   * Equivalent to calling removePeer on both servers.
+   *
+   * @param peer server to unpair with
+   */
+  public void unpairWith(Server peer) {
+    removePeer(peer);
+    peer.removePeer(this);
+  }
+
+  /**
    * Get the server port
    *
    * @return server port
