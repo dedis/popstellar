@@ -192,7 +192,7 @@ export const handleFederationResultMessage =
             value: challengeMessage.value,
             valid_until: challengeMessage.valid_until,
           });
-          dispatch(addReceivedChallenge(laoId, challenge, federationResult.public_key));
+          dispatch(addReceivedChallenge(laoId, challenge.toState(), federationResult.public_key));
         }
       } catch (e) {
         console.log(e);

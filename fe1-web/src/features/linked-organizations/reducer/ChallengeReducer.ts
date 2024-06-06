@@ -7,13 +7,13 @@ import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash, PublicKey } from 'core/objects';
 
-import { Challenge, ChallengeState } from '../objects/Challenge';
+import { ChallengeState } from '../objects/Challenge';
 
 export const CHALLENGE_REDUCER_PATH = 'challenge';
 
 export interface ChallengeReducerState {
   byLaoId: Record<string, ChallengeState>;
-  recvChallenges: Record<string, [Challenge, PublicKey?][]>;
+  recvChallenges: Record<string, [ChallengeState, PublicKey?][]>;
 }
 
 const initialState: ChallengeReducerState = {
@@ -40,7 +40,7 @@ const challengeSlice = createSlice({
       },
     },
     addReceivedChallenge: {
-      prepare(laoId: Hash, challenge: Challenge, publicKey?: PublicKey) {
+      prepare(laoId: Hash, challenge: ChallengeState, publicKey?: PublicKey) {
         return {
           payload: {
             laoId: laoId.valueOf(),
@@ -51,7 +51,7 @@ const challengeSlice = createSlice({
       },
       reducer(
         state,
-        action: PayloadAction<{ laoId: string; challenge: Challenge; publicKey?: PublicKey }>,
+        action: PayloadAction<{ laoId: string; challenge: ChallengeState; publicKey?: PublicKey }>,
       ) {
         const { laoId, challenge, publicKey } = action.payload;
         if (state.recvChallenges[laoId] === undefined) {
@@ -60,8 +60,8 @@ const challengeSlice = createSlice({
         if (
           state.recvChallenges[laoId].find(
             ([challenge1]) =>
-              challenge1.value === challenge.value &&
-              challenge1.valid_until === challenge.valid_until,
+              challenge1.value.valueOf() === challenge.value.valueOf() &&
+              challenge1.valid_until.valueOf() === challenge.valid_until.valueOf(),
           )
         ) {
           return;
@@ -70,7 +70,7 @@ const challengeSlice = createSlice({
       },
     },
     removeReceivedChallenge: {
-      prepare(laoId: Hash, challenge: Challenge, publicKey?: PublicKey) {
+      prepare(laoId: Hash, challenge: ChallengeState, publicKey?: PublicKey) {
         return {
           payload: {
             laoId: laoId.valueOf(),
@@ -81,7 +81,7 @@ const challengeSlice = createSlice({
       },
       reducer(
         state,
-        action: PayloadAction<{ laoId: string; challenge: Challenge; publicKey?: PublicKey }>,
+        action: PayloadAction<{ laoId: string; challenge: ChallengeState; publicKey?: PublicKey }>,
       ) {
         const { laoId, challenge } = action.payload;
         if (state.recvChallenges[laoId] === undefined) {
@@ -89,7 +89,11 @@ const challengeSlice = createSlice({
         }
 
         state.recvChallenges[laoId] = state.recvChallenges[laoId].filter(
-          ([challenge1]) => challenge1 !== challenge,
+          ([challenge1]) =>
+            !(
+              challenge1.valid_until.valueOf() === challenge.valid_until.valueOf() &&
+              challenge1.value.valueOf() === challenge.value.valueOf()
+            ),
         );
       },
     },
@@ -132,7 +136,7 @@ export const makeChallengeReceveidSelector = (laoId: Hash) => {
     // First input: a map containing all challenges
     (state: any) => getChallengeState(state),
     // Selector: returns the challenge for a specific lao
-    (challengeState: ChallengeReducerState): [Challenge, PublicKey?][] | undefined => {
+    (challengeState: ChallengeReducerState): [ChallengeState, PublicKey?][] | undefined => {
       const serializedLaoId = laoId.valueOf();
       if (!challengeState) {
         return undefined;

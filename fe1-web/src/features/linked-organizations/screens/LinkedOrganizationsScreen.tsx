@@ -51,11 +51,10 @@ const LinkedOrganizationsScreen = () => {
     ) {
       try {
         for (const [challenge, publicKey] of recvChallengeState) {
-          const chall2 = challenge.toState();
           const matchingOrg = scannedLinkedOrgStates.find(
             (org) =>
-              org.challenge!.value === chall2.value &&
-              org.challenge!.valid_until === chall2.valid_until,
+              org.challenge!.value.valueOf() === challenge.value.valueOf() &&
+              org.challenge!.valid_until.valueOf() === challenge.valid_until.valueOf(),
           );
           if (matchingOrg && publicKey) {
             dispatch(addLinkedOrganization(laoId, matchingOrg!));

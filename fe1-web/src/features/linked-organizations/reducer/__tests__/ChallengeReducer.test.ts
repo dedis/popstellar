@@ -54,13 +54,13 @@ describe('ChallengeReducer', () => {
           byLaoId: {},
           recvChallenges: {},
         } as ChallengeReducerState,
-        addReceivedChallenge(mockLaoId, mockChallenge, mockLao.organizer),
+        addReceivedChallenge(mockLaoId, mockChallengeState, mockLao.organizer),
       );
       expect(
         newState.recvChallenges[mockLaoId.valueOf()]?.find(
           ([challenge]) =>
-            challenge.value === mockChallenge.value &&
-            challenge.valid_until === mockChallenge.valid_until,
+            challenge.value === mockChallengeState.value &&
+            challenge.valid_until === mockChallengeState.valid_until,
         ),
       ).toBeTruthy();
     });
@@ -73,17 +73,17 @@ describe('ChallengeReducer', () => {
           byLaoId: {},
           recvChallenges: {},
         } as ChallengeReducerState,
-        addReceivedChallenge(mockLaoId, mockChallenge, mockLao.organizer),
+        addReceivedChallenge(mockLaoId, mockChallengeState, mockLao.organizer),
       );
       newState = challengeReduce(
         newState,
-        removeReceivedChallenge(mockLaoId, mockChallenge, mockLao.organizer),
+        removeReceivedChallenge(mockLaoId, mockChallengeState, mockLao.organizer),
       );
       expect(
         newState.recvChallenges[mockLaoId.valueOf()]?.find(
           ([challenge]) =>
-            challenge.value === mockChallenge.value &&
-            challenge.valid_until === mockChallenge.valid_until,
+            challenge.value === mockChallengeState.value &&
+            challenge.valid_until === mockChallengeState.valid_until,
         ),
       ).toBeUndefined();
     });
@@ -135,23 +135,23 @@ describe('makeChallengeReceveidSelector', () => {
         byLaoId: {},
         recvChallenges: {},
       } as ChallengeReducerState,
-      addReceivedChallenge(mockLaoId, mockChallenge, mockLao.organizer),
+      addReceivedChallenge(mockLaoId, mockChallengeState, mockLao.organizer),
     );
     expect(
       newState.recvChallenges[mockLaoId.valueOf()]?.find(
         ([challenge]) =>
-          challenge.value === mockChallenge.value &&
-          challenge.valid_until === mockChallenge.valid_until,
+          challenge.value.valueOf() === mockChallengeState.value.valueOf() &&
+          challenge.valid_until.valueOf() === mockChallengeState.valid_until.valueOf(),
       ),
     ).toBeTruthy();
     expect(
       makeChallengeReceveidSelector(mockLaoId)({
         [CHALLENGE_REDUCER_PATH]: {
           byLaoId: {},
-          recvChallenges: { [serializedMockLaoId]: [[mockChallenge, mockLao.organizer]] },
+          recvChallenges: { [serializedMockLaoId]: [[mockChallengeState, mockLao.organizer]] },
         } as ChallengeReducerState,
       }),
-    ).toEqual([[mockChallenge, mockLao.organizer]]);
+    ).toEqual([[mockChallengeState, mockLao.organizer]]);
   });
 
   it('returns undefined if the laoId is not in the store', () => {
@@ -160,20 +160,20 @@ describe('makeChallengeReceveidSelector', () => {
         byLaoId: {},
         recvChallenges: {},
       } as ChallengeReducerState,
-      addReceivedChallenge(mockLaoId, mockChallenge, mockLao.organizer),
+      addReceivedChallenge(mockLaoId, mockChallengeState, mockLao.organizer),
     );
     expect(
       newState.recvChallenges[mockLaoId.valueOf()]?.find(
         ([challenge]) =>
-          challenge.value === mockChallenge.value &&
-          challenge.valid_until === mockChallenge.valid_until,
+          challenge.value.valueOf() === mockChallengeState.value.valueOf() &&
+          challenge.valid_until.valueOf() === mockChallengeState.valid_until.valueOf(),
       ),
     ).toBeTruthy();
     expect(
       makeChallengeReceveidSelector(mockLaoId2)({
         [CHALLENGE_REDUCER_PATH]: {
           byLaoId: {},
-          recvChallenges: { [serializedMockLaoId]: [[mockChallenge, mockLao.organizer]] },
+          recvChallenges: { [serializedMockLaoId]: [[mockChallengeState, mockLao.organizer]] },
         } as ChallengeReducerState,
       }),
     ).toBeUndefined();
