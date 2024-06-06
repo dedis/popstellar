@@ -910,6 +910,12 @@ final case class DbActor(
         case failure            => sender() ! failure.recover(Status.Failure(_))
       }
 
+    case GetRumorState() =>
+      log.info(s"Actor $self (db) received a GetRumorState request")
+      Try(getRumorState) match
+        case Success(rumorState) => sender() ! DbActorGetRumorStateAck(rumorState)
+        case failure             => sender() ! failure.recover(Status.Failure(_))
+
     case UpdateNumberOfNewChirpsReactions(channel: Channel) =>
       updateNumberOfNewChirpsReactions(channel, false)
 
@@ -1163,6 +1169,10 @@ object DbActor {
 
   final case class GenerateRumorStateAns(rumorState: RumorState) extends Event
 
+  /** Requests the db to build out rumorState +
+    */
+  final case class GetRumorState() extends Event
+
   /** Requests the Db for the update the number of chirps reaction events since last top chirps request
     *
     * @param channel
@@ -1262,6 +1272,10 @@ object DbActor {
   /** Response for a [[GenerateRumorStateAns]]
     */
   final case class DbActorGenerateRumorStateAns(rumorList: List[Rumor]) extends DbActorMessage
+
+  /** Response for a [[GetRumorState]] +
+    */
+  final case class DbActorGetRumorStateAck(rumorState: RumorState) extends DbActorMessage
 
   /** Response for a general db actor ACK
     */
