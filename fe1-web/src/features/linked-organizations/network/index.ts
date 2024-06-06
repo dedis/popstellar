@@ -6,8 +6,15 @@ import {
   handleChallengeRequestMessage,
   handleFederationExpectMessage,
   handleFederationInitMessage,
+  handleFederationResultMessage,
 } from './LinkedOrgHandler';
-import { ChallengeRequest, ChallengeMessage, FederationExpect, FederationInit } from './messages';
+import {
+  ChallengeRequest,
+  ChallengeMessage,
+  FederationExpect,
+  FederationInit,
+  FederationResult,
+} from './messages';
 
 export * from './LinkedOrgMessageApi';
 
@@ -40,5 +47,11 @@ export function configureNetwork(configuration: LinkedOrganizationsConfiguration
     ActionType.FEDERATION_EXPECT,
     handleFederationExpectMessage(configuration.getCurrentLaoId),
     FederationExpect.fromJson,
+  );
+  configuration.messageRegistry.add(
+    ObjectType.FEDERATION,
+    ActionType.FEDERATION_RESULT,
+    handleFederationResultMessage(configuration.getCurrentLaoId),
+    FederationResult.fromJson,
   );
 }

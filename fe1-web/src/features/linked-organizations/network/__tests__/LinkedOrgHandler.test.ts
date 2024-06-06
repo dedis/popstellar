@@ -21,13 +21,19 @@ import {
   handleFederationExpectMessage,
   handleFederationInitMessage,
 } from '../LinkedOrgHandler';
-import { ChallengeRequest, ChallengeMessage, FederationExpect, FederationInit } from '../messages';
+import {
+  ChallengeRequest,
+  ChallengeMessage,
+  FederationExpect,
+  FederationInit,
+  FederationResult,
+} from '../messages';
 
 jest.mock('core/network/jsonrpc/messages/Message', () => {
   return {
-    Message: jest.fn().mockImplementation(() => {
+    Message: jest.fn().mockImplementation((x) => {
       return {
-        buildMessageData: jest.fn((input) => JSON.stringify(input)),
+        buildMessageData: jest.fn(() => JSON.parse(JSON.stringify(x))),
       };
     }),
   };
@@ -316,5 +322,61 @@ describe('handleFederationExpectMessage', () => {
         messageData: mockFederationExpect,
       }),
     ).toBeTrue();
+  });
+});
+
+describe('handleFederationResultMessage', () => {
+  it('should return false if the object type is wrong', () => {
+    expect(
+      handleChallengeMessage()({
+        ...mockMessageData,
+        messageData: {
+          object: ObjectType.MEETING,
+          action: ActionType.FEDERATION_RESULT,
+        },
+      } as ProcessableMessage),
+    ).toBeFalse();
+  });
+
+  it('should return false if the action type is wrong', () => {
+    expect(
+      handleChallengeMessage()({
+        ...mockMessageData,
+        messageData: {
+          object: ObjectType.FEDERATION,
+          action: ActionType.ADD,
+        },
+      } as ProcessableMessage),
+    ).toBeFalse();
+  });
+
+  it('should return false if there is an issue with the message data', () => {
+    expect(
+      handleChallengeMessage()({
+        ...mockMessageData,
+        messageData: {
+          object: ObjectType.FEDERATION,
+          action: ActionType.FEDERATION_RESULT,
+          challenge: undefined as unknown as Message,
+          status: undefined as unknown as string,
+          public_key: undefined as unknown as PublicKey,
+        } as FederationResult,
+      }),
+    ).toBeFalse();
+  });
+  it('should return false if there is both a public key and a reason in the message data', () => {
+    expect(
+      handleChallengeMessage()({
+        ...mockMessageData,
+        messageData: {
+          object: ObjectType.FEDERATION,
+          action: ActionType.FEDERATION_RESULT,
+          challenge: mockChallengMessageData,
+          status: 'success',
+          reason: 'error',
+          public_key: mockSender,
+        } as FederationResult,
+      }),
+    ).toBeFalse();
   });
 });

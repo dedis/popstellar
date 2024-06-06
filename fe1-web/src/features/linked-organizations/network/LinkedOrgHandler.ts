@@ -1,10 +1,17 @@
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
+import { Base64UrlData } from 'core/objects';
 import { dispatch } from 'core/redux';
 
 import { LinkedOrganizationsConfiguration } from '../interface';
 import { Challenge } from '../objects/Challenge';
-import { setChallenge } from '../reducer';
-import { ChallengeRequest, ChallengeMessage, FederationExpect, FederationInit } from './messages';
+import { addReceivedChallenge, setChallenge } from '../reducer';
+import {
+  ChallengeRequest,
+  ChallengeMessage,
+  FederationExpect,
+  FederationInit,
+  FederationResult,
+} from './messages';
 
 /**
  * Handler for linked organization messages
@@ -142,6 +149,57 @@ export const handleFederationExpectMessage =
       ) {
         return true;
       }
+    }
+    return false;
+  };
+
+/**
+ * Handles an federationResult message.
+ */
+export const handleFederationResultMessage =
+  (getCurrentLaoId: LinkedOrganizationsConfiguration['getCurrentLaoId']) =>
+  (msg: ProcessableMessage) => {
+    console.log('HANLDE FEDRES');
+    console.log(msg);
+    if (
+      msg.messageData.object !== ObjectType.FEDERATION ||
+      msg.messageData.action !== ActionType.FEDERATION_RESULT
+    ) {
+      console.warn('handleFederationResultMessage was called to process an unsupported message');
+      return false;
+    }
+
+    const makeErr = (err: string) => `federation/result was not processed: ${err}`;
+
+    const laoId = getCurrentLaoId();
+    if (!laoId) {
+      console.warn(makeErr('no Lao is currently active'));
+      return false;
+    }
+
+    if (msg.messageData instanceof FederationResult) {
+      const federationResult = msg.messageData as FederationResult;
+      try {
+        if (
+          federationResult.status &&
+          federationResult.challenge &&
+          (federationResult.reason || federationResult.public_key)
+        ) {
+          const b64urldata = new Base64UrlData(federationResult.challenge.data.toString());
+          const js = JSON.parse(b64urldata.decode());
+          const challengeMessage = ChallengeMessage.fromJson(js);
+          const challenge = new Challenge({
+            value: challengeMessage.value,
+            valid_until: challengeMessage.valid_until,
+          });
+          dispatch(addReceivedChallenge(laoId, challenge, federationResult.public_key));
+        }
+      } catch (e) {
+        console.log(e);
+        return false;
+      }
+
+      return true;
     }
     return false;
   };

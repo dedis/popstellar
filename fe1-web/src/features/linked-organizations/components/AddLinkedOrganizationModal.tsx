@@ -21,7 +21,7 @@ import { expectFederation, initFederation, requestChallenge } from '../network';
 import { Challenge } from '../objects/Challenge';
 import { LinkedOrganization } from '../objects/LinkedOrganization';
 import { makeChallengeSelector } from '../reducer';
-import { addLinkedOrganization } from '../reducer/LinkedOrganizationsReducer';
+import { addScannedLinkedOrganization } from '../reducer/LinkedOrganizationsReducer';
 import ManualInputModal from './ManualInputModal';
 import QRCodeModal from './QRCodeModal';
 import QRCodeScannerModal from './QRCodeScannerModal';
@@ -102,6 +102,14 @@ const AddLinkedOrganizationModal = () => {
   const onFederationExpect = useCallback(
     (org: LinkedOrganization) => {
       if (challengeState) {
+        const linkedorg = new LinkedOrganization({
+          lao_id: org.lao_id,
+          server_address: org.server_address,
+          public_key: org.public_key,
+          challenge: Challenge.fromState(challengeState),
+        });
+        setLinkedOrganization(linkedorg);
+        dispatch(addScannedLinkedOrganization(laoId, linkedorg.toState()));
         expectFederation(
           laoId,
           org.lao_id,
@@ -110,12 +118,7 @@ const AddLinkedOrganizationModal = () => {
           Challenge.fromState(challengeState),
         )
           .then(() => {
-            toast.show(`Success: Expect Federation`, {
-              type: 'success',
-              placement: 'bottom',
-              duration: FOUR_SECONDS,
-            });
-            dispatch(addLinkedOrganization(laoId, org.toState()));
+            console.log('Expect Federation successfull');
           })
           .catch((err) => {
             toast.show(`Could not expect Federation, error: ${err}`, {
@@ -133,12 +136,7 @@ const AddLinkedOrganizationModal = () => {
     (org: LinkedOrganization) => {
       initFederation(laoId, org.lao_id, org.server_address, org.public_key, org.challenge!)
         .then(() => {
-          toast.show(`Success: Init Federation`, {
-            type: 'success',
-            placement: 'bottom',
-            duration: FOUR_SECONDS,
-          });
-          dispatch(addLinkedOrganization(laoId, org.toState()));
+          console.log('Init Federation successfull');
         })
         .catch((err) => {
           toast.show(`Could not init Federation, error: ${err}`, {
@@ -159,6 +157,7 @@ const AddLinkedOrganizationModal = () => {
       if (isInitiatingOrganizer) {
         requestChallengeAndDisplayQRCode();
         setShowQRCodeModal(true);
+        dispatch(addScannedLinkedOrganization(laoId, scannedLinkedOrganization.toState()));
         setLinkedOrganization(scannedLinkedOrganization);
       } else {
         onFederationExpect(scannedLinkedOrganization);
