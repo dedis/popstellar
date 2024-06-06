@@ -220,10 +220,7 @@ constructor(
     // Extend the current connection by connecting to the peers of the main server
     // The greetLao will also be sent by the other servers, so the message sender
     // should handle this, avoiding to connect twice to the same server
-    // TODO: Remove the comment when testing for backend is finished ! Maxime @Kaz | May 2024
-    // Also, I realised removing this line that no tests are actually testing this part of the
-    // code...
-    // context.messageSender.extendConnection(greetLao.peers)
+    context.messageSender.extendConnection(greetLao.peers)
   }
 
   companion object {
