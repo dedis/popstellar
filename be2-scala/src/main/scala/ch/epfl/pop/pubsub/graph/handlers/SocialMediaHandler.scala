@@ -29,7 +29,6 @@ object SocialMediaHandler extends MessageHandler {
 
     Await.ready(ask, duration).value match {
       case Some(Success(_)) =>
-        dbActor ? DbActor.UpdateNumberOfNewChirpsReactions(rpcMessage.getParamsChannel)
         val (chirpId, channelChirp, data, broadcastChannel) = parametersToBroadcast[AddChirp](rpcMessage)
         //  create and propagate the notifyAddChirp message
         val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirpId, channelChirp, data.timestamp)
@@ -62,7 +61,6 @@ object SocialMediaHandler extends MessageHandler {
 
     Await.ready(ask, duration).value match {
       case Some(Success(_)) =>
-        dbActor ? DbActor.UpdateNumberOfNewChirpsReactions(rpcMessage.getParamsChannel)
         val (chirpId, channelChirp, data, broadcastChannel) = parametersToBroadcast[DeleteChirp](rpcMessage)
         // create and propagate the notifyDeleteChirp message
         val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirpId, channelChirp, data.timestamp)
@@ -97,11 +95,13 @@ object SocialMediaHandler extends MessageHandler {
 
   def handleAddReaction(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    dbActor ? DbActor.UpdateNumberOfNewChirpsReactions(rpcMessage.getParamsChannel)
     Await.result(ask, duration)
   }
 
   def handleDeleteReaction(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    dbActor ? DbActor.UpdateNumberOfNewChirpsReactions(rpcMessage.getParamsChannel)
     Await.result(ask, duration)
   }
 
