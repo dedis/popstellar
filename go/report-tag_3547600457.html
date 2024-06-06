@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>05 Jun 2024, 04:16</td>
+      <td>06 Jun 2024, 04:15</td>
     </tr>
   </tbody>
 </table>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >1</td>
           <td class="total">1</td>
 
-          <td class="duration" data-value="5197740">0.005</td>
+          <td class="duration" data-value="4548163">0.004</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -182,7 +182,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.004</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -383,7 +383,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validCastVote, newElection.channel)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -410,7 +410,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validCastVote)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -454,7 +454,7 @@ $(document).ready(function() {
       <div id="msg-4" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1829873300,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1220154915,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
@@ -479,11 +479,11 @@ classpath:be/features/election/castVote.feature:97</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-5" class="collapse collapsable-details">
-        <pre>04:12:25.925 classpath:be/features/election/castVote.feature:97
+        <pre>04:11:16.407 classpath:be/features/election/castVote.feature:97
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1829873300,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1220154915,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
