@@ -75,7 +75,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>06 Jun 2024, 04:15</td>
+      <td>07 Jun 2024, 04:16</td>
     </tr>
   </tbody>
 </table>
@@ -126,7 +126,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">0.007</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -239,7 +239,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">notOrganizer.publish(validCreateRollCall, lao.channel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -266,7 +266,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = notOrganizer.getBackendResponse(validCreateRollCall)</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -310,7 +310,7 @@ $(document).ready(function() {
       <div id="msg-4" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1990645243,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:206437565,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -328,11 +328,11 @@ classpath:be/features/rollCall/openRollCall.feature:54</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-5" class="collapse collapsable-details">
-        <pre>04:14:57.730 classpath:be/features/rollCall/openRollCall.feature:54
+        <pre>04:15:52.223 classpath:be/features/rollCall/openRollCall.feature:54
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1990645243,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:206437565,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -609,7 +609,7 @@ classpath:be/features/rollCall/openRollCall.feature:72</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-10" class="collapse collapsable-details">
-        <pre>04:15:03.054 classpath:be/features/rollCall/openRollCall.feature:72
+        <pre>04:15:57.544 classpath:be/features/rollCall/openRollCall.feature:72
 And json answer = organizer.getBackendResponse(validOpenRollCall)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -869,7 +869,7 @@ classpath:be/features/rollCall/openRollCall.feature:89</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-15" class="collapse collapsable-details">
-        <pre>04:15:08.365 classpath:be/features/rollCall/openRollCall.feature:89
+        <pre>04:16:02.858 classpath:be/features/rollCall/openRollCall.feature:89
 And json answer = organizer.getBackendResponse(invalidOpenRollCall)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -1129,7 +1129,7 @@ classpath:be/features/rollCall/openRollCall.feature:107</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-20" class="collapse collapsable-details">
-        <pre>04:15:13.680 classpath:be/features/rollCall/openRollCall.feature:107
+        <pre>04:16:08.181 classpath:be/features/rollCall/openRollCall.feature:107
 And json answer = organizer.getBackendResponse(invalidOpenRollCall)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -1316,7 +1316,7 @@ classpath:be/features/rollCall/openRollCall.feature:107
 </div>
 
 
-  <span class="lead-duration duration">0.458</span>
+  <span class="lead-duration duration">0.471</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-21">
@@ -1386,7 +1386,7 @@ classpath:be/features/rollCall/openRollCall.feature:107
   <span class="keyword indention">And</span>
   <span class="name">call read(validCoinIssuanceScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)', recipient: '#(recipient)', amount: '#(initialAmount)' }</span>
 
-  <span class="lead-duration duration">0.128</span>
+  <span class="lead-duration duration">0.131</span>
 
 </div>
 
@@ -1432,7 +1432,7 @@ classpath:be/features/digitalCash/transaction.feature:62</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-24" class="collapse collapsable-details">
-        <pre>04:10:37.913 classpath:be/features/digitalCash/transaction.feature:62
+        <pre>04:11:32.160 classpath:be/features/digitalCash/transaction.feature:62
 And call read(validCoinIssuanceScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)', recipient: '#(recipient)', amount: '#(initialAmount)' }
 js failed:
 &gt;&gt;&gt;&gt;
@@ -1490,10 +1490,10 @@ classpath:be/features/digitalCash/transaction.feature:62
       </div>
       <div id="msg-25" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@36453773&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@4db16677&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@6abb44cb&quot;,
-  &quot;recipient&quot;: &quot;common.utils.MockClient@41ddec69&quot;,
+  &quot;organizer&quot;: &quot;common.utils.MockClient@185a0811&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@77fb1002&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@e2f6a45&quot;,
+  &quot;recipient&quot;: &quot;common.utils.MockClient@24cbf894&quot;,
   &quot;amount&quot;: 32
 }
 </pre>
@@ -1515,7 +1515,7 @@ classpath:be/features/digitalCash/transaction.feature:62
   <span class="keyword indention">&gt; *</span>
   <span class="name">call read(setupCoinChannelScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.109</span>
+  <span class="lead-duration duration">0.112</span>
 
 </div>
 
@@ -1588,9 +1588,9 @@ classpath:be/features/utils/simpleScenarios.feature:265</pre>
       </div>
       <div id="msg-27" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@36453773&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@4db16677&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@6abb44cb&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@185a0811&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@77fb1002&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@e2f6a45&quot;
 }
 </pre>
       </div>
@@ -1611,7 +1611,7 @@ classpath:be/features/utils/simpleScenarios.feature:265</pre>
   <span class="keyword indention">&gt;&gt; *</span>
   <span class="name">call read(closeRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.091</span>
+  <span class="lead-duration duration">0.094</span>
 
 </div>
 
@@ -1683,9 +1683,9 @@ classpath:be/features/utils/simpleScenarios.feature:231</pre>
       </div>
       <div id="msg-29" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@36453773&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@4db16677&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@6abb44cb&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@185a0811&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@77fb1002&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@e2f6a45&quot;
 }
 </pre>
       </div>
@@ -1706,7 +1706,7 @@ classpath:be/features/utils/simpleScenarios.feature:231</pre>
   <span class="keyword indention">&gt;&gt;&gt; *</span>
   <span class="name">call read(openRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.071</span>
+  <span class="lead-duration duration">0.075</span>
 
 </div>
 
@@ -1777,9 +1777,9 @@ classpath:be/features/utils/simpleScenarios.feature:104</pre>
       </div>
       <div id="msg-31" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@36453773&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@4db16677&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@6abb44cb&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@185a0811&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@77fb1002&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@e2f6a45&quot;
 }
 </pre>
       </div>
@@ -1800,7 +1800,7 @@ classpath:be/features/utils/simpleScenarios.feature:104</pre>
   <span class="keyword indention">&gt;&gt;&gt;&gt; *</span>
   <span class="name">call read(createRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.053</span>
+  <span class="lead-duration duration">0.054</span>
 
 </div>
 
@@ -1870,9 +1870,9 @@ classpath:be/features/utils/simpleScenarios.feature:85</pre>
       </div>
       <div id="msg-33" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@36453773&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@4db16677&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@6abb44cb&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@185a0811&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@77fb1002&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@e2f6a45&quot;
 }
 </pre>
       </div>
@@ -2238,7 +2238,7 @@ classpath:be/features/utils/simpleScenarios.feature:80</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.009</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-36">
@@ -2450,7 +2450,7 @@ classpath:be/features/utils/simpleScenarios.feature:80</pre>
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidTransaction, lao.cashChannel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -2477,7 +2477,7 @@ classpath:be/features/utils/simpleScenarios.feature:80</pre>
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidTransaction)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -2518,7 +2518,7 @@ classpath:be/features/digitalCash/transaction.feature:136</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-40" class="collapse collapsable-details">
-        <pre>04:10:43.321 classpath:be/features/digitalCash/transaction.feature:136
+        <pre>04:11:37.601 classpath:be/features/digitalCash/transaction.feature:136
 And json answer = organizer.getBackendResponse(invalidTransaction)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2624,7 +2624,7 @@ classpath:be/features/digitalCash/transaction.feature:136
 </div>
 
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.006</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-41">
@@ -2775,7 +2775,7 @@ classpath:be/features/digitalCash/transaction.feature:136
   <span class="keyword indention">And</span>
   <span class="name">def invalidTransaction =</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -2836,7 +2836,7 @@ classpath:be/features/digitalCash/transaction.feature:136
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidTransaction, lao.cashChannel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -2863,7 +2863,7 @@ classpath:be/features/digitalCash/transaction.feature:136
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidTransaction)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -2904,7 +2904,7 @@ classpath:be/features/digitalCash/transaction.feature:176</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-45" class="collapse collapsable-details">
-        <pre>04:10:48.730 classpath:be/features/digitalCash/transaction.feature:176
+        <pre>04:11:43.038 classpath:be/features/digitalCash/transaction.feature:176
 And json answer = organizer.getBackendResponse(invalidTransaction)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -3010,7 +3010,7 @@ classpath:be/features/digitalCash/transaction.feature:176
 </div>
 
 
-  <span class="lead-duration duration">0.010</span>
+  <span class="lead-duration duration">0.009</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-46">
@@ -3222,7 +3222,7 @@ classpath:be/features/digitalCash/transaction.feature:176
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidTransaction, lao.cashChannel)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -3249,7 +3249,7 @@ classpath:be/features/digitalCash/transaction.feature:176
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidTransaction)</span>
 
-  <span class="lead-duration duration">0.007</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -3290,7 +3290,7 @@ classpath:be/features/digitalCash/transaction.feature:216</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-50" class="collapse collapsable-details">
-        <pre>04:10:54.151 classpath:be/features/digitalCash/transaction.feature:216
+        <pre>04:11:48.463 classpath:be/features/digitalCash/transaction.feature:216
 And json answer = organizer.getBackendResponse(invalidTransaction)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -3396,7 +3396,7 @@ classpath:be/features/digitalCash/transaction.feature:216
 </div>
 
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.006</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-51">
@@ -3489,7 +3489,7 @@ classpath:be/features/digitalCash/transaction.feature:216
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validCastVote, lao.channel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -3557,7 +3557,7 @@ classpath:be/features/election/castVote.feature:66</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-55" class="collapse collapsable-details">
-        <pre>04:11:10.989 classpath:be/features/election/castVote.feature:66
+        <pre>04:12:05.254 classpath:be/features/election/castVote.feature:66
 And json answer = organizer.getBackendResponse(validCastVote)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -3663,7 +3663,7 @@ classpath:be/features/election/castVote.feature:66
 </div>
 
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.014</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-56">
@@ -3814,7 +3814,7 @@ classpath:be/features/election/castVote.feature:66
   <span class="keyword indention">And</span>
   <span class="name">def validCastVote =</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -3864,7 +3864,7 @@ classpath:be/features/election/castVote.feature:66
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validCastVote, newElection.channel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -3891,7 +3891,7 @@ classpath:be/features/election/castVote.feature:66
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validCastVote)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -3918,7 +3918,7 @@ classpath:be/features/election/castVote.feature:66
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -3935,11 +3935,11 @@ classpath:be/features/election/castVote.feature:66
       <div id="msg-59" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1220154915,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:2016032757,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:67\npopstellar/internal/handler/jsonrpc.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/jsonrpc/jsonrpc.go:45\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:228\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
-    {&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}
+    {&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:67\npopstellar/internal/handler/jsonrpc.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/jsonrpc/jsonrpc.go:45\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:228\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}
     {&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}
 
       $.error.code | not equal (NUMBER:NUMBER)
@@ -3960,15 +3960,15 @@ classpath:be/features/election/castVote.feature:97</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-60" class="collapse collapsable-details">
-        <pre>04:11:16.407 classpath:be/features/election/castVote.feature:97
+        <pre>04:12:10.741 classpath:be/features/election/castVote.feature:97
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1220154915,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:2016032757,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:67\npopstellar/internal/handler/jsonrpc.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/jsonrpc/jsonrpc.go:45\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:228\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
-    {&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}
+    {&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:67\npopstellar/internal/handler/jsonrpc.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/jsonrpc/jsonrpc.go:45\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:228\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}
     {&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}
 
       $.error.code | not equal (NUMBER:NUMBER)
@@ -4133,7 +4133,7 @@ classpath:be/features/election/castVote.feature:97
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidCastVote, election.channel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -4201,7 +4201,7 @@ classpath:be/features/election/castVote.feature:122</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-65" class="collapse collapsable-details">
-        <pre>04:11:21.827 classpath:be/features/election/castVote.feature:122
+        <pre>04:12:16.187 classpath:be/features/election/castVote.feature:122
 And json answer = organizer.getBackendResponse(invalidCastVote)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -4307,7 +4307,7 @@ classpath:be/features/election/castVote.feature:122
 </div>
 
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.004</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-66">
@@ -4468,7 +4468,7 @@ classpath:be/features/election/castVote.feature:148</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-70" class="collapse collapsable-details">
-        <pre>04:11:27.275 classpath:be/features/election/castVote.feature:148
+        <pre>04:12:21.597 classpath:be/features/election/castVote.feature:148
 And json answer = organizer.getBackendResponse(invalidCastVote)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -4574,7 +4574,7 @@ classpath:be/features/election/castVote.feature:148
 </div>
 
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.012</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-71">
@@ -4644,7 +4644,7 @@ classpath:be/features/election/castVote.feature:148
   <span class="keyword indention">And</span>
   <span class="name">def validCastVote =</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -4762,7 +4762,7 @@ classpath:be/features/election/castVote.feature:175</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-75" class="collapse collapsable-details">
-        <pre>04:11:32.699 classpath:be/features/election/castVote.feature:175
+        <pre>04:12:27.057 classpath:be/features/election/castVote.feature:175
 And json answer = nonAttendee.getBackendResponse(validCastVote)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -5029,7 +5029,7 @@ classpath:be/features/election/castVote.feature:200</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-80" class="collapse collapsable-details">
-        <pre>04:11:38.142 classpath:be/features/election/castVote.feature:200
+        <pre>04:12:32.503 classpath:be/features/election/castVote.feature:200
 And json answer = organizer.getBackendResponse(invalidCastVote)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -5135,7 +5135,7 @@ classpath:be/features/election/castVote.feature:200
 </div>
 
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.002</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-81">
@@ -5279,7 +5279,7 @@ classpath:be/features/election/castVote.feature:200
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(badCreateRollCall)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -5320,7 +5320,7 @@ classpath:be/features/rollCall/createRollCall.feature:62</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-85" class="collapse collapsable-details">
-        <pre>04:14:04.657 classpath:be/features/rollCall/createRollCall.feature:62
+        <pre>04:14:59.120 classpath:be/features/rollCall/createRollCall.feature:62
 And json answer = organizer.getBackendResponse(badCreateRollCall)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -5426,7 +5426,7 @@ classpath:be/features/rollCall/createRollCall.feature:62
 </div>
 
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.006</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-86">
@@ -5570,7 +5570,7 @@ classpath:be/features/rollCall/createRollCall.feature:62
   <span class="keyword indention">And</span>
   <span class="name">json answer = notOrganizer.getBackendResponse(validCreateRollCall)</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -5614,7 +5614,7 @@ classpath:be/features/rollCall/createRollCall.feature:62
       <div id="msg-89" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:577573494,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:666380390,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -5632,11 +5632,11 @@ classpath:be/features/rollCall/createRollCall.feature:88</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-90" class="collapse collapsable-details">
-        <pre>04:14:09.961 classpath:be/features/rollCall/createRollCall.feature:88
+        <pre>04:15:04.427 classpath:be/features/rollCall/createRollCall.feature:88
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:577573494,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:666380390,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -5705,7 +5705,7 @@ classpath:be/features/rollCall/createRollCall.feature:88
 </div>
 
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-91">
@@ -5822,7 +5822,7 @@ classpath:be/features/rollCall/createRollCall.feature:88
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validCreateRollCall)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -5863,7 +5863,7 @@ classpath:be/features/rollCall/createRollCall.feature:110</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-95" class="collapse collapsable-details">
-        <pre>04:14:15.263 classpath:be/features/rollCall/createRollCall.feature:110
+        <pre>04:15:09.732 classpath:be/features/rollCall/createRollCall.feature:110
 And json answer = organizer.getBackendResponse(validCreateRollCall)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -5969,7 +5969,7 @@ classpath:be/features/rollCall/createRollCall.feature:110
 </div>
 
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-96">
@@ -6113,7 +6113,7 @@ classpath:be/features/rollCall/createRollCall.feature:110
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(badCreateRollCall)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -6154,7 +6154,7 @@ classpath:be/features/rollCall/createRollCall.feature:136</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-100" class="collapse collapsable-details">
-        <pre>04:14:20.562 classpath:be/features/rollCall/createRollCall.feature:136
+        <pre>04:15:15.031 classpath:be/features/rollCall/createRollCall.feature:136
 And json answer = organizer.getBackendResponse(badCreateRollCall)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -6445,7 +6445,7 @@ classpath:be/features/rollCall/createRollCall.feature:160</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-105" class="collapse collapsable-details">
-        <pre>04:14:25.862 classpath:be/features/rollCall/createRollCall.feature:160
+        <pre>04:15:20.334 classpath:be/features/rollCall/createRollCall.feature:160
 And json answer = organizer.getBackendResponse(badCreateRollCall)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -6736,7 +6736,7 @@ classpath:be/features/rollCall/createRollCall.feature:185</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-110" class="collapse collapsable-details">
-        <pre>04:14:31.169 classpath:be/features/rollCall/createRollCall.feature:185
+        <pre>04:15:25.635 classpath:be/features/rollCall/createRollCall.feature:185
 And json answer = organizer.getBackendResponse(badCreateRollCall)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -6842,7 +6842,7 @@ classpath:be/features/rollCall/createRollCall.feature:185
 </div>
 
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-111">
@@ -6959,7 +6959,7 @@ classpath:be/features/rollCall/createRollCall.feature:185
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(badCreateRollCall)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -7000,7 +7000,7 @@ classpath:be/features/rollCall/createRollCall.feature:208</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-115" class="collapse collapsable-details">
-        <pre>04:14:36.467 classpath:be/features/rollCall/createRollCall.feature:208
+        <pre>04:15:30.938 classpath:be/features/rollCall/createRollCall.feature:208
 And json answer = organizer.getBackendResponse(badCreateRollCall)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -7106,7 +7106,7 @@ classpath:be/features/rollCall/createRollCall.feature:208
 </div>
 
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-116">
@@ -7321,11 +7321,11 @@ classpath:be/features/rollCall/createRollCall.feature:208
       <div id="msg-119" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1856383512,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1826019935,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:67\npopstellar/internal/handler/jsonrpc.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/jsonrpc/jsonrpc.go:45\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:228\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
-    {&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}
+    {&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:67\npopstellar/internal/handler/jsonrpc.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/jsonrpc/jsonrpc.go:45\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:228\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}
     {&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}
 
       $.error.code | not equal (NUMBER:NUMBER)
@@ -7346,15 +7346,15 @@ classpath:be/features/rollCall/createRollCall.feature:234</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-120" class="collapse collapsable-details">
-        <pre>04:14:41.771 classpath:be/features/rollCall/createRollCall.feature:234
+        <pre>04:15:36.244 classpath:be/features/rollCall/createRollCall.feature:234
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1856383512,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1826019935,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:67\npopstellar/internal/handler/jsonrpc.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/jsonrpc/jsonrpc.go:45\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:228\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
-    {&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}
+    {&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:67\npopstellar/internal/handler/jsonrpc.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/jsonrpc/jsonrpc.go:45\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:228\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}
     {&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}
 
       $.error.code | not equal (NUMBER:NUMBER)
@@ -7426,7 +7426,7 @@ classpath:be/features/rollCall/createRollCall.feature:234
 </div>
 
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.003</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-121">
@@ -7566,7 +7566,7 @@ classpath:be/features/rollCall/createRollCall.feature:234
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validElectionOpen, newElection.channel)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -7637,11 +7637,11 @@ classpath:be/features/rollCall/createRollCall.feature:234
       <div id="msg-124" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:566039257,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-450557335,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:67\npopstellar/internal/handler/jsonrpc.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/jsonrpc/jsonrpc.go:45\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:228\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
-    {&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}
+    {&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:67\npopstellar/internal/handler/jsonrpc.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/jsonrpc/jsonrpc.go:45\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:228\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}
     {&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}
 
       $.error.code | not equal (NUMBER:NUMBER)
@@ -7662,15 +7662,15 @@ classpath:be/features/election/electionOpen.feature:55</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-125" class="collapse collapsable-details">
-        <pre>04:12:28.008 classpath:be/features/election/electionOpen.feature:55
+        <pre>04:13:22.321 classpath:be/features/election/electionOpen.feature:55
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:566039257,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-450557335,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:67\npopstellar/internal/handler/jsonrpc.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/jsonrpc/jsonrpc.go:45\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:228\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
-    {&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.HandleQuery\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:43\npopstellar/internal/handler.HandleIncomingMessage\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/incoming_message.go:26\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:135\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}
+    {&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:67\npopstellar/internal/handler/jsonrpc.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/jsonrpc/jsonrpc.go:45\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:228\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.3/x64/src/runtime/asm_amd64.s:1695\n&quot;}
     {&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}
 
       $.error.code | not equal (NUMBER:NUMBER)
@@ -7742,7 +7742,7 @@ classpath:be/features/election/electionOpen.feature:55
 </div>
 
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.004</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-126">
@@ -7896,7 +7896,7 @@ classpath:be/features/election/electionOpen.feature:73</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-130" class="collapse collapsable-details">
-        <pre>04:12:33.386 classpath:be/features/election/electionOpen.feature:73
+        <pre>04:13:27.719 classpath:be/features/election/electionOpen.feature:73
 And json answer = organizer.getBackendResponse(invalidElectionOpen)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -8045,7 +8045,7 @@ classpath:be/features/election/electionOpen.feature:73
   <span class="keyword indention">Given</span>
   <span class="name">def notOrganizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -8183,7 +8183,7 @@ classpath:be/features/election/electionOpen.feature:93</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-135" class="collapse collapsable-details">
-        <pre>04:12:38.781 classpath:be/features/election/electionOpen.feature:93
+        <pre>04:13:33.110 classpath:be/features/election/electionOpen.feature:93
 And json answer = notOrganizer.getBackendResponse(validElectionOpen)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -8289,7 +8289,7 @@ classpath:be/features/election/electionOpen.feature:93
 </div>
 
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.002</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-136">
@@ -8375,7 +8375,7 @@ classpath:be/features/election/electionOpen.feature:93
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidElectionOpen, election.channel)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -8402,7 +8402,7 @@ classpath:be/features/election/electionOpen.feature:93
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidElectionOpen)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -8443,7 +8443,7 @@ classpath:be/features/election/electionOpen.feature:112</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-140" class="collapse collapsable-details">
-        <pre>04:12:44.204 classpath:be/features/election/electionOpen.feature:112
+        <pre>04:13:38.492 classpath:be/features/election/electionOpen.feature:112
 And json answer = organizer.getBackendResponse(invalidElectionOpen)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -8549,7 +8549,7 @@ classpath:be/features/election/electionOpen.feature:112
 </div>
 
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.005</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-141">
@@ -8703,7 +8703,7 @@ classpath:be/features/election/electionOpen.feature:131</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-145" class="collapse collapsable-details">
-        <pre>04:12:49.581 classpath:be/features/election/electionOpen.feature:131
+        <pre>04:13:43.876 classpath:be/features/election/electionOpen.feature:131
 And json answer = organizer.getBackendResponse(invalidElectionOpen)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -8809,7 +8809,7 @@ classpath:be/features/election/electionOpen.feature:131
 </div>
 
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.009</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-146">
@@ -8852,7 +8852,7 @@ classpath:be/features/election/electionOpen.feature:131
   <span class="keyword indention">Given</span>
   <span class="name">def notOrganizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -8923,7 +8923,7 @@ classpath:be/features/election/electionOpen.feature:131
   <span class="keyword indention">When</span>
   <span class="name">notOrganizer.publish(validCreateRollCall, lao.channel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -8994,7 +8994,7 @@ classpath:be/features/election/electionOpen.feature:131
       <div id="msg-149" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-543081060,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1196532884,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -9012,11 +9012,11 @@ classpath:be/features/rollCall/closeRollCall.feature:56</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-150" class="collapse collapsable-details">
-        <pre>04:13:38.065 classpath:be/features/rollCall/closeRollCall.feature:56
+        <pre>04:14:32.503 classpath:be/features/rollCall/closeRollCall.feature:56
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-543081060,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1196532884,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -9085,7 +9085,7 @@ classpath:be/features/rollCall/closeRollCall.feature:56
 </div>
 
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.002</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-151">
@@ -9199,7 +9199,7 @@ classpath:be/features/rollCall/closeRollCall.feature:56
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidCloseRollCall)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -9240,7 +9240,7 @@ classpath:be/features/rollCall/closeRollCall.feature:75</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-155" class="collapse collapsable-details">
-        <pre>04:13:43.398 classpath:be/features/rollCall/closeRollCall.feature:75
+        <pre>04:14:37.842 classpath:be/features/rollCall/closeRollCall.feature:75
 And json answer = organizer.getBackendResponse(invalidCloseRollCall)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -9346,7 +9346,7 @@ classpath:be/features/rollCall/closeRollCall.feature:75
 </div>
 
 
-  <span class="lead-duration duration">0.039</span>
+  <span class="lead-duration duration">0.035</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-156">
@@ -9416,7 +9416,7 @@ classpath:be/features/rollCall/closeRollCall.feature:75
   <span class="keyword indention">And</span>
   <span class="name">call read(createRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(newRollCall)' }</span>
 
-  <span class="lead-duration duration">0.035</span>
+  <span class="lead-duration duration">0.032</span>
 
 </div>
 
@@ -9462,9 +9462,9 @@ classpath:be/features/rollCall/closeRollCall.feature:75
       </div>
       <div id="msg-158" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@665902eb&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@60580e42&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@2cc3df02&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@46219104&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@64c009b8&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@570f96b7&quot;
 }
 </pre>
       </div>
@@ -9556,7 +9556,7 @@ classpath:be/features/rollCall/closeRollCall.feature:75
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validCloseRollCall, lao.channel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -9583,7 +9583,7 @@ classpath:be/features/rollCall/closeRollCall.feature:75
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validCloseRollCall)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -9624,7 +9624,7 @@ classpath:be/features/rollCall/closeRollCall.feature:97</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-161" class="collapse collapsable-details">
-        <pre>04:13:48.767 classpath:be/features/rollCall/closeRollCall.feature:97
+        <pre>04:14:43.214 classpath:be/features/rollCall/closeRollCall.feature:97
 And json answer = organizer.getBackendResponse(validCloseRollCall)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -9885,7 +9885,7 @@ classpath:be/features/election/electionEnd.feature:56</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-166" class="collapse collapsable-details">
-        <pre>04:11:55.256 classpath:be/features/election/electionEnd.feature:56
+        <pre>04:12:49.404 classpath:be/features/election/electionEnd.feature:56
 And json answer = organizer.getBackendResponse(invalidElectionEnd)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -9991,7 +9991,7 @@ classpath:be/features/election/electionEnd.feature:56
 </div>
 
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.006</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-167">
@@ -10078,7 +10078,7 @@ classpath:be/features/election/electionEnd.feature:56
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidElectionEnd, election.channel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -10105,7 +10105,7 @@ classpath:be/features/election/electionEnd.feature:56
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidElectionEnd)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -10146,7 +10146,7 @@ classpath:be/features/election/electionEnd.feature:76</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-171" class="collapse collapsable-details">
-        <pre>04:12:00.684 classpath:be/features/election/electionEnd.feature:76
+        <pre>04:12:54.859 classpath:be/features/election/electionEnd.feature:76
 And json answer = organizer.getBackendResponse(invalidElectionEnd)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -10252,7 +10252,7 @@ classpath:be/features/election/electionEnd.feature:76
 </div>
 
 
-  <span class="lead-duration duration">0.006</span>
+  <span class="lead-duration duration">0.007</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-172">
@@ -10339,7 +10339,7 @@ classpath:be/features/election/electionEnd.feature:76
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidElectionEnd, election.channel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -10407,7 +10407,7 @@ classpath:be/features/election/electionEnd.feature:96</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-176" class="collapse collapsable-details">
-        <pre>04:12:06.159 classpath:be/features/election/electionEnd.feature:96
+        <pre>04:13:00.350 classpath:be/features/election/electionEnd.feature:96
 And json answer = organizer.getBackendResponse(invalidElectionEnd)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -10513,7 +10513,7 @@ classpath:be/features/election/electionEnd.feature:96
 </div>
 
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.004</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-177">
@@ -10668,7 +10668,7 @@ classpath:be/features/election/electionEnd.feature:116</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-181" class="collapse collapsable-details">
-        <pre>04:12:11.591 classpath:be/features/election/electionEnd.feature:116
+        <pre>04:13:05.813 classpath:be/features/election/electionEnd.feature:116
 And json answer = organizer.getBackendResponse(invalidElectionEnd)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -10770,18 +10770,18 @@ classpath:be/features/election/electionEnd.feature:116
 <div class="tags indention">
     <b>Tags:</b>
        <a href="report-tag_524961969.html">@env=go,scala</a>
-       <a href="report-tag_1783765064.html">@update2</a>
+       <a href="report-tag_1783765063.html">@update1</a>
 </div>
 
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">0.011</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-182">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Update Lao request with empty lao name should fail with an error response</span>
+  <span class="name">Update Lao should succeed with a valid update request with new lao name</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -10815,9 +10815,9 @@ classpath:be/features/election/electionEnd.feature:116
 
 <div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">def badUpdateLaoReq =</span>
+  <span class="name">def updateLaoRequest =</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -10835,6 +10835,267 @@ classpath:be/features/election/electionEnd.feature:116
           <a>Doc string</a>
       </div>
       <div id="msg-184" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;update_properties&quot;,
+  &quot;id&quot;: '#(lao.id)',
+  &quot;name&quot;: '#(random.generateName())',
+  &quot;last_modified&quot;: '#(lao.creation)',
+  &quot;witnesses&quot;: '#(lao.witnesses)'
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">organizer.publish(updateLaoRequest, lao.channel)</span>
+
+  <span class="lead-duration duration">0.003</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And failed">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = organizer.getBackendResponse(updateLaoRequest)</span>
+
+  <span class="lead-duration duration">0.004</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-185">
+          <a>js</a>
+      </div>
+      <div id="msg-185" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(updateLaoRequest)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/LAO/update.feature:30</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-186">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-186" class="collapse collapsable-details">
+        <pre>04:08:40.844 classpath:be/features/LAO/update.feature:30
+And json answer = organizer.getBackendResponse(updateLaoRequest)
+js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(updateLaoRequest)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/LAO/update.feature:30
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then skipped">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains VALID_MESSAGE</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+    <div class="indention">
+      <b>Feature:</b>
+      <a href="report-feature_7_1198537547.html">be/features/LAO/update.feature</a>
+    </div>
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+       <a href="report-tag_1783765064.html">@update2</a>
+</div>
+
+
+  <span class="lead-duration duration">0.006</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-187">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Update Lao request with empty lao name should fail with an error response</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-187" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-188">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-188" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">def badUpdateLaoReq =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-189">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-189" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;lao&quot;,
   &quot;action&quot;: &quot;update_properties&quot;,
@@ -10884,11 +11145,11 @@ classpath:be/features/election/electionEnd.feature:116
       <div class="step">
 
 
-<div class="brief step-name-And passed">
+<div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(badUpdateLaoReq)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -10897,9 +11158,57 @@ classpath:be/features/election/electionEnd.feature:116
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-190">
+          <a>js</a>
+      </div>
+      <div id="msg-190" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(badUpdateLaoReq)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/LAO/update.feature:48</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-191">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-191" class="collapse collapsable-details">
+        <pre>04:08:46.237 classpath:be/features/LAO/update.feature:48
+And json answer = organizer.getBackendResponse(badUpdateLaoReq)
+js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(badUpdateLaoReq)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/LAO/update.feature:48
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -10911,11 +11220,11 @@ classpath:be/features/election/electionEnd.feature:116
       <div class="step">
 
 
-<div class="brief step-name-Then failed">
+<div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -10924,45 +11233,9 @@ classpath:be/features/election/electionEnd.feature:116
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-185">
-          <a>match</a>
-      </div>
-      <div id="msg-185" class="collapse collapsable-details  in ">
-        <pre>match failed: CONTAINS
-  $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:2124406197,&quot;result&quot;:0}
-  {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
-
-
-classpath:be/features/LAO/update.feature:49</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-186">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-186" class="collapse collapsable-details">
-        <pre>04:07:52.195 classpath:be/features/LAO/update.feature:49
-Then match answer contains INVALID_MESSAGE_FIELD
-match failed: CONTAINS
-  $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:2124406197,&quot;result&quot;:0}
-  {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
-
-
-classpath:be/features/LAO/update.feature:49
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -11026,7 +11299,7 @@ classpath:be/features/LAO/update.feature:49
   <span class="lead-duration duration">0.009</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-187">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-192">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -11039,14 +11312,14 @@ classpath:be/features/LAO/update.feature:49
   </span>
   <div class="description indention"></div>
 
-  <div id="element-187" class="collapse collapsable-details  in ">
+  <div id="element-192" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-188">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-193">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -11058,7 +11331,7 @@ classpath:be/features/LAO/update.feature:49
 
   </div>
 
-  <div id="steps-188" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-193" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -11080,10 +11353,10 @@ classpath:be/features/LAO/update.feature:49
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-189">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-194">
           <a>Doc string</a>
       </div>
-      <div id="msg-189" class="collapse collapsable-details">
+      <div id="msg-194" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;lao&quot;,
   &quot;action&quot;: &quot;update_properties&quot;,
@@ -11110,7 +11383,7 @@ classpath:be/features/LAO/update.feature:49
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(badUpdateLaoReq, lao.channel)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -11133,11 +11406,11 @@ classpath:be/features/LAO/update.feature:49
       <div class="step">
 
 
-<div class="brief step-name-And passed">
+<div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(badUpdateLaoReq)</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -11146,9 +11419,57 @@ classpath:be/features/LAO/update.feature:49
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-195">
+          <a>js</a>
+      </div>
+      <div id="msg-195" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(badUpdateLaoReq)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/LAO/update.feature:66</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-196">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-196" class="collapse collapsable-details">
+        <pre>04:08:51.618 classpath:be/features/LAO/update.feature:66
+And json answer = organizer.getBackendResponse(badUpdateLaoReq)
+js failed:
+&gt;&gt;&gt;&gt;
+01: organizer.getBackendResponse(badUpdateLaoReq)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
+- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
+- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
+- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
+- com.intuit.karate.Json.of(Json.java:63)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/features/LAO/update.feature:66
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -11160,7 +11481,7 @@ classpath:be/features/LAO/update.feature:49
       <div class="step">
 
 
-<div class="brief step-name-Then failed">
+<div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
@@ -11173,45 +11494,9 @@ classpath:be/features/LAO/update.feature:49
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-190">
-          <a>match</a>
-      </div>
-      <div id="msg-190" class="collapse collapsable-details  in ">
-        <pre>match failed: CONTAINS
-  $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1386086810,&quot;result&quot;:0}
-  {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
-
-
-classpath:be/features/LAO/update.feature:67</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-191">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-191" class="collapse collapsable-details">
-        <pre>04:07:57.550 classpath:be/features/LAO/update.feature:67
-Then match answer contains INVALID_MESSAGE_FIELD
-match failed: CONTAINS
-  $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1386086810,&quot;result&quot;:0}
-  {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
-
-
-classpath:be/features/LAO/update.feature:67
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -11275,7 +11560,7 @@ classpath:be/features/LAO/update.feature:67
   <span class="lead-duration duration">0.004</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-192">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-197">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -11288,14 +11573,14 @@ classpath:be/features/LAO/update.feature:67
   </span>
   <div class="description indention"></div>
 
-  <div id="element-192" class="collapse collapsable-details  in ">
+  <div id="element-197" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-193">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-198">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -11307,7 +11592,7 @@ classpath:be/features/LAO/update.feature:67
 
   </div>
 
-  <div id="steps-193" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-198" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -11329,10 +11614,10 @@ classpath:be/features/LAO/update.feature:67
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-194">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-199">
           <a>Doc string</a>
       </div>
-      <div id="msg-194" class="collapse collapsable-details">
+      <div id="msg-199" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;setup&quot;,
@@ -11371,7 +11656,7 @@ classpath:be/features/LAO/update.feature:67
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidElectionSetup, lao.channel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -11409,10 +11694,10 @@ classpath:be/features/LAO/update.feature:67
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-195">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-200">
           <a>js</a>
       </div>
-      <div id="msg-195" class="collapse collapsable-details  in ">
+      <div id="msg-200" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: organizer.getBackendResponse(invalidElectionSetup)
@@ -11435,11 +11720,11 @@ classpath:be/features/election/electionSetup.feature:79</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-196">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-201">
           <a>Doc string</a>
       </div>
-      <div id="msg-196" class="collapse collapsable-details">
-        <pre>04:13:05.884 classpath:be/features/election/electionSetup.feature:79
+      <div id="msg-201" class="collapse collapsable-details">
+        <pre>04:14:00.276 classpath:be/features/election/electionSetup.feature:79
 And json answer = organizer.getBackendResponse(invalidElectionSetup)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -11545,10 +11830,10 @@ classpath:be/features/election/electionSetup.feature:79
 </div>
 
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.009</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-197">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-202">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -11561,14 +11846,14 @@ classpath:be/features/election/electionSetup.feature:79
   </span>
   <div class="description indention"></div>
 
-  <div id="element-197" class="collapse collapsable-details  in ">
+  <div id="element-202" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-198">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-203">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -11580,7 +11865,7 @@ classpath:be/features/election/electionSetup.feature:79
 
   </div>
 
-  <div id="steps-198" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-203" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -11602,10 +11887,10 @@ classpath:be/features/election/electionSetup.feature:79
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-199">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-204">
           <a>Doc string</a>
       </div>
-      <div id="msg-199" class="collapse collapsable-details">
+      <div id="msg-204" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;setup&quot;,
@@ -11644,7 +11929,7 @@ classpath:be/features/election/electionSetup.feature:79
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidElectionSetup, lao.channel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -11682,10 +11967,10 @@ classpath:be/features/election/electionSetup.feature:79
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-200">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-205">
           <a>js</a>
       </div>
-      <div id="msg-200" class="collapse collapsable-details  in ">
+      <div id="msg-205" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: organizer.getBackendResponse(invalidElectionSetup)
@@ -11708,11 +11993,11 @@ classpath:be/features/election/electionSetup.feature:111</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-201">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-206">
           <a>Doc string</a>
       </div>
-      <div id="msg-201" class="collapse collapsable-details">
-        <pre>04:13:11.282 classpath:be/features/election/electionSetup.feature:111
+      <div id="msg-206" class="collapse collapsable-details">
+        <pre>04:14:05.649 classpath:be/features/election/electionSetup.feature:111
 And json answer = organizer.getBackendResponse(invalidElectionSetup)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -11818,10 +12103,10 @@ classpath:be/features/election/electionSetup.feature:111
 </div>
 
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.004</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-202">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-207">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -11834,14 +12119,14 @@ classpath:be/features/election/electionSetup.feature:111
   </span>
   <div class="description indention"></div>
 
-  <div id="element-202" class="collapse collapsable-details  in ">
+  <div id="element-207" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-203">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-208">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -11853,7 +12138,7 @@ classpath:be/features/election/electionSetup.feature:111
 
   </div>
 
-  <div id="steps-203" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-208" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -11875,10 +12160,10 @@ classpath:be/features/election/electionSetup.feature:111
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-204">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-209">
           <a>Doc string</a>
       </div>
-      <div id="msg-204" class="collapse collapsable-details">
+      <div id="msg-209" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;setup&quot;,
@@ -11944,7 +12229,7 @@ classpath:be/features/election/electionSetup.feature:111
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidElectionSetup)</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -11955,10 +12240,10 @@ classpath:be/features/election/electionSetup.feature:111
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-205">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-210">
           <a>js</a>
       </div>
-      <div id="msg-205" class="collapse collapsable-details  in ">
+      <div id="msg-210" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: organizer.getBackendResponse(invalidElectionSetup)
@@ -11981,11 +12266,11 @@ classpath:be/features/election/electionSetup.feature:143</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-206">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-211">
           <a>Doc string</a>
       </div>
-      <div id="msg-206" class="collapse collapsable-details">
-        <pre>04:13:16.644 classpath:be/features/election/electionSetup.feature:143
+      <div id="msg-211" class="collapse collapsable-details">
+        <pre>04:14:11.019 classpath:be/features/election/electionSetup.feature:143
 And json answer = organizer.getBackendResponse(invalidElectionSetup)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -12094,7 +12379,7 @@ classpath:be/features/election/electionSetup.feature:143
   <span class="lead-duration duration">0.004</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-207">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-212">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -12107,14 +12392,14 @@ classpath:be/features/election/electionSetup.feature:143
   </span>
   <div class="description indention"></div>
 
-  <div id="element-207" class="collapse collapsable-details  in ">
+  <div id="element-212" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-208">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-213">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -12126,7 +12411,7 @@ classpath:be/features/election/electionSetup.feature:143
 
   </div>
 
-  <div id="steps-208" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-213" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -12148,10 +12433,10 @@ classpath:be/features/election/electionSetup.feature:143
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-209">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-214">
           <a>Doc string</a>
       </div>
-      <div id="msg-209" class="collapse collapsable-details">
+      <div id="msg-214" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;setup&quot;,
@@ -12228,10 +12513,10 @@ classpath:be/features/election/electionSetup.feature:143
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-210">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-215">
           <a>js</a>
       </div>
-      <div id="msg-210" class="collapse collapsable-details  in ">
+      <div id="msg-215" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: organizer.getBackendResponse(invalidElectionSetup)
@@ -12254,11 +12539,11 @@ classpath:be/features/election/electionSetup.feature:175</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-211">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-216">
           <a>Doc string</a>
       </div>
-      <div id="msg-211" class="collapse collapsable-details">
-        <pre>04:13:21.995 classpath:be/features/election/electionSetup.feature:175
+      <div id="msg-216" class="collapse collapsable-details">
+        <pre>04:14:16.377 classpath:be/features/election/electionSetup.feature:175
 And json answer = organizer.getBackendResponse(invalidElectionSetup)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -12364,10 +12649,10 @@ classpath:be/features/election/electionSetup.feature:175
 </div>
 
 
-  <span class="lead-duration duration">0.144</span>
+  <span class="lead-duration duration">0.132</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-212">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-217">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -12380,14 +12665,14 @@ classpath:be/features/election/electionSetup.feature:175
   </span>
   <div class="description indention"></div>
 
-  <div id="element-212" class="collapse collapsable-details  in ">
+  <div id="element-217" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-213">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-218">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -12399,7 +12684,7 @@ classpath:be/features/election/electionSetup.feature:175
 
   </div>
 
-  <div id="steps-213" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-218" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -12448,10 +12733,10 @@ classpath:be/features/election/electionSetup.feature:175
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-214">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-219">
           <a>Doc string</a>
       </div>
-      <div id="msg-214" class="collapse collapsable-details">
+      <div id="msg-219" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;lao&quot;,
   &quot;action&quot;: &quot;create&quot;,
@@ -12479,7 +12764,7 @@ classpath:be/features/election/electionSetup.feature:175
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(badLaoReq, rootChannel)</span>
 
-  <span class="lead-duration duration">0.128</span>
+  <span class="lead-duration duration">0.118</span>
 
 </div>
 
@@ -12506,7 +12791,7 @@ classpath:be/features/election/electionSetup.feature:175
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(badLaoReq)</span>
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -12517,10 +12802,10 @@ classpath:be/features/election/electionSetup.feature:175
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-215">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-220">
           <a>js</a>
       </div>
-      <div id="msg-215" class="collapse collapsable-details  in ">
+      <div id="msg-220" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: organizer.getBackendResponse(badLaoReq)
@@ -12543,11 +12828,11 @@ classpath:be/features/LAO/create.feature:29</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-216">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-221">
           <a>Doc string</a>
       </div>
-      <div id="msg-216" class="collapse collapsable-details">
-        <pre>04:07:03.688 classpath:be/features/LAO/create.feature:29
+      <div id="msg-221" class="collapse collapsable-details">
+        <pre>04:08:02.629 classpath:be/features/LAO/create.feature:29
 And json answer = organizer.getBackendResponse(badLaoReq)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -12653,10 +12938,10 @@ classpath:be/features/LAO/create.feature:29
 </div>
 
 
-  <span class="lead-duration duration">0.014</span>
+  <span class="lead-duration duration">0.012</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-217">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-222">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -12669,14 +12954,14 @@ classpath:be/features/LAO/create.feature:29
   </span>
   <div class="description indention"></div>
 
-  <div id="element-217" class="collapse collapsable-details  in ">
+  <div id="element-222" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-218">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-223">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -12688,7 +12973,7 @@ classpath:be/features/LAO/create.feature:29
 
   </div>
 
-  <div id="steps-218" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-223" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -12737,10 +13022,10 @@ classpath:be/features/LAO/create.feature:29
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-219">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-224">
           <a>Doc string</a>
       </div>
-      <div id="msg-219" class="collapse collapsable-details">
+      <div id="msg-224" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;lao&quot;,
   &quot;action&quot;: &quot;create&quot;,
@@ -12768,7 +13053,7 @@ classpath:be/features/LAO/create.feature:29
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(badLaoReq, rootChannel)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -12795,7 +13080,7 @@ classpath:be/features/LAO/create.feature:29
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(badLaoReq)</span>
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -12806,10 +13091,10 @@ classpath:be/features/LAO/create.feature:29
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-220">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-225">
           <a>js</a>
       </div>
-      <div id="msg-220" class="collapse collapsable-details  in ">
+      <div id="msg-225" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: organizer.getBackendResponse(badLaoReq)
@@ -12832,11 +13117,11 @@ classpath:be/features/LAO/create.feature:49</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-221">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-226">
           <a>Doc string</a>
       </div>
-      <div id="msg-221" class="collapse collapsable-details">
-        <pre>04:07:09.052 classpath:be/features/LAO/create.feature:49
+      <div id="msg-226" class="collapse collapsable-details">
+        <pre>04:08:08.002 classpath:be/features/LAO/create.feature:49
 And json answer = organizer.getBackendResponse(badLaoReq)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -12942,10 +13227,10 @@ classpath:be/features/LAO/create.feature:49
 </div>
 
 
-  <span class="lead-duration duration">0.019</span>
+  <span class="lead-duration duration">0.016</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-222">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-227">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -12958,14 +13243,14 @@ classpath:be/features/LAO/create.feature:49
   </span>
   <div class="description indention"></div>
 
-  <div id="element-222" class="collapse collapsable-details  in ">
+  <div id="element-227" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-223">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-228">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -12977,7 +13262,7 @@ classpath:be/features/LAO/create.feature:49
 
   </div>
 
-  <div id="steps-223" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-228" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -12985,7 +13270,7 @@ classpath:be/features/LAO/create.feature:49
   <span class="keyword indention">Given</span>
   <span class="name">def badLaoReq =</span>
 
-  <span class="lead-duration duration">0.006</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -12999,10 +13284,10 @@ classpath:be/features/LAO/create.feature:49
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-224">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-229">
           <a>Doc string</a>
       </div>
-      <div id="msg-224" class="collapse collapsable-details">
+      <div id="msg-229" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;lao&quot;,
   &quot;action&quot;: &quot;create&quot;,
@@ -13030,7 +13315,7 @@ classpath:be/features/LAO/create.feature:49
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(badLaoReq, rootChannel)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -13057,7 +13342,7 @@ classpath:be/features/LAO/create.feature:49
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(badLaoReq)</span>
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -13068,10 +13353,10 @@ classpath:be/features/LAO/create.feature:49
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-225">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-230">
           <a>js</a>
       </div>
-      <div id="msg-225" class="collapse collapsable-details  in ">
+      <div id="msg-230" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: organizer.getBackendResponse(badLaoReq)
@@ -13094,11 +13379,11 @@ classpath:be/features/LAO/create.feature:68</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-226">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-231">
           <a>Doc string</a>
       </div>
-      <div id="msg-226" class="collapse collapsable-details">
-        <pre>04:07:14.400 classpath:be/features/LAO/create.feature:68
+      <div id="msg-231" class="collapse collapsable-details">
+        <pre>04:08:13.352 classpath:be/features/LAO/create.feature:68
 And json answer = organizer.getBackendResponse(badLaoReq)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -13204,10 +13489,10 @@ classpath:be/features/LAO/create.feature:68
 </div>
 
 
-  <span class="lead-duration duration">0.007</span>
+  <span class="lead-duration duration">0.011</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-227">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-232">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -13220,14 +13505,14 @@ classpath:be/features/LAO/create.feature:68
   </span>
   <div class="description indention"></div>
 
-  <div id="element-227" class="collapse collapsable-details  in ">
+  <div id="element-232" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-228">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-233">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -13239,7 +13524,7 @@ classpath:be/features/LAO/create.feature:68
 
   </div>
 
-  <div id="steps-228" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-233" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -13261,10 +13546,10 @@ classpath:be/features/LAO/create.feature:68
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-229">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-234">
           <a>Doc string</a>
       </div>
-      <div id="msg-229" class="collapse collapsable-details">
+      <div id="msg-234" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;lao&quot;,
   &quot;action&quot;: &quot;create&quot;,
@@ -13319,7 +13604,7 @@ classpath:be/features/LAO/create.feature:68
   <span class="keyword indention">And</span>
   <span class="name">organizer.publish(laoCreateRequest, rootChannel)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -13346,7 +13631,7 @@ classpath:be/features/LAO/create.feature:68
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(laoCreateRequest)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -13357,10 +13642,10 @@ classpath:be/features/LAO/create.feature:68
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-230">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-235">
           <a>js</a>
       </div>
-      <div id="msg-230" class="collapse collapsable-details  in ">
+      <div id="msg-235" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: organizer.getBackendResponse(laoCreateRequest)
@@ -13383,11 +13668,11 @@ classpath:be/features/LAO/create.feature:107</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-231">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-236">
           <a>Doc string</a>
       </div>
-      <div id="msg-231" class="collapse collapsable-details">
-        <pre>04:07:30.060 classpath:be/features/LAO/create.feature:107
+      <div id="msg-236" class="collapse collapsable-details">
+        <pre>04:08:29.004 classpath:be/features/LAO/create.feature:107
 And json answer = organizer.getBackendResponse(laoCreateRequest)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -13493,10 +13778,10 @@ classpath:be/features/LAO/create.feature:107
 </div>
 
 
-  <span class="lead-duration duration">0.013</span>
+  <span class="lead-duration duration">0.026</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-232">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-237">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -13509,14 +13794,14 @@ classpath:be/features/LAO/create.feature:107
   </span>
   <div class="description indention"></div>
 
-  <div id="element-232" class="collapse collapsable-details  in ">
+  <div id="element-237" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-233">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-238">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -13528,7 +13813,7 @@ classpath:be/features/LAO/create.feature:107
 
   </div>
 
-  <div id="steps-233" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-238" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -13536,7 +13821,7 @@ classpath:be/features/LAO/create.feature:107
   <span class="keyword indention">Given</span>
   <span class="name">def notOrganizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.009</span>
 
 </div>
 
@@ -13563,7 +13848,7 @@ classpath:be/features/LAO/create.feature:107
   <span class="keyword indention">And</span>
   <span class="name">def laoCreateRequest =</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -13577,10 +13862,10 @@ classpath:be/features/LAO/create.feature:107
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-234">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-239">
           <a>Doc string</a>
       </div>
-      <div id="msg-234" class="collapse collapsable-details">
+      <div id="msg-239" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;lao&quot;,
   &quot;action&quot;: &quot;create&quot;,
@@ -13608,7 +13893,7 @@ classpath:be/features/LAO/create.feature:107
   <span class="keyword indention">When</span>
   <span class="name">notOrganizer.publish(laoCreateRequest, rootChannel)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -13635,7 +13920,7 @@ classpath:be/features/LAO/create.feature:107
   <span class="keyword indention">And</span>
   <span class="name">json answer = notOrganizer.getBackendResponse(laoCreateRequest)</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.012</span>
 
 </div>
 
@@ -13646,10 +13931,10 @@ classpath:be/features/LAO/create.feature:107
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-235">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-240">
           <a>js</a>
       </div>
-      <div id="msg-235" class="collapse collapsable-details  in ">
+      <div id="msg-240" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: notOrganizer.getBackendResponse(laoCreateRequest)
@@ -13672,11 +13957,11 @@ classpath:be/features/LAO/create.feature:128</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-236">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-241">
           <a>Doc string</a>
       </div>
-      <div id="msg-236" class="collapse collapsable-details">
-        <pre>04:07:35.397 classpath:be/features/LAO/create.feature:128
+      <div id="msg-241" class="collapse collapsable-details">
+        <pre>04:08:34.339 classpath:be/features/LAO/create.feature:128
 And json answer = notOrganizer.getBackendResponse(laoCreateRequest)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -13782,10 +14067,10 @@ classpath:be/features/LAO/create.feature:128
 </div>
 
 
-  <span class="lead-duration duration">5.003</span>
+  <span class="lead-duration duration">5.004</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-237">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-242">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -13798,14 +14083,14 @@ classpath:be/features/LAO/create.feature:128
   </span>
   <div class="description indention"></div>
 
-  <div id="element-237" class="collapse collapsable-details  in ">
+  <div id="element-242" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-238">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-243">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -13817,7 +14102,7 @@ classpath:be/features/LAO/create.feature:128
 
   </div>
 
-  <div id="steps-238" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-243" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -13906,7 +14191,7 @@ classpath:be/features/LAO/create.feature:128
   <span class="keyword indention">When</span>
   <span class="name">mockBackend.send(heartbeat)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -13933,7 +14218,7 @@ classpath:be/features/LAO/create.feature:128
   <span class="keyword indention">Then</span>
   <span class="name">assert mockBackend.getGetMessagesById().length == 0</span>
 
-  <span class="lead-duration duration">5.001</span>
+  <span class="lead-duration duration">5.002</span>
 
 </div>
 
@@ -13944,10 +14229,10 @@ classpath:be/features/LAO/create.feature:128
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-239">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-244">
           <a>did</a>
       </div>
-      <div id="msg-239" class="collapse collapsable-details  in ">
+      <div id="msg-244" class="collapse collapsable-details  in ">
         <pre>did not evaluate to 'true': mockBackend.getGetMessagesById().length == 0
 classpath:be/features/decentralizedCom/getMessagesById.feature:59</pre>
       </div>
@@ -13959,11 +14244,11 @@ classpath:be/features/decentralizedCom/getMessagesById.feature:59</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-240">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-245">
           <a>Doc string</a>
       </div>
-      <div id="msg-240" class="collapse collapsable-details">
-        <pre>04:08:29.014 classpath:be/features/decentralizedCom/getMessagesById.feature:59
+      <div id="msg-245" class="collapse collapsable-details">
+        <pre>04:09:23.071 classpath:be/features/decentralizedCom/getMessagesById.feature:59
 Then assert mockBackend.getGetMessagesById().length == 0
 did not evaluate to 'true': mockBackend.getGetMessagesById().length == 0
 classpath:be/features/decentralizedCom/getMessagesById.feature:59
@@ -14004,10 +14289,10 @@ classpath:be/features/decentralizedCom/getMessagesById.feature:59
 </div>
 
 
-  <span class="lead-duration duration">45.001</span>
+  <span class="lead-duration duration">45.002</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-241">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-246">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -14020,14 +14305,14 @@ classpath:be/features/decentralizedCom/getMessagesById.feature:59
   </span>
   <div class="description indention"></div>
 
-  <div id="element-241" class="collapse collapsable-details  in ">
+  <div id="element-246" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-242">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-247">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -14039,7 +14324,7 @@ classpath:be/features/decentralizedCom/getMessagesById.feature:59
 
   </div>
 
-  <div id="steps-242" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-247" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -14112,10 +14397,10 @@ classpath:be/features/decentralizedCom/getMessagesById.feature:59
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-243">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-248">
           <a>did</a>
       </div>
-      <div id="msg-243" class="collapse collapsable-details  in ">
+      <div id="msg-248" class="collapse collapsable-details  in ">
         <pre>did not evaluate to 'true': heartbeatMessages.length == 2
 classpath:be/features/decentralizedCom/heartbeat.feature:26</pre>
       </div>
@@ -14127,11 +14412,11 @@ classpath:be/features/decentralizedCom/heartbeat.feature:26</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-244">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-249">
           <a>Doc string</a>
       </div>
-      <div id="msg-244" class="collapse collapsable-details">
-        <pre>04:10:11.404 classpath:be/features/decentralizedCom/heartbeat.feature:26
+      <div id="msg-249" class="collapse collapsable-details">
+        <pre>04:11:05.560 classpath:be/features/decentralizedCom/heartbeat.feature:26
 Then assert heartbeatMessages.length == 2
 did not evaluate to 'true': heartbeatMessages.length == 2
 classpath:be/features/decentralizedCom/heartbeat.feature:26
@@ -14172,10 +14457,10 @@ classpath:be/features/decentralizedCom/heartbeat.feature:26
 </div>
 
 
-  <span class="lead-duration duration">5.011</span>
+  <span class="lead-duration duration">5.031</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-245">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-250">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -14188,14 +14473,14 @@ classpath:be/features/decentralizedCom/heartbeat.feature:26
   </span>
   <div class="description indention"></div>
 
-  <div id="element-245" class="collapse collapsable-details  in ">
+  <div id="element-250" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-246">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-251">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -14207,7 +14492,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:26
 
   </div>
 
-  <div id="steps-246" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-251" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -14229,10 +14514,10 @@ classpath:be/features/decentralizedCom/heartbeat.feature:26
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-247">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-252">
           <a>Doc string</a>
       </div>
-      <div id="msg-247" class="collapse collapsable-details">
+      <div id="msg-252" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;roll_call&quot;,
   &quot;action&quot;: &quot;create&quot;,
@@ -14262,7 +14547,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:26
   <span class="keyword indention">When</span>
   <span class="name">mockFrontend.publish(validCreateRollCall, lao.channel)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.019</span>
 
 </div>
 
@@ -14316,7 +14601,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:26
   <span class="keyword indention">Then</span>
   <span class="name">assert mockBackend.receivedHeartbeatWithSubstring(message_id)</span>
 
-  <span class="lead-duration duration">5.006</span>
+  <span class="lead-duration duration">5.009</span>
 
 </div>
 
@@ -14327,10 +14612,10 @@ classpath:be/features/decentralizedCom/heartbeat.feature:26
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-248">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-253">
           <a>did</a>
       </div>
-      <div id="msg-248" class="collapse collapsable-details  in ">
+      <div id="msg-253" class="collapse collapsable-details  in ">
         <pre>did not evaluate to 'true': mockBackend.receivedHeartbeatWithSubstring(message_id)
 classpath:be/features/decentralizedCom/heartbeat.feature:49</pre>
       </div>
@@ -14342,11 +14627,11 @@ classpath:be/features/decentralizedCom/heartbeat.feature:49</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-249">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-254">
           <a>Doc string</a>
       </div>
-      <div id="msg-249" class="collapse collapsable-details">
-        <pre>04:10:21.763 classpath:be/features/decentralizedCom/heartbeat.feature:49
+      <div id="msg-254" class="collapse collapsable-details">
+        <pre>04:11:15.949 classpath:be/features/decentralizedCom/heartbeat.feature:49
 Then assert mockBackend.receivedHeartbeatWithSubstring(message_id)
 did not evaluate to 'true': mockBackend.receivedHeartbeatWithSubstring(message_id)
 classpath:be/features/decentralizedCom/heartbeat.feature:49
