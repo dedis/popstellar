@@ -29,7 +29,7 @@ class LonelySealedTrait extends SemanticRule("LonelySealedTrait") {
 
 
   override def fix(implicit doc: SemanticDocument): Patch = {
-    val sealedTraits = mutable.Map[String, Defn]()
+    val sealedTraits = mutable.Map[String, Defn]() // Map to store the Defn and position the warning correctly
     val parents = mutable.Set[String]()
     val sealedTraitsHierarchy = mutable.Map[String, Set[String]]()
 

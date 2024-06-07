@@ -1,14 +1,23 @@
 lazy val V = _root_.scalafix.sbt.BuildInfo
-lazy val rulesCrossVersions = Seq(V.scala213, V.scala212)
+lazy val rulesCrossVersions = Seq(V.scala213)
 lazy val scala3Version = "3.3.1"
 
 inThisBuild(
   List(
-    organization := "dedis",
+    organization := "io.github.dedis",
+      organizationName := "dedis",
+    organizationHomepage := Some(url("https://dedis.epfl.ch")),
+    homepage := Some(url("https://github.com/dedis/popstellar")),
+    licenses := List("AGPL 3.0" -> url("https://www.gnu.org/licenses/agpl-3.0.en.html")),
+      developers := List(Developer("t1b00", "Thibault Czarniak", "thibault.czarniak@epfl.ch", url("https://www.linkedin.com/in/thcz/"))),
     semanticdbEnabled := true,
-    semanticdbVersion := scalafixSemanticdb.revision
+    semanticdbVersion := scalafixSemanticdb.revision,
+      scmInfo := Some(ScmInfo(url("https://github.com/dedis/popstellar"), "scm:git@github:dedis/popstellar.git")),
+      version := "1.0",
+      versionScheme := Some("semver-spec"),
   )
 )
+
 
 lazy val `popstellar` = (project in file("."))
   .aggregate(
@@ -20,14 +29,13 @@ lazy val `popstellar` = (project in file("."))
   .settings(
     publish / skip := true
   )
-
 lazy val rules = projectMatrix
   .settings(
-    moduleName := "scalafix",
-    libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % V.scalafixVersion
+    moduleName := "scapegoat-scalafix",
+    libraryDependencies += "ch.epfl.scala" % "scalafix-core_2.13" % V.scalafixVersion,
   )
   .defaultAxes(VirtualAxis.jvm)
-  .jvmPlatform(rulesCrossVersions)
+  .jvmPlatform(rulesCrossVersions :+ scala3Version)
 
 lazy val input = projectMatrix
   .settings(
@@ -52,6 +60,7 @@ lazy val testsAggregate = Project("tests", file("target/testsAggregate"))
 lazy val tests = projectMatrix
   .settings(
     publish / skip := true,
+      scalaVersion := V.scala213,
     scalafixTestkitOutputSourceDirectories :=
       TargetAxis
         .resolve(output, Compile / unmanagedSourceDirectories)
@@ -71,18 +80,13 @@ lazy val tests = projectMatrix
     rulesCrossVersions.map(VirtualAxis.scalaABIVersion) :+ VirtualAxis.jvm: _*
   )
   .jvmPlatform(
-    scalaVersions = Seq(V.scala212),
+    scalaVersions = Seq(V.scala213),
     axisValues = Seq(TargetAxis(scala3Version)),
     settings = Seq()
   )
   .jvmPlatform(
-    scalaVersions = Seq(V.scala213),
-    axisValues = Seq(TargetAxis(V.scala213)),
-    settings = Seq()
-  )
-  .jvmPlatform(
-    scalaVersions = Seq(V.scala212),
-    axisValues = Seq(TargetAxis(V.scala212)),
+    scalaVersions = Seq(scala3Version),
+    axisValues = Seq(TargetAxis(scala3Version)),
     settings = Seq()
   )
   .dependsOn(rules)
