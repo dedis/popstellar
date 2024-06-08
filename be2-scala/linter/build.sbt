@@ -14,10 +14,9 @@ inThisBuild(
     semanticdbVersion := scalafixSemanticdb.revision,
       scmInfo := Some(ScmInfo(url("https://github.com/dedis/popstellar"), "scm:git@github:dedis/popstellar.git")),
       version := "1.0",
-      versionScheme := Some("semver-spec"),
+      versionScheme := Some("pvp"),
   )
 )
-
 
 lazy val `popstellar` = (project in file("."))
   .aggregate(

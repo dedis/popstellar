@@ -171,14 +171,10 @@ libraryDependencies += "com.auth0" % "java-jwt" % "4.4.0"
 
 conflictManager := ConflictManager.latestCompatible
 
-ThisBuild / scalaVersion := "3.3.1"
-
 inThisBuild(
     List(
-        scalaVersion := "3.3.1",
         semanticdbEnabled := true,
         semanticdbVersion := scalafixSemanticdb.revision
     )
 )
-
-libraryDependencies += "ch.epfl.scala" % "scalafix-core_2.13" % _root_.scalafix.sbt.BuildInfo.scalafixVersion % ScalafixConfig
+ThisBuild / scalafixDependencies += "io.github.dedis" %% "scapegoat-scalafix" % "1.0" // Import custom rules
