@@ -20,15 +20,16 @@ final case class ConnectionMediator(
     mediatorRef: ActorRef,
     dbActorRef: AskableActorRef,
     securityModuleActorRef: AskableActorRef,
+    gossipManagerRef: ActorRef,
     messageRegistry: MessageRegistry
 ) extends Actor with ActorLogging with AskPatternConstants {
   implicit val system: ActorSystem = ActorSystem()
 
   private var serverMap: HashMap[ActorRef, GreetServer] = HashMap()
-  private var gossipManagerRef: AskableActorRef = _
 
   // Ping Monitor to inform it of our ActorRef
   monitorRef ! ConnectionMediator.Ping()
+  gossipManagerRef ! ConnectionMediator.Ping()
 
   override def receive: Receive = {
 
@@ -77,7 +78,7 @@ final case class ConnectionMediator(
           Right(JsonRpcRequest(
             RpcValidator.JSON_RPC_VERSION,
             MethodType.heartbeat,
-            new ParamsWithMap(Map.empty), // new ParamsWithMap(map),
+            new ParamsWithMap(Map.empty),
             None
           ))
         )
@@ -87,15 +88,12 @@ final case class ConnectionMediator(
       if (serverMap.isEmpty)
         sender() ! ConnectionMediator.NoPeer()
       else
-        val serverRefs = serverMap.filter((_, greetServer) => !excludes.contains(greetServer.publicKey))
+        val serverRefs = serverMap.keys.filter(!excludes.contains(_)).toList
         if (serverRefs.isEmpty)
           sender() ! ConnectionMediator.NoPeer()
         else
-          val randomKey = serverRefs.keys.toList(Random.nextInt(serverRefs.size))
-          sender() ! ConnectionMediator.GetRandomPeerAck(randomKey, serverRefs(randomKey))
-
-    case GossipManager.Ping() =>
-      gossipManagerRef = sender()
+          val randomKey = serverRefs(Random.nextInt(serverRefs.size))
+          sender() ! ConnectionMediator.GetRandomPeerAck(randomKey, serverMap(randomKey))
 
     case ConnectionMediator.GetFederationServer(serverAddress) =>
       if (serverMap.isEmpty)
@@ -112,8 +110,8 @@ final case class ConnectionMediator(
 
 object ConnectionMediator {
 
-  def props(monitorRef: ActorRef, mediatorRef: ActorRef, dbActorRef: AskableActorRef, securityModuleActorRef: AskableActorRef, messageRegistry: MessageRegistry): Props =
-    Props(new ConnectionMediator(monitorRef, mediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
+  def props(monitorRef: ActorRef, mediatorRef: ActorRef, dbActorRef: AskableActorRef, securityModuleActorRef: AskableActorRef, gossipManagerRef: ActorRef, messageRegistry: MessageRegistry): Props =
+    Props(new ConnectionMediator(monitorRef, mediatorRef, dbActorRef, securityModuleActorRef, gossipManagerRef, messageRegistry))
 
   sealed trait Event
   final case class ConnectTo(urlList: List[String]) extends Event
@@ -121,7 +119,7 @@ object ConnectionMediator {
   final case class ServerLeft(serverRef: ActorRef) extends Event
   final case class Ping() extends Event
   final case class ReadPeersClientAddress() extends Event
-  final case class GetRandomPeer(excludes: List[PublicKey] = List.empty) extends Event
+  final case class GetRandomPeer(excludes: Set[ActorRef] = Set.empty) extends Event
   final case class GetFederationServer(serverAddress: String) extends Event
 
   sealed trait ConnectionMediatorMessage

@@ -7,6 +7,8 @@ import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.json.MessageDataProtocol.*
 import ch.epfl.pop.model.network.method.Rumor
+import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
+import ch.epfl.pop.model.network.method.{Rumor, RumorState}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.federation.FederationChallenge
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
@@ -173,7 +175,7 @@ final case class DbActor(
 
     val askAddresses = Await.ready(connectionMediator ? ConnectionMediator.ReadPeersClientAddress(), duration).value.get
     val addresses = askAddresses match {
-      case Success(ConnectionMediator.ReadPeersClientAddressAck(result)) => List.empty // result
+      case Success(ConnectionMediator.ReadPeersClientAddressAck(result)) => result
       case _                                                             => List.empty
     }
 
@@ -427,6 +429,27 @@ final case class DbActor(
     }
   }
 
+  private def getRumorState: RumorState = {
+    val allPublicKeys = storage.filterKeysByPrefix(storage.RUMOR_DATA_KEY).map(key => PublicKey(Base64Data(key.replaceFirst(storage.RUMOR_DATA_KEY, ""))))
+    val allRumorData = allPublicKeys.flatMap {
+      publicKey =>
+        Try(readRumorData(publicKey)) match
+          case Success(rumorData: RumorData) => Some(publicKey -> rumorData.lastRumorId())
+          case Failure(ex)                   => None
+    }.toMap
+    RumorState(allRumorData)
+  }
+
+  private def generateRumorStateAns(rumorState: RumorState): List[Rumor] = {
+    val localRumorState = getRumorState
+    val missingRumors = rumorState.isMissingRumorsFrom(localRumorState)
+    missingRumors.flatMap { (publicKey, rumorIdList) =>
+      rumorIdList.map { id =>
+        readRumor((publicKey, id)).get
+      }
+    }.toList
+  }
+
   @throws[DbActorNAckException]
   private def readFederationMessage(key: String): Option[Message] = {
     Try(storage.read(key)) match {
@@ -669,6 +692,19 @@ final case class DbActor(
         case Success(foundRumorIds) => sender() ! DbActorReadRumorData(foundRumorIds)
         case failure                => sender() ! failure.recover(Status.Failure(_))
       }
+
+    case GenerateRumorStateAns(rumorState: RumorState) =>
+      log.info(s"Actor $self (db) received a GenerateRumorStateAns request")
+      Try(generateRumorStateAns(rumorState)) match {
+        case Success(rumorList) => sender() ! DbActorGenerateRumorStateAns(rumorList)
+        case failure            => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case GetRumorState() =>
+      log.info(s"Actor $self (db) received a GetRumorState request")
+      Try(getRumorState) match
+        case Success(rumorState) => sender() ! DbActorGetRumorStateAck(rumorState)
+        case failure             => sender() ! failure.recover(Status.Failure(_))
 
     case ReadFederationMessage(key) =>
       log.info(s"Actor $self (db) received a ReadFederationMessage request")
@@ -927,13 +963,26 @@ object DbActor {
     */
   final case class ReadRumorData(senderPk: PublicKey) extends Event
 
+  /** Requests the db to build a list of rumors that we have that are missing to the rumorState
+    * @param rumorState
+    *   Map of last seen rumorId per Publickey that we want to complete
+    */
+
+  final case class GenerateRumorStateAns(rumorState: RumorState) extends Event
+
+  /** Requests the db to build out rumorState +
+    */
+  final case class GetRumorState() extends Event
+
   /** Requests the Db for the message corresponding to a given key
+    *
     * @param key
     *   The key associated to the message we request for
     */
   final case class ReadFederationMessage(key: String) extends Event
 
   /** Requests the Db to write the given message associated with its key
+    *
     * @param key
     *   The key corresponding to the message
     * @param message
@@ -942,6 +991,7 @@ object DbActor {
   final case class WriteFederationMessage(key: String, message: Message) extends Event
 
   /** Requests the Db to delete the message associated with its key
+    *
     * @param key
     *   The key of the message to delete
     */
@@ -1036,7 +1086,16 @@ object DbActor {
     */
   final case class DbActorReadRumorData(rumorIds: RumorData) extends DbActorMessage
 
+  /** Response for a [[GenerateRumorStateAns]]
+    */
+  final case class DbActorGenerateRumorStateAns(rumorList: List[Rumor]) extends DbActorMessage
+
+  /** Response for a [[GetRumorState]] +
+    */
+  final case class DbActorGetRumorStateAck(rumorState: RumorState) extends DbActorMessage
+
   /** Response for a [[ReadFederationMessage]] db request
+    *
     * @param message
     *   requested message
     */

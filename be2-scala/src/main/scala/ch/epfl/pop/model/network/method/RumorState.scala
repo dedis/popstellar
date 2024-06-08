@@ -14,6 +14,19 @@ final case class RumorState(state: Map[PublicKey, Int]) extends Params {
   def toJsonString: String = {
     this.toJson.toString
   }
+
+  def isMissingRumorsFrom(otherRumorState: RumorState): Map[PublicKey, List[Int]] = {
+    this.state.flatMap { (publicKey, rumorId) =>
+      otherRumorState.state.get(publicKey) match
+        case Some(otherRumorId) =>
+          if (otherRumorId > rumorId)
+            Some(publicKey -> List.range(rumorId + 1, otherRumorId + 1))
+          else None
+        case None => None
+    } ++ {
+      otherRumorState.state.filter((pk, _) => !this.state.contains(pk)).map((pk, rumorId) => pk -> List.range(0, rumorId + 1))
+    }
+  }
 }
 
 object RumorState extends Parsable {

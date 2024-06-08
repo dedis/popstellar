@@ -212,7 +212,7 @@ class WitnessDatabaseTest {
         CREATION + 10,
         CREATION + 20,
         EventState.CREATED,
-        HashSet(),
+        LinkedHashSet(),
         "loc",
         ""
       )

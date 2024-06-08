@@ -4,7 +4,7 @@ import akka.NotUsed
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.{AskableActorRef, ask}
 import akka.stream.scaladsl.{Flow, Sink, Source}
-import akka.testkit.TestKit
+import akka.testkit.{TestKit, TestKitBase}
 import akka.util.Timeout
 import ch.epfl.pop.IOHelper.readJsonFromPath
 import ch.epfl.pop.model.network.JsonRpcResponse
@@ -17,13 +17,15 @@ import ch.epfl.pop.storage.{DbActor, InMemoryStorage, SecurityModuleActor}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuiteLike
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
 import scala.concurrent.Await
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 import scala.util.Success
 
-class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessagesByIdResponseHandlerSuiteSystem")) with AnyFunSuiteLike with AskPatternConstants with BeforeAndAfterAll {
+class GetMessagesByIdResponseHandlerSuite extends TestKitBase with AnyFunSuiteLike with AskPatternConstants with BeforeAndAfterAll {
+
+  implicit val system: ActorSystem = ActorSystem("GetMessagesByIdResponseHandlerSuiteSystem")
 
   // Implicit for system actors
   implicit val timeout: Timeout = Timeout(1.seconds)
@@ -35,8 +37,11 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
   val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)), "DbActor")
   val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(testSecurityDirectory)))
 
-  // Inject dbActor above
-  PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, isServer = false)
+  override def beforeAll(): Unit = {
+    // Inject dbActor above
+    PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, isServer = false)
+
+  }
 
   // handler we want to test
   val responseHandler: Flow[GraphMessage, GraphMessage, NotUsed] = ProcessMessagesHandler.getMsgByIdResponseHandler(MessageRegistry())

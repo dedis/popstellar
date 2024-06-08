@@ -16,28 +16,6 @@ import scala.util.{Failure, Success}
 /** RollCallHandler object uses the db instance from the MessageHandler (i.e PublishSubscribe)
   */
 object RollCallHandler extends MessageHandler {
-  final lazy val handlerInstance = new RollCallHandler(super.dbActor)
-
-  def handleCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleCreateRollCall(rpcMessage)
-
-  def handleOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleOpenRollCall(rpcMessage)
-
-  def handleReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleReopenRollCall(rpcMessage)
-
-  def handleCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleCloseRollCall(rpcMessage)
-}
-
-/** Implementation of the RollCallHandler that provides a testable interface
-  *
-  * @param dbRef
-  *   reference of the db actor
-  */
-class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
-
-  /** Overrides default DbActor with provided parameter
-    */
-  override final val dbActor: AskableActorRef = dbRef
-
   private val serverUnexpectedAnswer: String = "The server is doing something unexpected"
 
   def handleCreateRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {

@@ -1,0 +1,134 @@
+package messagedata
+
+import (
+	"encoding/json"
+	"popstellar/internal/errors"
+)
+
+const (
+	ConsensusObject            = "consensus"
+	ConsensusActionAccept      = "accept"
+	ConsensusActionElect       = "elect"
+	ConsensusActionElectAccept = "elect_accept"
+	ConsensusActionFailure     = "failure"
+	ConsensusActionLearn       = "learn"
+	ConsensusActionPrepare     = "prepare"
+	ConsensusActionPromise     = "promise"
+	ConsensusActionPropose     = "propose"
+
+	ElectionObject       = "election"
+	ElectionActionSetup  = "setup"
+	ElectionActionKey    = "key"
+	ElectionActionOpen   = "open"
+	ElectionActionEnd    = "end"
+	ElectionActionResult = "result"
+
+	LAOObject       = "lao"
+	LAOActionCreate = "create"
+	LAOActionState  = "state"
+	LAOActionUpdate = "update_properties"
+	LAOActionGreet  = "greet"
+
+	MeetingObject       = "meeting"
+	MeetingActionCreate = "create"
+	MeetingActionState  = "state"
+
+	MessageObject        = "message"
+	MessageActionWitness = "witness"
+
+	RollCallObject       = "roll_call"
+	RollCallActionClose  = "close"
+	RollCallActionCreate = "create"
+	RollCallActionOpen   = "open"
+	RollCallActionReOpen = "reopen"
+
+	VoteActionCastVote = "cast_vote"
+	VoteActionWriteIn  = "write_in"
+
+	FederationObject                 = "federation"
+	FederationActionChallengeRequest = "challenge_request"
+	FederationActionChallenge        = "challenge"
+	FederationActionInit             = "init"
+	FederationActionExpect           = "expect"
+	FederationActionResult           = "result"
+
+	ChirpObject             = "chirp"
+	ChirpActionAdd          = "add"
+	ChirpActionDelete       = "delete"
+	ChirpActionNotifyAdd    = "notify_add"
+	ChirpActionNotifyDelete = "notify_delete"
+
+	ReactionObject       = "reaction"
+	ReactionActionAdd    = "add"
+	ReactionActionDelete = "delete"
+
+	CoinObject                = "coin"
+	CoinActionPostTransaction = "post_transaction"
+
+	// AuthObject popcha messagedata object
+	AuthObject = "popcha"
+	// AuthAction popcha messagedata action
+	AuthAction = "authenticate"
+
+	// RootPrefix denotes the prefix for the root channel, used to verify the
+	// channel of origin of some message
+	RootPrefix = "/root/"
+)
+
+// MessageData defines a common interface for message data to be used with a
+// registry.
+type MessageData interface {
+	GetObject() string
+	GetAction() string
+	NewEmpty() MessageData
+}
+
+// Verifiable defines a MessageData that offers message verification
+type Verifiable interface {
+	MessageData
+	Verify() error
+}
+
+// GetObjectAndAction returns the object and action of a JSON RPC message.
+func GetObjectAndAction(buf []byte) (string, string, error) {
+	var objmap map[string]json.RawMessage
+
+	err := json.Unmarshal(buf, &objmap)
+	if err != nil {
+		return "", "", errors.NewInvalidMessageFieldError("failed to unmarshal objmap: %v", err)
+	}
+
+	var object string
+	var action string
+
+	err = json.Unmarshal(objmap["object"], &object)
+	if err != nil {
+		return "", "", errors.NewInvalidActionError("failed to get object: %v", err)
+	}
+
+	err = json.Unmarshal(objmap["action"], &action)
+	if err != nil {
+		return "", "", errors.NewInvalidActionError("failed to get action: %v", err)
+	}
+
+	return object, action, nil
+}
+
+// GetTime returns the time of a JSON RPC message.
+func GetTime(buf []byte) (int64, error) {
+	var objmap map[string]json.RawMessage
+
+	err := json.Unmarshal(buf, &objmap)
+	if err != nil {
+		return 0, errors.NewInvalidMessageFieldError("failed to unmarshal objmap: %v", err)
+	}
+
+	var time int64
+
+	err = json.Unmarshal(objmap["timestamp"], &time)
+	if err != nil {
+		return 0, errors.NewInvalidMessageFieldError("failed to get time: %v", err)
+	}
+
+	return time, nil
+}

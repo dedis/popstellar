@@ -59,7 +59,7 @@ class SocialMediaHomeFragmentTest {
       CREATION_TIME,
       CREATION_TIME,
       EventState.CLOSED,
-      HashSet(),
+      LinkedHashSet(),
       "",
       "",
     )
