@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
+	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
 	"popstellar/internal/message/messagedata"
@@ -20,15 +21,54 @@ const (
 	voteFlag = "Vote"
 )
 
+type Repository interface {
+
+	// GetLAOOrganizerPubKey returns the organizer public key of an election.
+	GetLAOOrganizerPubKey(electionID string) (kyber.Point, error)
+
+	// GetElectionSecretKey returns the secret key of an election.
+	GetElectionSecretKey(electionID string) (kyber.Scalar, error)
+
+	// IsElectionStartedOrEnded returns true if the election is started or ended.
+	IsElectionStartedOrEnded(electionID string) (bool, error)
+
+	// IsElectionEnded returns true if the election is ended.
+	IsElectionEnded(electionID string) (bool, error)
+
+	//IsElectionStarted returns true if the election is started.
+	IsElectionStarted(electionID string) (bool, error)
+
+	// GetElectionType returns the type of an election.
+	GetElectionType(electionID string) (string, error)
+
+	// GetElectionCreationTime returns the creation time of an election.
+	GetElectionCreationTime(electionID string) (int64, error)
+
+	// GetElectionAttendees returns the attendees of an election.
+	GetElectionAttendees(electionID string) (map[string]struct{}, error)
+
+	// GetElectionQuestions returns the questions of an election.
+	GetElectionQuestions(electionID string) (map[string]types.Question, error)
+
+	// GetElectionQuestionsWithValidVotes returns the questions of an election with valid votes.
+	GetElectionQuestionsWithValidVotes(electionID string) (map[string]types.Question, error)
+
+	// StoreElectionEndWithResult stores a message and an election result message inside the database.
+	StoreElectionEndWithResult(channelID string, msg, electionResultMsg message.Message) error
+
+	// StoreMessageAndData stores a message with an object and an action inside the database.
+	StoreMessageAndData(channelID string, msg message.Message) error
+}
+
 type Handler struct {
 	conf   repository.ConfigManager
 	subs   repository.SubscriptionManager
-	db     repository.ElectionRepository
+	db     Repository
 	schema *validation.SchemaValidator
 }
 
 func New(conf repository.ConfigManager, subs repository.SubscriptionManager,
-	db repository.ElectionRepository, schema *validation.SchemaValidator) *Handler {
+	db Repository, schema *validation.SchemaValidator) *Handler {
 	return &Handler{
 		conf:   conf,
 		subs:   subs,

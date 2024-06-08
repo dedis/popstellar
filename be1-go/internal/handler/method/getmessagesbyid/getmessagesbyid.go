@@ -2,18 +2,21 @@ package getmessagesbyid
 
 import (
 	"encoding/json"
-	"popstellar/internal/repository"
-
 	"popstellar/internal/errors"
 	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 )
 
-type Handler struct {
-	db repository.GetMessagesByIDRepository
+type Repository interface {
+	GetResultForGetMessagesByID(params map[string][]string) (map[string][]message.Message, error)
 }
 
-func New(db repository.GetMessagesByIDRepository) *Handler {
+type Handler struct {
+	db Repository
+}
+
+func New(db Repository) *Handler {
 	return &Handler{
 		db: db,
 	}

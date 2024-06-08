@@ -215,3 +215,7 @@ func (s *SQLite) HasMessage(messageID string) (bool, error) {
 		return true, nil
 	}
 }
+
+func (s *SQLite) GetParamsHeartbeat() (map[string][]string, error) {
+	return nil, nil
+}

@@ -13,15 +13,23 @@ import (
 	"popstellar/internal/message/query/method/message"
 )
 
+type Repository interface {
+	// HasMessage returns true if the message already exists.
+	HasMessage(messageID string) (bool, error)
+
+	// StoreChirpMessages stores a chirp message and a generalChirp broadcast inside the database.
+	StoreChirpMessages(channel, generalChannel string, msg, generalMsg message.Message) error
+}
+
 type Handler struct {
 	conf   repository.ConfigManager
 	subs   repository.SubscriptionManager
-	db     repository.ChirpRepository
+	db     Repository
 	schema *validation.SchemaValidator
 }
 
 func New(conf repository.ConfigManager, subs repository.SubscriptionManager,
-	db repository.ChirpRepository, schema *validation.SchemaValidator) *Handler {
+	db Repository, schema *validation.SchemaValidator) *Handler {
 	return &Handler{
 		conf:   conf,
 		subs:   subs,

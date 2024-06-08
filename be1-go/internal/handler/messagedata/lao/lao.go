@@ -14,15 +14,55 @@ import (
 	"strings"
 )
 
+type Repository interface {
+	// GetLaoWitnesses returns the list of witnesses of a LAO.
+	GetLaoWitnesses(laoID string) (map[string]struct{}, error)
+
+	// GetOrganizerPubKey returns the organizer public key of a LAO.
+	GetOrganizerPubKey(laoID string) (kyber.Point, error)
+
+	// GetRollCallState returns the state of th lao roll call.
+	GetRollCallState(channel string) (string, error)
+
+	// CheckPrevOpenOrReopenID returns true if the previous roll call open or reopen has the same ID
+	CheckPrevOpenOrReopenID(channel, nextID string) (bool, error)
+
+	// CheckPrevCreateOrCloseID returns true if the previous roll call create or close has the same ID
+	CheckPrevCreateOrCloseID(channel, nextID string) (bool, error)
+
+	// StoreRollCallClose stores a list of chirp channels and a rollCallClose message inside the database.
+	StoreRollCallClose(channels []string, laoID string, msg message.Message) error
+
+	// StoreElectionWithElectionKey stores an electionSetup message and an election key message inside the database.
+	StoreElectionWithElectionKey(
+		laoPath, electionPath string,
+		electionPubKey kyber.Point,
+		electionSecretKey kyber.Scalar,
+		msg, electionKeyMsg message.Message) error
+
+	//StoreElection stores an electionSetup message inside the database.
+	StoreElection(
+		laoPath, electionPath string,
+		electionPubKey kyber.Point,
+		electionSecretKey kyber.Scalar,
+		msg message.Message) error
+
+	// StoreMessageAndData stores a message with an object and an action inside the database.
+	StoreMessageAndData(channelID string, msg message.Message) error
+
+	// HasMessage returns true if the message already exists.
+	HasMessage(messageID string) (bool, error)
+}
+
 type Handler struct {
 	conf   repository.ConfigManager
 	subs   repository.SubscriptionManager
-	db     repository.LAORepository
+	db     Repository
 	schema *validation.SchemaValidator
 }
 
 func New(conf repository.ConfigManager, subs repository.SubscriptionManager,
-	db repository.LAORepository, schema *validation.SchemaValidator) *Handler {
+	db Repository, schema *validation.SchemaValidator) *Handler {
 	return &Handler{
 		conf:   conf,
 		subs:   subs,

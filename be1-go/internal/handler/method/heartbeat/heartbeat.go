@@ -10,12 +10,17 @@ import (
 	"popstellar/internal/repository"
 )
 
-type Handler struct {
-	queries repository.QueryManager
-	db      repository.HeartbeatRepository
+type Repository interface {
+	// GetParamsForGetMessageByID returns the params to do the getMessageByID msg in reponse of heartbeat
+	GetParamsForGetMessageByID(params map[string][]string) (map[string][]string, error)
 }
 
-func New(queries repository.QueryManager, db repository.HeartbeatRepository) *Handler {
+type Handler struct {
+	queries repository.QueryManager
+	db      Repository
+}
+
+func New(queries repository.QueryManager, db Repository) *Handler {
 	return &Handler{
 		queries: queries,
 		db:      db,

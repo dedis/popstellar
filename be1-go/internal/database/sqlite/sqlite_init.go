@@ -7,7 +7,6 @@ import (
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/message"
 	"popstellar/internal/handler/messagedata/root"
-	database "popstellar/internal/repository"
 	"sync"
 )
 
@@ -15,7 +14,6 @@ var dbLock sync.RWMutex
 
 // SQLite is a wrapper around the SQLite database.
 type SQLite struct {
-	database.Repository
 	database *sql.DB
 }
 

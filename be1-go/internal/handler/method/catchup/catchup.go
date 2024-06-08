@@ -2,18 +2,22 @@ package catchup
 
 import (
 	"encoding/json"
-	"popstellar/internal/repository"
-
 	"popstellar/internal/errors"
 	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 )
 
-type Handler struct {
-	db repository.CatchupRepository
+type Repository interface {
+	// GetAllMessagesFromChannel return all the messages received + sent on a channel
+	GetAllMessagesFromChannel(channelID string) ([]message.Message, error)
 }
 
-func New(db repository.CatchupRepository) *Handler {
+type Handler struct {
+	db Repository
+}
+
+func New(db Repository) *Handler {
 	return &Handler{
 		db: db,
 	}

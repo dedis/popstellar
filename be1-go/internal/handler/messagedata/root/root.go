@@ -24,15 +24,31 @@ const (
 	Federation = "/federation"
 )
 
+type Repository interface {
+
+	// StoreLaoWithLaoGreet stores a list of "sub" channels, a message and a lao greet message inside the database.
+	StoreLaoWithLaoGreet(
+		channels map[string]string,
+		laoID string,
+		organizerPubBuf []byte,
+		msg, laoGreetMsg message.Message) error
+
+	// StoreMessageAndData stores a message inside the database.
+	StoreMessageAndData(channelID string, msg message.Message) error
+
+	// HasChannel returns true if the channel already exists.
+	HasChannel(channel string) (bool, error)
+}
+
 type Handler struct {
 	config repository.ConfigManager
-	db     repository.RootRepository
+	db     Repository
 	subs   repository.SubscriptionManager
 	peers  repository.PeerManager
 	schema *validation.SchemaValidator
 }
 
-func New(config repository.ConfigManager, db repository.RootRepository,
+func New(config repository.ConfigManager, db Repository,
 	subs repository.SubscriptionManager, peers repository.PeerManager, schema *validation.SchemaValidator) *Handler {
 	return &Handler{
 		config: config,

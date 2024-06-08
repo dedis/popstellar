@@ -3,7 +3,6 @@ package message
 import (
 	"popstellar/internal/errors"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/repository"
 )
 
 const (
@@ -20,6 +19,15 @@ const (
 	FederationType   = "federation"
 )
 
+type Repository interface {
+
+	// HasMessage returns true if the message already exists.
+	HasMessage(messageID string) (bool, error)
+
+	// GetChannelType returns the type of the channel.
+	GetChannelType(channel string) (string, error)
+}
+
 type MessageDataHandler interface {
 	Handle(channelPath string, msg message.Message) error
 }
@@ -35,11 +43,11 @@ type MessageDataHandlers struct {
 }
 
 type Handler struct {
-	db       repository.ChannelRepository
+	db       Repository
 	handlers MessageDataHandlers
 }
 
-func New(db repository.Repository, handlers MessageDataHandlers) *Handler {
+func New(db Repository, handlers MessageDataHandlers) *Handler {
 	return &Handler{
 		db:       db,
 		handlers: handlers,

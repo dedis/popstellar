@@ -14,17 +14,22 @@ import (
 
 const thresholdMessagesByRumor = 1
 
+type Repository interface {
+	// AddMessageToMyRumor adds the message to the last rumor of the server and returns the current number of message inside the last rumor
+	AddMessageToMyRumor(messageID string) (int, error)
+}
+
 type MessageHandler interface {
 	Handle(channelPath string, msg message.Message, fromRumor bool) error
 }
 
 type Handler struct {
 	hub            repository.HubManager
-	db             repository.PublishRepository
+	db             Repository
 	messageHandler MessageHandler
 }
 
-func New(hub repository.HubManager, db repository.PublishRepository, messageHandler MessageHandler) *Handler {
+func New(hub repository.HubManager, db Repository, messageHandler MessageHandler) *Handler {
 	return &Handler{
 		hub:            hub,
 		db:             db,

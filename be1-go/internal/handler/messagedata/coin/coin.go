@@ -9,13 +9,18 @@ import (
 	"popstellar/internal/validation"
 )
 
+type Repository interface {
+	// StoreMessageAndData stores a message with an object and an action inside the database.
+	StoreMessageAndData(channelID string, msg message.Message) error
+}
+
 type Handler struct {
 	subs   repository.SubscriptionManager
-	db     repository.CoinRepository
+	db     Repository
 	schema *validation.SchemaValidator
 }
 
-func New(subs repository.SubscriptionManager, db repository.CoinRepository,
+func New(subs repository.SubscriptionManager, db Repository,
 	schema *validation.SchemaValidator) *Handler {
 	return &Handler{
 		subs:   subs,

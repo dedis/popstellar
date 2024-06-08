@@ -41,6 +41,20 @@ const (
 	rumorDelay     = time.Second * 5
 )
 
+type RumorSenderRepository interface {
+	// GetAndIncrementMyRumor return false if the last rumor is empty otherwise returns the new rumor to send and create the next rumor
+	GetAndIncrementMyRumor() (bool, method.Rumor, error)
+}
+
+type HeartbeatSenderRepository interface {
+	GetParamsHeartbeat() (map[string][]string, error)
+}
+
+type Repository interface {
+	HeartbeatSenderRepository
+	RumorSenderRepository
+}
+
 type JsonRpcHandler interface {
 	Handle(socket socket.Socket, msg []byte) error
 }
@@ -61,7 +75,7 @@ type Hub struct {
 	sockets repository.SocketManager
 
 	// database
-	db repository.HubRepository
+	db Repository
 
 	// handlers
 	jsonRpcHandler    JsonRpcHandler

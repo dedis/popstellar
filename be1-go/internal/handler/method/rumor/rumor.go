@@ -14,6 +14,17 @@ import (
 
 const maxRetry = 10
 
+type Repository interface {
+	// CheckRumor returns true if the rumor already exists
+	CheckRumor(senderID string, rumorID int) (bool, error)
+
+	// StoreRumor stores the new rumor with its processed and unprocessed messages
+	StoreRumor(rumorID int, sender string, unprocessed map[string][]message.Message, processed []string) error
+
+	// GetUnprocessedMessagesByChannel returns all the unprocessed messages by channel
+	GetUnprocessedMessagesByChannel() (map[string][]message.Message, error)
+}
+
 type MessageHandler interface {
 	Handle(channelPath string, msg message.Message, fromRumor bool) error
 }
@@ -21,11 +32,11 @@ type MessageHandler interface {
 type Handler struct {
 	queries        repository.QueryManager
 	sockets        repository.SocketManager
-	db             repository.RumorRepository
+	db             Repository
 	messageHandler MessageHandler
 }
 
-func New(queries repository.QueryManager, sockets repository.SocketManager, db repository.RumorRepository,
+func New(queries repository.QueryManager, sockets repository.SocketManager, db Repository,
 	messageHandler MessageHandler) *Handler {
 	return &Handler{
 		queries:        queries,

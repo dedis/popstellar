@@ -11,13 +11,24 @@ import (
 	"strings"
 )
 
+type Repository interface {
+	// IsAttendee returns if the user has participated in the last roll-call from the LAO
+	IsAttendee(laoPath string, poptoken string) (bool, error)
+
+	// GetReactionSender returns a reaction sender
+	GetReactionSender(messageID string) (string, error)
+
+	// StoreMessageAndData stores a message with an object and an action inside the database.
+	StoreMessageAndData(channelID string, msg message.Message) error
+}
+
 type Handler struct {
 	subs   repository.SubscriptionManager
-	db     repository.ReactionRepository
+	db     Repository
 	schema *validation.SchemaValidator
 }
 
-func New(subs repository.SubscriptionManager, db repository.ReactionRepository,
+func New(subs repository.SubscriptionManager, db Repository,
 	schema *validation.SchemaValidator) *Handler {
 	return &Handler{
 		subs:   subs,

@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
+	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
@@ -27,15 +28,40 @@ const (
 	channelPattern = "/root/%s/federation"
 )
 
+type Repository interface {
+	// GetOrganizerPubKey returns the organizer public key of a LAO.
+	GetOrganizerPubKey(laoID string) (kyber.Point, error)
+
+	// IsChallengeValid returns true if the challenge is valid and not used yet
+	IsChallengeValid(senderPk string, challenge messagedata.FederationChallenge, channelPath string) error
+
+	// RemoveChallenge removes the challenge from the database to avoid reuse
+	RemoveChallenge(challenge messagedata.FederationChallenge) error
+
+	// GetFederationExpect return a FederationExpect where the organizer is
+	// the given public keys
+	GetFederationExpect(senderPk string, remotePk string, Challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationExpect, error)
+
+	// GetFederationInit return a FederationExpect where the organizer is
+	// the given public keys
+	GetFederationInit(senderPk string, remotePk string, Challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationInit, error)
+
+	// GetServerKeys get the keys of the server
+	GetServerKeys() (kyber.Point, kyber.Scalar, error)
+
+	// StoreMessageAndData stores a message with an object and an action inside the database.
+	StoreMessageAndData(channelID string, msg message.Message) error
+}
+
 type Handler struct {
-	db     repository.FederationRepository
+	db     Repository
 	subs   repository.SubscriptionManager
 	socket repository.SocketManager
 	hub    repository.HubManager
 	schema *validation.SchemaValidator
 }
 
-func New(db repository.FederationRepository, subs repository.SubscriptionManager,
+func New(db Repository, subs repository.SubscriptionManager,
 	socket repository.SocketManager, hub repository.HubManager, schema *validation.SchemaValidator) *Handler {
 	return &Handler{
 		db:     db,
