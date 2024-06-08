@@ -80,13 +80,14 @@ lazy val tests = projectMatrix
   )
   .jvmPlatform(
     scalaVersions = Seq(V.scala213),
-    axisValues = Seq(TargetAxis(scala3Version)),
+    axisValues = Seq(TargetAxis(V.scala213)),
     settings = Seq()
   )
   .jvmPlatform(
-    scalaVersions = Seq(scala3Version),
+    scalaVersions = Seq(V.scala213),
     axisValues = Seq(TargetAxis(scala3Version)),
     settings = Seq()
   )
+
   .dependsOn(rules)
   .enablePlugins(ScalafixTestkitPlugin)
