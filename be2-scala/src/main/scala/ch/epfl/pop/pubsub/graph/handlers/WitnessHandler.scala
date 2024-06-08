@@ -15,18 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 /** WitnessHandler object uses the db instance from the MessageHandler
   */
-object WitnessHandler {
-  final lazy val handlerInstance = new WitnessHandler(DbActor.getInstance)
-
-  def handleWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleWitnessMessage(rpcMessage)
-}
-
-class WitnessHandler(dbRef: => AskableActorRef) extends MessageHandler {
-
-  /** Overrides default DbActor with provided parameter
-    */
-  override final val dbActor: AskableActorRef = dbRef
-
+object WitnessHandler extends MessageHandler {
   def handleWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = {
     val combined =
       for {

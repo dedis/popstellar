@@ -43,6 +43,24 @@ object UITestUtils {
     Assert.assertEquals(expected, ShadowToast.getTextOfLatestToast())
   }
 
+  /**
+   * Assert that the latest toast was shown with the expected text
+   *
+   * @param resId expected
+   * @param args arguments to the resource
+   */
+  @JvmStatic
+  fun assertToastDisplayedHasNotText(@StringRes resId: Int, vararg args: Any?) {
+    MatcherAssert.assertThat(
+      "No toast was displayed",
+      ShadowToast.getLatestToast(),
+      Matchers.notNullValue()
+    )
+
+    val expected = ApplicationProvider.getApplicationContext<Context>().getString(resId, *args)
+    Assert.assertNotEquals(expected, ShadowToast.getTextOfLatestToast())
+  }
+
   @JvmStatic
   fun assertToastIsDisplayedContainsText(@StringRes resId: Int, vararg args: Any?) {
     MatcherAssert.assertThat(

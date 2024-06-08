@@ -101,11 +101,13 @@ final case class ConnectionMediator(
       if (serverMap.isEmpty)
         sender() ! ConnectionMediator.NoPeer()
       else
-        val serverNeeded = serverMap.filter((_, greetServer) => greetServer.serverAddress.equals(serverAddress))
+        val serverNeeded = serverMap.filter((_, greetServer) => greetServer.clientAddress.equals(serverAddress))
         if (serverNeeded.isEmpty)
           sender() ! ConnectionMediator.NoPeer()
         else
           sender() ! ConnectionMediator.GetFederationServerAck(serverNeeded.keys.head)
+
+
 
   }
 }
@@ -123,6 +125,7 @@ object ConnectionMediator {
   final case class ReadPeersClientAddress() extends Event
   final case class GetRandomPeer(excludes: List[PublicKey] = List.empty) extends Event
   final case class GetFederationServer(serverAddress: String) extends Event
+
 
   sealed trait ConnectionMediatorMessage
   final case class ReadPeersClientAddressAck(list: List[String]) extends ConnectionMediatorMessage

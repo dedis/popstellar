@@ -19,9 +19,13 @@ import org.scalatest.matchers.should.Matchers
 import util.examples.MessageExample
 import util.examples.RollCall.{CreateRollCallExamples, OpenRollCallExamples}
 import util.examples.Rumor.RumorExample
+<<<<<<< HEAD
 import ch.epfl.pop.model.network.method.Rumor
 import util.examples.Federation.FederationExpectExample.EXPECT_MESSAGE
 import util.examples.Federation.FederationInitExample.{DATA_INIT_MESSAGE, INIT, INIT_MESSAGE, SENDER}
+=======
+import ch.epfl.pop.model.network.method.{Rumor, RumorState}
+>>>>>>> master
 
 import scala.collection.immutable.HashMap
 import scala.concurrent.Await
@@ -992,6 +996,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     Await.result(read, duration) shouldBe DbActorReadRumor(None)
   }
 
+<<<<<<< HEAD
   test("writeFederationMessage successfully add the message to the db") {
     val initialStorage = InMemoryStorage()
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
@@ -1079,4 +1084,44 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     message should equal(None)
 
   }
+=======
+  test("generateRumorState should create a correct rumorState") {
+    val initialStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    val publicKey = PublicKey(Base64Data.encode("publicKey"))
+    val rumorList: List[Rumor] = (0 to 10).map(i => Rumor(publicKey, i, Map.empty)).toList
+
+    for (rumor <- rumorList)
+      val writeResult = dbActor ? DbActor.WriteRumor(rumor)
+      Await.result(writeResult, duration) shouldBe a[DbActorAck]
+
+    val rumorState = RumorState(Map(
+      publicKey -> 5
+    ))
+
+    val generateRumorState = dbActor ? GenerateRumorStateAns(rumorState)
+    val rumorListResult = rumorList.filter(_.rumorId > 5)
+    Await.result(generateRumorState, duration) shouldBe DbActorGenerateRumorStateAns(rumorListResult)
+  }
+
+  test("generateRumorState should return an empty state if nothing is missing") {
+    val initialStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    val generateRumorState = dbActor ? GenerateRumorStateAns(RumorState(Map.empty))
+    Await.result(generateRumorState, duration) shouldBe DbActorGenerateRumorStateAns(List.empty)
+  }
+
+  test("generaterumorState should return an empty state if has nothing to send") {
+    val initialStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    val generateRumorState = dbActor ? GenerateRumorStateAns(RumorState(Map(
+      PublicKey(Base64Data.encode("publicKey")) -> 5
+    )))
+    Await.result(generateRumorState, duration) shouldBe DbActorGenerateRumorStateAns(List.empty)
+  }
+
+>>>>>>> master
 }

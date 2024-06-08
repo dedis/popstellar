@@ -185,7 +185,7 @@ class RollCallHandlerTest {
         now + 1,
         now + 2,
         EventState.CREATED,
-        HashSet(),
+        LinkedHashSet(),
         "somewhere",
         "desc"
       )

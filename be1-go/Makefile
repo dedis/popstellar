@@ -27,7 +27,7 @@ test-no-cache: protocol
 	go test -v -race ./... -count=1
 
 test-cov: protocol
-	go test -v -coverpkg=./... -coverprofile=coverage.out ./... -json > report.json
+	go test -v ./... -coverprofile=coverage.out -json > report.json
 
 vet: protocol
 	go vet ./...
@@ -35,10 +35,10 @@ vet: protocol
 check: test test-cov lint vet
 
 protocol:
-	cp -r ../protocol ./validation 
+	cp -r ../protocol ./internal/validation
 
 clean:
-	rm -rf validation/protocol
+	rm -rf ./internal/validation/protocol
 
 fmt:
 	gofmt -s -w ./

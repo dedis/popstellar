@@ -211,7 +211,7 @@ object MessageValidator {
      * @param value the value to compare to
      * @throws IllegalArgumentException if the value is not greater or equal than the given value
      */
-    fun greaterOrEqualThan(input: Int, value: Int, field: String): MessageValidatorBuilder {
+    fun greaterOrEqualThan(input: Long, value: Long, field: String): MessageValidatorBuilder {
       require(input >= value) { "$field must be greater or equal than $value" }
       return this
     }
@@ -302,6 +302,12 @@ object MessageValidator {
         "Unsupported voting method in question: ${title}. Must be one of $validVotingMethods."
       }
       validBallotOptions(ballotOptions)
+      return this
+    }
+
+    /** Helper method to check that a string list is sorted */
+    fun stringListIsSorted(list: List<*>, field: String): MessageValidatorBuilder {
+      require(list == list.sortedBy { it.toString() }) { "$field must be sorted" }
       return this
     }
 

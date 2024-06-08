@@ -44,21 +44,21 @@ class RollCallArrayAdapterTest {
         val myToken = PoPToken(MY_PRIVATE_KEY, MY_PUBLIC_KEY)
         val otherToken = PoPToken(OTHER_PRIVATE_KEY, OTHER_PUBLIC_KEY)
         attendeesList = listOf(myToken.publicKey.encoded, otherToken.publicKey.encoded)
-        adapter = RollCallArrayAdapter(context, R.id.valid_token_layout_text, attendeesList, myToken)
+        adapter = RollCallArrayAdapter(context, R.id.valid_token_layout_text, attendeesList, myToken, mock(RollCallFragment::class.java))
         mockView = TextView(context)
         val colorAccent = ContextCompat.getColor(context, R.color.textOnBackground)
         (mockView as TextView).setTextColor(colorAccent)
     }
 
     @Test
-    fun verify_our_token_is_highlighted() {
+    fun verifyOurTokenIsHighlighted() {
         val view = adapter.getView(0, mockView, mock(ViewGroup::class.java)) as TextView
         val color = ContextCompat.getColor(context, R.color.colorAccent)
         Assert.assertEquals(color, view.currentTextColor)
     }
 
     @Test
-    fun verify_other_token_is_not_highlighted() {
+    fun verifyOtherTokenIsNotHighlighted() {
         val view = adapter.getView(1, mockView, mock(ViewGroup::class.java)) as TextView
         val color = ContextCompat.getColor(context, R.color.textOnBackground)
         Assert.assertEquals(color, view.currentTextColor)

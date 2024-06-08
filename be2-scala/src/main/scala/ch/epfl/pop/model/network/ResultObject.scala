@@ -57,5 +57,6 @@ class ResultObject(val result: Option[ResultType]) {
           case (Some(a), Some(b)) => a == b
           case (None, None)       => true
           case _                  => false
+      case _ => false
   }
 }

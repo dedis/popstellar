@@ -5,25 +5,18 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"net/url"
-	"os"
-	popstellar "popstellar"
-	"popstellar/crypto"
-	"popstellar/hub"
-	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/config"
-	"popstellar/internal/popserver/database"
-	"popstellar/internal/popserver/database/sqlite"
-	"popstellar/internal/popserver/state"
-	"popstellar/internal/popserver/utils"
-	"popstellar/network"
-	"popstellar/network/socket"
-	"popstellar/validation"
-	"sync"
-	"time"
-
 	"github.com/rs/zerolog"
 	"golang.org/x/exp/slices"
+	"net/url"
+	"os"
+	"popstellar/internal/crypto"
+	"popstellar/internal/hub"
+	"popstellar/internal/logger"
+	"popstellar/internal/network"
+	"popstellar/internal/network/socket"
+	oldHub "popstellar/internal/old/hub"
+	"sync"
+	"time"
 
 	"github.com/rs/zerolog/log"
 	"go.dedis.ch/kyber/v3"
@@ -61,7 +54,7 @@ type ServerConfig struct {
 	DatabasePath   string   `json:"database-path"`
 }
 
-func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
+func (s *ServerConfig) newHub(l *zerolog.Logger) (oldHub.Hub, error) {
 	// compute the client server address if it wasn't provided
 	if s.ClientAddress == "" {
 		s.ClientAddress = fmt.Sprintf("ws://%s:%d/client", s.PublicAddress, s.ClientPort)
@@ -71,68 +64,25 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 		s.ServerAddress = fmt.Sprintf("ws://%s:%d/server", s.PublicAddress, s.ServerPort)
 	}
 
-	var point kyber.Point = nil
-	err := ownerKey(s.PublicKey, &point)
+	var ownerPubKey kyber.Point = nil
+	err := ownerKey(s.PublicKey, &ownerPubKey)
 	if err != nil {
 		return nil, err
 	}
 
-	schemaValidator, err := validation.NewSchemaValidator()
+	hub, err := hub.New(s.DatabasePath, ownerPubKey, s.ClientAddress, s.ServerAddress)
+
 	if err != nil {
 		return nil, err
 	}
 
-	db, err := sqlite.NewSQLite(s.DatabasePath, true)
-	if err != nil {
-		return nil, err
-	}
-
-	database.InitDatabase(&db)
-
-	serverPublicKey, serverSecretKey, err := db.GetServerKeys()
-	if err != nil {
-		serverSecretKey = crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-		serverPublicKey = crypto.Suite.Point().Mul(serverSecretKey, nil)
-
-		err := db.StoreServerKeys(serverPublicKey, serverSecretKey)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	utils.InitUtils(l, schemaValidator)
-
-	state.InitState(l)
-
-	config.InitConfig(point, serverPublicKey, serverSecretKey, s.ClientAddress, s.ServerAddress)
-
-	channels, err := db.GetAllChannels()
-	if err != nil {
-		return nil, err
-	}
-
-	for _, channel := range channels {
-		alreadyExist, errAnswer := state.HasChannel(channel)
-		if errAnswer != nil {
-			return nil, errAnswer
-		}
-		if alreadyExist {
-			continue
-		}
-
-		errAnswer = state.AddChannel(channel)
-		if errAnswer != nil {
-			return nil, errAnswer
-		}
-	}
-
-	return popserver.NewHub(), nil
+	return hub, nil
 }
 
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
 // the server
 func Serve(cliCtx *cli.Context) error {
-	poplog := popstellar.Logger
+	poplog := logger.Logger
 
 	configFilePath := cliCtx.String("config-file")
 	var serverConfig ServerConfig
@@ -238,7 +188,7 @@ func Serve(cliCtx *cli.Context) error {
 
 // serverConnectionLoop tries to connect to the remote servers following an exponential backoff strategy
 // it also listens for updates in the other-servers field and tries to connect to the new servers
-func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, otherServers []string, updatedServersChan chan []string, connectedServers *map[string]bool) {
+func serverConnectionLoop(h oldHub.Hub, wg *sync.WaitGroup, done chan struct{}, otherServers []string, updatedServersChan chan []string, connectedServers *map[string]bool) {
 	// first connection to the servers
 	serversToConnect := otherServers
 	_ = connectToServers(h, wg, done, serversToConnect, connectedServers)
@@ -276,7 +226,7 @@ func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, oth
 
 // connectToServers updates the connection status of the servers and tries to connect to the ones that are not connected
 // it returns an error if at least one connection fails
-func connectToServers(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, servers []string, connectedServers *map[string]bool) error {
+func connectToServers(h oldHub.Hub, wg *sync.WaitGroup, done chan struct{}, servers []string, connectedServers *map[string]bool) error {
 	updateServersState(servers, connectedServers)
 	var returnErr error
 	for serverAddress, connected := range *connectedServers {
@@ -295,10 +245,10 @@ func connectToServers(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, servers
 
 // connectToSocket establishes a connection to another server's server
 // endpoint.
-func connectToSocket(address string, h hub.Hub,
+func connectToSocket(address string, h oldHub.Hub,
 	wg *sync.WaitGroup, done chan struct{}) error {
 
-	poplog := popstellar.Logger
+	poplog := logger.Logger
 
 	urlString := fmt.Sprintf("ws://%s/server", address)
 	u, err := url.Parse(urlString)

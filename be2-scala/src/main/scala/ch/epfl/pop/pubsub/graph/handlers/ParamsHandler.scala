@@ -5,15 +5,16 @@ import akka.actor.{ActorRef, ActorSystem}
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.decentralized.ConnectionMediator
-import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
+import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject, ResultRumor}
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
+import ch.epfl.pop.model.network.method.{GreetServer, Rumor, RumorState}
 import ch.epfl.pop.model.objects.{Channel, PublicKey}
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, MessageRegistry, PubSubMediator}
-import ch.epfl.pop.storage.DbActor.{DbActorReadRumor, ReadRumor, WriteRumor}
+import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.storage.DbActor.{DbActorAck, DbActorGenerateRumorStateAns, DbActorGetRumorStateAck, DbActorReadRumor, GetRumorState, ReadRumor, WriteRumor}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -94,40 +95,50 @@ object ParamsHandler extends AskPatternConstants {
       jsonRpcMessage.method match {
         case MethodType.rumor =>
           val rumor: Rumor = jsonRpcMessage.getParams.asInstanceOf[Rumor]
-          val senderPk: PublicKey = rumor.senderPk
-          val rumorId: Int = rumor.rumorId
-          val messages: Map[Channel, List[Message]] = rumor.messages
-
           // check if rumor already received
-          val readRumorDb = dbActorRef ? ReadRumor(senderPk -> rumorId)
-          Await.result(readRumorDb, duration) match {
-            // already present
-            case DbActorReadRumor(foundRumor) =>
-              foundRumor match
-                case Some(_) =>
-                  Right(JsonRpcResponse(
-                    RpcValidator.JSON_RPC_VERSION,
-                    ErrorObject(ErrorCodes.ALREADY_EXISTS.id, s"rumor $rumorId already present"),
-                    jsonRpcMessage.id
-                  ))
-                // absent
-                case None =>
-                  dbActorRef ? WriteRumor(rumor)
-                  val success = ProcessMessagesHandler.rumorHandler(messageRegistry, rumor)
-                  if (success) {
-                    system.log.info(s"All messages from rumor $rumorId were processed correctly")
-                  } else {
-                    system.log.info(s"Some messages from rumor $rumorId were not processed")
-                  }
-                  Right(JsonRpcResponse(
-                    RpcValidator.JSON_RPC_VERSION,
-                    ResultObject(0),
-                    jsonRpcMessage.id
-                  ))
+          val readRumorStateDb = dbActorRef ? GetRumorState()
+          Await.result(readRumorStateDb, duration) match {
+            case DbActorGetRumorStateAck(rumorState) =>
+              // expected
+              rumorState.state.get(rumor.senderPk) match
+                case Some(rumorIdDb) if rumorIdDb + 1 == rumor.rumorId =>
+                  tryProcessExpectedRumor(jsonRpcMessage, dbActorRef, messageRegistry)
+                case None if rumor.rumorId == 0 =>
+                  tryProcessExpectedRumor(jsonRpcMessage, dbActorRef, messageRegistry)
+                // not Expected
+                case _ =>
+                  Left(PipelineError(ErrorCodes.ALREADY_EXISTS.id, s"Rumor ${rumor.rumorId} with jsonRpcId : ${jsonRpcMessage.id} already exists", jsonRpcMessage.id))
           }
         case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "RumorHandler received a non expected jsonRpcRequest", jsonRpcMessage.id))
       }
     case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "RumorHandler received an unexpected message:" + graphMessage, None))
+  }
+
+  private def tryProcessExpectedRumor(jsonRpcMessage: JsonRpcRequest, dbActorRef: AskableActorRef, messageRegistry: MessageRegistry)(implicit system: ActorSystem): GraphMessage = {
+    val rumor: Rumor = jsonRpcMessage.getParams.asInstanceOf[Rumor]
+    if (ProcessMessagesHandler.rumorHandler(messageRegistry, rumor)) {
+      val dbWrite = dbActorRef ? WriteRumor(rumor)
+      Await.result(dbWrite, duration) match
+        case DbActorAck() =>
+          system.log.info(s"All messages from rumor ${rumor.rumorId} were processed correctly")
+          return Right(jsonRpcMessage)
+    }
+    system.log.info(s"Some messages from rumor ${rumor.rumorId} were not processed")
+    Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Some messages from Rumor ${rumor.rumorId} with jsonRpcId : ${jsonRpcMessage.id} couldn't be processed", jsonRpcMessage.id))
+  }
+
+  def rumorStateHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+    case Right(jsonRpcRequest: JsonRpcRequest) =>
+      jsonRpcRequest.method match
+        case MethodType.rumor_state =>
+          val rumorState = jsonRpcRequest.getParams.asInstanceOf[RumorState]
+          val generateRumorStateAns = dbActorRef ? DbActor.GenerateRumorStateAns(rumorState)
+          Await.result(generateRumorStateAns, duration) match
+            case DbActorGenerateRumorStateAns(rumorList) =>
+              Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, new ResultObject(ResultRumor(rumorList)), jsonRpcRequest.id))
+            case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"RumorStateHandler was not able to generate rumor state answer", jsonRpcRequest.id))
+        case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"RumorStateHandler received a message with unexpected method :$graphMessage", jsonRpcRequest.id))
+    case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"RumorStateHandler received an unexpected message:$graphMessage", None))
 
   }
 

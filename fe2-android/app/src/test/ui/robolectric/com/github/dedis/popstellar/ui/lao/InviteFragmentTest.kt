@@ -2,10 +2,7 @@ package com.github.dedis.popstellar.ui.lao
 
 import android.content.ClipboardManager
 import android.content.Context
-import android.widget.Button
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.EspressoException
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions
@@ -20,13 +17,11 @@ import com.github.dedis.popstellar.testutils.BundleBuilder
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule
 import com.github.dedis.popstellar.testutils.pages.lao.InviteFragmentPageObject
 import com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject
-import com.github.dedis.popstellar.ui.lao.event.election.CastVoteOpenBallotFragmentTest
 import com.github.dedis.popstellar.utility.security.KeyManager
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import junit.framework.TestCase
-import javax.inject.Inject
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
@@ -35,6 +30,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoTestRule
+import javax.inject.Inject
 
 @SmallTest
 @HiltAndroidTest
