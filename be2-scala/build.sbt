@@ -174,7 +174,7 @@ conflictManager := ConflictManager.latestCompatible
 inThisBuild(
     List(
         semanticdbEnabled := true,
-        semanticdbVersion := scalafixSemanticdb.revision
+        semanticdbVersion := scalafixSemanticdb.revision,
+        scalafixDependencies += "io.github.dedis" %% "scapegoat-scalafix" % "1.0" // Import custom rules
     )
 )
-ThisBuild / scalafixDependencies += "io.github.dedis" %% "scapegoat-scalafix" % "1.0" // Import custom rules
