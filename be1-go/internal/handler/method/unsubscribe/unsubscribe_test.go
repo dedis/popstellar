@@ -2,20 +2,21 @@ package unsubscribe
 
 import (
 	"github.com/stretchr/testify/require"
+	"popstellar/internal/errors"
+	"popstellar/internal/handler/method/unsubscribe/mocks"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/state"
 	"testing"
 )
 
 func Test_handleUnsubscribe(t *testing.T) {
-	subs := state.NewSubscribers()
+	subs := mocks.NewSubscribers(t)
 
 	handler := New(subs)
 
 	type input struct {
 		name     string
-		socket   mock.FakeSocket
+		socket   *mock.FakeSocket
 		ID       int
 		channel  string
 		message  []byte
@@ -27,15 +28,11 @@ func Test_handleUnsubscribe(t *testing.T) {
 
 	// Test 1: successfully unsubscribe from a subscribed channel
 
-	fakeSocket := mock.FakeSocket{Id: "1"}
+	fakeSocket := mock.NewFakeSocket("1")
 	ID := 1
 	channel := "/root/lao1"
 
-	err := subs.AddChannel(channel)
-	require.NoError(t, err)
-
-	err = subs.Subscribe(channel, &fakeSocket)
-	require.NoError(t, err)
+	subs.On("Unsubscribe", channel, fakeSocket).Return(nil)
 
 	args = append(args, input{
 		name:    "Test 1",
@@ -48,12 +45,12 @@ func Test_handleUnsubscribe(t *testing.T) {
 
 	// Test 2: failed to unsubscribe because not subscribed to channel
 
-	fakeSocket = mock.FakeSocket{Id: "2"}
+	fakeSocket = mock.NewFakeSocket("2")
 	ID = 2
 	channel = "/root/lao2"
 
-	err = subs.AddChannel(channel)
-	require.NoError(t, err)
+	subs.On("Unsubscribe", channel, fakeSocket).
+		Return(errors.NewInvalidResourceError("cannot Unsubscribe from a channel not subscribed"))
 
 	args = append(args, input{
 		name:     "Test 2",
@@ -65,30 +62,14 @@ func Test_handleUnsubscribe(t *testing.T) {
 		contains: "cannot Unsubscribe from a channel not subscribed",
 	})
 
-	// Test 3: failed to unsubscribe because unknown channel
-
-	fakeSocket = mock.FakeSocket{Id: "3"}
-	ID = 3
-	channel = "/root/lao3"
-
-	args = append(args, input{
-		name:     "Test 3",
-		socket:   fakeSocket,
-		ID:       ID,
-		channel:  channel,
-		message:  generator.NewUnsubscribeQuery(t, ID, channel),
-		isError:  true,
-		contains: "cannot Unsubscribe from unknown channel",
-	})
-
 	// Test 3: failed to unsubscribe because cannot unsubscribe from root channel
 
-	fakeSocket = mock.FakeSocket{Id: "4"}
-	ID = 4
+	fakeSocket = mock.NewFakeSocket("3")
+	ID = 3
 	channel = "/root"
 
 	args = append(args, input{
-		name:     "Test 4",
+		name:     "Test 3",
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
@@ -101,16 +82,12 @@ func Test_handleUnsubscribe(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			id, err := handler.Handle(&arg.socket, arg.message)
+			_, err := handler.Handle(arg.socket, arg.message)
 			if arg.isError {
-				require.Error(t, err, arg.contains)
-				require.Equal(t, arg.ID, *id)
+				require.Error(t, err)
+				require.Contains(t, err.Error(), arg.contains)
 			} else {
 				require.NoError(t, err)
-
-				isSubscribe, err := subs.IsSubscribed(arg.channel, &arg.socket)
-				require.NoError(t, err)
-				require.False(t, isSubscribe)
 			}
 		})
 	}
