@@ -2,31 +2,11 @@ package query
 
 import (
 	"github.com/stretchr/testify/require"
+	"popstellar/internal/handler/query/mocks"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/network/socket"
 	"testing"
 )
-
-// nullMethodHandler is a struct that implements the MethodHandler interface with no-op methods
-type nullMethodHandler struct{}
-
-// Handle method for nullMethodHandler that always returns nil
-func (n *nullMethodHandler) Handle(socket socket.Socket, msg []byte) (*int, error) {
-	return nil, nil
-}
-
-// Initialize methodHandlers with nullMethodHandler instances
-var methodHandlers = MethodHandlers{
-	Catchup:         &nullMethodHandler{},
-	GetMessagesbyid: &nullMethodHandler{},
-	Greetserver:     &nullMethodHandler{},
-	Heartbeat:       &nullMethodHandler{},
-	Publish:         &nullMethodHandler{},
-	Subscribe:       &nullMethodHandler{},
-	Unsubscribe:     &nullMethodHandler{},
-	Rumor:           &nullMethodHandler{},
-}
 
 func Test_handleQuery(t *testing.T) {
 	type input struct {
@@ -34,6 +14,19 @@ func Test_handleQuery(t *testing.T) {
 		message  []byte
 		isError  bool
 		contains string
+	}
+
+	methodHandler := mocks.NewMethodHandler(t)
+
+	methodHandlers := MethodHandlers{
+		Catchup:         methodHandler,
+		GetMessagesbyid: methodHandler,
+		Greetserver:     methodHandler,
+		Heartbeat:       methodHandler,
+		Publish:         methodHandler,
+		Subscribe:       methodHandler,
+		Unsubscribe:     methodHandler,
+		Rumor:           methodHandler,
 	}
 
 	handler := New(methodHandlers)
