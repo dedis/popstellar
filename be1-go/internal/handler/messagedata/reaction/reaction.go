@@ -6,10 +6,13 @@ import (
 	"popstellar/internal/handler/messagedata/root"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/repository"
 	"popstellar/internal/validation"
 	"strings"
 )
+
+type Subscribers interface {
+	BroadcastToAllClients(msg message.Message, channel string) error
+}
 
 type Repository interface {
 	// IsAttendee returns if the user has participated in the last roll-call from the LAO
@@ -23,12 +26,12 @@ type Repository interface {
 }
 
 type Handler struct {
-	subs   repository.SubscriptionManager
+	subs   Subscribers
 	db     Repository
 	schema *validation.SchemaValidator
 }
 
-func New(subs repository.SubscriptionManager, db Repository,
+func New(subs Subscribers, db Repository,
 	schema *validation.SchemaValidator) *Handler {
 	return &Handler{
 		subs:   subs,
