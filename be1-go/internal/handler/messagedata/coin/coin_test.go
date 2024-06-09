@@ -9,7 +9,6 @@ import (
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/mock"
-	"popstellar/internal/repository"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
 	"testing"
@@ -119,7 +118,7 @@ func Test_handleChannelCoin(t *testing.T) {
 }
 
 func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string, mockRepository *mock.Repository,
-	subs repository.SubscriptionManager) inputTestHandleChannelCoin {
+	subs *state.Subscribers) inputTestHandleChannelCoin {
 	laoID := message.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
@@ -165,7 +164,7 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 }
 
 func newFailTestHandleChannelCoin(t *testing.T, filename string, name string,
-	subs repository.SubscriptionManager) inputTestHandleChannelCoin {
+	subs *state.Subscribers) inputTestHandleChannelCoin {
 	laoID := message.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
