@@ -145,7 +145,7 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	}
 
 	// Create the message data handlers
-	dataHandlers := messageHandler.MessageDataHandlers{
+	dataHandlers := messageHandler.DataHandlers{
 		Root:       root.New(conf, &db, subs, peers, schemaValidator),
 		Lao:        lao.New(conf, subs, &db, schemaValidator),
 		Election:   election.New(conf, subs, &db, schemaValidator),

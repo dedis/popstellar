@@ -28,26 +28,26 @@ type Repository interface {
 	GetChannelType(channel string) (string, error)
 }
 
-type MessageDataHandler interface {
+type DataHandler interface {
 	Handle(channelPath string, msg message.Message) error
 }
 
-type MessageDataHandlers struct {
-	Root       MessageDataHandler
-	Lao        MessageDataHandler
-	Election   MessageDataHandler
-	Chirp      MessageDataHandler
-	Reaction   MessageDataHandler
-	Coin       MessageDataHandler
-	Federation MessageDataHandler
+type DataHandlers struct {
+	Root       DataHandler
+	Lao        DataHandler
+	Election   DataHandler
+	Chirp      DataHandler
+	Reaction   DataHandler
+	Coin       DataHandler
+	Federation DataHandler
 }
 
 type Handler struct {
 	db       Repository
-	handlers MessageDataHandlers
+	handlers DataHandlers
 }
 
-func New(db Repository, handlers MessageDataHandlers) *Handler {
+func New(db Repository, handlers DataHandlers) *Handler {
 	return &Handler{
 		db:       db,
 		handlers: handlers,
