@@ -7,8 +7,12 @@ import (
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/repository"
 )
+
+type Queries interface {
+	GetNextID() int
+	AddQuery(ID int, query method.GetMessagesById)
+}
 
 type Repository interface {
 	// GetParamsForGetMessageByID returns the params to do the getMessageByID msg in reponse of heartbeat
@@ -16,11 +20,11 @@ type Repository interface {
 }
 
 type Handler struct {
-	queries repository.QueryManager
+	queries Queries
 	db      Repository
 }
 
-func New(queries repository.QueryManager, db Repository) *Handler {
+func New(queries Queries, db Repository) *Handler {
 	return &Handler{
 		queries: queries,
 		db:      db,
