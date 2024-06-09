@@ -2,27 +2,25 @@ package heartbeat
 
 import (
 	"encoding/json"
-	"github.com/rs/zerolog"
+	mock2 "github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
-	"io"
+	"popstellar/internal/handler/method/heartbeat/mocks"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/state"
 	"testing"
 )
 
 func Test_handleHeartbeat(t *testing.T) {
-	l := zerolog.New(io.Discard)
-	queries := state.NewQueries(&l)
-	db := mock.NewRepository(t)
+	queries := mocks.NewQueries(t)
+	db := mocks.NewRepository(t)
 
 	handler := New(queries, db)
 
 	type input struct {
 		name     string
-		socket   mock.FakeSocket
+		socket   *mock.FakeSocket
 		message  []byte
 		expected map[string][]string
 		isError  bool
@@ -35,7 +33,7 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	// Test 1: successfully handled heartbeat with some messages to catching up
 
-	fakeSocket := mock.FakeSocket{Id: "1"}
+	fakeSocket := mock.NewFakeSocket("1")
 
 	heartbeatMsgIDs1 := make(map[string][]string)
 	heartbeatMsgIDs1["/root"] = []string{
@@ -62,6 +60,8 @@ func Test_handleHeartbeat(t *testing.T) {
 	}
 
 	db.On("GetParamsForGetMessageByID", heartbeatMsgIDs1).Return(expected1, nil)
+	queries.On("GetNextID").Return(1)
+	queries.On("AddQuery", 1, mock2.AnythingOfType("method.GetMessagesById"))
 
 	args = append(args, input{
 		name:     "Test 1",
@@ -73,7 +73,7 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	// Test 2: successfully handled heartbeat with nothing to catching up
 
-	fakeSocket = mock.FakeSocket{Id: "2"}
+	fakeSocket = mock.NewFakeSocket("2")
 
 	heartbeatMsgIDs2 := make(map[string][]string)
 	heartbeatMsgIDs2["/root"] = []string{
@@ -93,7 +93,7 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	// Test 3: failed to handled heartbeat because DB is disconnected
 
-	fakeSocket = mock.FakeSocket{Id: "3"}
+	fakeSocket = mock.NewFakeSocket("3")
 
 	heartbeatMsgIDs3 := make(map[string][]string)
 	heartbeatMsgIDs3["/root"] = []string{
@@ -121,7 +121,7 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			_, err := handler.Handle(&arg.socket, arg.message)
+			_, err := handler.Handle(arg.socket, arg.message)
 			if arg.isError {
 				require.Error(t, err)
 			} else if arg.expected != nil {
