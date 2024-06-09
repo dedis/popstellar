@@ -5,9 +5,12 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/repository"
 	"popstellar/internal/validation"
 )
+
+type Subscribers interface {
+	BroadcastToAllClients(msg message.Message, channel string) error
+}
 
 type Repository interface {
 	// StoreMessageAndData stores a message with an object and an action inside the database.
@@ -15,12 +18,12 @@ type Repository interface {
 }
 
 type Handler struct {
-	subs   repository.SubscriptionManager
+	subs   Subscribers
 	db     Repository
 	schema *validation.SchemaValidator
 }
 
-func New(subs repository.SubscriptionManager, db Repository,
+func New(subs Subscribers, db Repository,
 	schema *validation.SchemaValidator) *Handler {
 	return &Handler{
 		subs:   subs,
