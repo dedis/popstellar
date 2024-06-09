@@ -6,14 +6,17 @@ import (
 	"popstellar/internal/handler/messagedata/root"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/repository"
 )
 
-type Handler struct {
-	subs repository.SubscriptionManager
+type Subscribers interface {
+	Unsubscribe(channel string, socket socket.Socket) error
 }
 
-func New(subs repository.SubscriptionManager) *Handler {
+type Handler struct {
+	subs Subscribers
+}
+
+func New(subs Subscribers) *Handler {
 	return &Handler{subs: subs}
 }
 
