@@ -11,7 +11,6 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/repository"
 	"popstellar/internal/types"
 	"popstellar/internal/validation"
 	"sort"
@@ -20,6 +19,15 @@ import (
 const (
 	voteFlag = "Vote"
 )
+
+type Config interface {
+	GetServerPublicKey() kyber.Point
+	Sign(data []byte) ([]byte, error)
+}
+
+type Subscribers interface {
+	BroadcastToAllClients(msg message.Message, channel string) error
+}
 
 type Repository interface {
 
@@ -61,13 +69,13 @@ type Repository interface {
 }
 
 type Handler struct {
-	conf   repository.ConfigManager
-	subs   repository.SubscriptionManager
+	conf   Config
+	subs   Subscribers
 	db     Repository
 	schema *validation.SchemaValidator
 }
 
-func New(conf repository.ConfigManager, subs repository.SubscriptionManager,
+func New(conf Config, subs Subscribers,
 	db Repository, schema *validation.SchemaValidator) *Handler {
 	return &Handler{
 		conf:   conf,
