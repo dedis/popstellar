@@ -3,12 +3,13 @@ package root
 import (
 	"encoding/base64"
 	"encoding/json"
+	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
 	messageHandler "popstellar/internal/handler/message"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/repository"
 	"popstellar/internal/validation"
 )
 
@@ -23,6 +24,21 @@ const (
 	Auth       = "/authentication"
 	Federation = "/federation"
 )
+
+type Config interface {
+	GetOwnerPublicKey() kyber.Point
+	GetServerPublicKey() kyber.Point
+	GetServerInfo() (string, string, string, error)
+	Sign(data []byte) ([]byte, error)
+}
+
+type Subscribers interface {
+	AddChannel(channel string) error
+}
+
+type Peers interface {
+	GetAllPeersInfo() []method.GreetServerParams
+}
 
 type Repository interface {
 
@@ -41,20 +57,20 @@ type Repository interface {
 }
 
 type Handler struct {
-	config repository.ConfigManager
+	conf   Config
+	subs   Subscribers
+	peers  Peers
 	db     Repository
-	subs   repository.SubscriptionManager
-	peers  repository.PeerManager
 	schema *validation.SchemaValidator
 }
 
-func New(config repository.ConfigManager, db Repository,
-	subs repository.SubscriptionManager, peers repository.PeerManager, schema *validation.SchemaValidator) *Handler {
+func New(config Config, db Repository,
+	subs Subscribers, peers Peers, schema *validation.SchemaValidator) *Handler {
 	return &Handler{
-		config: config,
-		db:     db,
+		conf:   config,
 		subs:   subs,
 		peers:  peers,
+		db:     db,
 		schema: schema,
 	}
 }
@@ -150,7 +166,7 @@ func (h *Handler) verifyLaoCreation(msg message.Message, laoCreate messagedata.L
 			senderPubKey, organizerPubKey)
 	}
 
-	ownerPublicKey := h.config.GetOwnerPublicKey()
+	ownerPublicKey := h.conf.GetOwnerPublicKey()
 
 	// Check if the sender of the LAO creation message is the owner
 	if ownerPublicKey != nil && !ownerPublicKey.Equal(senderPubKey) {
@@ -195,7 +211,7 @@ func (h *Handler) createLaoGreet(organizerBuf []byte, laoID string) (message.Mes
 		knownPeers = append(knownPeers, messagedata.Peer{Address: info.ClientAddress})
 	}
 
-	_, clientServerAddress, _, err := h.config.GetServerInfo()
+	_, clientServerAddress, _, err := h.conf.GetServerInfo()
 	if err != nil {
 		return message.Message{}, err
 	}
@@ -217,7 +233,7 @@ func (h *Handler) createLaoGreet(organizerBuf []byte, laoID string) (message.Mes
 
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
 
-	serverPublicKey := h.config.GetServerPublicKey()
+	serverPublicKey := h.conf.GetServerPublicKey()
 
 	// Marshall the server public key
 	serverPubBuf, err := serverPublicKey.MarshalBinary()
@@ -226,7 +242,7 @@ func (h *Handler) createLaoGreet(organizerBuf []byte, laoID string) (message.Mes
 	}
 
 	// sign the data
-	signatureBuf, err := h.config.Sign(dataBuf)
+	signatureBuf, err := h.conf.Sign(dataBuf)
 	if err != nil {
 		return message.Message{}, err
 	}
