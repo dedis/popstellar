@@ -9,10 +9,20 @@ import (
 	"popstellar/internal/handler/messagedata/root"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/repository"
 	"popstellar/internal/validation"
 	"strings"
 )
+
+type Config interface {
+	GetServerPublicKey() kyber.Point
+	Sign(data []byte) ([]byte, error)
+}
+
+type Subscribers interface {
+	HasChannel(channel string) bool
+	BroadcastToAllClients(msg message.Message, channel string) error
+	AddChannel(channel string) error
+}
 
 type Repository interface {
 	// GetLaoWitnesses returns the list of witnesses of a LAO.
@@ -55,13 +65,13 @@ type Repository interface {
 }
 
 type Handler struct {
-	conf   repository.ConfigManager
-	subs   repository.SubscriptionManager
+	conf   Config
+	subs   Subscribers
 	db     Repository
 	schema *validation.SchemaValidator
 }
 
-func New(conf repository.ConfigManager, subs repository.SubscriptionManager,
+func New(conf Config, subs Subscribers,
 	db Repository, schema *validation.SchemaValidator) *Handler {
 	return &Handler{
 		conf:   conf,
