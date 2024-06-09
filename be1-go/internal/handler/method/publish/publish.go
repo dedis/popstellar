@@ -3,7 +3,6 @@ package publish
 import (
 	"encoding/json"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/repository"
 	"strings"
 
 	"popstellar/internal/errors"
@@ -13,6 +12,10 @@ import (
 )
 
 const thresholdMessagesByRumor = 1
+
+type Hub interface {
+	NotifyResetRumorSender() error
+}
 
 type Repository interface {
 	// AddMessageToMyRumor adds the message to the last rumor of the server and returns the current number of message inside the last rumor
@@ -24,12 +27,12 @@ type MessageHandler interface {
 }
 
 type Handler struct {
-	hub            repository.HubManager
+	hub            Hub
 	db             Repository
 	messageHandler MessageHandler
 }
 
-func New(hub repository.HubManager, db Repository, messageHandler MessageHandler) *Handler {
+func New(hub Hub, db Repository, messageHandler MessageHandler) *Handler {
 	return &Handler{
 		hub:            hub,
 		db:             db,
