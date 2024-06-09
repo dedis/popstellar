@@ -3,6 +3,7 @@ package getmessagesbyid
 import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
+	"popstellar/internal/handler/method/getmessagesbyid/mocks"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
@@ -10,7 +11,7 @@ import (
 )
 
 func Test_handleGetMessagesByID(t *testing.T) {
-	db := mock.NewRepository(t)
+	db := mocks.NewRepository(t)
 
 	handler := New(db)
 
