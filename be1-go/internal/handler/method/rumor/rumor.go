@@ -2,7 +2,6 @@ package rumor
 
 import (
 	"encoding/json"
-	"popstellar/internal/repository"
 	"sort"
 
 	"popstellar/internal/errors"
@@ -13,6 +12,15 @@ import (
 )
 
 const maxRetry = 10
+
+type Queries interface {
+	GetNextID() int
+	AddRumorQuery(id int, query method.Rumor)
+}
+
+type Sockets interface {
+	SendRumor(socket socket.Socket, senderID string, rumorID int, buf []byte)
+}
 
 type Repository interface {
 	// CheckRumor returns true if the rumor already exists
@@ -30,13 +38,13 @@ type MessageHandler interface {
 }
 
 type Handler struct {
-	queries        repository.QueryManager
-	sockets        repository.SocketManager
+	queries        Queries
+	sockets        Sockets
 	db             Repository
 	messageHandler MessageHandler
 }
 
-func New(queries repository.QueryManager, sockets repository.SocketManager, db Repository,
+func New(queries Queries, sockets Sockets, db Repository,
 	messageHandler MessageHandler) *Handler {
 	return &Handler{
 		queries:        queries,
