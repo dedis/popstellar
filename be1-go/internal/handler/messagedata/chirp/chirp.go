@@ -3,8 +3,8 @@ package chirp
 import (
 	"encoding/base64"
 	"encoding/json"
+	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/handler/messagedata/root"
-	"popstellar/internal/repository"
 	"popstellar/internal/validation"
 	"strings"
 
@@ -12,6 +12,15 @@ import (
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 )
+
+type Config interface {
+	GetServerPublicKey() kyber.Point
+	Sign(data []byte) ([]byte, error)
+}
+
+type Subscribers interface {
+	BroadcastToAllClients(msg message.Message, channel string) error
+}
 
 type Repository interface {
 	// HasMessage returns true if the message already exists.
@@ -22,13 +31,13 @@ type Repository interface {
 }
 
 type Handler struct {
-	conf   repository.ConfigManager
-	subs   repository.SubscriptionManager
+	conf   Config
+	subs   Subscribers
 	db     Repository
 	schema *validation.SchemaValidator
 }
 
-func New(conf repository.ConfigManager, subs repository.SubscriptionManager,
+func New(conf Config, subs Subscribers,
 	db Repository, schema *validation.SchemaValidator) *Handler {
 	return &Handler{
 		conf:   conf,
