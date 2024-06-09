@@ -3,6 +3,7 @@ package catchup
 import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
+	"popstellar/internal/handler/method/catchup/mocks"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
@@ -10,7 +11,7 @@ import (
 )
 
 func Test_handleCatchUp(t *testing.T) {
-	db := mock.NewRepository(t)
+	db := mocks.NewRepository(t)
 
 	handler := New(db)
 
