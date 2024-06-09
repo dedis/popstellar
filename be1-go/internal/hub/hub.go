@@ -152,7 +152,7 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 		Chirp:      chirp.New(conf, subs, &db, schemaValidator),
 		Reaction:   reaction.New(subs, &db, schemaValidator),
 		Coin:       coin.New(subs, &db, schemaValidator),
-		Federation: federation.New(&db, subs, sockets, hubParams, schemaValidator),
+		Federation: federation.New(hubParams, subs, &db, schemaValidator),
 	}
 
 	// Create the message handler

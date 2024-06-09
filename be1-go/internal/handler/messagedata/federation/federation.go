@@ -18,15 +18,29 @@ import (
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/repository"
 	"popstellar/internal/validation"
 	"strings"
+	"sync"
 	"time"
 )
 
 const (
 	channelPattern = "/root/%s/federation"
 )
+
+type Hub interface {
+	GetMessageChan() chan socket.IncomingMessage
+	GetClosedSockets() chan string
+	GetWaitGroup() *sync.WaitGroup
+	GetStopChan() chan struct{}
+}
+
+type Subscribers interface {
+	BroadcastToAllClients(msg message.Message, channel string) error
+	AddChannel(channel string) error
+	Subscribe(channel string, socket socket.Socket) error
+	SendToAll(buf []byte, channel string) error
+}
 
 type Repository interface {
 	// GetOrganizerPubKey returns the organizer public key of a LAO.
@@ -54,20 +68,17 @@ type Repository interface {
 }
 
 type Handler struct {
+	hub    Hub
+	subs   Subscribers
 	db     Repository
-	subs   repository.SubscriptionManager
-	socket repository.SocketManager
-	hub    repository.HubManager
 	schema *validation.SchemaValidator
 }
 
-func New(db Repository, subs repository.SubscriptionManager,
-	socket repository.SocketManager, hub repository.HubManager, schema *validation.SchemaValidator) *Handler {
+func New(hub Hub, subs Subscribers, db Repository, schema *validation.SchemaValidator) *Handler {
 	return &Handler{
-		db:     db,
-		subs:   subs,
-		socket: socket,
 		hub:    hub,
+		subs:   subs,
+		db:     db,
 		schema: schema,
 	}
 }

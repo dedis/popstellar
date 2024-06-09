@@ -36,11 +36,10 @@ func Test_handleChannelFederation(t *testing.T) {
 	db := mock2.NewRepository(t)
 	subs := state.NewSubscribers()
 	hub := state.NewHubParams()
-	socket := state.NewSockets()
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := New(db, subs, socket, hub, schema)
+	federationHandler := New(hub, subs, db, schema)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, organizer2Sk, _ := generator.GenerateKeyPair(t)
@@ -323,11 +322,10 @@ func Test_handleRequestChallenge(t *testing.T) {
 	db := mock2.NewRepository(t)
 	subs := state.NewSubscribers()
 	hub := state.NewHubParams()
-	socket := state.NewSockets()
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := New(db, subs, socket, hub, schema)
+	federationHandler := New(hub, subs, db, schema)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
@@ -375,11 +373,10 @@ func Test_handleFederationExpect(t *testing.T) {
 	db := mock2.NewRepository(t)
 	subs := state.NewSubscribers()
 	hub := state.NewHubParams()
-	socket := state.NewSockets()
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := New(db, subs, socket, hub, schema)
+	federationHandler := New(hub, subs, db, schema)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, _, _ := generator.GenerateKeyPair(t)
@@ -432,11 +429,10 @@ func Test_handleFederationInit(t *testing.T) {
 	db := mock2.NewRepository(t)
 	subs := state.NewSubscribers()
 	hub := state.NewHubParams()
-	socket := state.NewSockets()
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := New(db, subs, socket, hub, schema)
+	federationHandler := New(hub, subs, db, schema)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, _, _ := generator.GenerateKeyPair(t)
@@ -511,11 +507,10 @@ func Test_handleFederationChallenge(t *testing.T) {
 	db := mock2.NewRepository(t)
 	subs := state.NewSubscribers()
 	hub := state.NewHubParams()
-	socket := state.NewSockets()
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := New(db, subs, socket, hub, schema)
+	federationHandler := New(hub, subs, db, schema)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, organizer2Sk, _ := generator.GenerateKeyPair(t)
@@ -615,11 +610,10 @@ func Test_handleFederationResult(t *testing.T) {
 	db := mock2.NewRepository(t)
 	subs := state.NewSubscribers()
 	hub := state.NewHubParams()
-	socket := state.NewSockets()
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := New(db, subs, socket, hub, schema)
+	federationHandler := New(hub, subs, db, schema)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, organizer2Sk, _ := generator.GenerateKeyPair(t)
