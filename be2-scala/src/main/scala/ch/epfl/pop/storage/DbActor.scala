@@ -423,6 +423,13 @@ final case class DbActor(
             startingIndex = 0
           }
           pagedCatchupList = pagedCatchupList.slice(startingIndex, pagedCatchupList.length)
+
+        case null =>
+          var startingIndex = pagedCatchupList.length - numberOfMessages
+          if (startingIndex < 0) {
+            startingIndex = 0
+          }
+          pagedCatchupList = pagedCatchupList.slice(startingIndex, pagedCatchupList.length)
       }
       readGreetLao(chirpsChannel) match {
         case Some(msg) => msg :: pagedCatchupList
@@ -457,6 +464,13 @@ final case class DbActor(
           }
 
         case None =>
+          var startingIndex = pagedCatchupList.length - numberOfMessages
+          if (startingIndex < 0) {
+            startingIndex = 0
+          }
+          pagedCatchupList = pagedCatchupList.slice(startingIndex, pagedCatchupList.length)
+
+        case null =>
           var startingIndex = pagedCatchupList.length - numberOfMessages
           if (startingIndex < 0) {
             startingIndex = 0
