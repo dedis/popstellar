@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func NewGreetServerQuery(t *testing.T, publicKey, clientAddress, serverAddress string) []byte {
+func NewGreetServerQuery(t *testing.T, publicKey, clientAddress, serverAddress string) (method.GreetServer, []byte) {
 	serverInfo := method.GreetServerParams{
 		PublicKey:     publicKey,
 		ServerAddress: clientAddress,
@@ -31,7 +31,7 @@ func NewGreetServerQuery(t *testing.T, publicKey, clientAddress, serverAddress s
 	greetServerBuf, err := json.Marshal(&greetServer)
 	require.NoError(t, err)
 
-	return greetServerBuf
+	return greetServer, greetServerBuf
 }
 
 func NewSubscribeQuery(t *testing.T, queryID int, channel string) []byte {
