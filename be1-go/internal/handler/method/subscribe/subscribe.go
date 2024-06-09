@@ -2,19 +2,21 @@ package subscribe
 
 import (
 	"encoding/json"
-	"popstellar/internal/handler/messagedata/root"
-	"popstellar/internal/repository"
-
 	"popstellar/internal/errors"
+	"popstellar/internal/handler/messagedata/root"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
 )
 
-type Handler struct {
-	subs repository.SubscriptionManager
+type Subscribers interface {
+	Subscribe(channel string, socket socket.Socket) error
 }
 
-func New(subs repository.SubscriptionManager) *Handler {
+type Handler struct {
+	subs Subscribers
+}
+
+func New(subs Subscribers) *Handler {
 	return &Handler{subs: subs}
 }
 
