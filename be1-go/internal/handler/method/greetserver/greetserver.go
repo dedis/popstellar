@@ -7,15 +7,24 @@ import (
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/repository"
 )
 
-type Handler struct {
-	conf  repository.ConfigManager
-	peers repository.PeerManager
+type Config interface {
+	GetServerInfo() (string, string, string, error)
 }
 
-func New(conf repository.ConfigManager, peers repository.PeerManager) *Handler {
+type Peers interface {
+	AddPeerInfo(socketID string, info method.GreetServerParams) error
+	IsPeerGreeted(socketID string) bool
+	AddPeerGreeted(socketID string)
+}
+
+type Handler struct {
+	conf  Config
+	peers Peers
+}
+
+func New(conf Config, peers Peers) *Handler {
 	return &Handler{
 		conf:  conf,
 		peers: peers,
