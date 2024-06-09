@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
+	"popstellar/internal/handler/message/mocks"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
 	"testing"
 	"time"
@@ -20,7 +20,7 @@ func (n *nullChannelSubHandler) Handle(_ string, _ message.Message) error {
 }
 
 func Test_handleChannel(t *testing.T) {
-	db := mock.NewRepository(t)
+	db := mocks.NewRepository(t)
 
 	subHandlers := DataHandlers{
 		Root:       &nullChannelSubHandler{},
