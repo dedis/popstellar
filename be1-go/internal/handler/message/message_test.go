@@ -11,25 +11,18 @@ import (
 	"time"
 )
 
-// nullChannelSubHandler is a struct that implements the DataHandler interface with no-op methods
-type nullChannelSubHandler struct{}
-
-// handle method for nullChannelSubHandler that always returns nil
-func (n *nullChannelSubHandler) Handle(_ string, _ message.Message) error {
-	return nil
-}
-
 func Test_handleChannel(t *testing.T) {
 	db := mocks.NewRepository(t)
+	dataHandler := mocks.NewDataHandler(t)
 
 	subHandlers := DataHandlers{
-		Root:       &nullChannelSubHandler{},
-		Lao:        &nullChannelSubHandler{},
-		Election:   &nullChannelSubHandler{},
-		Chirp:      &nullChannelSubHandler{},
-		Reaction:   &nullChannelSubHandler{},
-		Coin:       &nullChannelSubHandler{},
-		Federation: &nullChannelSubHandler{},
+		Root:       dataHandler,
+		Lao:        dataHandler,
+		Election:   dataHandler,
+		Chirp:      dataHandler,
+		Reaction:   dataHandler,
+		Coin:       dataHandler,
+		Federation: dataHandler,
 	}
 
 	channel := New(db, subHandlers)
@@ -198,6 +191,7 @@ func Test_handleChannel(t *testing.T) {
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
 	db.On("GetChannelType", channelPath).Return(RootType, nil)
+	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
 		name:        "Test 12",
@@ -213,6 +207,7 @@ func Test_handleChannel(t *testing.T) {
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
 	db.On("GetChannelType", channelPath).Return(LaoType, nil)
+	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
 		name:        "Test 13",
@@ -228,6 +223,7 @@ func Test_handleChannel(t *testing.T) {
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
 	db.On("GetChannelType", channelPath).Return(LaoType, nil)
+	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
 		name:        "Test 14",
@@ -243,6 +239,7 @@ func Test_handleChannel(t *testing.T) {
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
 	db.On("GetChannelType", channelPath).Return(ChirpType, nil)
+	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
 		name:        "Test 15",
@@ -258,6 +255,7 @@ func Test_handleChannel(t *testing.T) {
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
 	db.On("GetChannelType", channelPath).Return(ReactionType, nil)
+	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
 		name:        "Test 16",
@@ -273,6 +271,7 @@ func Test_handleChannel(t *testing.T) {
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
 	db.On("GetChannelType", channelPath).Return(CoinType, nil)
+	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
 		name:        "Test 17",
@@ -288,6 +287,7 @@ func Test_handleChannel(t *testing.T) {
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
 	db.On("GetChannelType", channelPath).Return(FederationType, nil)
+	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
 		name:        "Test 18",
