@@ -177,7 +177,7 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	})
 
 	// Create the answer handler
-	aHandler := answerHandler.New(queries, answerHandler.AnswerHandlers{
+	aHandler := answerHandler.New(queries, answerHandler.Handlers{
 		MessageHandler: msgHandler,
 		RumorSender:    rumorHandler,
 	})

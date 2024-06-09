@@ -9,7 +9,6 @@ import (
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/repository"
 	"sort"
 )
 
@@ -17,6 +16,12 @@ const (
 	maxRetry          = 10
 	continueMongering = 0.5
 )
+
+type Queries interface {
+	SetQueryReceived(ID int) error
+	IsRumorQuery(queryID int) bool
+	GetRumorFromPastQuery(queryID int) (method.Rumor, bool)
+}
 
 type MessageHandler interface {
 	Handle(channelPath string, msg message.Message, fromRumor bool) error
@@ -26,17 +31,17 @@ type RumorSender interface {
 	SendRumor(socket socket.Socket, rumor method.Rumor)
 }
 
-type AnswerHandlers struct {
+type Handlers struct {
 	MessageHandler MessageHandler
 	RumorSender    RumorSender
 }
 
 type Handler struct {
-	queries  repository.QueryManager
-	handlers AnswerHandlers
+	queries  Queries
+	handlers Handlers
 }
 
-func New(queries repository.QueryManager, handlers AnswerHandlers) *Handler {
+func New(queries Queries, handlers Handlers) *Handler {
 	return &Handler{
 		queries:  queries,
 		handlers: handlers,
