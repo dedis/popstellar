@@ -22,6 +22,10 @@ type FakeSocket struct {
 	Id string
 }
 
+func NewFakeSocket(ID string) *FakeSocket {
+	return &FakeSocket{Id: ID}
+}
+
 // Send implements socket.Socket
 func (f *FakeSocket) Send(msg []byte) {
 	f.Msg = msg
@@ -35,7 +39,7 @@ func (f *FakeSocket) SendResult(id int, res []message.Message, missingMsgs map[s
 }
 
 // SendError implements socket.Socket
-func (f *FakeSocket) SendError(id *int, err error) {
+func (f *FakeSocket) SendError(_ *int, err error) {
 	f.Err = err
 }
 
