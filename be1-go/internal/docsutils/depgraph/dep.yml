@@ -2,13 +2,23 @@ modname: popstellar
 overwrite: true
 outfile: graph.dot
 includes:
-  - popstellar/cli/*
-  - popstellar/internal/*
+  - popstellar/internal/handler/*
 excludes:
-  - popstellar/internal/message/*
-  - popstellar/internal/docsutils/*
-  - popstellar/internal/old/*
-  - popstellar/internal/mocks/*
-  - popstellar/internal/sqlite/*
-  - popstellar/internal/logger
+  - popstellar/internal/handler/query/hquery/mocks
+  - popstellar/internal/handler/method/catchup/hcatchup/mocks
+  - popstellar/internal/handler/method/getmessagesbyid/hgetmessagesbyid/mocks
+  - popstellar/internal/handler/method/greetserver/hgreetserver/mocks
+  - popstellar/internal/handler/method/heartbeat/hheartbeat/mocks
+  - popstellar/internal/handler/method/subscribe/hsubscribe/mocks
+  - popstellar/internal/handler/method/unsubscribe/hunsubscribe/mocks
+  - popstellar/internal/handler/message/hmessage/mocks
+  - popstellar/internal/handler/messagedata/chirp/hchirp/mocks
+  - popstellar/internal/handler/messagedata/coin/hcoin/mocks
+  - popstellar/internal/handler/messagedata/election/helection/mocks
+  - popstellar/internal/handler/messagedata/federation/hfederation/mocks
+  - popstellar/internal/handler/messagedata/lao/hlao/mocks
+  - popstellar/internal/handler/messagedata/reaction/hreaction/mocks
+  - popstellar/internal/handler/messagedata/root/hroot/mocks
+  - popstellar/internal/handler/messagedata/consensus
+  - popstellar/internal/handler/messagedata/authentication
 interfaces:
