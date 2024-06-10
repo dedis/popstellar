@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"popstellar/internal/handler/channel"
+	melection2 "popstellar/internal/handler/channel/election/melection"
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/handler/messagedata"
-	melection2 "popstellar/internal/handler/messagedata/election/melection"
 	"testing"
 
 	"github.com/stretchr/testify/require"

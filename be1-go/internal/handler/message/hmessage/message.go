@@ -2,8 +2,8 @@ package hmessage
 
 import (
 	"popstellar/internal/errors"
+	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/handler/messagedata"
 )
 
 type Repository interface {

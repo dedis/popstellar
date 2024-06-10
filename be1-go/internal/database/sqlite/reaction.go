@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	poperrors "popstellar/internal/errors"
-	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/lao/mlao"
+	"popstellar/internal/handler/channel"
+	"popstellar/internal/handler/channel/lao/mlao"
 )
 
 func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {

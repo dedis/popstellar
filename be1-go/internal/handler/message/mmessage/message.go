@@ -6,7 +6,7 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/messagedata"
+	"popstellar/internal/handler/channel"
 )
 
 // Message defines a JSON RPC message

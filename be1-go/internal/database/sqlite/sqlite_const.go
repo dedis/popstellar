@@ -1,7 +1,7 @@
 package sqlite
 
 import (
-	"popstellar/internal/handler/messagedata"
+	"popstellar/internal/handler/channel"
 )
 
 const (

@@ -7,8 +7,8 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/internal/crypto"
+	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/handler/messagedata"
 	"testing"
 )
 

@@ -8,11 +8,11 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/crypto"
 	poperrors "popstellar/internal/errors"
+	"popstellar/internal/handler/channel"
+	"popstellar/internal/handler/channel/election/melection"
+	"popstellar/internal/handler/channel/election/telection"
+	mlao2 "popstellar/internal/handler/channel/lao/mlao"
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/election/melection"
-	"popstellar/internal/handler/messagedata/election/telection"
-	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
 	"time"
 )
 

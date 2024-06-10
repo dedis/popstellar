@@ -3,7 +3,7 @@ package consensus
 import (
 	"encoding/json"
 	"golang.org/x/xerrors"
-	mconsensus2 "popstellar/internal/handler/messagedata/consensus/mconsensus"
+	mconsensus2 "popstellar/internal/handler/channel/consensus/mconsensus"
 )
 
 // createPrepareMessage creates the data for a new prepare message

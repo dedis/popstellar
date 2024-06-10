@@ -3,7 +3,7 @@ package hunsubscribe
 import (
 	"encoding/json"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/messagedata"
+	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/network/socket"
 )

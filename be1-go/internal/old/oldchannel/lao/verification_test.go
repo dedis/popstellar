@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"popstellar/internal/handler/channel"
+	mlao2 "popstellar/internal/handler/channel/lao/mlao"
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/handler/messagedata"
-	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/old/oldchannel"
 	"testing"
 

@@ -3,8 +3,8 @@ package mmessage
 import (
 	"embed"
 	"encoding/base64"
-	"popstellar/internal/handler/messagedata/lao/mlao"
-	"popstellar/internal/handler/messagedata/root/mroot"
+	"popstellar/internal/handler/channel/lao/mlao"
+	"popstellar/internal/handler/channel/root/mroot"
 	"testing"
 
 	"github.com/stretchr/testify/require"

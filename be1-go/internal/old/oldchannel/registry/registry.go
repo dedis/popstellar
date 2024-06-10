@@ -2,8 +2,8 @@ package registry
 
 import (
 	"encoding/base64"
+	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/network/socket"
 
 	"golang.org/x/xerrors"

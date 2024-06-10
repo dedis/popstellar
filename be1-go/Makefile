@@ -54,58 +54,58 @@ test-data:
 	# Message
 	cp -r ../protocol/examples/messageData/lao_create/. ./internal/handler/message/mmessage/testdata
 
-	# MessageData
-	cp -r ../protocol/examples/messageData/test_messages/. ./internal/handler/messagedata/testdata
+	# Channel
+	cp -r ../protocol/examples/messageData/test_messages/. ./internal/handler/channel/testdata
 
 	# Authentification
-	cp -r ../protocol/examples/messageData/popcha_authenticate/. ./internal/handler/messagedata/authentication/mauthentication/testdata
+	cp -r ../protocol/examples/messageData/popcha_authenticate/. ./internal/handler/channel/authentication/mauthentication/testdata
 
 	# Chirp
-	cp -r ../protocol/examples/messageData/chirp_add_publish/. ./internal/handler/messagedata/chirp/mchirp/testdata
-	cp -r ../protocol/examples/messageData/chirp_delete_publish/. ./internal/handler/messagedata/chirp/mchirp/testdata
-	cp -r ../protocol/examples/messageData/chirp_notify_add/. ./internal/handler/messagedata/chirp/mchirp/testdata
-	cp -r ../protocol/examples/messageData/chirp_notify_delete/. ./internal/handler/messagedata/chirp/mchirp/testdata
+	cp -r ../protocol/examples/messageData/chirp_add_publish/. ./internal/handler/channel/chirp/mchirp/testdata
+	cp -r ../protocol/examples/messageData/chirp_delete_publish/. ./internal/handler/channel/chirp/mchirp/testdata
+	cp -r ../protocol/examples/messageData/chirp_notify_add/. ./internal/handler/channel/chirp/mchirp/testdata
+	cp -r ../protocol/examples/messageData/chirp_notify_delete/. ./internal/handler/channel/chirp/mchirp/testdata
 
 	# Coin
-	cp -r ../protocol/examples/messageData/coin/. ./internal/handler/messagedata/coin/hcoin/testdata
-	cp -r ../protocol/examples/messageData/coin/. ./internal/handler/messagedata/coin/mcoin/testdata
+	cp -r ../protocol/examples/messageData/coin/. ./internal/handler/channel/coin/hcoin/testdata
+	cp -r ../protocol/examples/messageData/coin/. ./internal/handler/channel/coin/mcoin/testdata
 
 	# Consensus
-	cp -r ../protocol/examples/messageData/consensus_accept/. ./internal/handler/messagedata/consensus/mconsensus/testdata
-	cp -r ../protocol/examples/messageData/consensus_elect/. ./internal/handler/messagedata/consensus/mconsensus/testdata
-	cp -r ../protocol/examples/messageData/consensus_elect_accept/. ./internal/handler/messagedata/consensus/mconsensus/testdata
-	cp -r ../protocol/examples/messageData/consensus_failure/. ./internal/handler/messagedata/consensus/mconsensus/testdata
-	cp -r ../protocol/examples/messageData/consensus_learn/. ./internal/handler/messagedata/consensus/mconsensus/testdata
-	cp -r ../protocol/examples/messageData/consensus_prepare/. ./internal/handler/messagedata/consensus/mconsensus/testdata
-	cp -r ../protocol/examples/messageData/consensus_promise/. ./internal/handler/messagedata/consensus/mconsensus/testdata
-	cp -r ../protocol/examples/messageData/consensus_propose/. ./internal/handler/messagedata/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_accept/. ./internal/handler/channel/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_elect/. ./internal/handler/channel/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_elect_accept/. ./internal/handler/channel/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_failure/. ./internal/handler/channel/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_learn/. ./internal/handler/channel/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_prepare/. ./internal/handler/channel/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_promise/. ./internal/handler/channel/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_propose/. ./internal/handler/channel/consensus/mconsensus/testdata
 
 	# Election
-	cp -r ../protocol/examples/messageData/election_end/. ./internal/handler/messagedata/election/melection/testdata
-	cp -r ../protocol/examples/messageData/election_key/. ./internal/handler/messagedata/election/melection/testdata
-	cp -r ../protocol/examples/messageData/election_open/. ./internal/handler/messagedata/election/melection/testdata
-	cp -r ../protocol/examples/messageData/election_result.json ./internal/handler/messagedata/election/melection/testdata
-	cp -r ../protocol/examples/messageData/vote_cast_vote/. ./internal/handler/messagedata/election/melection/testdata
+	cp -r ../protocol/examples/messageData/election_end/. ./internal/handler/channel/election/melection/testdata
+	cp -r ../protocol/examples/messageData/election_key/. ./internal/handler/channel/election/melection/testdata
+	cp -r ../protocol/examples/messageData/election_open/. ./internal/handler/channel/election/melection/testdata
+	cp -r ../protocol/examples/messageData/election_result.json ./internal/handler/channel/election/melection/testdata
+	cp -r ../protocol/examples/messageData/vote_cast_vote/. ./internal/handler/channel/election/melection/testdata
 
 	# Lao
-	cp -r ../protocol/examples/messageData/election_setup/. ./internal/handler/messagedata/lao/mlao/testdata
-	cp -r ../protocol/examples/messageData/lao_greet/. ./internal/handler/messagedata/lao/mlao/testdata
-	cp -r ../protocol/examples/messageData/lao_state/. ./internal/handler/messagedata/lao/mlao/testdata
-	cp -r ../protocol/examples/messageData/lao_update/. ./internal/handler/messagedata/lao/mlao/testdata
-	cp -r ../protocol/examples/messageData/meeting_create.json ./internal/handler/messagedata/lao/mlao/testdata
-	cp -r ../protocol/examples/messageData/meeting_state.json ./internal/handler/messagedata/lao/mlao/testdata
-	cp -r ../protocol/examples/messageData/message_witness.json ./internal/handler/messagedata/lao/mlao/testdata
-	cp -r ../protocol/examples/messageData/roll_call_close.json ./internal/handler/messagedata/lao/mlao/testdata
-	cp -r ../protocol/examples/messageData/roll_call_create.json ./internal/handler/messagedata/lao/mlao/testdata
-	cp -r ../protocol/examples/messageData/roll_call_open.json ./internal/handler/messagedata/lao/mlao/testdata
-	cp -r ../protocol/examples/messageData/roll_call_reopen.json ./internal/handler/messagedata/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/election_setup/. ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/lao_greet/. ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/lao_state/. ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/lao_update/. ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/meeting_create.json ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/meeting_state.json ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/message_witness.json ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/roll_call_close.json ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/roll_call_create.json ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/roll_call_open.json ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/roll_call_reopen.json ./internal/handler/channel/lao/mlao/testdata
 
 	# Reaction
-	cp -r ../protocol/examples/messageData/reaction_add/. ./internal/handler/messagedata/reaction/mreaction/testdata
-	cp -r ../protocol/examples/messageData/reaction_delete/. ./internal/handler/messagedata/reaction/mreaction/testdata
+	cp -r ../protocol/examples/messageData/reaction_add/. ./internal/handler/channel/reaction/mreaction/testdata
+	cp -r ../protocol/examples/messageData/reaction_delete/. ./internal/handler/channel/reaction/mreaction/testdata
 
 	# Root
-	cp -r ../protocol/examples/messageData/lao_create/. ./internal/handler/messagedata/root/mroot/testdata
+	cp -r ../protocol/examples/messageData/lao_create/. ./internal/handler/channel/root/mroot/testdata
 
 
 clean:
@@ -127,33 +127,33 @@ clean:
 	# Message
 	rm -rf ./internal/handler/message/mmessage/testdata
 
-	# MessageData
-	rm -rf ./internal/handler/messagedata/testdata
+	# Channel
+	rm -rf ./internal/handler/channel/testdata
 
 	# Authentication
-	rm -rf ./internal/handler/messagedata/authentication/mauthentication/testdata
+	rm -rf ./internal/handler/channel/authentication/mauthentication/testdata
 
 	# Chirp
-	rm -rf ./internal/handler/messagedata/chirp/mchirp/testdata
+	rm -rf ./internal/handler/channel/chirp/mchirp/testdata
 
 	# Coin
-	rm -rf ./internal/handler/messagedata/coin/hcoin/testdata
-	rm -rf ./internal/handler/messagedata/coin/mcoin/testdata
+	rm -rf ./internal/handler/channel/coin/hcoin/testdata
+	rm -rf ./internal/handler/channel/coin/mcoin/testdata
 
 	# Consensus
-	rm -rf ./internal/handler/messagedata/consensus/mconsensus/testdata
+	rm -rf ./internal/handler/channel/consensus/mconsensus/testdata
 
 	# Election
-	rm -rf ./internal/handler/messagedata/election/melection/testdata
+	rm -rf ./internal/handler/channel/election/melection/testdata
 
 	# Lao
-	rm -rf ./internal/handler/messagedata/lao/mlao/testdata
+	rm -rf ./internal/handler/channel/lao/mlao/testdata
 
 	# Reaction
-	rm -rf ./internal/handler/messagedata/reaction/mreaction/testdata
+	rm -rf ./internal/handler/channel/reaction/mreaction/testdata
 
 	# Root
-	rm -rf ./internal/handler/messagedata/root/mroot/testdata
+	rm -rf ./internal/handler/channel/root/mroot/testdata
 
 fmt:
 	gofmt -s -w ./

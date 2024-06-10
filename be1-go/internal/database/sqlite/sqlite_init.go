@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"go.dedis.ch/kyber/v3"
 	poperrors "popstellar/internal/errors"
-	"popstellar/internal/handler/messagedata"
+	"popstellar/internal/handler/channel"
 	"sync"
 )
 

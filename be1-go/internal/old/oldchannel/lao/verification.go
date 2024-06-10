@@ -2,8 +2,8 @@ package lao
 
 import (
 	"encoding/base64"
-	"popstellar/internal/handler/messagedata"
-	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
+	"popstellar/internal/handler/channel"
+	mlao2 "popstellar/internal/handler/channel/lao/mlao"
 	"strconv"
 	"strings"
 

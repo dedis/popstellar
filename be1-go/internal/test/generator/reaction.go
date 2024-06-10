@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
+	"popstellar/internal/handler/channel"
+	mreaction2 "popstellar/internal/handler/channel/reaction/mreaction"
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/handler/messagedata"
-	mreaction2 "popstellar/internal/handler/messagedata/reaction/mreaction"
 	"testing"
 )
 
