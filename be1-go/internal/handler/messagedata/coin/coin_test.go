@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
+	"popstellar/internal/handler/messagedata/coin/mocks"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/mock"
@@ -27,7 +28,7 @@ type inputTestHandleChannelCoin struct {
 func Test_handleChannelCoin(t *testing.T) {
 	subs := state.NewSubscribers()
 
-	db := mock.NewRepository(t)
+	db := mocks.NewRepository(t)
 
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
@@ -117,7 +118,7 @@ func Test_handleChannelCoin(t *testing.T) {
 
 }
 
-func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string, mockRepository *mock.Repository,
+func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string, mockRepository *mocks.Repository,
 	subs *state.Subscribers) inputTestHandleChannelCoin {
 	laoID := message.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
