@@ -5,13 +5,13 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/message/messagedata/mlao"
+	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
 	"testing"
 )
 
 func NewLaoStateMsg(t *testing.T, organizer, laoID, name, modificationID string, creation, lastModified int64,
 	organizerSK kyber.Scalar) mmessage.Message {
-	laoState := mlao.LaoState{
+	laoState := mlao2.LaoState{
 		Object:                 mmessage.LAOObject,
 		Action:                 mmessage.LAOActionState,
 		ID:                     laoID,
@@ -21,7 +21,7 @@ func NewLaoStateMsg(t *testing.T, organizer, laoID, name, modificationID string,
 		Organizer:              organizer,
 		Witnesses:              []string{},
 		ModificationID:         modificationID,
-		ModificationSignatures: []mlao.ModificationSignature{},
+		ModificationSignatures: []mlao2.ModificationSignature{},
 	}
 
 	buf, err := json.Marshal(laoState)
@@ -34,7 +34,7 @@ func NewLaoStateMsg(t *testing.T, organizer, laoID, name, modificationID string,
 
 func NewRollCallCreateMsg(t *testing.T, sender, laoName, createID string, creation, start, end int64,
 	senderSK kyber.Scalar) mmessage.Message {
-	rollCallCreate := mlao.RollCallCreate{
+	rollCallCreate := mlao2.RollCallCreate{
 		Object:        mmessage.RollCallObject,
 		Action:        mmessage.RollCallActionCreate,
 		ID:            createID,
@@ -57,7 +57,7 @@ func NewRollCallCreateMsg(t *testing.T, sender, laoName, createID string, creati
 func NewRollCallOpenMsg(t *testing.T, sender, updateID, opens string, openedAt int64,
 	senderSK kyber.Scalar) mmessage.Message {
 
-	rollCallOpen := mlao.RollCallOpen{
+	rollCallOpen := mlao2.RollCallOpen{
 		Object:   mmessage.RollCallObject,
 		Action:   mmessage.RollCallActionOpen,
 		UpdateID: updateID,
@@ -76,7 +76,7 @@ func NewRollCallOpenMsg(t *testing.T, sender, updateID, opens string, openedAt i
 func NewRollCallReOpenMsg(t *testing.T, sender, updateID, opens string, openedAt int64,
 	senderSK kyber.Scalar) mmessage.Message {
 
-	rollCallReOpen := mlao.RollCallOpen{
+	rollCallReOpen := mlao2.RollCallOpen{
 		Object:   mmessage.RollCallObject,
 		Action:   mmessage.RollCallActionReOpen,
 		UpdateID: updateID,
@@ -95,7 +95,7 @@ func NewRollCallReOpenMsg(t *testing.T, sender, updateID, opens string, openedAt
 func NewRollCallCloseMsg(t *testing.T, sender, updateID, closes string, closedAt int64, attendees []string,
 	senderSK kyber.Scalar) mmessage.Message {
 
-	rollCallClose := mlao.RollCallClose{
+	rollCallClose := mlao2.RollCallClose{
 		Object:    mmessage.RollCallObject,
 		Action:    mmessage.RollCallActionClose,
 		UpdateID:  updateID,
@@ -113,9 +113,9 @@ func NewRollCallCloseMsg(t *testing.T, sender, updateID, closes string, closedAt
 }
 
 func NewElectionSetupMsg(t *testing.T, sender, ID, setupLao, electionName, version string,
-	createdAt, start, end int64, questions []mlao.ElectionSetupQuestion, senderSK kyber.Scalar) mmessage.Message {
+	createdAt, start, end int64, questions []mlao2.ElectionSetupQuestion, senderSK kyber.Scalar) mmessage.Message {
 
-	electionSetup := mlao.ElectionSetup{
+	electionSetup := mlao2.ElectionSetup{
 		Object:    mmessage.ElectionObject,
 		Action:    mmessage.ElectionActionSetup,
 		ID:        ID,

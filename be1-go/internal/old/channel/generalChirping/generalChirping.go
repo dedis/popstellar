@@ -7,13 +7,13 @@ import (
 	"popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	mchirp2 "popstellar/internal/handler/messagedata/chirp/mchirp"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
 	"popstellar/internal/handler/method/publish/mpublish"
 	"popstellar/internal/handler/method/subscribe/msubscribe"
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
-	"popstellar/internal/message/messagedata/mchirp"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/registry"
@@ -135,15 +135,15 @@ func (c *Channel) Broadcast(broadcast mbroadcast.Broadcast, socket socket.Socket
 func (c *Channel) NewGeneralChirpingRegistry() registry.MessageRegistry {
 	newRegistry := registry.NewMessageRegistry()
 
-	newRegistry.Register(mchirp.ChirpNotifyAdd{}, c.processAddChirp)
-	newRegistry.Register(mchirp.ChirpNotifyDelete{}, c.processDeleteChirp)
+	newRegistry.Register(mchirp2.ChirpNotifyAdd{}, c.processAddChirp)
+	newRegistry.Register(mchirp2.ChirpNotifyDelete{}, c.processDeleteChirp)
 
 	return newRegistry
 }
 
 // processAddChirp checks an add chirp message
 func (c *Channel) processAddChirp(msg mmessage.Message, msgData interface{}, _ socket.Socket) error {
-	data, ok := msgData.(*mchirp.ChirpNotifyAdd)
+	data, ok := msgData.(*mchirp2.ChirpNotifyAdd)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#notifyAdd message", msgData)
 	}
@@ -160,7 +160,7 @@ func (c *Channel) processAddChirp(msg mmessage.Message, msgData interface{}, _ s
 func (c *Channel) processDeleteChirp(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*mchirp.ChirpNotifyDelete)
+	data, ok := msgData.(*mchirp2.ChirpNotifyDelete)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#notifyDelete message", msgData)
 	}

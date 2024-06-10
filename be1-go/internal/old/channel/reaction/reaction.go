@@ -7,13 +7,13 @@ import (
 	"popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	mreaction2 "popstellar/internal/handler/messagedata/reaction/mreaction"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
 	"popstellar/internal/handler/method/publish/mpublish"
 	"popstellar/internal/handler/method/subscribe/msubscribe"
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
-	"popstellar/internal/message/messagedata/mreaction"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/registry"
@@ -167,8 +167,8 @@ func (c *Channel) handleMessage(msg mmessage.Message, socket socket.Socket) erro
 func (c *Channel) NewReactionRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
-	registry.Register(mreaction.ReactionAdd{}, c.processReactionAdd)
-	registry.Register(mreaction.ReactionDelete{}, c.processReactionDelete)
+	registry.Register(mreaction2.ReactionAdd{}, c.processReactionAdd)
+	registry.Register(mreaction2.ReactionDelete{}, c.processReactionDelete)
 
 	return registry
 }
@@ -220,7 +220,7 @@ func (c *Channel) verifyMessage(msg mmessage.Message) error {
 }
 
 func (c *Channel) verifyAddReactionMessage(msg mmessage.Message) error {
-	var reactMsg mreaction.ReactionAdd
+	var reactMsg mreaction2.ReactionAdd
 
 	err := msg.UnmarshalData(&reactMsg)
 	if err != nil {
@@ -251,7 +251,7 @@ func (c *Channel) verifyAddReactionMessage(msg mmessage.Message) error {
 }
 
 func (c *Channel) verifyDeleteReactionMessage(msg mmessage.Message, retry bool) error {
-	var delReactMsg mreaction.ReactionDelete
+	var delReactMsg mreaction2.ReactionDelete
 
 	err := msg.UnmarshalData(&delReactMsg)
 	if err != nil {

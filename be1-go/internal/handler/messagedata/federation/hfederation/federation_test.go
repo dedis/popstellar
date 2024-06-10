@@ -13,11 +13,11 @@ import (
 	generator2 "popstellar/internal/generator"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata/federation/hfederation/mocks"
+	mfederation2 "popstellar/internal/handler/messagedata/federation/mfederation"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/publish/mpublish"
 	method2 "popstellar/internal/handler/method/subscribe/msubscribe"
 	"popstellar/internal/handler/query/mquery"
-	"popstellar/internal/message/messagedata/mfederation"
 	mock2 "popstellar/internal/network/socket/mocks"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
@@ -249,7 +249,7 @@ func Test_handleChannelFederation(t *testing.T) {
 		contains: "sender is not the organizer of the channelPath",
 	})
 
-	federationChallenge1 := mfederation.FederationChallenge{
+	federationChallenge1 := mfederation2.FederationChallenge{
 		Object:     mmessage.FederationObject,
 		Action:     mmessage.FederationActionChallenge,
 		Value:      value,
@@ -257,7 +257,7 @@ func Test_handleChannelFederation(t *testing.T) {
 	}
 
 	db.On("GetFederationExpect", organizer,
-		notOrganizer, federationChallenge1, channelPath).Return(mfederation.FederationExpect{}, sql.ErrNoRows)
+		notOrganizer, federationChallenge1, channelPath).Return(mfederation2.FederationExpect{}, sql.ErrNoRows)
 
 	// Test 15 Error when FederationChallenge is received without any
 	// matching FederationExpect
@@ -293,7 +293,7 @@ func Test_handleChannelFederation(t *testing.T) {
 	})
 
 	db.On("GetFederationInit", organizer,
-		organizer2, federationChallenge1, channelPath).Return(mfederation.FederationInit{}, sql.ErrNoRows)
+		organizer2, federationChallenge1, channelPath).Return(mfederation2.FederationInit{}, sql.ErrNoRows)
 
 	// Test 18 Error when FederationResult is received without any
 	// matching FederationInit
@@ -362,7 +362,7 @@ func Test_handleRequestChallenge(t *testing.T) {
 	require.Equal(t, "broadcast", broadcastMsg.Method)
 	require.Equal(t, channelPath, broadcastMsg.Params.Channel)
 
-	var challenge mfederation.FederationChallenge
+	var challenge mfederation2.FederationChallenge
 	err = broadcastMsg.Params.Message.UnmarshalData(&challenge)
 	require.NoError(t, err)
 
@@ -403,7 +403,7 @@ func Test_handleFederationExpect(t *testing.T) {
 	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
 
-	federationChallenge := mfederation.FederationChallenge{
+	federationChallenge := mfederation2.FederationChallenge{
 		Object:     mmessage.FederationObject,
 		Action:     mmessage.FederationActionChallenge,
 		Value:      value,
@@ -547,7 +547,7 @@ func Test_handleFederationChallenge(t *testing.T) {
 	serverAddressA := "ws://localhost:9801/client"
 	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
-	challenge := mfederation.FederationChallenge{
+	challenge := mfederation2.FederationChallenge{
 		Object:     mmessage.FederationObject,
 		Action:     mmessage.FederationActionChallenge,
 		Value:      value,
@@ -560,7 +560,7 @@ func Test_handleFederationChallenge(t *testing.T) {
 	challengeMsg2 := generator2.NewFederationChallenge(t, organizer2,
 		value, validUntil, organizer2Sk)
 
-	federationExpect := mfederation.FederationExpect{
+	federationExpect := mfederation2.FederationExpect{
 		Object:        mmessage.FederationObject,
 		Action:        mmessage.FederationActionExpect,
 		LaoId:         laoID2,
@@ -596,7 +596,7 @@ func Test_handleFederationChallenge(t *testing.T) {
 	require.Equal(t, mquery.MethodPublish, publishMsg.Method)
 	require.Equal(t, broadcastMsg.Params.Message, publishMsg.Params.Message)
 
-	var resultMsg mfederation.FederationResult
+	var resultMsg mfederation2.FederationResult
 	err = broadcastMsg.Params.Message.UnmarshalData(&resultMsg)
 	require.NoError(t, err)
 
@@ -641,7 +641,7 @@ func Test_handleFederationResult(t *testing.T) {
 	serverAddressA := "ws://localhost:9801/client"
 	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
-	challenge := mfederation.FederationChallenge{
+	challenge := mfederation2.FederationChallenge{
 		Object:     mmessage.FederationObject,
 		Action:     mmessage.FederationActionChallenge,
 		Value:      value,
@@ -654,7 +654,7 @@ func Test_handleFederationResult(t *testing.T) {
 	challengeMsg2 := generator2.NewFederationChallenge(t, organizer2, value,
 		validUntil, organizer2Sk)
 
-	federationInit := mfederation.FederationInit{
+	federationInit := mfederation2.FederationInit{
 		Object:        mmessage.FederationObject,
 		Action:        mmessage.FederationActionInit,
 		LaoId:         laoID,

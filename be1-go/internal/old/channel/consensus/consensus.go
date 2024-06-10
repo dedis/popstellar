@@ -7,13 +7,13 @@ import (
 	"popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	mconsensus2 "popstellar/internal/handler/messagedata/consensus/mconsensus"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
 	"popstellar/internal/handler/method/publish/mpublish"
 	"popstellar/internal/handler/method/subscribe/msubscribe"
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
-	"popstellar/internal/message/messagedata/mconsensus"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/registry"
@@ -96,8 +96,8 @@ type ConsensusInstance struct {
 	decided  bool
 	decision bool
 
-	promises map[string]mconsensus.ConsensusPromise
-	accepts  map[string]mconsensus.ConsensusAccept
+	promises map[string]mconsensus2.ConsensusPromise
+	accepts  map[string]mconsensus2.ConsensusAccept
 
 	electInstances map[string]*ElectInstance
 }
@@ -238,14 +238,14 @@ func (c *Channel) handleMessage(msg mmessage.Message, socket socket.Socket) erro
 func (c *Channel) NewConsensusRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
-	registry.Register(mconsensus.ConsensusElect{}, c.processConsensusElect)
-	registry.Register(mconsensus.ConsensusElectAccept{}, c.processConsensusElectAccept)
-	registry.Register(mconsensus.ConsensusPrepare{}, c.processConsensusPrepare)
-	registry.Register(mconsensus.ConsensusPromise{}, c.processConsensusPromise)
-	registry.Register(mconsensus.ConsensusPropose{}, c.processConsensusPropose)
-	registry.Register(mconsensus.ConsensusAccept{}, c.processConsensusAccept)
-	registry.Register(mconsensus.ConsensusLearn{}, c.processConsensusLearn)
-	registry.Register(mconsensus.ConsensusFailure{}, c.processConsensusFailure)
+	registry.Register(mconsensus2.ConsensusElect{}, c.processConsensusElect)
+	registry.Register(mconsensus2.ConsensusElectAccept{}, c.processConsensusElectAccept)
+	registry.Register(mconsensus2.ConsensusPrepare{}, c.processConsensusPrepare)
+	registry.Register(mconsensus2.ConsensusPromise{}, c.processConsensusPromise)
+	registry.Register(mconsensus2.ConsensusPropose{}, c.processConsensusPropose)
+	registry.Register(mconsensus2.ConsensusAccept{}, c.processConsensusAccept)
+	registry.Register(mconsensus2.ConsensusLearn{}, c.processConsensusLearn)
+	registry.Register(mconsensus2.ConsensusFailure{}, c.processConsensusFailure)
 
 	return registry
 }
@@ -254,7 +254,7 @@ func (c *Channel) NewConsensusRegistry() registry.MessageRegistry {
 func (c *Channel) processConsensusElect(message mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*mconsensus.ConsensusElect)
+	data, ok := msgData.(*mconsensus2.ConsensusElect)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#elect message", msgData)
 	}
@@ -300,7 +300,7 @@ func (c *Channel) processConsensusElect(message mmessage.Message, msgData interf
 func (c *Channel) processConsensusElectAccept(message mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*mconsensus.ConsensusElectAccept)
+	data, ok := msgData.(*mconsensus2.ConsensusElectAccept)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#elect_accept message", msgData)
 	}
@@ -375,7 +375,7 @@ func (c *Channel) processConsensusElectAccept(message mmessage.Message, msgData 
 func (c *Channel) processConsensusPrepare(_ mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*mconsensus.ConsensusPrepare)
+	data, ok := msgData.(*mconsensus2.ConsensusPrepare)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#prepare message", msgData)
 	}
@@ -436,7 +436,7 @@ func (c *Channel) processConsensusPrepare(_ mmessage.Message, msgData interface{
 func (c *Channel) processConsensusPromise(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*mconsensus.ConsensusPromise)
+	data, ok := msgData.(*mconsensus2.ConsensusPromise)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#promise message", msgData)
 	}
@@ -513,7 +513,7 @@ func (c *Channel) processConsensusPromise(msg mmessage.Message, msgData interfac
 func (c *Channel) processConsensusPropose(_ mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*mconsensus.ConsensusPropose)
+	data, ok := msgData.(*mconsensus2.ConsensusPropose)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#propose message", msgData)
 	}
@@ -581,7 +581,7 @@ func (c *Channel) processConsensusPropose(_ mmessage.Message, msgData interface{
 func (c *Channel) processConsensusAccept(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*mconsensus.ConsensusAccept)
+	data, ok := msgData.(*mconsensus2.ConsensusAccept)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#accept message", msgData)
 	}
@@ -657,7 +657,7 @@ func (c *Channel) processConsensusAccept(msg mmessage.Message, msgData interface
 func (c *Channel) processConsensusLearn(_ mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*mconsensus.ConsensusLearn)
+	data, ok := msgData.(*mconsensus2.ConsensusLearn)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#learn message", msgData)
 	}
@@ -700,7 +700,7 @@ func (c *Channel) processConsensusLearn(_ mmessage.Message, msgData interface{},
 func (c *Channel) processConsensusFailure(_ mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*mconsensus.ConsensusFailure)
+	data, ok := msgData.(*mconsensus2.ConsensusFailure)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#failure message", msgData)
 	}
@@ -919,8 +919,8 @@ func (c *Channel) createConsensusInstance(instanceID string) *ConsensusInstance 
 		decided:  false,
 		decision: false,
 
-		promises: make(map[string]mconsensus.ConsensusPromise),
-		accepts:  make(map[string]mconsensus.ConsensusAccept),
+		promises: make(map[string]mconsensus2.ConsensusPromise),
+		accepts:  make(map[string]mconsensus2.ConsensusAccept),
 
 		electInstances: make(map[string]*ElectInstance),
 	}

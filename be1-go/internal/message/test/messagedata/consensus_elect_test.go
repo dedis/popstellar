@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/message/messagedata/mconsensus"
+	"popstellar/internal/handler/messagedata/consensus/mconsensus"
 	"testing"
 
 	"github.com/stretchr/testify/require"

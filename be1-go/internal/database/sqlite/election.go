@@ -9,9 +9,9 @@ import (
 	"popstellar/internal/crypto"
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata/election/melection"
 	"popstellar/internal/handler/messagedata/election/telection"
-	"popstellar/internal/message/messagedata/melection"
-	"popstellar/internal/message/messagedata/mlao"
+	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
 	"time"
 )
 
@@ -161,7 +161,7 @@ func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{},
 		return nil, poperrors.NewDatabaseSelectErrorMsg("roll call close message data: %v", err)
 	}
 
-	var rollCallClose mlao.RollCallClose
+	var rollCallClose mlao2.RollCallClose
 	err = json.Unmarshal(rollCallCloseBytes, &rollCallClose)
 	if err != nil {
 		return nil, poperrors.NewJsonUnmarshalError("roll call close message data: %v", err)
@@ -174,19 +174,19 @@ func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{},
 	return attendeesMap, nil
 }
 
-func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (mlao.ElectionSetup, error) {
+func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (mlao2.ElectionSetup, error) {
 
 	var electionSetupBytes []byte
 	err := tx.QueryRow(selectElectionSetup, electionPath, mmessage.ElectionObject, mmessage.ElectionActionSetup).
 		Scan(&electionSetupBytes)
 	if err != nil {
-		return mlao.ElectionSetup{}, poperrors.NewDatabaseSelectErrorMsg("election setup message data: %v", err)
+		return mlao2.ElectionSetup{}, poperrors.NewDatabaseSelectErrorMsg("election setup message data: %v", err)
 	}
 
-	var electionSetup mlao.ElectionSetup
+	var electionSetup mlao2.ElectionSetup
 	err = json.Unmarshal(electionSetupBytes, &electionSetup)
 	if err != nil {
-		return mlao.ElectionSetup{}, poperrors.NewJsonUnmarshalError("election setup message data: %v", err)
+		return mlao2.ElectionSetup{}, poperrors.NewJsonUnmarshalError("election setup message data: %v", err)
 	}
 	return electionSetup, nil
 }
@@ -272,7 +272,7 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 	return questions, nil
 }
 
-func getQuestionsFromMessage(electionSetup mlao.ElectionSetup) (map[string]telection.Question, error) {
+func getQuestionsFromMessage(electionSetup mlao2.ElectionSetup) (map[string]telection.Question, error) {
 
 	questions := make(map[string]telection.Question)
 	for _, question := range electionSetup.Questions {

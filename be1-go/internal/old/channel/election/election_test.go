@@ -10,14 +10,14 @@ import (
 	"path/filepath"
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/message/mmessage"
+	melection2 "popstellar/internal/handler/messagedata/election/melection"
+	"popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
 	"popstellar/internal/handler/method/greetserver/mgreetserver"
 	"popstellar/internal/handler/method/publish/mpublish"
 	"popstellar/internal/handler/method/subscribe/msubscribe"
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
-	"popstellar/internal/message/messagedata/melection"
-	"popstellar/internal/message/messagedata/mlao"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/validation"
@@ -222,7 +222,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var castVote melection.VoteCastVote
+	var castVote melection2.VoteCastVote
 	err = json.Unmarshal(buf, &castVote)
 	require.NoError(t, err)
 
@@ -274,7 +274,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
-	var endElect melection.ElectionEnd
+	var endElect melection2.ElectionEnd
 	err = json.Unmarshal(buf, &endElect)
 	require.NoError(t, err)
 
@@ -303,7 +303,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 	dataBuf, err := base64.URLEncoding.DecodeString(broad.Params.Message.Data)
 	require.NoError(t, err)
 
-	var result melection.ElectionResult
+	var result melection2.ElectionResult
 	err = json.Unmarshal(dataBuf, &result)
 	require.NoError(t, err)
 
@@ -331,7 +331,7 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var castVote melection.VoteCastVote
+	var castVote melection2.VoteCastVote
 	err = json.Unmarshal(buf, &castVote)
 	require.NoError(t, err)
 
@@ -365,7 +365,7 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var electionResult melection.ElectionResult
+	var electionResult melection2.ElectionResult
 	err = json.Unmarshal(buf, &electionResult)
 	require.NoError(t, err)
 
@@ -397,7 +397,7 @@ func Test_Update_Vote_Works(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var castVote melection.VoteCastVote
+	var castVote melection2.VoteCastVote
 	err = json.Unmarshal(buf, &castVote)
 	require.NoError(t, err)
 
@@ -438,7 +438,7 @@ func Test_Publish_Election_Open(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var electionOpen melection.ElectionOpen
+	var electionOpen melection2.ElectionOpen
 	err = json.Unmarshal(buf, &electionOpen)
 	require.NoError(t, err)
 
@@ -483,7 +483,7 @@ func Test_Process_Election_Open(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var electionOpen melection.ElectionOpen
+	var electionOpen melection2.ElectionOpen
 	err = json.Unmarshal(buf, &electionOpen)
 	require.NoError(t, err)
 
@@ -499,7 +499,7 @@ func Test_Process_Election_Open(t *testing.T) {
 	}
 
 	// Fail to process non election open
-	require.Error(t, electChannel.processElectionOpen(m, melection.ElectionEnd.NewEmpty, socket.ServerSocket{}))
+	require.Error(t, electChannel.processElectionOpen(m, melection2.ElectionEnd.NewEmpty, socket.ServerSocket{}))
 
 	// Fail for non base64 sender key
 	require.Error(t, electChannel.processElectionOpen(m, electionOpen, socket.ServerSocket{}))
@@ -520,7 +520,7 @@ func Test_Sending_Election_Key(t *testing.T) {
 
 	electionKeyMsg := catchupAnswer[1]
 
-	var dataKey melection.ElectionKey
+	var dataKey melection2.ElectionKey
 
 	err := electionKeyMsg.UnmarshalData(&dataKey)
 	require.NoError(t, err, electionKeyMsg)

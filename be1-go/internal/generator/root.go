@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/message/messagedata/mroot"
+	"popstellar/internal/handler/messagedata/root/mroot"
 	"testing"
 )
 

@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/message/messagedata/mcoin"
+	"popstellar/internal/handler/messagedata/coin/mcoin"
 	"testing"
 
 	"github.com/stretchr/testify/require"

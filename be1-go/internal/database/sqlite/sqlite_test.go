@@ -11,10 +11,10 @@ import (
 	"popstellar/internal/crypto"
 	generator2 "popstellar/internal/generator"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata/election/melection"
 	"popstellar/internal/handler/messagedata/election/telection"
-	"popstellar/internal/message/messagedata/melection"
-	"popstellar/internal/message/messagedata/mfederation"
-	"popstellar/internal/message/messagedata/mlao"
+	"popstellar/internal/handler/messagedata/federation/mfederation"
+	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
 	"sort"
 	"testing"
 	"time"
@@ -280,13 +280,13 @@ func Test_SQLite_StoreLaoWithLaoGreet(t *testing.T) {
 	laoCreateMsg := generator2.NewLaoCreateMsg(t, "sender1", laoID, "laoName", 123456789,
 		organizerPubBuf64, nil)
 
-	laoGreet := mlao.LaoGreet{
+	laoGreet := mlao2.LaoGreet{
 		Object:   "lao",
 		Action:   "greet",
 		LaoID:    laoID,
 		Frontend: "frontend",
 		Address:  "address",
-		Peers:    []mlao.Peer{{Address: "peer1"}, {Address: "peer2"}},
+		Peers:    []mlao2.Peer{{Address: "peer1"}, {Address: "peer2"}},
 	}
 	laoGreetBytes, err := json.Marshal(laoGreet)
 	require.NoError(t, err)
@@ -579,7 +579,7 @@ func Test_SQLite_GetElectionCreationTimeAndType(t *testing.T) {
 	creationTime := int64(123456789)
 
 	electionSetupMsg := generator2.NewElectionSetupMsg(t, "sender1", "ID1", laoPath, "electionName",
-		mlao.OpenBallot, creationTime, 2, 3, nil, nil)
+		mlao2.OpenBallot, creationTime, 2, 3, nil, nil)
 
 	err = lite.StoreMessageAndData(electionPath, electionSetupMsg)
 	require.NoError(t, err)
@@ -590,7 +590,7 @@ func Test_SQLite_GetElectionCreationTimeAndType(t *testing.T) {
 
 	electionType, err := lite.GetElectionType(electionPath)
 	require.NoError(t, err)
-	require.Equal(t, mlao.OpenBallot, electionType)
+	require.Equal(t, mlao2.OpenBallot, electionType)
 }
 
 func Test_SQLite_GetElectionAttendees(t *testing.T) {
@@ -627,7 +627,7 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 	laoPath := "laoPath"
 	laoID := "laoID"
 	electionID := "electionID"
-	questions := []mlao.ElectionSetupQuestion{
+	questions := []mlao2.ElectionSetupQuestion{
 		{
 			ID:            "questionID1",
 			Question:      "question1",
@@ -637,7 +637,7 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 	}
 
 	electionSetupMsg := generator2.NewElectionSetupMsg(t, "sender1", "ID1", laoPath, "electionName",
-		mlao.OpenBallot, 1, 2, 3, questions, nil)
+		mlao2.OpenBallot, 1, 2, 3, questions, nil)
 
 	err = lite.StoreMessageAndData(electionPath, electionSetupMsg)
 	require.NoError(t, err)
@@ -645,7 +645,7 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 	data64, err := base64.URLEncoding.DecodeString(electionSetupMsg.Data)
 	require.NoError(t, err)
 
-	var electionSetup mlao.ElectionSetup
+	var electionSetup mlao2.ElectionSetup
 	err = json.Unmarshal(data64, &electionSetup)
 	require.NoError(t, err)
 

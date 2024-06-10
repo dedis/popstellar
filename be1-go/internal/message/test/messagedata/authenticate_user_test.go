@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/message/messagedata/mauthentification"
+	"popstellar/internal/handler/messagedata/authentification/mauthentification"
 	"testing"
 )
 

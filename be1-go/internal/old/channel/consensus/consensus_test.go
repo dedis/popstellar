@@ -10,6 +10,7 @@ import (
 	"popstellar/internal/crypto"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	mconsensus2 "popstellar/internal/handler/messagedata/consensus/mconsensus"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
 	"popstellar/internal/handler/method/greetserver/mgreetserver"
@@ -17,7 +18,6 @@ import (
 	"popstellar/internal/handler/method/subscribe/msubscribe"
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
-	"popstellar/internal/message/messagedata/mconsensus"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/validation"
@@ -399,7 +399,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	// Unmarshal the prepare message data to check its values
 	jsonData, err := base64.RawStdEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var prepare mconsensus.ConsensusPrepare
+	var prepare mconsensus2.ConsensusPrepare
 	err = json.Unmarshal(jsonData, &prepare)
 	require.NoError(t, err)
 
@@ -523,7 +523,7 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err := base64.RawStdEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var prepare mconsensus.ConsensusFailure
+	var prepare mconsensus2.ConsensusFailure
 	err = json.Unmarshal(jsonData, &prepare)
 	require.NoError(t, err)
 
@@ -645,7 +645,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 	// Unmarshal the promise message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var promise mconsensus.ConsensusPromise
+	var promise mconsensus2.ConsensusPromise
 	err = json.Unmarshal(jsonData, &promise)
 	require.NoError(t, err)
 
@@ -771,7 +771,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	// Unmarshal the propose message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var propose mconsensus.ConsensusPropose
+	var propose mconsensus2.ConsensusPropose
 	err = json.Unmarshal(jsonData, &propose)
 	require.NoError(t, err)
 
@@ -895,7 +895,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 	// Unmarshal the accept message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var accept mconsensus.ConsensusAccept
+	var accept mconsensus2.ConsensusAccept
 	err = json.Unmarshal(jsonData, &accept)
 	require.NoError(t, err)
 
@@ -1025,7 +1025,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	// Unmarshal the learn message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var learn mconsensus.ConsensusLearn
+	var learn mconsensus2.ConsensusLearn
 	err = json.Unmarshal(jsonData, &learn)
 	require.NoError(t, err)
 
@@ -1369,7 +1369,7 @@ func Test_Timeout_Elect(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var learn mconsensus.ConsensusFailure
+	var learn mconsensus2.ConsensusFailure
 	err = json.Unmarshal(jsonData, &learn)
 	require.NoError(t, err)
 
@@ -1472,7 +1472,7 @@ func Test_Timeout_Prepare(t *testing.T) {
 	// Unmarshal the prepare message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var prepare mconsensus.ConsensusPrepare
+	var prepare mconsensus2.ConsensusPrepare
 	err = json.Unmarshal(jsonData, &prepare)
 	require.NoError(t, err)
 
@@ -1499,7 +1499,7 @@ func Test_Timeout_Prepare(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err = base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var failure mconsensus.ConsensusFailure
+	var failure mconsensus2.ConsensusFailure
 	err = json.Unmarshal(jsonData, &failure)
 	require.NoError(t, err)
 
@@ -1603,7 +1603,7 @@ func Test_Timeout_Promise(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var promise mconsensus.ConsensusPromise
+	var promise mconsensus2.ConsensusPromise
 	err = json.Unmarshal(jsonData, &promise)
 	require.NoError(t, err)
 
@@ -1630,7 +1630,7 @@ func Test_Timeout_Promise(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err = base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var failure mconsensus.ConsensusFailure
+	var failure mconsensus2.ConsensusFailure
 	err = json.Unmarshal(jsonData, &failure)
 	require.NoError(t, err)
 
@@ -1736,7 +1736,7 @@ func Test_Timeout_Propose(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var propose mconsensus.ConsensusPropose
+	var propose mconsensus2.ConsensusPropose
 	err = json.Unmarshal(jsonData, &propose)
 	require.NoError(t, err)
 
@@ -1763,7 +1763,7 @@ func Test_Timeout_Propose(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err = base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var failure mconsensus.ConsensusFailure
+	var failure mconsensus2.ConsensusFailure
 	err = json.Unmarshal(jsonData, &failure)
 	require.NoError(t, err)
 
@@ -1867,7 +1867,7 @@ func Test_Timeout_Accept(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var accept mconsensus.ConsensusAccept
+	var accept mconsensus2.ConsensusAccept
 	err = json.Unmarshal(jsonData, &accept)
 	require.NoError(t, err)
 
@@ -1894,7 +1894,7 @@ func Test_Timeout_Accept(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err = base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var failure mconsensus.ConsensusFailure
+	var failure mconsensus2.ConsensusFailure
 	err = json.Unmarshal(jsonData, &failure)
 	require.NoError(t, err)
 

@@ -9,14 +9,14 @@ import (
 	"popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	melection2 "popstellar/internal/handler/messagedata/election/melection"
+	"popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
 	"popstellar/internal/handler/method/publish/mpublish"
 	"popstellar/internal/handler/method/subscribe/msubscribe"
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
-	"popstellar/internal/message/messagedata/melection"
-	"popstellar/internal/message/messagedata/mlao"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/registry"
@@ -278,10 +278,10 @@ func (c *Channel) handleMessage(msg mmessage.Message, socket socket.Socket) erro
 func (c *Channel) newElectionRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
-	registry.Register(melection.ElectionOpen{}, c.processElectionOpen)
-	registry.Register(melection.VoteCastVote{}, c.processCastVote)
-	registry.Register(melection.ElectionEnd{}, c.processElectionEnd)
-	registry.Register(melection.ElectionResult{}, c.processElectionResult)
+	registry.Register(melection2.ElectionOpen{}, c.processElectionOpen)
+	registry.Register(melection2.VoteCastVote{}, c.processCastVote)
+	registry.Register(melection2.ElectionEnd{}, c.processElectionEnd)
+	registry.Register(melection2.ElectionResult{}, c.processElectionResult)
 
 	return registry
 }
@@ -289,7 +289,7 @@ func (c *Channel) newElectionRegistry() registry.MessageRegistry {
 func (c *Channel) processElectionOpen(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*melection.ElectionOpen)
+	data, ok := msgData.(*melection2.ElectionOpen)
 	if !ok {
 		return xerrors.Errorf("message '%T' isn't a election#open message", msgData)
 	}
@@ -312,7 +312,7 @@ func (c *Channel) processElectionOpen(msg mmessage.Message, msgData interface{},
 		return manswer.NewErrorf(-5, "sender is %s, should be the organizer", msg.Sender)
 	}
 
-	var electionOpen melection.ElectionOpen
+	var electionOpen melection2.ElectionOpen
 
 	err = msg.UnmarshalData(&electionOpen)
 	if err != nil {
@@ -339,7 +339,7 @@ func (c *Channel) processElectionOpen(msg mmessage.Message, msgData interface{},
 func (c *Channel) processCastVote(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	_, ok := msgData.(*melection.VoteCastVote)
+	_, ok := msgData.(*melection2.VoteCastVote)
 	if !ok {
 		return xerrors.Errorf("message '%T' isn't a election#cast_vote message", msgData)
 	}
@@ -363,7 +363,7 @@ func (c *Channel) processCastVote(msg mmessage.Message, msgData interface{},
 		return manswer.NewError(-4, "only attendees can cast a vote in an election")
 	}
 
-	var castVote melection.VoteCastVote
+	var castVote melection2.VoteCastVote
 
 	err = msg.UnmarshalData(&castVote)
 	if err != nil {
@@ -392,7 +392,7 @@ func (c *Channel) processCastVote(msg mmessage.Message, msgData interface{},
 func (c *Channel) processElectionEnd(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	_, ok := msgData.(*melection.ElectionEnd)
+	_, ok := msgData.(*melection2.ElectionEnd)
 	if !ok {
 		return xerrors.Errorf("message '%T' isn't a election#end message", msgData)
 	}
@@ -419,7 +419,7 @@ func (c *Channel) processElectionEnd(msg mmessage.Message, msgData interface{},
 		return manswer.NewErrorf(-5, "sender is %s, should be the organizer", msg.Sender)
 	}
 
-	var electionEnd melection.ElectionEnd
+	var electionEnd melection2.ElectionEnd
 
 	err = msg.UnmarshalData(&electionEnd)
 	if err != nil {
@@ -453,7 +453,7 @@ func (c *Channel) processElectionEnd(msg mmessage.Message, msgData interface{},
 func (c *Channel) processElectionResult(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*melection.ElectionResult)
+	data, ok := msgData.(*melection2.ElectionResult)
 	if !ok {
 		return xerrors.Errorf("message '%T' isn't a election#result message", msgData)
 	}
@@ -535,7 +535,7 @@ func (c *Channel) createAndSendElectionKey() error {
 		return xerrors.Errorf("failed to marshal the election key: %v", err)
 	}
 
-	msgData := melection.ElectionKey{
+	msgData := melection2.ElectionKey{
 		Object:   mmessage.ElectionObject,
 		Action:   mmessage.ElectionActionKey,
 		Election: c.getElectionID(),
@@ -654,14 +654,14 @@ func (c *Channel) broadcastElectionResult() error {
 }
 
 func (c *Channel) gatherResults(questions map[string]*question,
-	log zerolog.Logger) (melection.ElectionResult, error) {
+	log zerolog.Logger) (melection2.ElectionResult, error) {
 
 	log.Info().Msgf("gathering results for the election")
 
-	resultElection := melection.ElectionResult{
+	resultElection := melection2.ElectionResult{
 		Object:    mmessage.ElectionObject,
 		Action:    mmessage.ElectionActionResult,
-		Questions: []melection.ElectionResultQuestion{},
+		Questions: []melection2.ElectionResultQuestion{},
 	}
 
 	for id := range questions {
@@ -683,7 +683,7 @@ func (c *Channel) gatherResults(questions map[string]*question,
 
 			res := gatherOptionCounts(numberOfVotesPerBallotOption, question.ballotOptions)
 
-			electResult := melection.ElectionResultQuestion{
+			electResult := melection2.ElectionResultQuestion{
 				ID:     id,
 				Result: res,
 			}
@@ -768,10 +768,10 @@ func (c *Channel) decryptVote(vote string) (int, error) {
 	return int(index), nil
 }
 
-func gatherOptionCounts(count []int, options []string) []melection.ElectionResultQuestionResult {
-	questionResults := make([]melection.ElectionResultQuestionResult, 0)
+func gatherOptionCounts(count []int, options []string) []melection2.ElectionResultQuestionResult {
+	questionResults := make([]melection2.ElectionResultQuestionResult, 0)
 	for i, option := range options {
-		questionResults = append(questionResults, melection.ElectionResultQuestionResult{
+		questionResults = append(questionResults, melection2.ElectionResultQuestionResult{
 			BallotOption: option,
 			Count:        count[i],
 		})
@@ -792,7 +792,7 @@ func checkMethodProperties(method string, length int) error {
 	return nil
 }
 
-func updateVote(msgID string, sender string, castVote melection.VoteCastVote,
+func updateVote(msgID string, sender string, castVote melection2.VoteCastVote,
 	questions map[string]*question) error {
 
 	// this should update any previously set vote if the message ids are the same

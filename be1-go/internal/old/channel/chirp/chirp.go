@@ -7,13 +7,13 @@ import (
 	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	mchirp2 "popstellar/internal/handler/messagedata/chirp/mchirp"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
 	"popstellar/internal/handler/method/publish/mpublish"
 	"popstellar/internal/handler/method/subscribe/msubscribe"
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
-	"popstellar/internal/message/messagedata/mchirp"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/registry"
@@ -173,8 +173,8 @@ func (c *Channel) handleMessage(msg mmessage.Message, socket socket.Socket) erro
 func (c *Channel) NewChirpRegistry() registry.MessageRegistry {
 	newRegistry := registry.NewMessageRegistry()
 
-	newRegistry.Register(mchirp.ChirpAdd{}, c.processAddChirp)
-	newRegistry.Register(mchirp.ChirpDelete{}, c.processDeleteChirp)
+	newRegistry.Register(mchirp2.ChirpAdd{}, c.processAddChirp)
+	newRegistry.Register(mchirp2.ChirpDelete{}, c.processDeleteChirp)
 
 	return newRegistry
 }
@@ -182,7 +182,7 @@ func (c *Channel) NewChirpRegistry() registry.MessageRegistry {
 func (c *Channel) processAddChirp(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*mchirp.ChirpAdd)
+	data, ok := msgData.(*mchirp2.ChirpAdd)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#add message", msgData)
 	}
@@ -202,7 +202,7 @@ func (c *Channel) processDeleteChirp(msg mmessage.Message, msgData interface{},
 }
 
 func (c *Channel) helperProcessDeleteChirp(msg mmessage.Message, msgData interface{}, retry bool) error {
-	data, ok := msgData.(*mchirp.ChirpDelete)
+	data, ok := msgData.(*mchirp2.ChirpDelete)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#delete message", msgData)
 	}
@@ -319,7 +319,7 @@ func (c *Channel) broadcastViaGeneral(msg mmessage.Message) error {
 		return xerrors.Errorf("failed to read the message data: %v", err)
 	}
 
-	newData := mchirp.ChirpBroadcast{
+	newData := mchirp2.ChirpBroadcast{
 		Object:    object,
 		Action:    action,
 		ChirpID:   msg.MessageID,

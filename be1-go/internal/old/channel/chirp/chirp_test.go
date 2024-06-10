@@ -10,6 +10,7 @@ import (
 	"popstellar/internal/crypto"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	mchirp2 "popstellar/internal/handler/messagedata/chirp/mchirp"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
 	"popstellar/internal/handler/method/greetserver/mgreetserver"
@@ -17,7 +18,6 @@ import (
 	"popstellar/internal/handler/method/subscribe/msubscribe"
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
-	"popstellar/internal/message/messagedata/mchirp"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/generalChirping"
@@ -281,7 +281,7 @@ func Test_Send_Chirp(t *testing.T) {
 
 	msg2 := generalCha.Catchup(mcatchup.Catchup{ID: 0})
 
-	checkData := mchirp.ChirpNotifyAdd{
+	checkData := mchirp2.ChirpNotifyAdd{
 		Object:    "chirp",
 		Action:    "notify_add",
 		ChirpID:   mmessage.Hash(buf64, "h"),
@@ -361,7 +361,7 @@ func Test_Delete_Chirp(t *testing.T) {
 	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
-	var chirpDel mchirp.ChirpDelete
+	var chirpDel mchirp2.ChirpDelete
 
 	err = json.Unmarshal(buf, &chirpDel)
 	require.NoError(t, err)
@@ -389,7 +389,7 @@ func Test_Delete_Chirp(t *testing.T) {
 
 	msg := generalCha.Catchup(mcatchup.Catchup{ID: 0})
 
-	checkDataAdd := mchirp.ChirpNotifyAdd{
+	checkDataAdd := mchirp2.ChirpNotifyAdd{
 		Object:    "chirp",
 		Action:    "notify_add",
 		ChirpID:   mmessage.Hash(buf64add, "h"),
@@ -400,7 +400,7 @@ func Test_Delete_Chirp(t *testing.T) {
 	require.Nil(t, err)
 	checkData64Add := base64.URLEncoding.EncodeToString(checkDataBufAdd)
 
-	checkDataDelete := mchirp.ChirpNotifyDelete{
+	checkDataDelete := mchirp2.ChirpNotifyDelete{
 		Object:    "chirp",
 		Action:    "notify_delete",
 		ChirpID:   mmessage.Hash(buf64delete, "h"),
@@ -487,7 +487,7 @@ func Test_Out_Of_Order_Delete(t *testing.T) {
 	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
-	var chirpDel mchirp.ChirpDelete
+	var chirpDel mchirp2.ChirpDelete
 
 	err = json.Unmarshal(buf, &chirpDel)
 	require.NoError(t, err)

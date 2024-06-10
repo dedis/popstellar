@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
+	mreaction2 "popstellar/internal/handler/messagedata/reaction/mreaction"
 	"popstellar/internal/handler/messagedata/root/hroot"
-	"popstellar/internal/message/messagedata/mreaction"
 	"popstellar/internal/validation"
 	"strings"
 )
@@ -87,7 +87,7 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 }
 
 func (h *Handler) handleReactionAdd(msg mmessage.Message) error {
-	var reactMsg mreaction.ReactionAdd
+	var reactMsg mreaction2.ReactionAdd
 	err := msg.UnmarshalData(&reactMsg)
 	if err != nil {
 		return err
@@ -102,7 +102,7 @@ func (h *Handler) handleReactionAdd(msg mmessage.Message) error {
 }
 
 func (h *Handler) handleReactionDelete(msg mmessage.Message) error {
-	var delReactMsg mreaction.ReactionDelete
+	var delReactMsg mreaction2.ReactionDelete
 	err := msg.UnmarshalData(&delReactMsg)
 	if err != nil {
 		return err

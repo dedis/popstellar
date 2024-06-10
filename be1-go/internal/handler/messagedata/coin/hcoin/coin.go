@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/message/messagedata/mcoin"
+	"popstellar/internal/handler/messagedata/coin/mcoin"
 	"popstellar/internal/validation"
 )
 

@@ -11,7 +11,7 @@ import (
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata/election/helection/mocks"
 	"popstellar/internal/handler/messagedata/election/telection"
-	"popstellar/internal/message/messagedata/mlao"
+	"popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
 	"testing"

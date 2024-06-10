@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/message/messagedata/mlao"
+	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/old/channel"
 	"testing"
 
@@ -37,7 +37,7 @@ func TestVerify_LaoState(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var laoState mlao.LaoState
+	var laoState mlao2.LaoState
 
 	err = json.Unmarshal(buf, &laoState)
 	require.NoError(t, err)
@@ -96,7 +96,7 @@ func TestVerify_RollCallCreate(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var rollCallCreate mlao.RollCallCreate
+	var rollCallCreate mlao2.RollCallCreate
 
 	err = json.Unmarshal(buf, &rollCallCreate)
 	require.NoError(t, err)
@@ -126,7 +126,7 @@ func TestVerify_RollCallOpen(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var rollCallOpen mlao.RollCallOpen
+	var rollCallOpen mlao2.RollCallOpen
 
 	err = json.Unmarshal(buf, &rollCallOpen)
 	require.NoError(t, err)
@@ -156,7 +156,7 @@ func TestVerify_RollCallClose(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var rollCallClose mlao.RollCallClose
+	var rollCallClose mlao2.RollCallClose
 
 	err = json.Unmarshal(buf, &rollCallClose)
 	require.NoError(t, err)
@@ -184,7 +184,7 @@ func TestVerify_ElectionSetup(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var electionSetup mlao.ElectionSetup
+	var electionSetup mlao2.ElectionSetup
 
 	err = json.Unmarshal(buf, &electionSetup)
 	require.NoError(t, err)

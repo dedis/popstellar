@@ -10,9 +10,9 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
+	melection2 "popstellar/internal/handler/messagedata/election/melection"
 	"popstellar/internal/handler/messagedata/election/telection"
-	"popstellar/internal/message/messagedata/melection"
-	"popstellar/internal/message/messagedata/mlao"
+	"popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/validation"
 	"sort"
 )
@@ -131,7 +131,7 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 }
 
 func (h *Handler) handleVoteCastVote(msg mmessage.Message, channelPath string) error {
-	var voteCastVote melection.VoteCastVote
+	var voteCastVote melection2.VoteCastVote
 	err := msg.UnmarshalData(&voteCastVote)
 	if err != nil {
 		return err
@@ -192,7 +192,7 @@ func (h *Handler) handleVoteCastVote(msg mmessage.Message, channelPath string) e
 }
 
 func (h *Handler) handleElectionOpen(msg mmessage.Message, channelPath string) error {
-	var electionOpen melection.ElectionOpen
+	var electionOpen melection2.ElectionOpen
 	err := msg.UnmarshalData(&electionOpen)
 	if err != nil {
 		return err
@@ -230,7 +230,7 @@ func (h *Handler) handleElectionOpen(msg mmessage.Message, channelPath string) e
 }
 
 func (h *Handler) handleElectionEnd(msg mmessage.Message, channelPath string) error {
-	var electionEnd melection.ElectionEnd
+	var electionEnd melection2.ElectionEnd
 	err := msg.UnmarshalData(&electionEnd)
 	if err != nil {
 		return err
@@ -276,7 +276,7 @@ func (h *Handler) handleElectionEnd(msg mmessage.Message, channelPath string) er
 	return h.subs.BroadcastToAllClients(electionResultMsg, channelPath)
 }
 
-func (h *Handler) verifyElectionEnd(electionEnd melection.ElectionEnd, channelPath string) error {
+func (h *Handler) verifyElectionEnd(electionEnd melection2.ElectionEnd, channelPath string) error {
 	// verify message data
 	err := electionEnd.Verify(channelPath)
 	if err != nil {
@@ -344,7 +344,7 @@ func (h *Handler) verifySenderElection(msg mmessage.Message, channelPath string,
 	return nil
 }
 
-func (h *Handler) verifyVote(vote melection.Vote, channelPath, electionID string) error {
+func (h *Handler) verifyVote(vote melection2.Vote, channelPath, electionID string) error {
 	questions, err := h.db.GetElectionQuestions(channelPath)
 	if err != nil {
 		return err
@@ -395,7 +395,7 @@ func (h *Handler) verifyVote(vote melection.Vote, channelPath, electionID string
 	return nil
 }
 
-func (h *Handler) verifyRegisteredVotes(electionEnd melection.ElectionEnd,
+func (h *Handler) verifyRegisteredVotes(electionEnd melection2.ElectionEnd,
 	questions map[string]telection.Question) error {
 	var voteIDs []string
 	for _, question := range questions {
@@ -454,13 +454,13 @@ func (h *Handler) createElectionResult(questions map[string]telection.Question, 
 	return electionResultMsg, nil
 }
 
-func (h *Handler) computeElectionResult(questions map[string]telection.Question, channelPath string) (melection.ElectionResult, error) {
+func (h *Handler) computeElectionResult(questions map[string]telection.Question, channelPath string) (melection2.ElectionResult, error) {
 	electionType, err := h.db.GetElectionType(channelPath)
 	if err != nil {
-		return melection.ElectionResult{}, err
+		return melection2.ElectionResult{}, err
 	}
 
-	result := make([]melection.ElectionResultQuestion, 0)
+	result := make([]melection2.ElectionResultQuestion, 0)
 
 	for id, question := range questions {
 		if question.Method != mlao.PluralityMethod {
@@ -475,15 +475,15 @@ func (h *Handler) computeElectionResult(questions map[string]telection.Question,
 			}
 		}
 
-		var questionResults []melection.ElectionResultQuestionResult
+		var questionResults []melection2.ElectionResultQuestionResult
 		for i, options := range question.BallotOptions {
-			questionResults = append(questionResults, melection.ElectionResultQuestionResult{
+			questionResults = append(questionResults, melection2.ElectionResultQuestionResult{
 				BallotOption: options,
 				Count:        votesPerBallotOption[i],
 			})
 		}
 
-		electionResult := melection.ElectionResultQuestion{
+		electionResult := melection2.ElectionResultQuestion{
 			ID:     id,
 			Result: questionResults,
 		}
@@ -491,7 +491,7 @@ func (h *Handler) computeElectionResult(questions map[string]telection.Question,
 		result = append(result, electionResult)
 	}
 
-	resultElection := melection.ElectionResult{
+	resultElection := melection2.ElectionResult{
 		Object:    mmessage.ElectionObject,
 		Action:    mmessage.ElectionActionResult,
 		Questions: result,

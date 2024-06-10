@@ -6,7 +6,7 @@ import (
 	"errors"
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/message/messagedata/mlao"
+	"popstellar/internal/handler/messagedata/lao/mlao"
 )
 
 func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {

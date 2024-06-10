@@ -6,8 +6,8 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
+	mchirp2 "popstellar/internal/handler/messagedata/chirp/mchirp"
 	"popstellar/internal/handler/messagedata/root/hroot"
-	"popstellar/internal/message/messagedata/mchirp"
 	"popstellar/internal/validation"
 	"strings"
 )
@@ -104,7 +104,7 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 }
 
 func (h *Handler) handleChirpAdd(channelID string, msg mmessage.Message) error {
-	var data mchirp.ChirpAdd
+	var data mchirp2.ChirpAdd
 	err := msg.UnmarshalData(&data)
 	if err != nil {
 		return err
@@ -123,7 +123,7 @@ func (h *Handler) handleChirpAdd(channelID string, msg mmessage.Message) error {
 }
 
 func (h *Handler) handleChirpDelete(channelID string, msg mmessage.Message) error {
-	var data mchirp.ChirpDelete
+	var data mchirp2.ChirpDelete
 	err := msg.UnmarshalData(&data)
 	if err != nil {
 		return err
@@ -166,7 +166,7 @@ func (h *Handler) createChirpNotify(channelID string, msg mmessage.Message) (mme
 		return mmessage.Message{}, err
 	}
 
-	newData := mchirp.ChirpBroadcast{
+	newData := mchirp2.ChirpBroadcast{
 		Object:    object,
 		Action:    action,
 		ChirpID:   msg.MessageID,

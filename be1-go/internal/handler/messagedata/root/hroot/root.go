@@ -8,9 +8,9 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/hmessage"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata/lao/mlao"
+	"popstellar/internal/handler/messagedata/root/mroot"
 	"popstellar/internal/handler/method/greetserver/mgreetserver"
-	"popstellar/internal/message/messagedata/mlao"
-	"popstellar/internal/message/messagedata/mroot"
 	"popstellar/internal/validation"
 )
 

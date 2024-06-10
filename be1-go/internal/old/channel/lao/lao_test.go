@@ -11,6 +11,7 @@ import (
 	"popstellar/internal/crypto"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
 	"popstellar/internal/handler/method/greetserver/mgreetserver"
@@ -18,7 +19,6 @@ import (
 	"popstellar/internal/handler/method/subscribe/msubscribe"
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
-	"popstellar/internal/message/messagedata/mlao"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/validation"
@@ -334,12 +334,12 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 	bufState, err := os.ReadFile(fileState)
 	require.NoError(t, err)
 
-	var mState mlao.LaoState
+	var mState mlao2.LaoState
 	err = json.Unmarshal(bufState, &mState)
 	require.NoError(t, err)
 
 	mState.ModificationID = mmessage.Hash(bufb64, publicKey64)
-	mState.ModificationSignatures = []mlao.ModificationSignature{}
+	mState.ModificationSignatures = []mlao2.ModificationSignature{}
 
 	mStateBuf, err := json.Marshal(mState)
 	require.NoError(t, err)
@@ -639,7 +639,7 @@ func TestLAOChannel_Sends_Greeting(t *testing.T) {
 
 	greetMsg := catchupAnswer[1]
 
-	var laoGreet mlao.LaoGreet
+	var laoGreet mlao2.LaoGreet
 
 	err = greetMsg.UnmarshalData(&laoGreet)
 	require.NoError(t, err)
@@ -994,7 +994,7 @@ func createRollCallCreate(t *testing.T, sender keypair,
 	now := time.Now().Unix()
 	rollcallName := "Roll Call"
 	rollcallId := mmessage.Hash("R", laoId, strconv.FormatInt(now, 10), rollcallName)
-	rollcallCreate, err := json.Marshal(mlao.RollCallCreate{
+	rollcallCreate, err := json.Marshal(mlao2.RollCallCreate{
 		Object:        "roll_call",
 		Action:        "create",
 		ID:            rollcallId,
@@ -1018,7 +1018,7 @@ func createRollCallOpen(t *testing.T, sender keypair,
 	openAt := time.Now().Unix()
 	updateId := mmessage.Hash("R", laoId, rollcallId, strconv.FormatInt(openAt, 10))
 
-	rollcallOpen, err := json.Marshal(mlao.RollCallOpen{
+	rollcallOpen, err := json.Marshal(mlao2.RollCallOpen{
 		Object:   "roll_call",
 		Action:   "open",
 		UpdateID: updateId,
@@ -1039,7 +1039,7 @@ func createRollCallClose(t *testing.T, sender keypair,
 	updateId := mmessage.Hash("R", laoId, openId, strconv.FormatInt(closeAt, 10))
 	attendees := []string{base64.URLEncoding.EncodeToString(sender.publicBuf)}
 
-	rollcallClose, err := json.Marshal(mlao.RollCallClose{
+	rollcallClose, err := json.Marshal(mlao2.RollCallClose{
 		Object:    "roll_call",
 		Action:    "close",
 		UpdateID:  updateId,
