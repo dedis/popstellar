@@ -53,7 +53,7 @@ The project is organized into different packages/directories as follow:
     └── validation              # validate incoming/outgoing messages
 ```
 
-The directory `handler` contains all the modules of the logic of `PopStellar` as follow:
+The directory `handler` contains all the modules of the backend logic for PoP as follow:
 
 ```
 handler
@@ -67,7 +67,7 @@ handler
 │
 ├── messagedata             # directory with all the channel modules
 │   ├── authentication         # for popcha#authenticate
-│   ├── chirp                  # for chirp#add|delete|notify_add|notify_delete
+│   ├── chirp                  # for chirp#add|delete
 │   ├── coin                   # for coin#post_transaction
 │   ├── consensus              # for consensus#elect|elect_accept|prepare|promise|propose|accept|learn|failure
 │   ├── election               # for election#key|open|cast_vote|end|result
