@@ -11,9 +11,9 @@ import (
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mconsensus"
+	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/validation"
@@ -48,7 +48,7 @@ func Test_Consensus_Channel_Subscribe(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var message method.Subscribe
+	var message method2.Subscribe
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
@@ -76,7 +76,7 @@ func Test_Consensus_Channel_Unsubscribe(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var message method.Unsubscribe
+	var message method2.Unsubscribe
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
@@ -103,7 +103,7 @@ func Test_Consensus_Channel_Wrong_Unsubscribe(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var message method.Unsubscribe
+	var message method2.Unsubscribe
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
@@ -142,7 +142,7 @@ func Test_Consensus_Channel_Catchup(t *testing.T) {
 	}
 
 	// Compute the catchup method
-	catchupAnswer := channel.Catchup(method.Catchup{ID: 0})
+	catchupAnswer := channel.Catchup(method2.Catchup{ID: 0})
 
 	// Check that the order of the messages is the same in `messages` and in
 	// `catchupAnswer`
@@ -191,11 +191,11 @@ func Test_Consensus_Channel_Broadcast(t *testing.T) {
 	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
-	var broadcast method.Broadcast
+	var broadcast method2.Broadcast
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
-	broadcast.Base = query.Base{
+	broadcast.Base = mquery.Base{
 		JSONRPCBase: jsonrpc.JSONRPCBase{
 			JSONRPC: "2.0",
 		},
@@ -255,7 +255,7 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 	bufPub, err := os.ReadFile(filePublish)
 	require.NoError(t, err)
 
-	var messagePublish method.Publish
+	var messagePublish method2.Publish
 
 	err = json.Unmarshal(bufPub, &messagePublish)
 	require.NoError(t, err)
@@ -268,7 +268,7 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 	bufBroad, err := os.ReadFile(fileBroadcast)
 	require.NoError(t, err)
 
-	var messageBroadcast method.Broadcast
+	var messageBroadcast method2.Broadcast
 
 	err = json.Unmarshal(bufBroad, &messageBroadcast)
 	require.NoError(t, err)
@@ -359,7 +359,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	bufPub, err := os.ReadFile(filePublish)
 	require.NoError(t, err)
 
-	var messagePublish method.Publish
+	var messagePublish method2.Publish
 
 	err = json.Unmarshal(bufPub, &messagePublish)
 	require.NoError(t, err)
@@ -372,7 +372,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	bufBroad, err := os.ReadFile(fileBroadcast)
 	require.NoError(t, err)
 
-	var messageBroadcast method.Broadcast
+	var messageBroadcast method2.Broadcast
 
 	err = json.Unmarshal(bufBroad, &messageBroadcast)
 	require.NoError(t, err)
@@ -386,7 +386,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	require.Equal(t, byteBroad, cliSocket.msg)
 
 	// Unmarshal the prepare message sent to other servers to verify its values
-	var sentPublish method.Publish
+	var sentPublish method2.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
 	require.NoError(t, err)
 
@@ -483,7 +483,7 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 	bufPub, err := os.ReadFile(filePublish)
 	require.NoError(t, err)
 
-	var messagePublish method.Publish
+	var messagePublish method2.Publish
 
 	err = json.Unmarshal(bufPub, &messagePublish)
 	require.NoError(t, err)
@@ -496,7 +496,7 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 	bufBroad, err := os.ReadFile(fileBroadcast)
 	require.NoError(t, err)
 
-	var messageBroadcast method.Broadcast
+	var messageBroadcast method2.Broadcast
 
 	err = json.Unmarshal(bufBroad, &messageBroadcast)
 	require.NoError(t, err)
@@ -510,7 +510,7 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 	require.Equal(t, byteBroad, cliSocket.msg)
 
 	// Unmarshal the failure message sent to other servers to verify its values
-	var sentPublish method.Publish
+	var sentPublish method2.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
 	require.NoError(t, err)
 
@@ -605,7 +605,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 	bufPub, err := os.ReadFile(filePublish)
 	require.NoError(t, err)
 
-	var messagePublish method.Publish
+	var messagePublish method2.Publish
 
 	err = json.Unmarshal(bufPub, &messagePublish)
 	require.NoError(t, err)
@@ -618,7 +618,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 	bufBroad, err := os.ReadFile(fileBroadcast)
 	require.NoError(t, err)
 
-	var messageBroadcast method.Broadcast
+	var messageBroadcast method2.Broadcast
 
 	err = json.Unmarshal(bufBroad, &messageBroadcast)
 	require.NoError(t, err)
@@ -632,7 +632,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 	require.Equal(t, byteBroad, cliSocket.msg)
 
 	// Unmarshal the prepare message sent to other servers to verify its values
-	var sentPublish method.Publish
+	var sentPublish method2.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
 	require.NoError(t, err)
 
@@ -731,7 +731,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	bufPub, err := os.ReadFile(filePublish)
 	require.NoError(t, err)
 
-	var messagePublish method.Publish
+	var messagePublish method2.Publish
 
 	err = json.Unmarshal(bufPub, &messagePublish)
 	require.NoError(t, err)
@@ -744,7 +744,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	bufBroad, err := os.ReadFile(fileBroadcast)
 	require.NoError(t, err)
 
-	var messageBroadcast method.Broadcast
+	var messageBroadcast method2.Broadcast
 
 	err = json.Unmarshal(bufBroad, &messageBroadcast)
 	require.NoError(t, err)
@@ -758,7 +758,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	require.Equal(t, byteBroad, cliSocket.msg)
 
 	// Unmarshal the propose message sent to other servers to verify its values
-	var sentPublish method.Publish
+	var sentPublish method2.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
 	require.NoError(t, err)
 
@@ -855,7 +855,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 	bufPub, err := os.ReadFile(filePublish)
 	require.NoError(t, err)
 
-	var messagePublish method.Publish
+	var messagePublish method2.Publish
 
 	err = json.Unmarshal(bufPub, &messagePublish)
 	require.NoError(t, err)
@@ -868,7 +868,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 	bufBroad, err := os.ReadFile(fileBroadcast)
 	require.NoError(t, err)
 
-	var messageBroadcast method.Broadcast
+	var messageBroadcast method2.Broadcast
 
 	err = json.Unmarshal(bufBroad, &messageBroadcast)
 	require.NoError(t, err)
@@ -882,7 +882,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 	require.Equal(t, byteBroad, cliSocket.msg)
 
 	// Unmarshal the prepare message sent to other servers to verify its values
-	var sentPublish method.Publish
+	var sentPublish method2.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
 	require.NoError(t, err)
 
@@ -982,7 +982,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	bufPub, err := os.ReadFile(filePublish)
 	require.NoError(t, err)
 
-	var messagePublish method.Publish
+	var messagePublish method2.Publish
 
 	err = json.Unmarshal(bufPub, &messagePublish)
 	require.NoError(t, err)
@@ -998,7 +998,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	bufBroad, err := os.ReadFile(fileBroadcast)
 	require.NoError(t, err)
 
-	var messageBroadcast method.Broadcast
+	var messageBroadcast method2.Broadcast
 
 	err = json.Unmarshal(bufBroad, &messageBroadcast)
 	require.NoError(t, err)
@@ -1012,7 +1012,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	require.Equal(t, byteBroad, cliSocket.msg)
 
 	// Unmarshal the learn message sent to other servers to verify its values
-	var sentPublish method.Publish
+	var sentPublish method2.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
 	require.NoError(t, err)
 
@@ -1104,7 +1104,7 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 	bufPub, err := os.ReadFile(filePublish)
 	require.NoError(t, err)
 
-	var messagePublish method.Publish
+	var messagePublish method2.Publish
 
 	err = json.Unmarshal(bufPub, &messagePublish)
 	require.NoError(t, err)
@@ -1117,7 +1117,7 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 	bufBroad, err := os.ReadFile(fileBroadcast)
 	require.NoError(t, err)
 
-	var messageBroadcast method.Broadcast
+	var messageBroadcast method2.Broadcast
 
 	err = json.Unmarshal(bufBroad, &messageBroadcast)
 	require.NoError(t, err)
@@ -1203,7 +1203,7 @@ func Test_Consensus_Publish_Failure(t *testing.T) {
 	bufPub, err := os.ReadFile(filePublish)
 	require.NoError(t, err)
 
-	var messagePublish method.Publish
+	var messagePublish method2.Publish
 
 	err = json.Unmarshal(bufPub, &messagePublish)
 	require.NoError(t, err)
@@ -1216,7 +1216,7 @@ func Test_Consensus_Publish_Failure(t *testing.T) {
 	bufBroad, err := os.ReadFile(fileBroadcast)
 	require.NoError(t, err)
 
-	var messageBroadcast method.Broadcast
+	var messageBroadcast method2.Broadcast
 
 	err = json.Unmarshal(bufBroad, &messageBroadcast)
 	require.NoError(t, err)
@@ -1275,7 +1275,7 @@ func Test_Publish_New_Message(t *testing.T) {
 	}
 
 	// Unmarshal the sent message
-	var publish method.Publish
+	var publish method2.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &publish)
 	require.NoError(t, err)
 
@@ -1332,7 +1332,7 @@ func Test_Timeout_Elect(t *testing.T) {
 	bufPub, err := os.ReadFile(filePublish)
 	require.NoError(t, err)
 
-	var messagePublish method.Publish
+	var messagePublish method2.Publish
 
 	err = json.Unmarshal(bufPub, &messagePublish)
 	require.NoError(t, err)
@@ -1356,7 +1356,7 @@ func Test_Timeout_Elect(t *testing.T) {
 	require.NotNil(t, fakeHub.fakeSock.msg)
 
 	// Unmarshal the failure message sent to other servers to verify its values
-	var sentPublish method.Publish
+	var sentPublish method2.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
 	require.NoError(t, err)
 
@@ -1448,7 +1448,7 @@ func Test_Timeout_Prepare(t *testing.T) {
 	bufPub, err := os.ReadFile(filePublish)
 	require.NoError(t, err)
 
-	var messagePublish method.Publish
+	var messagePublish method2.Publish
 
 	err = json.Unmarshal(bufPub, &messagePublish)
 	require.NoError(t, err)
@@ -1459,7 +1459,7 @@ func Test_Timeout_Prepare(t *testing.T) {
 	require.NoError(t, err)
 
 	// Verify that a prepare message was sent and empty the socket
-	var sentPrepare method.Publish
+	var sentPrepare method2.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPrepare)
 	require.NoError(t, err)
 
@@ -1486,7 +1486,7 @@ func Test_Timeout_Prepare(t *testing.T) {
 	require.NotNil(t, fakeHub.fakeSock.msg)
 
 	// Unmarshal the failure message sent to other servers to verify its values
-	var sentPublish method.Publish
+	var sentPublish method2.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
 	require.NoError(t, err)
 
@@ -1578,7 +1578,7 @@ func Test_Timeout_Promise(t *testing.T) {
 	bufPub, err := os.ReadFile(filePublish)
 	require.NoError(t, err)
 
-	var messagePublish method.Publish
+	var messagePublish method2.Publish
 
 	err = json.Unmarshal(bufPub, &messagePublish)
 	require.NoError(t, err)
@@ -1590,7 +1590,7 @@ func Test_Timeout_Promise(t *testing.T) {
 
 	// Verify that a promise message was sent and empty the socket
 	// Unmarshal the failure message sent to other servers to verify its values
-	var sentPromise method.Publish
+	var sentPromise method2.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPromise)
 	require.NoError(t, err)
 
@@ -1617,7 +1617,7 @@ func Test_Timeout_Promise(t *testing.T) {
 	require.NotNil(t, fakeHub.fakeSock.msg)
 
 	// Unmarshal the failure message sent to other servers to verify its values
-	var sentPublish method.Publish
+	var sentPublish method2.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
 	require.NoError(t, err)
 
@@ -1710,7 +1710,7 @@ func Test_Timeout_Propose(t *testing.T) {
 	bufPub, err := os.ReadFile(filePublish)
 	require.NoError(t, err)
 
-	var messagePublish method.Publish
+	var messagePublish method2.Publish
 
 	err = json.Unmarshal(bufPub, &messagePublish)
 	require.NoError(t, err)
@@ -1723,7 +1723,7 @@ func Test_Timeout_Propose(t *testing.T) {
 	require.NotNil(t, fakeHub.fakeSock.msg)
 	// Verify that a prepare message was sent and empty the socket
 	// Unmarshal the failure message sent to other servers to verify its values
-	var sentPropose method.Publish
+	var sentPropose method2.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPropose)
 	require.NoError(t, err)
 
@@ -1750,7 +1750,7 @@ func Test_Timeout_Propose(t *testing.T) {
 	require.NotNil(t, fakeHub.fakeSock.msg)
 
 	// Unmarshal the failure message sent to other servers to verify its values
-	var sentPublish method.Publish
+	var sentPublish method2.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
 	require.NoError(t, err)
 
@@ -1842,7 +1842,7 @@ func Test_Timeout_Accept(t *testing.T) {
 	bufPub, err := os.ReadFile(filePublish)
 	require.NoError(t, err)
 
-	var messagePublish method.Publish
+	var messagePublish method2.Publish
 
 	err = json.Unmarshal(bufPub, &messagePublish)
 	require.NoError(t, err)
@@ -1854,7 +1854,7 @@ func Test_Timeout_Accept(t *testing.T) {
 
 	// Verify that a promise message was sent and empty the socket
 	// Unmarshal the failure message sent to other servers to verify its values
-	var sentAccept method.Publish
+	var sentAccept method2.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentAccept)
 	require.NoError(t, err)
 
@@ -1881,7 +1881,7 @@ func Test_Timeout_Accept(t *testing.T) {
 	require.NotNil(t, fakeHub.fakeSock.msg)
 
 	// Unmarshal the failure message sent to other servers to verify its values
-	var sentPublish method.Publish
+	var sentPublish method2.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
 	require.NoError(t, err)
 
@@ -2018,7 +2018,7 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
 
 // GetPeersInfo implements channel.HubFunctionalities
-func (h *fakeHub) GetPeersInfo() []method.GreetServerParams {
+func (h *fakeHub) GetPeersInfo() []method2.GreetServerParams {
 	return nil
 }
 
@@ -2030,7 +2030,7 @@ func (h *fakeHub) GetServerNumber() int {
 	return 1
 }
 
-func (h *fakeHub) SendAndHandleMessage(msg method.Broadcast) error {
+func (h *fakeHub) SendAndHandleMessage(msg method2.Broadcast) error {
 	byteMsg, err := json.Marshal(msg)
 	if err != nil {
 		return err

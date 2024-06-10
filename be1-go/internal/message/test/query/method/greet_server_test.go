@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/method"
 	"testing"
 )
 

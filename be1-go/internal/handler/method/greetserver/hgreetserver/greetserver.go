@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/method"
+	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 )
 
@@ -69,11 +69,11 @@ func (h *Handler) SendGreetServer(socket socket.Socket) error {
 	}
 
 	serverGreet := &method.GreetServer{
-		Base: query.Base{
+		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: query.MethodGreetServer,
+			Method: mquery.MethodGreetServer,
 		},
 		Params: greetServerParams,
 	}

@@ -22,8 +22,8 @@ import (
 	"popstellar/internal/logger"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mauthentification"
+	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/validation"
@@ -146,7 +146,7 @@ func Test_Authenticate_User(t *testing.T) {
 	// adding the pop token to the list of the latest roll call
 	authCha.AddAttendee("OuAhDgVgD0M2PIMTs8wyqxkg7N_ScEQu87k35i4zCsg=")
 
-	var msg method.Publish
+	var msg method2.Publish
 
 	err = json.Unmarshal(bufCreatePub, &msg)
 	require.NoError(t, err)
@@ -286,7 +286,7 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 func (h *fakeHub) NotifyWitnessMessage(_ string, _ string, _ string) {}
 
 // GetPeersInfo implements channel.HubFunctionalities
-func (h *fakeHub) GetPeersInfo() []method.GreetServerParams {
+func (h *fakeHub) GetPeersInfo() []method2.GreetServerParams {
 	return nil
 }
 
@@ -300,7 +300,7 @@ func (h *fakeHub) GetServerNumber() int {
 	return 0
 }
 
-func (h *fakeHub) SendAndHandleMessage(_ method.Broadcast) error {
+func (h *fakeHub) SendAndHandleMessage(_ method2.Broadcast) error {
 	return nil
 }
 

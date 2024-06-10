@@ -8,9 +8,9 @@ import (
 	"popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata/mroot"
+	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/hub/standard_hub/hub_state"
@@ -169,7 +169,7 @@ func (h *Hub) Start() {
 			case id := <-h.closedSockets:
 				h.channelByID.ForEach(func(c channel.Channel) {
 					// dummy Unsubscribe message because it's only used for logging...
-					c.Unsubscribe(id, method.Unsubscribe{})
+					c.Unsubscribe(id, method2.Unsubscribe{})
 				})
 			case <-h.stop:
 				h.log.Info().Msg("stopping the hub")
@@ -204,7 +204,7 @@ func (h *Hub) GetServerNumber() int {
 
 // SendAndHandleMessage sends a publish message to all other known servers and
 // handle it
-func (h *Hub) SendAndHandleMessage(msg method.Broadcast) error {
+func (h *Hub) SendAndHandleMessage(msg method2.Broadcast) error {
 	byteMsg, err := json.Marshal(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to marshal publish message: %v", err)
@@ -236,18 +236,18 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 		return xerrors.Errorf("failed to marshal server public key: %v", err)
 	}
 
-	serverInfo := method.GreetServerParams{
+	serverInfo := method2.GreetServerParams{
 		PublicKey:     base64.URLEncoding.EncodeToString(pk),
 		ServerAddress: h.serverServerAddress,
 		ClientAddress: h.clientServerAddress,
 	}
 
-	serverGreet := &method.GreetServer{
-		Base: query.Base{
+	serverGreet := &method2.GreetServer{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: query.MethodGreetServer,
+			Method: mquery.MethodGreetServer,
 		},
 		Params: serverInfo,
 	}
@@ -302,7 +302,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 		return rpcErr
 	}
 
-	var queryBase query.Base
+	var queryBase mquery.Base
 
 	err = json.Unmarshal(byteMessage, &queryBase)
 	if err != nil {
@@ -316,14 +316,14 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	var handlerErr error
 
 	switch queryBase.Method {
-	case query.MethodPublish:
+	case mquery.MethodPublish:
 		id, handlerErr = h.handlePublish(socket, byteMessage)
 		h.sendHeartbeatToServers()
-	case query.MethodSubscribe:
+	case mquery.MethodSubscribe:
 		id, handlerErr = h.handleSubscribe(socket, byteMessage)
-	case query.MethodUnsubscribe:
+	case mquery.MethodUnsubscribe:
 		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
-	case query.MethodCatchUp:
+	case mquery.MethodCatchUp:
 		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
 	default:
 		err = manswer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
@@ -336,7 +336,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 		return err
 	}
 
-	if queryBase.Method == query.MethodCatchUp {
+	if queryBase.Method == mquery.MethodCatchUp {
 		socket.SendResult(id, msgs, nil)
 		return nil
 	}
@@ -384,7 +384,7 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		return rpcErr
 	}
 
-	var queryBase query.Base
+	var queryBase mquery.Base
 
 	err = json.Unmarshal(byteMessage, &queryBase)
 	if err != nil {
@@ -398,18 +398,18 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 	var handlerErr error
 
 	switch queryBase.Method {
-	case query.MethodGreetServer:
+	case mquery.MethodGreetServer:
 		handlerErr = h.handleGreetServer(socket, byteMessage)
-	case query.MethodPublish:
+	case mquery.MethodPublish:
 		id, handlerErr = h.handlePublish(socket, byteMessage)
 		h.sendHeartbeatToServers()
-	case query.MethodSubscribe:
+	case mquery.MethodSubscribe:
 		id, handlerErr = h.handleSubscribe(socket, byteMessage)
-	case query.MethodUnsubscribe:
+	case mquery.MethodUnsubscribe:
 		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
-	case query.MethodHeartbeat:
+	case mquery.MethodHeartbeat:
 		handlerErr = h.handleHeartbeat(socket, byteMessage)
-	case query.MethodGetMessagesById:
+	case mquery.MethodGetMessagesById:
 		msgsByChannel, id, handlerErr = h.handleGetMessagesById(socket, byteMessage)
 
 	default:
@@ -424,7 +424,7 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		return err
 	}
 
-	if queryBase.Method == query.MethodGetMessagesById {
+	if queryBase.Method == mquery.MethodGetMessagesById {
 		socket.SendResult(id, nil, msgsByChannel)
 		return nil
 	}
@@ -457,8 +457,8 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[string][]string) error {
 	queryId := h.queries.GetNextID()
 
-	getMessagesById := method.GetMessagesById{
-		Base: query.Base{
+	getMessagesById := method2.GetMessagesById{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
@@ -482,8 +482,8 @@ func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[s
 
 // sendHeartbeatToServers sends a heartbeat message to all servers
 func (h *Hub) sendHeartbeatToServers() {
-	heartbeatMessage := method.Heartbeat{
-		Base: query.Base{
+	heartbeatMessage := method2.Heartbeat{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
@@ -594,7 +594,7 @@ func (h *Hub) NotifyWitnessMessage(messageId string, publicKey string, signature
 	h.hubInbox.AddWitnessSignature(messageId, publicKey, signature)
 }
 
-func (h *Hub) GetPeersInfo() []method.GreetServerParams {
+func (h *Hub) GetPeersInfo() []method2.GreetServerParams {
 	return h.peers.GetAllPeersInfo()
 }
 

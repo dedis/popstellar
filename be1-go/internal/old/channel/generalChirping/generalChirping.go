@@ -8,9 +8,9 @@ import (
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mchirp"
+	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/registry"
@@ -59,7 +59,7 @@ func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.
 // ---
 
 // Subscribe is used to handle a subscribe message from the client.
-func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
+func (c *Channel) Subscribe(socket socket.Socket, msg method2.Subscribe) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(msg.ID)).
 		Msg("received a subscribe")
@@ -69,7 +69,7 @@ func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
 }
 
 // Unsubscribe is used to handle an unsubscribe message.
-func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
+func (c *Channel) Unsubscribe(socketID string, msg method2.Unsubscribe) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(msg.ID)).
 		Msg("received a unsubscribe")
@@ -83,7 +83,7 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 }
 
 // Publish is used to handle a publish message.
-func (c *Channel) Publish(msg method.Publish, socket socket.Socket) error {
+func (c *Channel) Publish(msg method2.Publish, socket socket.Socket) error {
 	c.log.Error().
 		Str(msgID, strconv.Itoa(msg.ID)).
 		Msg("nothing should be published in the general")
@@ -91,7 +91,7 @@ func (c *Channel) Publish(msg method.Publish, socket socket.Socket) error {
 }
 
 // Catchup is used to handle a catchup message.
-func (c *Channel) Catchup(msg method.Catchup) []mmessage.Message {
+func (c *Channel) Catchup(msg method2.Catchup) []mmessage.Message {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(msg.ID)).
 		Msg("received a catchup")
@@ -99,7 +99,7 @@ func (c *Channel) Catchup(msg method.Catchup) []mmessage.Message {
 }
 
 // Broadcast is used to handle broadcast messages.
-func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
+func (c *Channel) Broadcast(broadcast method2.Broadcast, socket socket.Socket) error {
 	err := c.VerifyBroadcastMessage(broadcast)
 	if err != nil {
 		return xerrors.Errorf("failed to verify broadcast message on an "+
@@ -171,7 +171,7 @@ func (c *Channel) processDeleteChirp(msg mmessage.Message, msgData interface{},
 }
 
 // VerifyBroadcastMessage checks if a Broadcast message is valid
-func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
+func (c *Channel) VerifyBroadcastMessage(broadcast method2.Broadcast) error {
 	c.log.Info().Msg("received broadcast")
 
 	// Check if the structure of the message is correct
@@ -229,12 +229,12 @@ func (c *Channel) broadcastToAllClients(msg mmessage.Message) error {
 		Str(msgID, msg.MessageID).
 		Msg("broadcast new chirp to all clients")
 
-	rpcMessage := method.Broadcast{
-		Base: query.Base{
+	rpcMessage := method2.Broadcast{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: query.MethodBroadcast,
+			Method: mquery.MethodBroadcast,
 		},
 		Params: struct {
 			Channel string           `json:"channel"`

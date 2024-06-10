@@ -12,9 +12,9 @@ import (
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mlao"
+	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/validation"
@@ -54,7 +54,7 @@ func TestLAOChannel_Subscribe(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var message method.Subscribe
+	var message method2.Subscribe
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
@@ -86,7 +86,7 @@ func TestLAOChannel_Unsubscribe(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var message method.Unsubscribe
+	var message method2.Unsubscribe
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
@@ -119,7 +119,7 @@ func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var message method.Unsubscribe
+	var message method2.Unsubscribe
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
@@ -169,11 +169,11 @@ func TestLAOChannel_Broadcast(t *testing.T) {
 	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
-	var message method.Broadcast
+	var message method2.Broadcast
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
-	message.Base = query.Base{
+	message.Base = mquery.Base{
 		JSONRPCBase: jsonrpc.JSONRPCBase{
 			JSONRPC: "2.0",
 		},
@@ -230,7 +230,7 @@ func TestLAOChannel_Catchup(t *testing.T) {
 	}
 
 	// Compute the catchup method
-	catchupAnswer := channel.Catchup(method.Catchup{ID: 0})
+	catchupAnswer := channel.Catchup(method2.Catchup{ID: 0})
 
 	// Change the greeting message id to make it easier to check
 	catchupAnswer[1] = mmessage.Message{MessageID: "1"}
@@ -279,7 +279,7 @@ func TestLAOChannel_Publish_LaoUpdate(t *testing.T) {
 	bufPub, err := os.ReadFile(filePublish)
 	require.NoError(t, err)
 
-	var messagePublish method.Publish
+	var messagePublish method2.Publish
 
 	err = json.Unmarshal(bufPub, &messagePublish)
 	require.NoError(t, err)
@@ -357,7 +357,7 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 	bufStatePub, err := os.ReadFile(fileStatePublish)
 	require.NoError(t, err)
 
-	var messageStatePublish method.Publish
+	var messageStatePublish method2.Publish
 
 	err = json.Unmarshal(bufStatePub, &messageStatePublish)
 	require.NoError(t, err)
@@ -434,7 +434,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 	bufCreatePub, err := os.ReadFile(fileCreatePub)
 	require.NoError(t, err)
 
-	var messageCreatePub method.Publish
+	var messageCreatePub method2.Publish
 
 	err = json.Unmarshal(bufCreatePub, &messageCreatePub)
 	require.NoError(t, err)
@@ -603,7 +603,7 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 	bufPub, err := os.ReadFile(filePublish)
 	require.NoError(t, err)
 
-	var messagePublish method.Publish
+	var messagePublish method2.Publish
 
 	err = json.Unmarshal(bufPub, &messagePublish)
 	require.NoError(t, err)
@@ -629,7 +629,7 @@ func TestLAOChannel_Sends_Greeting(t *testing.T) {
 	channel, err := NewChannel("/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
 	require.NoError(t, err)
 
-	catchupAnswer := channel.Catchup(method.Catchup{ID: 0})
+	catchupAnswer := channel.Catchup(method2.Catchup{ID: 0})
 	// should contain the creation message and the LAO greet
 	require.Len(t, catchupAnswer, 2)
 
@@ -666,7 +666,7 @@ func Test_LAOChannel_Witness_Message(t *testing.T) {
 
 	// Publish witness message and catchup on channel to get the message back
 	require.NoError(t, channel.Publish(sampleWitnessMessagePublish, nil))
-	catchupAnswer := channel.Catchup(method.Catchup{ID: 0})
+	catchupAnswer := channel.Catchup(method2.Catchup{ID: 0})
 
 	// Check that the witness signature was added to the message
 	require.Equal(t, 1, len(catchupAnswer[2].WitnessSignatures))
@@ -689,7 +689,7 @@ func Test_LAOChannel_Witness_Message_Not_Received_Yet(t *testing.T) {
 	// Publish roll_call_create message
 	require.NoError(t, channel.Publish(sampleRollCallCreatePublish, nil))
 
-	catchupAnswer := channel.Catchup(method.Catchup{ID: 0})
+	catchupAnswer := channel.Catchup(method2.Catchup{ID: 0})
 
 	// Check that the witness signature was added to the message
 	require.Equal(t, 1, len(catchupAnswer[3].WitnessSignatures))
@@ -810,19 +810,19 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
 
 // GetPeersInfo implements channel.HubFunctionalities
-func (h *fakeHub) GetPeersInfo() []method.GreetServerParams {
-	peer1 := method.GreetServerParams{
+func (h *fakeHub) GetPeersInfo() []method2.GreetServerParams {
+	peer1 := method2.GreetServerParams{
 		PublicKey:     "",
 		ClientAddress: "wss://localhost:9002/client",
 		ServerAddress: "",
 	}
 
-	peer2 := method.GreetServerParams{
+	peer2 := method2.GreetServerParams{
 		PublicKey:     "",
 		ClientAddress: "wss://localhost:9004/client",
 		ServerAddress: "",
 	}
-	return []method.GreetServerParams{peer1, peer2}
+	return []method2.GreetServerParams{peer1, peer2}
 }
 
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
@@ -833,7 +833,7 @@ func (h *fakeHub) GetServerNumber() int {
 	return 0
 }
 
-func (h *fakeHub) SendAndHandleMessage(msg method.Broadcast) error {
+func (h *fakeHub) SendAndHandleMessage(msg method2.Broadcast) error {
 	return nil
 }
 
@@ -906,8 +906,8 @@ var sampleRollCallCreate = mmessage.Message{
 	WitnessSignatures: nil,
 }
 
-var sampleRollCallCreatePublish = method.Publish{
-	Base: query.Base{
+var sampleRollCallCreatePublish = method2.Publish{
+	Base: mquery.Base{
 		JSONRPCBase: jsonrpc.JSONRPCBase{
 			JSONRPC: "2.0",
 		},
@@ -930,8 +930,8 @@ var sampleWitnessMessage = mmessage.Message{
 	MessageID: "FBVnOu7SeIXWUstgFyPkdHmnv36dtxLE7yb8n4v1D6k=",
 }
 
-var sampleWitnessMessagePublish = method.Publish{
-	Base: query.Base{
+var sampleWitnessMessagePublish = method2.Publish{
+	Base: mquery.Base{
 		JSONRPCBase: jsonrpc.JSONRPCBase{
 			JSONRPC: "2.0",
 		},
@@ -949,7 +949,7 @@ var sampleWitnessMessagePublish = method.Publish{
 // createPublish is a helper function that create a Publish message
 // containing a message data with valid signature and ids
 func createPublish(t *testing.T, sender keypair, laoId string,
-	data []byte) method.Publish {
+	data []byte) method2.Publish {
 
 	data64 := base64.URLEncoding.EncodeToString(data)
 	senderPk := base64.URLEncoding.EncodeToString(sender.publicBuf)
@@ -964,8 +964,8 @@ func createPublish(t *testing.T, sender keypair, laoId string,
 		WitnessSignatures: nil,
 	}
 
-	publishMsg := method.Publish{
-		Base: query.Base{
+	publishMsg := method2.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
@@ -985,7 +985,7 @@ func createPublish(t *testing.T, sender keypair, laoId string,
 }
 
 func createRollCallCreate(t *testing.T, sender keypair,
-	laoId string) (method.Publish, string) {
+	laoId string) (method2.Publish, string) {
 
 	now := time.Now().Unix()
 	rollcallName := "Roll Call"
@@ -1009,7 +1009,7 @@ func createRollCallCreate(t *testing.T, sender keypair,
 }
 
 func createRollCallOpen(t *testing.T, sender keypair,
-	laoId string, rollcallId string) method.Publish {
+	laoId string, rollcallId string) method2.Publish {
 
 	openAt := time.Now().Unix()
 	updateId := mmessage.Hash("R", laoId, rollcallId, strconv.FormatInt(openAt, 10))
@@ -1029,7 +1029,7 @@ func createRollCallOpen(t *testing.T, sender keypair,
 }
 
 func createRollCallClose(t *testing.T, sender keypair,
-	laoId string, openId string) method.Publish {
+	laoId string, openId string) method2.Publish {
 
 	closeAt := time.Now().Unix()
 	updateId := mmessage.Hash("R", laoId, openId, strconv.FormatInt(closeAt, 10))

@@ -10,9 +10,9 @@ import (
 	popstellar "popstellar/internal/logger"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mlao"
+	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/authentication"
@@ -157,7 +157,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg mmessage.M
 // ---
 
 // Subscribe is used to handle a subscribe message from the client.
-func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
+func (c *Channel) Subscribe(socket socket.Socket, msg method2.Subscribe) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(msg.ID)).
 		Msg("received a subscribe")
@@ -167,7 +167,7 @@ func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
 }
 
 // Unsubscribe is used to handle an unsubscribe message.
-func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
+func (c *Channel) Unsubscribe(socketID string, msg method2.Unsubscribe) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(msg.ID)).
 		Msg("received an unsubscribe")
@@ -182,7 +182,7 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 }
 
 // Publish handles publish messages for the LAO channel.
-func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
+func (c *Channel) Publish(publish method2.Publish, socket socket.Socket) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
 		Msg("received a publish")
@@ -201,7 +201,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 }
 
 // Catchup is used to handle a catchup message.
-func (c *Channel) Catchup(catchup method.Catchup) []mmessage.Message {
+func (c *Channel) Catchup(catchup method2.Catchup) []mmessage.Message {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(catchup.ID)).
 		Msg("received a catchup")
@@ -210,7 +210,7 @@ func (c *Channel) Catchup(catchup method.Catchup) []mmessage.Message {
 }
 
 // Broadcast is used to handle a broadcast message.
-func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
+func (c *Channel) Broadcast(broadcast method2.Broadcast, socket socket.Socket) error {
 	c.log.Info().Msg("received a broadcast")
 
 	err := c.verifyMessage(broadcast.Params.Message)
@@ -572,8 +572,8 @@ func (c *Channel) broadcastToAllClients(msg mmessage.Message) error {
 		Str(msgID, msg.MessageID).
 		Msg("broadcasting message to all clients")
 
-	rpcMessage := method.Broadcast{
-		Base: query.Base{
+	rpcMessage := method2.Broadcast{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},

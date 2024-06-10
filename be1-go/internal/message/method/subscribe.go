@@ -1,10 +1,10 @@
 package method
 
-import "popstellar/internal/message/query"
+import "popstellar/internal/message/mquery"
 
 // Subscribe defines a JSON RPC subscribe message
 type Subscribe struct {
-	query.Base
+	mquery.Base
 
 	ID int `json:"id"`
 

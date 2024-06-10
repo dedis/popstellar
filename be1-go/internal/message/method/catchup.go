@@ -1,10 +1,10 @@
 package method
 
-import "popstellar/internal/message/query"
+import "popstellar/internal/message/mquery"
 
 // Catchup define a JSON RPC catchup message
 type Catchup struct {
-	query.Base
+	mquery.Base
 
 	ID int `json:"id"`
 

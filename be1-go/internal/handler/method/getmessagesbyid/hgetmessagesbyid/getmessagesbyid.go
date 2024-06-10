@@ -3,8 +3,8 @@ package hgetmessagesbyid
 import (
 	"encoding/json"
 	"popstellar/internal/errors"
+	"popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
 )
 

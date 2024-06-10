@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 	"sync"
 )
@@ -125,7 +125,7 @@ func (s *Subscribers) IsSubscribed(channelPath string, socket socket.Socket) (bo
 
 func (s *Subscribers) BroadcastToAllClients(msg mmessage.Message, channel string) error {
 	rpcMessage := method.Broadcast{
-		Base: query.Base{
+		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},

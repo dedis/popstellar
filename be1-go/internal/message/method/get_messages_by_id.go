@@ -1,12 +1,12 @@
 package method
 
 import (
-	"popstellar/internal/message/query"
+	"popstellar/internal/message/mquery"
 )
 
 // GetMessagesById defines a JSON RPC getMessagesById message
 type GetMessagesById struct {
-	query.Base
+	mquery.Base
 
 	ID int `json:"id"`
 

@@ -2,7 +2,7 @@ package method
 
 import (
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query"
+	"popstellar/internal/message/mquery"
 )
 
 type ParamsRumor struct {
@@ -13,7 +13,7 @@ type ParamsRumor struct {
 
 // Rumor defines a JSON RPC rumor message
 type Rumor struct {
-	query.Base
+	mquery.Base
 	ID     int         `json:"id"`
 	Params ParamsRumor `json:"params"`
 }

@@ -1,7 +1,7 @@
 package hub_state
 
 import (
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/method"
 	"sync"
 
 	"github.com/rs/zerolog"

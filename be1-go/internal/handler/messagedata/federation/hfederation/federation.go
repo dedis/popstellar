@@ -15,9 +15,9 @@ import (
 	"popstellar/internal/logger"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mfederation"
+	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/validation"
 	"strings"
@@ -267,14 +267,14 @@ func (h *Handler) handleInit(msg mmessage.Message, channelPath string) error {
 		return err
 	}
 
-	subscribeMsg := method.Subscribe{
-		Base: query.Base{
+	subscribeMsg := method2.Subscribe{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: "subscribe",
 		},
-		Params: method.SubscribeParams{Channel: channelPath},
+		Params: method2.SubscribeParams{Channel: channelPath},
 	}
 
 	subscribeBytes, err := json.Marshal(subscribeMsg)
@@ -503,14 +503,14 @@ func (h *Handler) createMessage(data messagedata.MessageData) (mmessage.Message,
 }
 
 func (h *Handler) publishTo(msg mmessage.Message, channelPath string) error {
-	publishMsg := method.Publish{
-		Base: query.Base{
+	publishMsg := method2.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: "publish",
 		},
-		Params: method.PublishParams{
+		Params: method2.PublishParams{
 			Channel: channelPath,
 			Message: msg,
 		},

@@ -27,8 +27,8 @@ import (
 	"popstellar/internal/handler/method/unsubscribe/hunsubscribe"
 	"popstellar/internal/handler/query/hquery"
 	"popstellar/internal/logger"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
+	method2 "popstellar/internal/message/method"
+	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
@@ -54,7 +54,7 @@ type Sockets interface {
 
 type Repository interface {
 	// GetAndIncrementMyRumor return false if the last rumor is empty otherwise returns the new rumor to send and create the next rumor
-	GetAndIncrementMyRumor() (bool, method.Rumor, error)
+	GetAndIncrementMyRumor() (bool, method2.Rumor, error)
 
 	GetParamsHeartbeat() (map[string][]string, error)
 }
@@ -68,7 +68,7 @@ type GreetServerSender interface {
 }
 
 type RumorSender interface {
-	SendRumor(socket socket.Socket, rumor method.Rumor)
+	SendRumor(socket socket.Socket, rumor method2.Rumor)
 }
 
 type Hub struct {
@@ -332,8 +332,8 @@ func (h *Hub) runHeartbeat() {
 
 // sendHeartbeat sends a heartbeat message to all servers
 func (h *Hub) sendHeartbeat() error {
-	heartbeatMessage := method.Heartbeat{
-		Base: query.Base{
+	heartbeatMessage := method2.Heartbeat{
+		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},

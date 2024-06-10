@@ -2,12 +2,12 @@ package method
 
 import (
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query"
+	"popstellar/internal/message/mquery"
 )
 
 // Broadcast defines a JSON RPC broadcast message
 type Broadcast struct {
-	query.Base
+	mquery.Base
 
 	Params BroadcastParams `json:"params"`
 }

@@ -3,7 +3,7 @@ package hquery
 import (
 	"encoding/json"
 	"popstellar/internal/errors"
-	"popstellar/internal/message/query"
+	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 )
 
@@ -33,7 +33,7 @@ func New(handlers MethodHandlers) *Handler {
 }
 
 func (h *Handler) Handle(socket socket.Socket, msg []byte) error {
-	var queryBase query.Base
+	var queryBase mquery.Base
 
 	err := json.Unmarshal(msg, &queryBase)
 	if err != nil {
@@ -43,21 +43,21 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) error {
 	var id *int = nil
 
 	switch queryBase.Method {
-	case query.MethodCatchUp:
+	case mquery.MethodCatchUp:
 		id, err = h.handlers.Catchup.Handle(socket, msg)
-	case query.MethodGetMessagesById:
+	case mquery.MethodGetMessagesById:
 		id, err = h.handlers.GetMessagesbyid.Handle(socket, msg)
-	case query.MethodGreetServer:
+	case mquery.MethodGreetServer:
 		_, err = h.handlers.Greetserver.Handle(socket, msg)
-	case query.MethodHeartbeat:
+	case mquery.MethodHeartbeat:
 		_, err = h.handlers.Heartbeat.Handle(socket, msg)
-	case query.MethodPublish:
+	case mquery.MethodPublish:
 		id, err = h.handlers.Publish.Handle(socket, msg)
-	case query.MethodSubscribe:
+	case mquery.MethodSubscribe:
 		id, err = h.handlers.Subscribe.Handle(socket, msg)
-	case query.MethodUnsubscribe:
+	case mquery.MethodUnsubscribe:
 		id, err = h.handlers.Unsubscribe.Handle(socket, msg)
-	case query.MethodRumor:
+	case mquery.MethodRumor:
 		id, err = h.handlers.Rumor.Handle(socket, msg)
 	default:
 		err = errors.NewInvalidActionError("unexpected method: '%s'", queryBase.Method)

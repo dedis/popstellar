@@ -2,7 +2,7 @@ package state
 
 import (
 	"popstellar/internal/errors"
-	"popstellar/internal/message/query/method"
+	method2 "popstellar/internal/message/method"
 	"sync"
 
 	"github.com/rs/zerolog"
@@ -15,8 +15,8 @@ type Queries struct {
 	// query not yet answered, else true.
 	state map[int]bool
 	// getMessagesByIdQueries stores the server's getMessagesByIds queries by their ID.
-	getMessagesByIdQueries map[int]method.GetMessagesById
-	getRumorQueries        map[int]method.Rumor
+	getMessagesByIdQueries map[int]method2.GetMessagesById
+	getRumorQueries        map[int]method2.Rumor
 
 	// nextID store the ID of the next query
 	nextID int
@@ -28,8 +28,8 @@ type Queries struct {
 func NewQueries(log *zerolog.Logger) *Queries {
 	return &Queries{
 		state:                  make(map[int]bool),
-		getMessagesByIdQueries: make(map[int]method.GetMessagesById),
-		getRumorQueries:        make(map[int]method.Rumor),
+		getMessagesByIdQueries: make(map[int]method2.GetMessagesById),
+		getRumorQueries:        make(map[int]method2.Rumor),
 		log:                    log,
 	}
 }
@@ -77,7 +77,7 @@ func (q *Queries) SetQueryReceived(id int) error {
 }
 
 // AddQuery adds the given query to the table
-func (q *Queries) AddQuery(id int, query method.GetMessagesById) {
+func (q *Queries) AddQuery(id int, query method2.GetMessagesById) {
 	q.Lock()
 	defer q.Unlock()
 
@@ -85,7 +85,7 @@ func (q *Queries) AddQuery(id int, query method.GetMessagesById) {
 	q.state[id] = false
 }
 
-func (q *Queries) AddRumorQuery(id int, query method.Rumor) {
+func (q *Queries) AddRumorQuery(id int, query method2.Rumor) {
 	q.Lock()
 	defer q.Unlock()
 
@@ -102,13 +102,13 @@ func (q *Queries) IsRumorQuery(queryID int) bool {
 	return ok
 }
 
-func (q *Queries) GetRumorFromPastQuery(queryID int) (method.Rumor, bool) {
+func (q *Queries) GetRumorFromPastQuery(queryID int) (method2.Rumor, bool) {
 	q.Lock()
 	defer q.Unlock()
 
 	rumor, ok := q.getRumorQueries[queryID]
 	if !ok {
-		return method.Rumor{}, false
+		return method2.Rumor{}, false
 	}
 
 	return rumor, true

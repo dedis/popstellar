@@ -1,10 +1,10 @@
 package method
 
-import "popstellar/internal/message/query"
+import "popstellar/internal/message/mquery"
 
 // Unsubscribe defines a JSON RPC unsubscribe message
 type Unsubscribe struct {
-	query.Base
+	mquery.Base
 
 	ID int `json:"id"`
 

@@ -4,26 +4,26 @@ import (
 	"encoding/json"
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
+	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/mquery"
 	"testing"
 )
 
-func NewGreetServerQuery(t *testing.T, publicKey, clientAddress, serverAddress string) (method.GreetServer, []byte) {
-	serverInfo := method.GreetServerParams{
+func NewGreetServerQuery(t *testing.T, publicKey, clientAddress, serverAddress string) (method2.GreetServer, []byte) {
+	serverInfo := method2.GreetServerParams{
 		PublicKey:     publicKey,
 		ServerAddress: clientAddress,
 		ClientAddress: serverAddress,
 	}
 
-	greetServer := method.GreetServer{
-		Base: query.Base{
+	greetServer := method2.GreetServer{
+		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodGreetServer,
+			Method: mquery.MethodGreetServer,
 		},
 		Params: serverInfo,
 	}
@@ -35,16 +35,16 @@ func NewGreetServerQuery(t *testing.T, publicKey, clientAddress, serverAddress s
 }
 
 func NewSubscribeQuery(t *testing.T, queryID int, channel string) []byte {
-	subscribe := method.Subscribe{
-		Base: query.Base{
+	subscribe := method2.Subscribe{
+		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodSubscribe,
+			Method: mquery.MethodSubscribe,
 		},
 		ID:     queryID,
-		Params: method.SubscribeParams{Channel: channel},
+		Params: method2.SubscribeParams{Channel: channel},
 	}
 
 	subscribeBuf, err := json.Marshal(&subscribe)
@@ -54,16 +54,16 @@ func NewSubscribeQuery(t *testing.T, queryID int, channel string) []byte {
 }
 
 func NewUnsubscribeQuery(t *testing.T, queryID int, channel string) []byte {
-	unsubscribe := method.Unsubscribe{
-		Base: query.Base{
+	unsubscribe := method2.Unsubscribe{
+		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodUnsubscribe,
+			Method: mquery.MethodUnsubscribe,
 		},
 		ID:     queryID,
-		Params: method.UnsubscribeParams{Channel: channel},
+		Params: method2.UnsubscribeParams{Channel: channel},
 	}
 
 	unsubscribeBuf, err := json.Marshal(&unsubscribe)
@@ -73,16 +73,16 @@ func NewUnsubscribeQuery(t *testing.T, queryID int, channel string) []byte {
 }
 
 func NewPublishQuery(t *testing.T, queryID int, channel string, msg mmessage.Message) []byte {
-	publish := method.Publish{
-		Base: query.Base{
+	publish := method2.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodPublish,
+			Method: mquery.MethodPublish,
 		},
 		ID: queryID,
-		Params: method.PublishParams{
+		Params: method2.PublishParams{
 			Channel: channel,
 			Message: msg,
 		},
@@ -95,16 +95,16 @@ func NewPublishQuery(t *testing.T, queryID int, channel string, msg mmessage.Mes
 }
 
 func NewCatchupQuery(t *testing.T, queryID int, channel string) []byte {
-	catchup := method.Catchup{
-		Base: query.Base{
+	catchup := method2.Catchup{
+		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodCatchUp,
+			Method: mquery.MethodCatchUp,
 		},
 		ID:     queryID,
-		Params: method.CatchupParams{Channel: channel},
+		Params: method2.CatchupParams{Channel: channel},
 	}
 
 	catchupBuf, err := json.Marshal(&catchup)
@@ -114,13 +114,13 @@ func NewCatchupQuery(t *testing.T, queryID int, channel string) []byte {
 }
 
 func NewHeartbeatQuery(t *testing.T, msgIDsByChannel map[string][]string) []byte {
-	heartbeat := method.Heartbeat{
-		Base: query.Base{
+	heartbeat := method2.Heartbeat{
+		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodHeartbeat,
+			Method: mquery.MethodHeartbeat,
 		},
 		Params: msgIDsByChannel,
 	}
@@ -132,13 +132,13 @@ func NewHeartbeatQuery(t *testing.T, msgIDsByChannel map[string][]string) []byte
 }
 
 func NewGetMessagesByIDQuery(t *testing.T, queryID int, msgIDsByChannel map[string][]string) []byte {
-	getMessagesByID := method.GetMessagesById{
-		Base: query.Base{
+	getMessagesByID := method2.GetMessagesById{
+		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodGetMessagesById,
+			Method: mquery.MethodGetMessagesById,
 		},
 		ID:     queryID,
 		Params: msgIDsByChannel,
@@ -151,15 +151,15 @@ func NewGetMessagesByIDQuery(t *testing.T, queryID int, msgIDsByChannel map[stri
 }
 
 func NewRumorQuery(t *testing.T, queryID int, senderID string, rumorID int, messages map[string][]mmessage.Message) []byte {
-	rumor := method.Rumor{
-		Base: query.Base{
+	rumor := method2.Rumor{
+		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: query.MethodRumor,
+			Method: mquery.MethodRumor,
 		},
 		ID: queryID,
-		Params: method.ParamsRumor{
+		Params: method2.ParamsRumor{
 			SenderID: senderID,
 			RumorID:  rumorID,
 			Messages: messages,

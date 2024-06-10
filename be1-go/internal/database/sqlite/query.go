@@ -6,9 +6,9 @@ import (
 	"errors"
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/mquery"
 	"strings"
 )
 
@@ -330,7 +330,7 @@ func newRumor(rumorID int, sender string, messages map[string][]mmessage.Message
 	}
 
 	return method.Rumor{
-		Base: query.Base{
+		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},

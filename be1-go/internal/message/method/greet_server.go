@@ -1,6 +1,6 @@
 package method
 
-import "popstellar/internal/message/query"
+import "popstellar/internal/message/mquery"
 
 type GreetServerParams struct {
 	PublicKey     string `json:"public_key"`
@@ -10,6 +10,6 @@ type GreetServerParams struct {
 
 // GreetServer defines a JSON RPC greetServer message
 type GreetServer struct {
-	query.Base
+	mquery.Base
 	Params GreetServerParams `json:"params"`
 }

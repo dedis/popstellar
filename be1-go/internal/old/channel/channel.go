@@ -1,8 +1,8 @@
 package channel
 
 import (
+	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/validation"
 	"sync"
@@ -20,21 +20,21 @@ type LaoFactory func(channelID string, hub HubFunctionalities, msg mmessage.Mess
 // Channel represents a PoP channel - like a LAO.
 type Channel interface {
 	// Subscribe is used to handle a subscribe message.
-	Subscribe(socket socket.Socket, msg method.Subscribe) error
+	Subscribe(socket socket.Socket, msg method2.Subscribe) error
 
 	// Unsubscribe is used to handle an unsubscribe message.
-	Unsubscribe(socketID string, msg method.Unsubscribe) error
+	Unsubscribe(socketID string, msg method2.Unsubscribe) error
 
 	// Publish is used to handle a publish message. The sender's socket may be
 	// needed when a message creates a channel, to know if the server should
 	// catchup on this channel or not.
-	Publish(msg method.Publish, socket socket.Socket) error
+	Publish(msg method2.Publish, socket socket.Socket) error
 
 	// Catchup is used to handle a catchup message.
-	Catchup(msg method.Catchup) []mmessage.Message
+	Catchup(msg method2.Catchup) []mmessage.Message
 
 	// Broadcast is used to handle a broadcast message.
-	Broadcast(msg method.Broadcast, socket socket.Socket) error
+	Broadcast(msg method2.Broadcast, socket socket.Socket) error
 }
 
 // NewSockets returns a new initialized Sockets
@@ -98,15 +98,15 @@ type HubFunctionalities interface {
 	GetSchemaValidator() validation.SchemaValidator
 	NotifyNewChannel(channelID string, channel Channel, socket socket.Socket)
 	GetServerNumber() int
-	SendAndHandleMessage(method.Broadcast) error
+	SendAndHandleMessage(method2.Broadcast) error
 	NotifyWitnessMessage(messageId string, publicKey string, signature string)
 	GetClientServerAddress() string
-	GetPeersInfo() []method.GreetServerParams
+	GetPeersInfo() []method2.GreetServerParams
 }
 
 // Broadcastable defines a channel that can broadcast
 type Broadcastable interface {
-	Broadcast(msg method.Broadcast, _ socket.Socket) error
+	Broadcast(msg method2.Broadcast, _ socket.Socket) error
 	GetChannelPath() string
 }
 

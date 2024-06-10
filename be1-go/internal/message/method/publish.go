@@ -2,12 +2,12 @@ package method
 
 import (
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query"
+	"popstellar/internal/message/mquery"
 )
 
 // Publish defines a JSON RPC publish message
 type Publish struct {
-	query.Base
+	mquery.Base
 
 	ID int `json:"id"`
 

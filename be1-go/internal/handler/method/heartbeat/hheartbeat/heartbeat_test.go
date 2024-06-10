@@ -7,7 +7,7 @@ import (
 	"golang.org/x/xerrors"
 	"popstellar/internal/generator"
 	mocks2 "popstellar/internal/handler/method/heartbeat/hheartbeat/mocks"
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/method"
 	"popstellar/internal/network/socket/mocks"
 	"testing"
 )

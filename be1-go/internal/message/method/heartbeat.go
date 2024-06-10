@@ -1,11 +1,11 @@
 package method
 
 import (
-	"popstellar/internal/message/query"
+	"popstellar/internal/message/mquery"
 )
 
 // Heartbeat defines a JSON RPC heartbeat message
 type Heartbeat struct {
-	query.Base
+	mquery.Base
 	Params map[string][]string `json:"params"`
 }

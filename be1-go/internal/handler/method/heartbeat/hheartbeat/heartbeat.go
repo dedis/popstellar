@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
+	method2 "popstellar/internal/message/method"
+	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 )
 
 type Queries interface {
 	GetNextID() int
-	AddQuery(ID int, query method.GetMessagesById)
+	AddQuery(ID int, query method2.GetMessagesById)
 }
 
 type Repository interface {
@@ -32,7 +32,7 @@ func New(queries Queries, db Repository) *Handler {
 }
 
 func (h *Handler) Handle(socket socket.Socket, byteMessage []byte) (*int, error) {
-	var heartbeat method.Heartbeat
+	var heartbeat method2.Heartbeat
 	err := json.Unmarshal(byteMessage, &heartbeat)
 	if err != nil {
 		return nil, errors.NewJsonUnmarshalError(err.Error())
@@ -49,12 +49,12 @@ func (h *Handler) Handle(socket socket.Socket, byteMessage []byte) (*int, error)
 
 	queryId := h.queries.GetNextID()
 
-	getMessagesById := method.GetMessagesById{
-		Base: query.Base{
+	getMessagesById := method2.GetMessagesById{
+		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: query.MethodGetMessagesById,
+			Method: mquery.MethodGetMessagesById,
 		},
 		ID:     queryId,
 		Params: result,

@@ -14,9 +14,9 @@ import (
 	"popstellar/internal/handler/messagedata/federation/hfederation/mocks"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mfederation"
+	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/mquery"
 	mock2 "popstellar/internal/network/socket/mocks"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
@@ -354,7 +354,7 @@ func Test_handleRequestChallenge(t *testing.T) {
 	require.NoError(t, err)
 
 	require.NotNil(t, fakeSocket.Msg)
-	var broadcastMsg method.Broadcast
+	var broadcastMsg method2.Broadcast
 	err = json.Unmarshal(fakeSocket.Msg, &broadcastMsg)
 	require.NoError(t, err)
 
@@ -484,21 +484,21 @@ func Test_handleFederationInit(t *testing.T) {
 		require.Fail(t, "Timed out waiting for expected message")
 	}
 
-	var subMsg method.Subscribe
+	var subMsg method2.Subscribe
 	err = json.Unmarshal(msgBytes, &subMsg)
 	require.NoError(t, err)
-	require.Equal(t, query.MethodSubscribe, subMsg.Method)
-	require.Equal(t, method.SubscribeParams{Channel: channelPath}, subMsg.Params)
+	require.Equal(t, mquery.MethodSubscribe, subMsg.Method)
+	require.Equal(t, method2.SubscribeParams{Channel: channelPath}, subMsg.Params)
 
 	select {
 	case msgBytes = <-msgChan:
 	case <-time.After(time.Second):
 		require.Fail(t, "Timed out waiting for expected message")
 	}
-	var publishMsg method.Publish
+	var publishMsg method2.Publish
 	err = json.Unmarshal(msgBytes, &publishMsg)
 	require.NoError(t, err)
-	require.Equal(t, query.MethodPublish, publishMsg.Method)
+	require.Equal(t, mquery.MethodPublish, publishMsg.Method)
 	require.Equal(t, channelPath2, publishMsg.Params.Channel)
 	require.Equal(t, challengeMsg, publishMsg.Params.Message)
 }
@@ -582,17 +582,17 @@ func Test_handleFederationChallenge(t *testing.T) {
 	// The same federation result message should be received by both sockets
 	// on fakeSocket1, representing the organizer, it should be in a broadcast
 	require.NotNil(t, fakeSocket1.Msg)
-	var broadcastMsg method.Broadcast
+	var broadcastMsg method2.Broadcast
 	err = json.Unmarshal(fakeSocket1.Msg, &broadcastMsg)
 	require.NoError(t, err)
-	require.Equal(t, query.MethodBroadcast, broadcastMsg.Method)
+	require.Equal(t, mquery.MethodBroadcast, broadcastMsg.Method)
 
 	// on fakeSocket2, representing the other server, it should in a publish
 	require.NotNil(t, fakeSocket2.Msg)
-	var publishMsg method.Publish
+	var publishMsg method2.Publish
 	err = json.Unmarshal(fakeSocket2.Msg, &publishMsg)
 	require.NoError(t, err)
-	require.Equal(t, query.MethodPublish, publishMsg.Method)
+	require.Equal(t, mquery.MethodPublish, publishMsg.Method)
 	require.Equal(t, broadcastMsg.Params.Message, publishMsg.Params.Message)
 
 	var resultMsg mfederation.FederationResult
@@ -675,11 +675,11 @@ func Test_handleFederationResult(t *testing.T) {
 	require.NoError(t, err)
 
 	require.NotNil(t, fakeSocket.Msg)
-	var broadcastMsg method.Broadcast
+	var broadcastMsg method2.Broadcast
 	err = json.Unmarshal(fakeSocket.Msg, &broadcastMsg)
 	require.NoError(t, err)
 
-	require.Equal(t, query.MethodBroadcast, broadcastMsg.Method)
+	require.Equal(t, mquery.MethodBroadcast, broadcastMsg.Method)
 	require.Equal(t, federationResultMsg, broadcastMsg.Params.Message)
 }
 

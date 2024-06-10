@@ -8,9 +8,9 @@ import (
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mconsensus"
+	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/registry"
@@ -147,7 +147,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities,
 // ---
 
 // Subscribe is used to handle a subscribe message from the client
-func (c *Channel) Subscribe(sock socket.Socket, msg method.Subscribe) error {
+func (c *Channel) Subscribe(sock socket.Socket, msg method2.Subscribe) error {
 	c.log.Info().Str(msgID, strconv.Itoa(msg.ID)).Msg("received a subscribe")
 
 	c.sockets.Upsert(sock)
@@ -156,7 +156,7 @@ func (c *Channel) Subscribe(sock socket.Socket, msg method.Subscribe) error {
 }
 
 // Unsubscribe is used to handle an unsubscribe message.
-func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
+func (c *Channel) Unsubscribe(socketID string, msg method2.Unsubscribe) error {
 	c.log.Info().Str(msgID, strconv.Itoa(msg.ID)).Msg("received an unsubscribe")
 
 	ok := c.sockets.Delete(socketID)
@@ -168,7 +168,7 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 }
 
 // Publish handles publish messages for the consensus channel
-func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
+func (c *Channel) Publish(publish method2.Publish, socket socket.Socket) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
 		Msg("received a publish")
@@ -187,14 +187,14 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 }
 
 // Catchup is used to handle a catchup message.
-func (c *Channel) Catchup(catchup method.Catchup) []mmessage.Message {
+func (c *Channel) Catchup(catchup method2.Catchup) []mmessage.Message {
 	c.log.Info().Str(msgID, strconv.Itoa(catchup.ID)).Msg("received a catchup")
 
 	return c.inbox.GetSortedMessages()
 }
 
 // Broadcast is used to handle a broadcast message.
-func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
+func (c *Channel) Broadcast(broadcast method2.Broadcast, socket socket.Socket) error {
 	c.log.Info().Msg("received a broadcast")
 
 	err := c.verifyMessage(broadcast.Params.Message)
@@ -762,8 +762,8 @@ func (c *Channel) verifyMessage(msg mmessage.Message) error {
 func (c *Channel) broadcastToAllClients(msg mmessage.Message) error {
 	c.log.Info().Str(msgID, msg.MessageID).Msg("broadcasting message to all witnesses")
 
-	rpcMessage := method.Broadcast{
-		Base: query.Base{
+	rpcMessage := method2.Broadcast{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
@@ -855,8 +855,8 @@ func (c *Channel) publishNewMessage(byteMsg []byte) error {
 		WitnessSignatures: make([]mmessage.WitnessSignature, 0),
 	}
 
-	broadcast := method.Broadcast{
-		Base: query.Base{
+	broadcast := method2.Broadcast{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},

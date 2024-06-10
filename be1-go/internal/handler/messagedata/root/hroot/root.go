@@ -10,8 +10,8 @@ import (
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mlao"
 	"popstellar/internal/message/messagedata/mroot"
+	"popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query/method"
 	"popstellar/internal/validation"
 )
 

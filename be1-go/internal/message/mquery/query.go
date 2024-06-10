@@ -1,4 +1,4 @@
-package query
+package mquery
 
 import (
 	message "popstellar/internal/handler/jsonrpc/mjsonrpc"

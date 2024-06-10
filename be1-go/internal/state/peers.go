@@ -2,7 +2,7 @@ package state
 
 import (
 	"popstellar/internal/errors"
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/method"
 	"sync"
 
 	"golang.org/x/exp/maps"

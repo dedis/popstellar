@@ -10,9 +10,9 @@ import (
 	"popstellar/internal/crypto"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata/mchirp"
+	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/generalChirping"
@@ -52,7 +52,7 @@ func Test_Chirp_Channel_Subscribe(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var msg method.Subscribe
+	var msg method2.Subscribe
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
 
@@ -79,7 +79,7 @@ func Test_Chirp_Channel_Unsubscribe(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var msg method.Unsubscribe
+	var msg method2.Unsubscribe
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
 
@@ -107,7 +107,7 @@ func Test_Chirp_Channel_Wrong_Unsubscribe(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var msg method.Unsubscribe
+	var msg method2.Unsubscribe
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
 
@@ -155,7 +155,7 @@ func Test_Chirp_Channel_Catchup(t *testing.T) {
 	}
 
 	// Compute the catchup method
-	catchupAnswer := cha.Catchup(method.Catchup{ID: 0})
+	catchupAnswer := cha.Catchup(method2.Catchup{ID: 0})
 
 	// Check that the order of the messages is the same in `messages` and in
 	// `catchupAnswer`
@@ -200,11 +200,11 @@ func Test_Chirp_Channel_Broadcast(t *testing.T) {
 	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
-	var msg method.Broadcast
+	var msg method2.Broadcast
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
 
-	msg.Base = query.Base{
+	msg.Base = mquery.Base{
 		JSONRPCBase: jsonrpc.JSONRPCBase{
 			JSONRPC: "2.0",
 		},
@@ -264,7 +264,7 @@ func Test_Send_Chirp(t *testing.T) {
 	bufCreatePub, err := os.ReadFile(fileCreatePub)
 	require.NoError(t, err)
 
-	var msg method.Publish
+	var msg method2.Publish
 
 	err = json.Unmarshal(bufCreatePub, &msg)
 	require.NoError(t, err)
@@ -274,7 +274,7 @@ func Test_Send_Chirp(t *testing.T) {
 
 	require.NoError(t, cha.Publish(msg, socket.ClientSocket{}))
 
-	msg2 := generalCha.Catchup(method.Catchup{ID: 0})
+	msg2 := generalCha.Catchup(method2.Catchup{ID: 0})
 
 	checkData := mchirp.ChirpNotifyAdd{
 		Object:    "chirp",
@@ -337,7 +337,7 @@ func Test_Delete_Chirp(t *testing.T) {
 	bufCreatePub, err := os.ReadFile(fileCreatePub)
 	require.NoError(t, err)
 
-	var pub method.Publish
+	var pub method2.Publish
 
 	err = json.Unmarshal(bufCreatePub, &pub)
 	require.NoError(t, err)
@@ -382,7 +382,7 @@ func Test_Delete_Chirp(t *testing.T) {
 	// publish delete chirp message
 	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
 
-	msg := generalCha.Catchup(method.Catchup{ID: 0})
+	msg := generalCha.Catchup(method2.Catchup{ID: 0})
 
 	checkDataAdd := mchirp.ChirpNotifyAdd{
 		Object:    "chirp",
@@ -457,7 +457,7 @@ func Test_Out_Of_Order_Delete(t *testing.T) {
 	bufCreatePub, err := os.ReadFile(fileCreatePub)
 	require.NoError(t, err)
 
-	var pub method.Publish
+	var pub method2.Publish
 
 	err = json.Unmarshal(bufCreatePub, &pub)
 	require.NoError(t, err)
@@ -475,7 +475,7 @@ func Test_Out_Of_Order_Delete(t *testing.T) {
 	}()
 
 	// because of the go routine, we need another publish variable for the delete chirp
-	var pub2 method.Publish
+	var pub2 method2.Publish
 	// create delete chirp message
 	file = filepath.Join(relativeMsgDataExamplePath, "chirp_delete_publish",
 		"chirp_delete_publish.json")
@@ -626,7 +626,7 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
 
 // GetPeersInfo implements channel.HubFunctionalities
-func (h *fakeHub) GetPeersInfo() []method.GreetServerParams {
+func (h *fakeHub) GetPeersInfo() []method2.GreetServerParams {
 	return nil
 }
 
@@ -640,7 +640,7 @@ func (h *fakeHub) GetServerNumber() int {
 	return 0
 }
 
-func (h *fakeHub) SendAndHandleMessage(msg method.Broadcast) error {
+func (h *fakeHub) SendAndHandleMessage(msg method2.Broadcast) error {
 	return nil
 }
 

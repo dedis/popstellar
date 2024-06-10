@@ -8,9 +8,9 @@ import (
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mroot"
+	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/hub/standard_hub/hub_state"
 	"popstellar/internal/validation"
@@ -30,7 +30,7 @@ const (
 )
 
 // handleRootChannelPublishMessage handles an incoming publish message on the root channel.
-func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method.Publish) error {
+func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method2.Publish) error {
 	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
 	if err != nil {
 		err := manswer2.NewInvalidMessageFieldError("failed to decode message data: %v", err)
@@ -85,7 +85,7 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 
 // handleRootChannelPublishMessage handles an incoming publish message on the root channel.
 func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
-	broadcast method.Broadcast,
+	broadcast method2.Broadcast,
 ) error {
 	jsonData, err := base64.URLEncoding.DecodeString(broadcast.Params.Message.Data)
 	if err != nil {
@@ -149,7 +149,7 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 func (h *Hub) handleRootCatchup(senderSocket socket.Socket,
 	byteMessage []byte,
 ) ([]mmessage.Message, int, error) {
-	var catchup method.Catchup
+	var catchup method2.Catchup
 
 	err := json.Unmarshal(byteMessage, &catchup)
 	if err != nil {
@@ -217,7 +217,7 @@ func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg 
 }
 
 func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, error) {
-	var publish method.Publish
+	var publish method2.Publish
 
 	err := json.Unmarshal(byteMessage, &publish)
 	if err != nil {
@@ -284,7 +284,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 }
 
 func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
-	var broadcast method.Broadcast
+	var broadcast method2.Broadcast
 
 	err := json.Unmarshal(byteMessage, &broadcast)
 	if err != nil {
@@ -334,7 +334,7 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 }
 
 func (h *Hub) handleSubscribe(socket socket.Socket, byteMessage []byte) (int, error) {
-	var subscribe method.Subscribe
+	var subscribe method2.Subscribe
 
 	err := json.Unmarshal(byteMessage, &subscribe)
 	if err != nil {
@@ -355,7 +355,7 @@ func (h *Hub) handleSubscribe(socket socket.Socket, byteMessage []byte) (int, er
 }
 
 func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, error) {
-	var unsubscribe method.Unsubscribe
+	var unsubscribe method2.Unsubscribe
 
 	err := json.Unmarshal(byteMessage, &unsubscribe)
 	if err != nil {
@@ -378,7 +378,7 @@ func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, 
 func (h *Hub) handleCatchup(socket socket.Socket,
 	byteMessage []byte,
 ) ([]mmessage.Message, int, error) {
-	var catchup method.Catchup
+	var catchup method2.Catchup
 
 	err := json.Unmarshal(byteMessage, &catchup)
 	if err != nil {
@@ -405,7 +405,7 @@ func (h *Hub) handleCatchup(socket socket.Socket,
 func (h *Hub) handleHeartbeat(socket socket.Socket,
 	byteMessage []byte,
 ) error {
-	var heartbeat method.Heartbeat
+	var heartbeat method2.Heartbeat
 
 	err := json.Unmarshal(byteMessage, &heartbeat)
 	if err != nil {
@@ -429,7 +429,7 @@ func (h *Hub) handleHeartbeat(socket socket.Socket,
 func (h *Hub) handleGetMessagesById(socket socket.Socket,
 	byteMessage []byte,
 ) (map[string][]mmessage.Message, int, error) {
-	var getMessagesById method.GetMessagesById
+	var getMessagesById method2.GetMessagesById
 
 	err := json.Unmarshal(byteMessage, &getMessagesById)
 	if err != nil {
@@ -445,7 +445,7 @@ func (h *Hub) handleGetMessagesById(socket socket.Socket,
 }
 
 func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error {
-	var greetServer method.GreetServer
+	var greetServer method2.GreetServer
 
 	err := json.Unmarshal(byteMessage, &greetServer)
 	if err != nil {
@@ -524,8 +524,8 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData mmessage.M
 			expectedMessageID, messageID)
 	}
 
-	publish := method.Publish{
-		Base: query.Base{
+	publish := method2.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
