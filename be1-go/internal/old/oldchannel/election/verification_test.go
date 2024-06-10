@@ -14,7 +14,7 @@ import (
 )
 
 func TestVerify_ElectionOpen(t *testing.T) {
-	// create the election channel
+	// create the election oldchannel
 	electChannel, _ := newFakeChannel(t, false)
 
 	// read the valid example file
@@ -68,7 +68,7 @@ func TestVerify_ElectionOpen(t *testing.T) {
 }
 
 func TestVerify_ElectionOpen_already_open(t *testing.T) {
-	// create the opened election channel
+	// create the opened election oldchannel
 	electChannel, _ := newFakeChannel(t, false)
 	electChannel.started = true
 
@@ -81,13 +81,13 @@ func TestVerify_ElectionOpen_already_open(t *testing.T) {
 	err = json.Unmarshal(buf, &electionOpen)
 	require.NoError(t, err)
 
-	// send the election open message to the channel
+	// send the election open message to the oldchannel
 	err = electChannel.verifyMessageElectionOpen(electionOpen)
 	require.Error(t, err)
 }
 
 func TestVerify_ElectionOpen_already_closed(t *testing.T) {
-	// create the terminated election channel
+	// create the terminated election oldchannel
 	electChannel, _ := newFakeChannel(t, false)
 	electChannel.terminated = true
 
@@ -100,13 +100,13 @@ func TestVerify_ElectionOpen_already_closed(t *testing.T) {
 	err = json.Unmarshal(buf, &electionOpen)
 	require.NoError(t, err)
 
-	// send the election open message to the channel
+	// send the election open message to the oldchannel
 	err = electChannel.verifyMessageElectionOpen(electionOpen)
 	require.Error(t, err)
 }
 
 func TestVerify_ElectionOpen_Created_Time_Less_Than_Create_Time_Setup(t *testing.T) {
-	// create the opened election channel with election open time less than
+	// create the opened election oldchannel with election open time less than
 	// election creation time
 	electChannel, _ := newFakeChannel(t, false)
 
@@ -121,13 +121,13 @@ func TestVerify_ElectionOpen_Created_Time_Less_Than_Create_Time_Setup(t *testing
 
 	electChannel.createdAt = electionOpen.OpenedAt + 100
 
-	// send the election open message to the channel
+	// send the election open message to the oldchannel
 	err = electChannel.verifyMessageElectionOpen(electionOpen)
 	require.Error(t, err)
 }
 
 func TestVerify_ElectionEnd_Created_Time_Less_Than_Create_Time_Setup(t *testing.T) {
-	// create the opened election channel with election open time less than
+	// create the opened election oldchannel with election open time less than
 	// election creation time
 	electChannel, _ := newFakeChannel(t, false)
 	electChannel.started = true
@@ -143,14 +143,14 @@ func TestVerify_ElectionEnd_Created_Time_Less_Than_Create_Time_Setup(t *testing.
 
 	electChannel.createdAt = electionEnd.CreatedAt + 100
 
-	// send the election open message to the channel
+	// send the election open message to the oldchannel
 	err = electChannel.verifyMessageElectionEnd(electionEnd)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "election end cannot have a creation time prior to election setup ")
 }
 
 func TestVerify_CastVote_Created_Time_Less_Than_Create_Time_Setup(t *testing.T) {
-	// create the opened election channel with election open time less than
+	// create the opened election oldchannel with election open time less than
 	// election creation time
 	electChannel, _ := newFakeChannel(t, false)
 	electChannel.started = true
@@ -166,14 +166,14 @@ func TestVerify_CastVote_Created_Time_Less_Than_Create_Time_Setup(t *testing.T) 
 
 	electChannel.createdAt = castVote.CreatedAt + 100
 
-	// send the election open message to the channel
+	// send the election open message to the oldchannel
 	err = electChannel.verifyMessageCastVote(castVote)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "cast vote cannot have a creation time prior to election setup")
 }
 
 func TestVerify_CastVote_Open_Ballot(t *testing.T) {
-	// create the election channel
+	// create the election oldchannel
 	electChannel, _ := newFakeChannel(t, false)
 	electChannel.started = true
 
@@ -230,7 +230,7 @@ func TestVerify_CastVote_Open_Ballot(t *testing.T) {
 }
 
 func TestVerify_CastVote_Secret_Ballot(t *testing.T) {
-	// create the election channel
+	// create the election oldchannel
 	electChannel, _ := newFakeChannel(t, true)
 	electChannel.started = true
 
@@ -284,7 +284,7 @@ func TestVerify_CastVote_Secret_Ballot(t *testing.T) {
 }
 
 func TestVerify_CastVote_not_open(t *testing.T) {
-	// create the non opened election channel
+	// create the non opened election oldchannel
 	electChannel, _ := newFakeChannel(t, false)
 
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "vote_cast_vote",
@@ -296,13 +296,13 @@ func TestVerify_CastVote_not_open(t *testing.T) {
 	err = json.Unmarshal(buf, &voteCastVote)
 	require.NoError(t, err)
 
-	// send the cast vote message to the channel
+	// send the cast vote message to the oldchannel
 	err = electChannel.verifyMessageCastVote(voteCastVote)
 	require.Error(t, err)
 }
 
 func TestVerify_CastVote_already_closed(t *testing.T) {
-	// create the terminated election channel
+	// create the terminated election oldchannel
 	electChannel, _ := newFakeChannel(t, false)
 	electChannel.terminated = true
 
@@ -315,13 +315,13 @@ func TestVerify_CastVote_already_closed(t *testing.T) {
 	err = json.Unmarshal(buf, &voteCastVote)
 	require.NoError(t, err)
 
-	// send the cast vote message to the channel
+	// send the cast vote message to the oldchannel
 	err = electChannel.verifyMessageCastVote(voteCastVote)
 	require.Error(t, err)
 }
 
 func TestVerify_ElectionEnd(t *testing.T) {
-	// create the election channel
+	// create the election oldchannel
 	electChannel, pkOrganizer := newFakeChannel(t, false)
 	electChannel.started = true
 
@@ -400,7 +400,7 @@ func TestVerify_ElectionEnd(t *testing.T) {
 }
 
 func TestVerify_ElectionEnd_not_open(t *testing.T) {
-	// create the non opened election channel
+	// create the non opened election oldchannel
 	electChannel, _ := newFakeChannel(t, false)
 
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_end",
@@ -412,7 +412,7 @@ func TestVerify_ElectionEnd_not_open(t *testing.T) {
 	err = json.Unmarshal(buf, &electionEnd)
 	require.NoError(t, err)
 
-	// send election end to the channel
+	// send election end to the oldchannel
 	err = electChannel.verifyMessageElectionEnd(electionEnd)
 	require.Error(t, err)
 }
@@ -496,7 +496,7 @@ func TestVerifyRegisteredVotes_OK(t *testing.T) {
 }
 
 func TestVerify_ElectionEnd_already_closed(t *testing.T) {
-	// create the terminated election channel
+	// create the terminated election oldchannel
 	electChannel, _ := newFakeChannel(t, false)
 	electChannel.terminated = true
 
@@ -509,7 +509,7 @@ func TestVerify_ElectionEnd_already_closed(t *testing.T) {
 	err = json.Unmarshal(buf, &electionEnd)
 	require.NoError(t, err)
 
-	// send election end to the channel
+	// send election end to the oldchannel
 	err = electChannel.verifyMessageElectionEnd(electionEnd)
 	require.Error(t, err)
 }

@@ -251,7 +251,7 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup mlao2.ElectionSetup) 
 		return xerrors.Errorf("lao id is %s, should be base64URL encoded", electionSetup.Lao)
 	}
 
-	// verify lao id is channel's lao id
+	// verify lao id is oldchannel's lao id
 	laoID := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
 	if electionSetup.Lao != laoID {
 		return xerrors.Errorf("lao id is %s, should be %s", electionSetup.Lao, laoID)

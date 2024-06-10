@@ -16,9 +16,9 @@ import (
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
-	"popstellar/internal/old/channel/registry"
 	"popstellar/internal/old/inbox"
+	"popstellar/internal/old/oldchannel"
+	"popstellar/internal/old/oldchannel/registry"
 	"popstellar/internal/validation"
 	"strconv"
 
@@ -30,23 +30,23 @@ const msgID = "msg id"
 
 // Channel is used to handle chirping messages w/o text.
 type Channel struct {
-	sockets channel.Sockets
+	sockets oldchannel.Sockets
 	inbox   *inbox.Inbox
-	hub     channel.HubFunctionalities
+	hub     oldchannel.HubFunctionalities
 
-	// channel path
+	// oldchannel path
 	channelPath string
 
 	log      zerolog.Logger
 	registry registry.MessageRegistry
 }
 
-// NewChannel returns a new initialized chirping channel
-func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) *Channel {
-	log = log.With().Str("channel", "general chirp").Logger()
+// NewChannel returns a new initialized chirping oldchannel
+func NewChannel(channelPath string, hub oldchannel.HubFunctionalities, log zerolog.Logger) *Channel {
+	log = log.With().Str("oldchannel", "general chirp").Logger()
 
 	newChannel := &Channel{
-		sockets:     channel.NewSockets(),
+		sockets:     oldchannel.NewSockets(),
 		inbox:       inbox.NewInbox(channelPath),
 		channelPath: channelPath,
 		hub:         hub,
@@ -59,7 +59,7 @@ func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.
 }
 
 // ---
-// Publish-subscribe / channel.Channel implementation
+// Publish-subscribe / oldchannel.Channel implementation
 // ---
 
 // Subscribe is used to handle a subscribe message from the client.
@@ -80,7 +80,7 @@ func (c *Channel) Unsubscribe(socketID string, msg method2.Unsubscribe) error {
 
 	ok := c.sockets.Delete(socketID)
 	if !ok {
-		return manswer.NewError(-2, "client is not subscribed to this channel")
+		return manswer.NewError(-2, "client is not subscribed to this oldchannel")
 	}
 
 	return nil
@@ -107,7 +107,7 @@ func (c *Channel) Broadcast(broadcast mbroadcast.Broadcast, socket socket.Socket
 	err := c.VerifyBroadcastMessage(broadcast)
 	if err != nil {
 		return xerrors.Errorf("failed to verify broadcast message on an "+
-			"generalChirping channel: %w", err)
+			"generalChirping oldchannel: %w", err)
 	}
 
 	msg := broadcast.Params.Message
@@ -132,7 +132,7 @@ func (c *Channel) Broadcast(broadcast mbroadcast.Broadcast, socket socket.Socket
 // ---
 
 // NewGeneralChirpingRegistry creates a new registry for a general chirping
-// channel and populates the registry with the actions of the channel.
+// oldchannel and populates the registry with the actions of the oldchannel.
 func (c *Channel) NewGeneralChirpingRegistry() registry.MessageRegistry {
 	newRegistry := registry.NewMessageRegistry()
 
@@ -259,7 +259,7 @@ func (c *Channel) broadcastToAllClients(msg mmessage.Message) error {
 	return nil
 }
 
-// GetChannelPath is a getter for the channel path
+// GetChannelPath is a getter for the oldchannel path
 func (c *Channel) GetChannelPath() string {
 	return c.channelPath
 }

@@ -27,7 +27,7 @@ import (
 	method2 "popstellar/internal/handler/method/publish/mpublish"
 	"popstellar/internal/logger"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
+	"popstellar/internal/old/oldchannel"
 	"popstellar/internal/validation"
 	"sync"
 	"testing"
@@ -91,13 +91,13 @@ func TestURIParamsConstruction(t *testing.T) {
 		ResponseMode:    "query",
 		PopchaAddress:   "https://server.example.com",
 	}
-	// creating a fake channel, we will not use it in this test
+	// creating a fake oldchannel, we will not use it in this test
 	c := NewChannel("", nil, zerolog.New(io.Discard), secPathTest, pubPathtest)
 	_, err := constructRedirectURIParams(c, authMsg, authMsg.Nonce)
 	require.NoError(t, err)
 }
 
-// Test_Authenticate_User test the correctness of the authentication channel publish handling.
+// Test_Authenticate_User test the correctness of the authentication oldchannel publish handling.
 func Test_Authenticate_User(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -105,7 +105,7 @@ func Test_Authenticate_User(t *testing.T) {
 	fakeHub, err := newFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 	name := "3hfd5xSty1VShCdcfLUDsgNF_EnMSRiFk74xvH5LRjM=/authenticate"
-	// Create the channel
+	// Create the oldchannel
 	authCha := NewChannel("3hfd5xSty1VShCdcfLUDsgNF_EnMSRiFk74xvH5LRjM=/authenticate", fakeHub, logger.Logger, secPathTest, pubPathtest)
 
 	fakeHub.RegisterNewChannel(name, authCha)
@@ -118,9 +118,9 @@ func Test_Authenticate_User(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	// channel where the ws server signals when it has started listening
+	// oldchannel where the ws server signals when it has started listening
 	msgCh := make(chan []byte, 1)
-	// channel where the ws server put message it received from the pop backend
+	// oldchannel where the ws server put message it received from the pop backend
 	startCh := make(chan struct{}, 1)
 
 	// creating dummy websocket server
@@ -193,7 +193,7 @@ type fakeHub struct {
 	messageChan chan socket.IncomingMessage
 
 	sync.RWMutex
-	channelByID map[string]channel.Channel
+	channelByID map[string]oldchannel.Channel
 
 	closedSockets chan string
 
@@ -210,11 +210,11 @@ type fakeHub struct {
 
 	log zerolog.Logger
 
-	laoFac channel.LaoFactory
+	laoFac oldchannel.LaoFactory
 }
 
 // newFakeHub returns a fake Hub.
-func newFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+func newFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac oldchannel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
@@ -227,7 +227,7 @@ func newFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 
 	hub := fakeHub{
 		messageChan:     make(chan socket.IncomingMessage),
-		channelByID:     make(map[string]channel.Channel),
+		channelByID:     make(map[string]oldchannel.Channel),
 		closedSockets:   make(chan string),
 		pubKeyOwner:     publicOrg,
 		pubKeyServ:      pubServ,
@@ -242,7 +242,7 @@ func newFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 	return &hub, nil
 }
 
-func (h *fakeHub) RegisterNewChannel(channeID string, channel channel.Channel) {
+func (h *fakeHub) RegisterNewChannel(channeID string, channel oldchannel.Channel) {
 	h.Lock()
 	h.channelByID[channeID] = channel
 	h.Unlock()
@@ -255,27 +255,27 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	return point, secret
 }
 
-// GetPubKeyOwner implements channel.HubFunctionalities
+// GetPubKeyOwner implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPubKeyOwner() kyber.Point {
 	return h.pubKeyOwner
 }
 
-// GetPubKeyServ implements channel.HubFunctionalities
+// GetPubKeyServ implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
 }
 
-// GetServerAddress implements channel.HubFunctionalities
+// GetServerAddress implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetServerAddress() string {
 	return ""
 }
 
-// GetClientServerAddress implements channel.HubFunctionalities
+// GetClientServerAddress implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetClientServerAddress() string {
 	return ""
 }
 
-// Sign implements channel.HubFunctionalities
+// Sign implements oldchannel.HubFunctionalities
 func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	signatureBuf, err := schnorr.Sign(crypto.Suite, h.secKeyServ, data)
 	if err != nil {
@@ -284,10 +284,10 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	return signatureBuf, nil
 }
 
-// NotifyWitnessMessage implements channel.HubFunctionalities
+// NotifyWitnessMessage implements oldchannel.HubFunctionalities
 func (h *fakeHub) NotifyWitnessMessage(_ string, _ string, _ string) {}
 
-// GetPeersInfo implements channel.HubFunctionalities
+// GetPeersInfo implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPeersInfo() []mgreetserver.GreetServerParams {
 	return nil
 }
@@ -296,7 +296,7 @@ func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
 }
 
-func (h *fakeHub) NotifyNewChannel(_ string, _ channel.Channel, _ socket.Socket) {}
+func (h *fakeHub) NotifyNewChannel(_ string, _ oldchannel.Channel, _ socket.Socket) {}
 
 func (h *fakeHub) GetServerNumber() int {
 	return 0
@@ -318,7 +318,7 @@ func websocketHandler(t *testing.T, msgCh chan []byte) func(http.ResponseWriter,
 		conn, err := upgrader.Upgrade(w, r, nil)
 		require.NoError(t, err)
 
-		// receive the message and send it to the message channel
+		// receive the message and send it to the message oldchannel
 		_, msg, err := conn.ReadMessage()
 		require.NoError(t, err)
 

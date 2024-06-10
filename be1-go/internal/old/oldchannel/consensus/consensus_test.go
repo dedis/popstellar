@@ -20,7 +20,7 @@ import (
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
+	"popstellar/internal/old/oldchannel"
 	"popstellar/internal/validation"
 	"sync"
 	"testing"
@@ -37,7 +37,7 @@ import (
 
 const protocolRelativePath string = "../../../../../protocol"
 
-// Tests that the channel works correctly when it receives a subscribe from a
+// Tests that the oldchannel works correctly when it receives a subscribe from a
 // client
 func Test_Consensus_Channel_Subscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
@@ -65,7 +65,7 @@ func Test_Consensus_Channel_Subscribe(t *testing.T) {
 	require.True(t, consensusChannel.sockets.Delete("socket"))
 }
 
-// Tests that the channel works correctly when it receives an unsubscribe from a
+// Tests that the oldchannel works correctly when it receives an unsubscribe from a
 // client
 func Test_Consensus_Channel_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
@@ -94,7 +94,7 @@ func Test_Consensus_Channel_Unsubscribe(t *testing.T) {
 	require.False(t, consensusChannel.sockets.Delete("socket"))
 }
 
-// Test that the channel throws an error when it receives an unsubscribe from a
+// Test that the oldchannel throws an error when it receives an unsubscribe from a
 // non-subscribed source
 func Test_Consensus_Channel_Wrong_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
@@ -113,10 +113,10 @@ func Test_Consensus_Channel_Wrong_Unsubscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	err = channel.Unsubscribe("socket", message)
-	require.Error(t, err, "client is not subscribed to this channel")
+	require.Error(t, err, "client is not subscribed to this oldchannel")
 }
 
-// Tests that the channel works correctly when it receives a catchup
+// Tests that the oldchannel works correctly when it receives a catchup
 func Test_Consensus_Channel_Catchup(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -128,7 +128,7 @@ func Test_Consensus_Channel_Catchup(t *testing.T) {
 	numMessages := 5
 	messages := make([]mmessage.Message, numMessages)
 
-	// Create the channel
+	// Create the oldchannel
 	channel := NewChannel("channel0", fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -157,7 +157,7 @@ func Test_Consensus_Channel_Catchup(t *testing.T) {
 	}
 }
 
-// Tests that the channel works when it receives a broadcast message
+// Tests that the oldchannel works when it receives a broadcast message
 func Test_Consensus_Channel_Broadcast(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -166,12 +166,12 @@ func Test_Consensus_Channel_Broadcast(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	channel := NewChannel("channel0", fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
-	// Create a socket subscribed to the channel
+	// Create a socket subscribed to the oldchannel
 	sckt := &fakeSocket{id: "socket"}
 	consensusChannel.sockets.Upsert(sckt)
 
@@ -219,7 +219,7 @@ func Test_Consensus_Channel_Broadcast(t *testing.T) {
 	require.Equal(t, byteBroad, sckt.msg)
 }
 
-// Tests that the channel works correctly when it receives an elect message
+// Tests that the oldchannel works correctly when it receives an elect message
 func Test_Consensus_Publish_Elect(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -228,14 +228,14 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
 	consensusChanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
 	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
-	// Create a socket subscribed to the channel
+	// Create a socket subscribed to the oldchannel
 	socket := &fakeSocket{id: "socket"}
 	consensusChannel.sockets.Upsert(socket)
 
@@ -288,7 +288,7 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 	require.Equal(t, byteBroad, socket.msg)
 }
 
-// Tests that the channel works correctly when it receives an elect_accept
+// Tests that the oldchannel works correctly when it receives an elect_accept
 // message
 func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
@@ -301,7 +301,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
 	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
@@ -311,11 +311,11 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	consensusChannel.clock = clock
 	clock.Set(time.Unix(1634760000, 0))
 
-	// Create a client socket subscribed to the channel
+	// Create a client socket subscribed to the oldchannel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
 	consensusChannel.sockets.Upsert(cliSocket)
 
-	// Create a consensus elect message into the inbox of the channel
+	// Create a consensus elect message into the inbox of the oldchannel
 	file := filepath.Join(protocolRelativePath,
 		"examples", "messageData", "consensus_elect", "elect.json")
 	bufElect, err := os.ReadFile(file)
@@ -333,7 +333,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add a new consensus instance to the channel
+	// Add a new consensus instance to the oldchannel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = proposerRole
 
@@ -412,7 +412,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	require.Equal(t, int64(1), prepare.Value.ProposedTry)
 }
 
-// Tests that the channel works correctly when it receives an elect_accept
+// Tests that the oldchannel works correctly when it receives an elect_accept
 // message refusing the proposition
 func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
@@ -425,7 +425,7 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
 	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
@@ -435,11 +435,11 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 	consensusChannel.clock = clock
 	clock.Set(time.Unix(1634760000, 0))
 
-	// Create a client socket subscribed to the channel
+	// Create a client socket subscribed to the oldchannel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
 	consensusChannel.sockets.Upsert(cliSocket)
 
-	// Create a consensus elect message into the inbox of the channel
+	// Create a consensus elect message into the inbox of the oldchannel
 	file := filepath.Join(protocolRelativePath,
 		"examples", "messageData", "consensus_elect", "elect.json")
 	bufElect, err := os.ReadFile(file)
@@ -457,7 +457,7 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add a new consensus instance to the channel
+	// Add a new consensus instance to the oldchannel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = proposerRole
 
@@ -535,7 +535,7 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 	require.Equal(t, int64(1634760000), prepare.CreatedAt)
 }
 
-// Tests that the channel works correctly when it receives a prepare message
+// Tests that the oldchannel works correctly when it receives a prepare message
 func Test_Consensus_Publish_Prepare(t *testing.T) {
 	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
 	messageID := "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q="
@@ -547,7 +547,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
 	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
@@ -557,11 +557,11 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 	consensusChannel.clock = clock
 	clock.Set(time.Unix(1634760000, 0))
 
-	// Create a client socket subscribed to the channel
+	// Create a client socket subscribed to the oldchannel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
 	consensusChannel.sockets.Upsert(cliSocket)
 
-	// Create a consensus elect message into the inbox of the channel
+	// Create a consensus elect message into the inbox of the oldchannel
 	file := filepath.Join(protocolRelativePath,
 		"examples", "messageData", "consensus_elect", "elect.json")
 	bufElect, err := os.ReadFile(file)
@@ -579,7 +579,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add a new consensus instance to the channel
+	// Add a new consensus instance to the oldchannel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = proposerRole
 
@@ -660,7 +660,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 	require.Equal(t, int64(4), promise.Value.PromisedTry)
 }
 
-// Tests that the channel works correctly when it receives a promise message
+// Tests that the oldchannel works correctly when it receives a promise message
 func Test_Consensus_Publish_Promise(t *testing.T) {
 	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
 	messageID := "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q="
@@ -672,7 +672,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
 	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
@@ -682,11 +682,11 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	consensusChannel.clock = clock
 	clock.Set(time.Unix(1634760000, 0))
 
-	// Create a client socket subscribed to the channel
+	// Create a client socket subscribed to the oldchannel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
 	consensusChannel.sockets.Upsert(cliSocket)
 
-	// Create a consensus elect message into the inbox of the channel
+	// Create a consensus elect message into the inbox of the oldchannel
 	file := filepath.Join(protocolRelativePath,
 		"examples", "messageData", "consensus_elect", "elect.json")
 	bufElect, err := os.ReadFile(file)
@@ -704,7 +704,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add a new consensus instance to the channel
+	// Add a new consensus instance to the oldchannel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = proposerRole
 	consensusInstance.lastSent = messagedata.ConsensusActionPrepare
@@ -785,7 +785,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	require.True(t, propose.Value.ProposedValue)
 }
 
-// Tests that the channel works correctly when it receives a propose message
+// Tests that the oldchannel works correctly when it receives a propose message
 func Test_Consensus_Publish_Propose(t *testing.T) {
 	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
 	messageID := "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q="
@@ -797,7 +797,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
 	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
@@ -807,11 +807,11 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 	consensusChannel.clock = clock
 	clock.Set(time.Unix(1634760000, 0))
 
-	// Create a client socket subscribed to the channel
+	// Create a client socket subscribed to the oldchannel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
 	consensusChannel.sockets.Upsert(cliSocket)
 
-	// Create a consensus elect message into the inbox of the channel
+	// Create a consensus elect message into the inbox of the oldchannel
 	file := filepath.Join(protocolRelativePath,
 		"examples", "messageData", "consensus_elect", "elect.json")
 	bufElect, err := os.ReadFile(file)
@@ -829,7 +829,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add a new consensus instance to the channel
+	// Add a new consensus instance to the oldchannel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = proposerRole
 
@@ -909,7 +909,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 	require.True(t, accept.Value.AcceptedValue)
 }
 
-// Tests that the channel works correctly when it receives an accept message
+// Tests that the oldchannel works correctly when it receives an accept message
 func Test_Consensus_Publish_Accept(t *testing.T) {
 	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
 	messageID := "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q="
@@ -921,7 +921,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
 	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
@@ -931,11 +931,11 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	consensusChannel.clock = clock
 	clock.Set(time.Unix(1634760000, 0))
 
-	// Create a client socket subscribed to the channel
+	// Create a client socket subscribed to the oldchannel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
 	consensusChannel.sockets.Upsert(cliSocket)
 
-	// Create a consensus elect message into the inbox of the channel
+	// Create a consensus elect message into the inbox of the oldchannel
 	file := filepath.Join(protocolRelativePath,
 		"examples", "messageData", "consensus_elect", "elect.json")
 	bufElect, err := os.ReadFile(file)
@@ -953,7 +953,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add a new consensus instance to the channel
+	// Add a new consensus instance to the oldchannel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = proposerRole
 	consensusInstance.proposedTry = 4
@@ -1038,7 +1038,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	require.True(t, learn.Value.Decision)
 }
 
-// Tests that the channel works correctly when it receives a learn message
+// Tests that the oldchannel works correctly when it receives a learn message
 func Test_Consensus_Publish_Learn(t *testing.T) {
 	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
 	messageID := "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q="
@@ -1050,17 +1050,17 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
 	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
-	// Create a client socket subscribed to the channel
+	// Create a client socket subscribed to the oldchannel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
 	consensusChannel.sockets.Upsert(cliSocket)
 
-	// Create a consensus elect message into the inbox of the channel
+	// Create a consensus elect message into the inbox of the oldchannel
 	file := filepath.Join(protocolRelativePath,
 		"examples", "messageData", "consensus_elect", "elect.json")
 	bufElect, err := os.ReadFile(file)
@@ -1078,7 +1078,7 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add a new consensus instance to the channel
+	// Add a new consensus instance to the oldchannel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = proposerRole
 
@@ -1137,7 +1137,7 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 	require.Equal(t, byteBroad, cliSocket.msg)
 }
 
-// Tests that the channel works correctly when it receives a failure message
+// Tests that the oldchannel works correctly when it receives a failure message
 func Test_Consensus_Publish_Failure(t *testing.T) {
 	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
 	messageID := "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q="
@@ -1149,17 +1149,17 @@ func Test_Consensus_Publish_Failure(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
 	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
-	// Create a client socket subscribed to the channel
+	// Create a client socket subscribed to the oldchannel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
 	consensusChannel.sockets.Upsert(cliSocket)
 
-	// Create a consensus elect message into the inbox of the channel
+	// Create a consensus elect message into the inbox of the oldchannel
 	file := filepath.Join(protocolRelativePath,
 		"examples", "messageData", "consensus_failure", "failure.json")
 	bufElect, err := os.ReadFile(file)
@@ -1177,7 +1177,7 @@ func Test_Consensus_Publish_Failure(t *testing.T) {
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add a new consensus instance to the channel
+	// Add a new consensus instance to the oldchannel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = proposerRole
 
@@ -1245,7 +1245,7 @@ func Test_Publish_New_Message(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
 	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
@@ -1303,7 +1303,7 @@ func Test_Timeout_Elect(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
 	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
@@ -1312,7 +1312,7 @@ func Test_Timeout_Elect(t *testing.T) {
 	clock := clock.NewMock()
 	consensusChannel.clock = clock
 
-	// Create a socket subscribed to the channel
+	// Create a socket subscribed to the oldchannel
 	socket := &fakeSocket{id: "socket"}
 	consensusChannel.sockets.Upsert(socket)
 
@@ -1391,7 +1391,7 @@ func Test_Timeout_Prepare(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
 	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
@@ -1400,11 +1400,11 @@ func Test_Timeout_Prepare(t *testing.T) {
 	clock := clock.NewMock()
 	consensusChannel.clock = clock
 
-	// Create a socket subscribed to the channel
+	// Create a socket subscribed to the oldchannel
 	socket := &fakeSocket{id: "socket"}
 	consensusChannel.sockets.Upsert(socket)
 
-	// Create a consensus elect message into the inbox of the channel
+	// Create a consensus elect message into the inbox of the oldchannel
 	file := filepath.Join(protocolRelativePath,
 		"examples", "messageData", "consensus_elect", "elect.json")
 	bufElect, err := os.ReadFile(file)
@@ -1422,7 +1422,7 @@ func Test_Timeout_Prepare(t *testing.T) {
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add a new consensus instance to the channel
+	// Add a new consensus instance to the oldchannel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = proposerRole
 
@@ -1521,7 +1521,7 @@ func Test_Timeout_Promise(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
 	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
@@ -1530,11 +1530,11 @@ func Test_Timeout_Promise(t *testing.T) {
 	clock := clock.NewMock()
 	consensusChannel.clock = clock
 
-	// Create a socket subscribed to the channel
+	// Create a socket subscribed to the oldchannel
 	socket := &fakeSocket{id: "socket"}
 	consensusChannel.sockets.Upsert(socket)
 
-	// Create a consensus elect message into the inbox of the channel
+	// Create a consensus elect message into the inbox of the oldchannel
 	file := filepath.Join(protocolRelativePath,
 		"examples", "messageData", "consensus_elect", "elect.json")
 	bufElect, err := os.ReadFile(file)
@@ -1552,7 +1552,7 @@ func Test_Timeout_Promise(t *testing.T) {
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add a new consensus instance to the channel
+	// Add a new consensus instance to the oldchannel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = acceptorRole
 
@@ -1652,7 +1652,7 @@ func Test_Timeout_Propose(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
 	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
@@ -1661,11 +1661,11 @@ func Test_Timeout_Propose(t *testing.T) {
 	clock := clock.NewMock()
 	consensusChannel.clock = clock
 
-	// Create a socket subscribed to the channel
+	// Create a socket subscribed to the oldchannel
 	socket := &fakeSocket{id: "socket"}
 	consensusChannel.sockets.Upsert(socket)
 
-	// Create a consensus elect message into the inbox of the channel
+	// Create a consensus elect message into the inbox of the oldchannel
 	file := filepath.Join(protocolRelativePath,
 		"examples", "messageData", "consensus_elect", "elect.json")
 	bufElect, err := os.ReadFile(file)
@@ -1683,7 +1683,7 @@ func Test_Timeout_Propose(t *testing.T) {
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add a new consensus instance to the channel
+	// Add a new consensus instance to the oldchannel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = proposerRole
 	consensusInstance.lastSent = messagedata.ConsensusActionPrepare
@@ -1785,7 +1785,7 @@ func Test_Timeout_Accept(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
 	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
 	consensusChannel, ok := channel.(*Channel)
@@ -1794,11 +1794,11 @@ func Test_Timeout_Accept(t *testing.T) {
 	clock := clock.NewMock()
 	consensusChannel.clock = clock
 
-	// Create a socket subscribed to the channel
+	// Create a socket subscribed to the oldchannel
 	socket := &fakeSocket{id: "socket"}
 	consensusChannel.sockets.Upsert(socket)
 
-	// Create a consensus elect message into the inbox of the channel
+	// Create a consensus elect message into the inbox of the oldchannel
 	file := filepath.Join(protocolRelativePath,
 		"examples", "messageData", "consensus_elect", "elect.json")
 	bufElect, err := os.ReadFile(file)
@@ -1816,7 +1816,7 @@ func Test_Timeout_Accept(t *testing.T) {
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add a new consensus instance to the channel
+	// Add a new consensus instance to the oldchannel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = acceptorRole
 
@@ -1930,7 +1930,7 @@ type fakeHub struct {
 	messageChan chan socket.IncomingMessage
 
 	sync.RWMutex
-	channelByID map[string]channel.Channel
+	channelByID map[string]oldchannel.Channel
 
 	closedSockets chan string
 
@@ -1947,13 +1947,13 @@ type fakeHub struct {
 
 	log zerolog.Logger
 
-	laoFac channel.LaoFactory
+	laoFac oldchannel.LaoFactory
 
 	fakeSock fakeSocket
 }
 
 // NewFakeHub returns a fake Hub.
-func NewFakeHub(pubKeyOwner kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+func NewFakeHub(pubKeyOwner kyber.Point, log zerolog.Logger, laoFac oldchannel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
@@ -1966,7 +1966,7 @@ func NewFakeHub(pubKeyOwner kyber.Point, log zerolog.Logger, laoFac channel.LaoF
 
 	hub := fakeHub{
 		messageChan:     make(chan socket.IncomingMessage),
-		channelByID:     make(map[string]channel.Channel),
+		channelByID:     make(map[string]oldchannel.Channel),
 		closedSockets:   make(chan string),
 		pubKeyOwner:     pubKeyOwner,
 		pubKeyServ:      pubServ,
@@ -1989,28 +1989,28 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	return point, secret
 }
 
-func (h *fakeHub) RegisterNewChannel(channeID string, channel channel.Channel) {
+func (h *fakeHub) RegisterNewChannel(channeID string, channel oldchannel.Channel) {
 	h.Lock()
 	h.channelByID[channeID] = channel
 	h.Unlock()
 }
 
-// GetPubKeyOwner implements channel.HubFunctionalities
+// GetPubKeyOwner implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPubKeyOwner() kyber.Point {
 	return h.pubKeyOwner
 }
 
-// GetPubKeyServ implements channel.HubFunctionalities
+// GetPubKeyServ implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
 }
 
-// GetClientServerAddress implements channel.HubFunctionalities
+// GetClientServerAddress implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetClientServerAddress() string {
 	return ""
 }
 
-// Sign implements channel.HubFunctionalities
+// Sign implements oldchannel.HubFunctionalities
 func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	signatureBuf, err := schnorr.Sign(crypto.Suite, h.secKeyServ, data)
 	if err != nil {
@@ -2019,10 +2019,10 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	return signatureBuf, nil
 }
 
-// NotifyWitnessMessage implements channel.HubFunctionalities
+// NotifyWitnessMessage implements oldchannel.HubFunctionalities
 func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
 
-// GetPeersInfo implements channel.HubFunctionalities
+// GetPeersInfo implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPeersInfo() []mgreetserver.GreetServerParams {
 	return nil
 }
@@ -2048,7 +2048,8 @@ func (h *fakeHub) SendAndHandleMessage(msg mbroadcast.Broadcast) error {
 	return nil
 }
 
-func (h *fakeHub) NotifyNewChannel(channelID string, channel channel.Channel, socket socket.Socket) {}
+func (h *fakeHub) NotifyNewChannel(channelID string, channel oldchannel.Channel, socket socket.Socket) {
+}
 
 // fakeSocket is a fake implementation of a socket
 //

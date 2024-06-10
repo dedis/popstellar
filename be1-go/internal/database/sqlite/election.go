@@ -347,7 +347,7 @@ func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionRes
 	}
 	_, err = tx.Exec(insertChannelMessage, channelPath, msg.MessageID, true)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("relation election end message and election channel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation election end message and election oldchannel: %v", err)
 	}
 	_, err = tx.Exec(insertMessage, electionResultMsg.MessageID, electionResultMsgBytes, electionResult, storedTime)
 	if err != nil {
@@ -355,7 +355,7 @@ func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionRes
 	}
 	_, err = tx.Exec(insertChannelMessage, channelPath, electionResultMsg.MessageID, false)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("relation election result message and election channel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation election result message and election oldchannel: %v", err)
 	}
 	err = tx.Commit()
 

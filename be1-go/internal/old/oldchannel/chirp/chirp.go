@@ -16,9 +16,9 @@ import (
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
-	"popstellar/internal/old/channel/registry"
 	"popstellar/internal/old/inbox"
+	"popstellar/internal/old/oldchannel"
+	"popstellar/internal/old/oldchannel/registry"
 	"popstellar/internal/validation"
 	"strconv"
 	"time"
@@ -35,25 +35,25 @@ const (
 
 // Channel is used to handle chirp messages.
 type Channel struct {
-	sockets        channel.Sockets
+	sockets        oldchannel.Sockets
 	inbox          *inbox.Inbox
-	generalChannel channel.Broadcastable
-	// channel path
+	generalChannel oldchannel.Broadcastable
+	// oldchannel path
 	channelID string
 	owner     string
-	hub       channel.HubFunctionalities
+	hub       oldchannel.HubFunctionalities
 	log       zerolog.Logger
 	registry  registry.MessageRegistry
 }
 
-// NewChannel returns a new initialized individual chirping channel
-func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalities,
-	generalChannel channel.Broadcastable, log zerolog.Logger) *Channel {
+// NewChannel returns a new initialized individual chirping oldchannel
+func NewChannel(channelPath string, ownerKey string, hub oldchannel.HubFunctionalities,
+	generalChannel oldchannel.Broadcastable, log zerolog.Logger) *Channel {
 
-	log = log.With().Str("channel", "chirp").Logger()
+	log = log.With().Str("oldchannel", "chirp").Logger()
 
 	newChannel := &Channel{
-		sockets:        channel.NewSockets(),
+		sockets:        oldchannel.NewSockets(),
 		inbox:          inbox.NewInbox(channelPath),
 		channelID:      channelPath,
 		generalChannel: generalChannel,
@@ -68,7 +68,7 @@ func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalit
 }
 
 // ---
-// Publish-subscribe / channel.Channel implementation
+// Publish-subscribe / oldchannel.Channel implementation
 // ---
 
 // Subscribe is used to handle a subscribe message from the client.
@@ -90,13 +90,13 @@ func (c *Channel) Unsubscribe(socketID string, msg method2.Unsubscribe) error {
 	ok := c.sockets.Delete(socketID)
 
 	if !ok {
-		return manswer.NewError(-2, "client is not subscribed to this channel")
+		return manswer.NewError(-2, "client is not subscribed to this oldchannel")
 	}
 
 	return nil
 }
 
-// Publish is used to handle publish messages in the chirp channel.
+// Publish is used to handle publish messages in the chirp oldchannel.
 func (c *Channel) Publish(publish mpublish.Publish, socket socket.Socket) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
@@ -105,7 +105,7 @@ func (c *Channel) Publish(publish mpublish.Publish, socket socket.Socket) error 
 	err := c.verifyMessage(publish.Params.Message)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message on a "+
-			"chirping channel: %w", err)
+			"chirping oldchannel: %w", err)
 	}
 
 	err = c.handleMessage(publish.Params.Message, socket)
@@ -132,7 +132,7 @@ func (c *Channel) Broadcast(broadcast mbroadcast.Broadcast, socket socket.Socket
 	err := c.verifyMessage(broadcast.Params.Message)
 	if err != nil {
 		return xerrors.Errorf("failed to verify broadcast message on a "+
-			"chirping channel: %w", err)
+			"chirping oldchannel: %w", err)
 	}
 
 	err = c.handleMessage(broadcast.Params.Message, socket)
@@ -169,8 +169,8 @@ func (c *Channel) handleMessage(msg mmessage.Message, socket socket.Socket) erro
 	return nil
 }
 
-// NewChirpRegistry creates a new registry for a general chirping channel and
-// populates the registry with the actions of the channel.
+// NewChirpRegistry creates a new registry for a general chirping oldchannel and
+// populates the registry with the actions of the oldchannel.
 func (c *Channel) NewChirpRegistry() registry.MessageRegistry {
 	newRegistry := registry.NewMessageRegistry()
 
@@ -268,7 +268,7 @@ func (c *Channel) verifyChirpMessage(msg mmessage.Message, chirpMsg messagedata.
 	}
 
 	if msg.Sender != c.owner {
-		return manswer.NewError(-4, "only the owner of the channel can post chirps")
+		return manswer.NewError(-4, "only the owner of the oldchannel can post chirps")
 	}
 
 	return nil
@@ -373,7 +373,7 @@ func (c *Channel) broadcastViaGeneral(msg mmessage.Message) error {
 
 	err = c.generalChannel.Broadcast(rpcMessage, nil)
 	if err != nil {
-		return xerrors.Errorf("the general channel failed to broadcast the chirp message: %v", err)
+		return xerrors.Errorf("the general oldchannel failed to broadcast the chirp message: %v", err)
 	}
 
 	return nil

@@ -20,7 +20,7 @@ import (
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
+	"popstellar/internal/old/oldchannel"
 	"popstellar/internal/validation"
 	"sync"
 	"testing"
@@ -41,7 +41,7 @@ const (
 	protocolRelativePath string = "../../../validation/protocol"
 )
 
-// Tests that the channel works correctly when it receives a subscribe from a
+// Tests that the oldchannel works correctly when it receives a subscribe from a
 // client
 func TestReactionChannel_Subscribe(t *testing.T) {
 	// Create the hub
@@ -50,7 +50,7 @@ func TestReactionChannel_Subscribe(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
 	relativePath := filepath.Join(protocolRelativePath,
@@ -72,7 +72,7 @@ func TestReactionChannel_Subscribe(t *testing.T) {
 	require.True(t, cha.sockets.Delete("socket"))
 }
 
-// Tests that the channel works correctly when it receives an unsubscribe from a
+// Tests that the oldchannel works correctly when it receives an unsubscribe from a
 // client
 func TestReactionChannel_Unsubscribe(t *testing.T) {
 	// Create the hub
@@ -81,7 +81,7 @@ func TestReactionChannel_Unsubscribe(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
 	relativePath := filepath.Join(protocolRelativePath,
@@ -107,7 +107,7 @@ func TestReactionChannel_Unsubscribe(t *testing.T) {
 	require.Error(t, cha.Unsubscribe("socket", message))
 }
 
-// Test that the channel throws an error when it receives an unsubscribe from a
+// Test that the oldchannel throws an error when it receives an unsubscribe from a
 // non-subscribed source
 func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	// Create the hub
@@ -116,7 +116,7 @@ func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
 	relativePath := filepath.Join(protocolRelativePath,
@@ -134,7 +134,7 @@ func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	require.Error(t, cha.Unsubscribe("inexistingSocket", message))
 }
 
-// Tests that the channel works when it receives a broadcast message
+// Tests that the oldchannel works when it receives a broadcast message
 func TestReactionChannel_Broadcast(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -142,7 +142,7 @@ func TestReactionChannel_Broadcast(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
 	cha.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
@@ -198,7 +198,7 @@ func TestReactionChannel_Broadcast(t *testing.T) {
 	require.Equal(t, bufBroad, fakeSock.msg)
 }
 
-// Tests that the channel works correctly when it receives a catchup
+// Tests that the oldchannel works correctly when it receives a catchup
 func Test_Catchup(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -206,7 +206,7 @@ func Test_Catchup(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(reactionChannelName, cha)
@@ -243,7 +243,7 @@ func Test_Catchup(t *testing.T) {
 	}
 }
 
-// Tests that the channel works correctly when it receives a reaction
+// Tests that the oldchannel works correctly when it receives a reaction
 func Test_SendReaction(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -251,7 +251,7 @@ func Test_SendReaction(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(reactionChannelName, cha)
@@ -296,7 +296,7 @@ func Test_SendReaction(t *testing.T) {
 	require.NoError(t, cha.Publish(message, socket.ClientSocket{}))
 }
 
-// Tests that the channel throws an error when it receives a delete reaction
+// Tests that the oldchannel throws an error when it receives a delete reaction
 // request on a reaction that has never been posted
 func Test_DeleteAbsentReaction_MustFail(t *testing.T) {
 	// Create the hub
@@ -305,7 +305,7 @@ func Test_DeleteAbsentReaction_MustFail(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(reactionChannelName, cha)
@@ -350,7 +350,7 @@ func Test_DeleteAbsentReaction_MustFail(t *testing.T) {
 	require.Error(t, cha.Publish(pub, socket.ClientSocket{}))
 }
 
-// Tests that the channel works correctly when it receives a delete reaction request
+// Tests that the oldchannel works correctly when it receives a delete reaction request
 func Test_DeleteReaction(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -358,7 +358,7 @@ func Test_DeleteReaction(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(reactionChannelName, cha)
@@ -451,7 +451,7 @@ func Test_DeleteReaction(t *testing.T) {
 	require.Equal(t, deleteReactionID, cha.inbox.GetSortedMessages()[1].MessageID)
 }
 
-// Tests that the channel works correctly when it receives a delete reaction request
+// Tests that the oldchannel works correctly when it receives a delete reaction request
 // before a send reaction request.
 func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 	// Create the hub
@@ -460,7 +460,7 @@ func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(reactionChannelName, cha)
@@ -586,7 +586,7 @@ type fakeHub struct {
 	messageChan chan socket.IncomingMessage
 
 	sync.RWMutex
-	channelByID map[string]channel.Channel
+	channelByID map[string]oldchannel.Channel
 
 	closedSockets chan string
 
@@ -603,11 +603,11 @@ type fakeHub struct {
 
 	log zerolog.Logger
 
-	laoFac channel.LaoFactory
+	laoFac oldchannel.LaoFactory
 }
 
 // NewFakeHub returns a fake Hub.
-func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac oldchannel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
@@ -620,7 +620,7 @@ func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 
 	hub := fakeHub{
 		messageChan:     make(chan socket.IncomingMessage),
-		channelByID:     make(map[string]channel.Channel),
+		channelByID:     make(map[string]oldchannel.Channel),
 		closedSockets:   make(chan string),
 		pubKeyOwner:     publicOrg,
 		pubKeyServ:      pubServ,
@@ -635,7 +635,7 @@ func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 	return &hub, nil
 }
 
-func (h *fakeHub) RegisterNewChannel(channeID string, channel channel.Channel) {
+func (h *fakeHub) RegisterNewChannel(channeID string, channel oldchannel.Channel) {
 	h.Lock()
 	h.channelByID[channeID] = channel
 	h.Unlock()
@@ -648,22 +648,22 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	return point, secret
 }
 
-// GetPubKeyOwner implements channel.HubFunctionalities
+// GetPubKeyOwner implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPubKeyOwner() kyber.Point {
 	return h.pubKeyOwner
 }
 
-// GetPubKeyServ implements channel.HubFunctionalities
+// GetPubKeyServ implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
 }
 
-// GetClientServerAddress implements channel.HubFunctionalities
+// GetClientServerAddress implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetClientServerAddress() string {
 	return ""
 }
 
-// Sign implements channel.HubFunctionalities
+// Sign implements oldchannel.HubFunctionalities
 func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	signatureBuf, err := schnorr.Sign(crypto.Suite, h.secKeyServ, data)
 	if err != nil {
@@ -672,10 +672,10 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	return signatureBuf, nil
 }
 
-// NotifyWitnessMessage implements channel.HubFunctionalities
+// NotifyWitnessMessage implements oldchannel.HubFunctionalities
 func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
 
-// GetPeersInfo implements channel.HubFunctionalities
+// GetPeersInfo implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPeersInfo() []mgreetserver.GreetServerParams {
 	return nil
 }
@@ -684,7 +684,8 @@ func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
 }
 
-func (h *fakeHub) NotifyNewChannel(channelID string, channel channel.Channel, socket socket.Socket) {}
+func (h *fakeHub) NotifyNewChannel(channelID string, channel oldchannel.Channel, socket socket.Socket) {
+}
 
 func (h *fakeHub) GetServerNumber() int {
 	return 0

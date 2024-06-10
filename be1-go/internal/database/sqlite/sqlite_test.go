@@ -333,7 +333,7 @@ func Test_SQLite_StoreLaoWithLaoGreet(t *testing.T) {
 	organizerPubKey.Equal(returnedKey)
 	require.True(t, organizerPubKey.Equal(returnedKey))
 
-	// Test that we can retrieve the organizer public key from the election channel
+	// Test that we can retrieve the organizer public key from the election oldchannel
 	electionPath := "electionID"
 	err = lite.StoreChannel(electionPath, "election", laoID)
 	require.NoError(t, err)

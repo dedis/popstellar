@@ -72,13 +72,13 @@ func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
 	_, err = tx.Exec(createChannel)
 	if err != nil {
 		db.Close()
-		return SQLite{}, poperrors.NewDatabaseCreateTableErrorMsg("channel: %v", err)
+		return SQLite{}, poperrors.NewDatabaseCreateTableErrorMsg("oldchannel: %v", err)
 	}
 
 	_, err = tx.Exec(insertOrIgnoreChannel, messagedata.Root, channelTypeToID[messagedata.RootObject], "")
 	if err != nil {
 		db.Close()
-		return SQLite{}, poperrors.NewDatabaseInsertErrorMsg("root channel: %v", err)
+		return SQLite{}, poperrors.NewDatabaseInsertErrorMsg("root oldchannel: %v", err)
 	}
 
 	_, err = tx.Exec(createChannelMessage)
@@ -206,7 +206,7 @@ func (s *SQLite) GetAllChannels() ([]string, error) {
 	for rows.Next() {
 		var channelPath string
 		if err = rows.Scan(&channelPath); err != nil {
-			return nil, poperrors.NewDatabaseScanErrorMsg("channel: %v", err)
+			return nil, poperrors.NewDatabaseScanErrorMsg("oldchannel: %v", err)
 		}
 		channels = append(channels, channelPath)
 	}

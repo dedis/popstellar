@@ -16,9 +16,9 @@ import (
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
-	"popstellar/internal/old/channel/registry"
 	"popstellar/internal/old/inbox"
+	"popstellar/internal/old/oldchannel"
+	"popstellar/internal/old/oldchannel/registry"
 	"popstellar/internal/validation"
 	"strconv"
 )
@@ -29,26 +29,26 @@ const (
 
 // Channel is used to handle election messages.
 type Channel struct {
-	sockets   channel.Sockets
+	sockets   oldchannel.Sockets
 	inbox     *inbox.Inbox
-	hub       channel.HubFunctionalities
+	hub       oldchannel.HubFunctionalities
 	channelID string
 	registry  registry.MessageRegistry
 
 	log zerolog.Logger
 }
 
-// NewChannel returns a new initialized digitalCash channel
-func NewChannel(channelID string, hub channel.HubFunctionalities,
-	log zerolog.Logger) channel.Channel {
+// NewChannel returns a new initialized digitalCash oldchannel
+func NewChannel(channelID string, hub oldchannel.HubFunctionalities,
+	log zerolog.Logger) oldchannel.Channel {
 
 	box := inbox.NewInbox(channelID)
 
-	log = log.With().Str("channel", "coin").Logger()
+	log = log.With().Str("oldchannel", "coin").Logger()
 
-	// Saving on Digital Cash channel too so it self-contains the entire cash history
+	// Saving on Digital Cash oldchannel too so it self-contains the entire cash history
 	retChannel := &Channel{
-		sockets:   channel.NewSockets(),
+		sockets:   oldchannel.NewSockets(),
 		inbox:     box,
 		channelID: channelID,
 		hub:       hub,
@@ -61,7 +61,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities,
 }
 
 // ---
-// Publish-subscribe / channel.Channel implementation
+// Publish-subscribe / oldchannel.Channel implementation
 // ---
 
 // Subscribe is used to handle a subscribe message from the client
@@ -78,13 +78,13 @@ func (c *Channel) Unsubscribe(socketID string, msg method2.Unsubscribe) error {
 
 	ok := c.sockets.Delete(socketID)
 	if !ok {
-		return manswer.NewError(-2, "client is not subscribed to this channel")
+		return manswer.NewError(-2, "client is not subscribed to this oldchannel")
 	}
 
 	return nil
 }
 
-// Publish handles publish messages for the consensus channel
+// Publish handles publish messages for the consensus oldchannel
 func (c *Channel) Publish(publish mpublish.Publish, socket socket.Socket) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
@@ -148,7 +148,7 @@ func (c *Channel) handleMessage(msg mmessage.Message, socket socket.Socket) erro
 	return nil
 }
 
-// NewDigitalCashRegistry creates a new registry for the digital cash channel
+// NewDigitalCashRegistry creates a new registry for the digital cash oldchannel
 func (c *Channel) NewDigitalCashRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 

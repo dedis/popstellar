@@ -20,9 +20,9 @@ import (
 	"popstellar/internal/handler/method/subscribe/msubscribe"
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
-	"popstellar/internal/old/channel/registry"
 	"popstellar/internal/old/inbox"
+	"popstellar/internal/old/oldchannel"
+	"popstellar/internal/old/oldchannel/registry"
 	"popstellar/internal/validation"
 	"strconv"
 	"strings"
@@ -49,10 +49,10 @@ type clientID string
 
 // Channel is used to handle authentication messages.
 type Channel struct {
-	sockets channel.Sockets
+	sockets oldchannel.Sockets
 	inbox   *inbox.Inbox
 
-	// channel path lao_id/authentication
+	// oldchannel path lao_id/authentication
 	channelID string
 
 	// clientID to pop token to identifier map
@@ -72,18 +72,18 @@ type Channel struct {
 	pkPath string
 
 	latestRollCallMembers *rollCallMembers
-	hub                   channel.HubFunctionalities
+	hub                   oldchannel.HubFunctionalities
 	log                   zerolog.Logger
 	registry              registry.MessageRegistry
 }
 
-// NewChannel returns a new initialized authentication channel. This channel is used to transmit the
+// NewChannel returns a new initialized authentication oldchannel. This oldchannel is used to transmit the
 // authentication messages between the PoP App and the Back-end.
-func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger, secretKeyPath string, publicKeyPath string) *Channel {
+func NewChannel(channelPath string, hub oldchannel.HubFunctionalities, log zerolog.Logger, secretKeyPath string, publicKeyPath string) *Channel {
 
-	log = log.With().Str("channel", "authentication").Logger()
+	log = log.With().Str("oldchannel", "authentication").Logger()
 	newChannel := &Channel{
-		sockets:               channel.NewSockets(),
+		sockets:               oldchannel.NewSockets(),
 		inbox:                 inbox.NewInbox(channelPath),
 		channelID:             channelPath,
 		popToID:               make(map[clientID]map[string]identifier),
@@ -103,20 +103,20 @@ func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.
 }
 
 // ---
-// Publish-subscribe / channel.Channel implementation
+// Publish-subscribe / oldchannel.Channel implementation
 // ---
 
 // Subscribe : for authentication messages, we explicitly forbid subscription from clients.
 func (c *Channel) Subscribe(_ socket.Socket, _ msubscribe.Subscribe) error {
-	return xerrors.New("It is not possible to subscribe to the authentication channel.")
+	return xerrors.New("It is not possible to subscribe to the authentication oldchannel.")
 }
 
 // Unsubscribe is also not usable in that context, as clients can't use Subscribe
 func (c *Channel) Unsubscribe(_ string, _ method2.Unsubscribe) error {
-	return xerrors.New("It is not possible to unsubscribe from the authentication channel.")
+	return xerrors.New("It is not possible to unsubscribe from the authentication oldchannel.")
 }
 
-// Publish is used to handle publish messages in the authentication channel.
+// Publish is used to handle publish messages in the authentication oldchannel.
 func (c *Channel) Publish(publish mpublish.Publish, socket socket.Socket) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
@@ -125,7 +125,7 @@ func (c *Channel) Publish(publish mpublish.Publish, socket socket.Socket) error 
 	err := c.verifyMessage(publish.Params.Message)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message on a "+
-			"authentication channel: %w", err)
+			"authentication oldchannel: %w", err)
 	}
 
 	err = c.handleMessage(publish.Params.Message, socket)
@@ -138,13 +138,13 @@ func (c *Channel) Publish(publish mpublish.Publish, socket socket.Socket) error 
 
 // Catchup is used to handle a catchup message.
 func (c *Channel) Catchup(_ mcatchup.Catchup) []mmessage.Message {
-	c.log.Error().Msg("Catchup is not allowed on the authentication channel")
+	c.log.Error().Msg("Catchup is not allowed on the authentication oldchannel")
 	return nil
 }
 
 // Broadcast is forbidden, as authentication messages must be kept secret.
 func (c *Channel) Broadcast(_ mbroadcast.Broadcast, _ socket.Socket) error {
-	return xerrors.New("Broadcasting is not allowed on the authentication channel")
+	return xerrors.New("Broadcasting is not allowed on the authentication oldchannel")
 }
 
 // ---
@@ -163,7 +163,7 @@ func (c *Channel) handleMessage(msg mmessage.Message, socket socket.Socket) erro
 	return nil
 }
 
-// NewAuthenticationRegistry creates a new registry for an authentication channel
+// NewAuthenticationRegistry creates a new registry for an authentication oldchannel
 func (c *Channel) NewAuthenticationRegistry() registry.MessageRegistry {
 	newRegistry := registry.NewMessageRegistry()
 	newRegistry.Register(mauthentification.AuthenticateUser{}, c.auhenticateUser)
@@ -404,7 +404,7 @@ func (c *Channel) addPPIDEntry(id identifier, ppid identifier) {
 
 // LaoFunctionalities methods
 
-// AddAttendee adds an attendee to the reaction channel.
+// AddAttendee adds an attendee to the reaction oldchannel.
 func (c *Channel) AddAttendee(key string) {
 	c.latestRollCallMembers.add(key)
 }

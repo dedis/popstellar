@@ -18,16 +18,16 @@ import (
 	"popstellar/internal/handler/query/mquery"
 	popstellar "popstellar/internal/logger"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
-	"popstellar/internal/old/channel/authentication"
-	"popstellar/internal/old/channel/chirp"
-	"popstellar/internal/old/channel/coin"
-	"popstellar/internal/old/channel/consensus"
-	"popstellar/internal/old/channel/election"
-	"popstellar/internal/old/channel/generalChirping"
-	"popstellar/internal/old/channel/reaction"
-	"popstellar/internal/old/channel/registry"
 	"popstellar/internal/old/inbox"
+	"popstellar/internal/old/oldchannel"
+	"popstellar/internal/old/oldchannel/authentication"
+	"popstellar/internal/old/oldchannel/chirp"
+	"popstellar/internal/old/oldchannel/coin"
+	"popstellar/internal/old/oldchannel/consensus"
+	"popstellar/internal/old/oldchannel/election"
+	"popstellar/internal/old/oldchannel/generalChirping"
+	"popstellar/internal/old/oldchannel/reaction"
+	"popstellar/internal/old/oldchannel/registry"
 	"popstellar/internal/validation"
 	"strconv"
 	"strings"
@@ -51,11 +51,11 @@ const (
 	msgID  = "msg id"
 	social = "/social/"
 	chirps = "chirps"
-	// endpoint for the PoPCHA authentication channel
+	// endpoint for the PoPCHA authentication oldchannel
 	auth = "/authentication"
-	// skAbsolutePath represents the absolute path to the rsa secret key for the popcha authentication channel
+	// skAbsolutePath represents the absolute path to the rsa secret key for the popcha authentication oldchannel
 	skAbsolutePath = "crypto/popcha.rsa"
-	// pkAbsolutePath represents the absolute path to the rsa public key for the popcha authentication channel
+	// pkAbsolutePath represents the absolute path to the rsa public key for the popcha authentication oldchannel
 	pkAbsolutePath = "crypto/popcha.rsa.pub"
 
 	// Open represents the open roll call state.
@@ -68,16 +68,16 @@ const (
 	Created rollCallState = "created"
 )
 
-// Channel defines a LAO channel
+// Channel defines a LAO oldchannel
 type Channel struct {
-	sockets channel.Sockets
+	sockets oldchannel.Sockets
 
 	inbox     *inbox.Inbox
-	general   channel.Broadcastable
-	reactions channel.LAOFunctionalities
+	general   oldchannel.Broadcastable
+	reactions oldchannel.LAOFunctionalities
 
-	//PoPCHA channel for authentication message
-	authMsgs channel.LAOFunctionalities
+	//PoPCHA oldchannel for authentication message
+	authMsgs oldchannel.LAOFunctionalities
 
 	// /root/<ID>
 	channelID string
@@ -89,7 +89,7 @@ type Channel struct {
 
 	rollCall rollCall
 
-	hub channel.HubFunctionalities
+	hub oldchannel.HubFunctionalities
 
 	attendees map[string]struct{}
 
@@ -107,12 +107,12 @@ type rollCall struct {
 	id    string
 }
 
-// NewChannel returns a new initialized LAO channel. It automatically creates
-// its associated consensus channel and register it to the hub.
-func NewChannel(channelID string, hub channel.HubFunctionalities, msg mmessage.Message,
-	log zerolog.Logger, organizerPubKey kyber.Point, socket socket.Socket) (channel.Channel, error) {
+// NewChannel returns a new initialized LAO oldchannel. It automatically creates
+// its associated consensus oldchannel and register it to the hub.
+func NewChannel(channelID string, hub oldchannel.HubFunctionalities, msg mmessage.Message,
+	log zerolog.Logger, organizerPubKey kyber.Point, socket socket.Socket) (oldchannel.Channel, error) {
 
-	log = log.With().Str("channel", "lao").Logger()
+	log = log.With().Str("oldchannel", "lao").Logger()
 
 	box := inbox.NewInbox(channelID)
 	box.StoreMessage(msg)
@@ -129,7 +129,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg mmessage.M
 
 	newChannel := &Channel{
 		channelID:       channelID,
-		sockets:         channel.NewSockets(),
+		sockets:         oldchannel.NewSockets(),
 		inbox:           box,
 		general:         generalCh,
 		reactions:       reactionCh,
@@ -150,14 +150,14 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg mmessage.M
 
 	newChannel.createCoinChannel(socket, newChannel.log)
 
-	// creating the authentication channel for the PoPCHA protocol
+	// creating the authentication oldchannel for the PoPCHA protocol
 	newChannel.createAuthChannel(hub, socket)
 
 	return newChannel, err
 }
 
 // ---
-// Publish-subscribe / channel.Channel implementation
+// Publish-subscribe / oldchannel.Channel implementation
 // ---
 
 // Subscribe is used to handle a subscribe message from the client.
@@ -179,13 +179,13 @@ func (c *Channel) Unsubscribe(socketID string, msg method2.Unsubscribe) error {
 	ok := c.sockets.Delete(socketID)
 
 	if !ok {
-		return manswer.NewError(-2, "client is not subscribed to this channel")
+		return manswer.NewError(-2, "client is not subscribed to this oldchannel")
 	}
 
 	return nil
 }
 
-// Publish handles publish messages for the LAO channel.
+// Publish handles publish messages for the LAO oldchannel.
 func (c *Channel) Publish(publish mpublish.Publish, socket socket.Socket) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
@@ -251,7 +251,7 @@ func (c *Channel) handleMessage(msg mmessage.Message, socket socket.Socket) erro
 	return nil
 }
 
-// NewLAORegistry creates a new registry for the LAO channel
+// NewLAORegistry creates a new registry for the LAO oldchannel
 func (c *Channel) NewLAORegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
@@ -459,7 +459,7 @@ func (c *Channel) processRollCallClose(msg mmessage.Message, msgData interface{}
 		c.createChirpingChannel(attendee, senderSocket)
 
 		c.reactions.AddAttendee(attendee)
-		// add the attendee in the PopCha authentication channel
+		// add the attendee in the PopCha authentication oldchannel
 		c.authMsgs.AddAttendee(attendee)
 	}
 
@@ -602,15 +602,15 @@ func (c *Channel) broadcastToAllClients(msg mmessage.Message) error {
 	return nil
 }
 
-// createGeneralChirpingChannel creates a new general chirping channel and returns it
-func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities,
+// createGeneralChirpingChannel creates a new general chirping oldchannel and returns it
+func createGeneralChirpingChannel(laoID string, hub oldchannel.HubFunctionalities,
 	socket socket.Socket) *generalChirping.Channel {
 
 	generalChannelPath := laoID + social + chirps
 	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, popstellar.Logger)
 	hub.NotifyNewChannel(generalChannelPath, generalChirpingChannel, socket)
 
-	log.Info().Msgf("storing new channel '%s' ", generalChannelPath)
+	log.Info().Msgf("storing new oldchannel '%s' ", generalChannelPath)
 
 	return generalChirpingChannel
 }
@@ -620,21 +620,21 @@ func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) 
 
 	cha := chirp.NewChannel(chirpingChannelPath, publicKey, c.hub, c.general, popstellar.Logger)
 	c.hub.NotifyNewChannel(chirpingChannelPath, cha, socket)
-	log.Info().Msgf("storing new chirp channel (%s) for: '%s'", c.channelID, publicKey)
+	log.Info().Msgf("storing new chirp oldchannel (%s) for: '%s'", c.channelID, publicKey)
 }
 
-// createAuthChannel creates an authentication channel associated to the laoID, handling PopCHA requests
-func (c *Channel) createAuthChannel(hub channel.HubFunctionalities, socket socket.Socket) {
+// createAuthChannel creates an authentication oldchannel associated to the laoID, handling PopCHA requests
+func (c *Channel) createAuthChannel(hub oldchannel.HubFunctionalities, socket socket.Socket) {
 	chanPath := c.channelID + auth
 	authChan := authentication.NewChannel(chanPath, hub, popstellar.Logger, skAbsolutePath, pkAbsolutePath)
 	hub.NotifyNewChannel(chanPath, authChan, socket)
-	c.log.Info().Msgf("storing new authentication channel '%s' ", chanPath)
+	c.log.Info().Msgf("storing new authentication oldchannel '%s' ", chanPath)
 
 	// adding it to the LaoChannel
 	c.authMsgs = authChan
 }
 
-// createCoinChannel creates a coin channel to handle digital cash project
+// createCoinChannel creates a coin oldchannel to handle digital cash project
 func (c *Channel) createCoinChannel(socket socket.Socket, log zerolog.Logger) {
 	coinPath := fmt.Sprintf("%s/coin", c.channelID)
 	coinCh := coin.NewChannel(coinPath, c.hub, log)
@@ -645,27 +645,27 @@ func (c *Channel) createCoinChannel(socket socket.Socket, log zerolog.Logger) {
 func (c *Channel) createElection(msg mmessage.Message,
 	setupMsg mlao2.ElectionSetup, socket socket.Socket) error {
 
-	// Check if the Lao ID of the message corresponds to the channel ID
+	// Check if the Lao ID of the message corresponds to the oldchannel ID
 	channelID := c.channelID[6:]
 	if channelID != setupMsg.Lao {
 		return manswer.NewInvalidMessageFieldError("Lao ID of the message is %s, should be "+
-			"equal to the channel ID %s", setupMsg.Lao, channelID)
+			"equal to the oldchannel ID %s", setupMsg.Lao, channelID)
 	}
 
-	// Compute the new election channel id
+	// Compute the new election oldchannel id
 	channelPath := "/root/" + setupMsg.Lao + "/" + setupMsg.ID
 
-	// Create the new election channel
+	// Create the new election oldchannel
 	electionCh, err := election.NewChannel(channelPath, msg, setupMsg, c.attendees,
 		c.hub, c.log, c.organizerPubKey)
 	if err != nil {
 		return xerrors.Errorf("failed to create the election: %v", err)
 	}
 
-	// Saving the election channel creation message on the lao channel
+	// Saving the election oldchannel creation message on the lao oldchannel
 	c.inbox.StoreMessage(msg)
 
-	// Add the new election channel to the organizerHub
+	// Add the new election oldchannel to the organizerHub
 	c.hub.NotifyNewChannel(channelPath, electionCh, socket)
 
 	return nil

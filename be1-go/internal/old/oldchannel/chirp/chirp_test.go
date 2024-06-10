@@ -20,8 +20,8 @@ import (
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
-	"popstellar/internal/old/channel/generalChirping"
+	"popstellar/internal/old/oldchannel"
+	"popstellar/internal/old/oldchannel/generalChirping"
 	"popstellar/internal/validation"
 	"sync"
 	"testing"
@@ -44,7 +44,7 @@ const (
 	relativeQueryExamplePath   string = "../../../../../protocol/examples/query"
 )
 
-// Tests that the channel works correctly when it receives a subscribe from a
+// Tests that the oldchannel works correctly when it receives a subscribe from a
 // client
 func Test_Chirp_Channel_Subscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
@@ -71,7 +71,7 @@ func Test_Chirp_Channel_Subscribe(t *testing.T) {
 	require.True(t, cha.sockets.Delete("socket"))
 }
 
-// Tests that the channel works correctly when it receives an unsubscribe from a
+// Tests that the oldchannel works correctly when it receives an unsubscribe from a
 // client
 func Test_Chirp_Channel_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
@@ -99,7 +99,7 @@ func Test_Chirp_Channel_Unsubscribe(t *testing.T) {
 	require.False(t, cha.sockets.Delete("socket"))
 }
 
-// Test that the channel throws an error when it receives an unsubscribe from a
+// Test that the oldchannel throws an error when it receives an unsubscribe from a
 // non-subscribed source
 func Test_Chirp_Channel_Wrong_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
@@ -121,7 +121,7 @@ func Test_Chirp_Channel_Wrong_Unsubscribe(t *testing.T) {
 	require.Error(t, cha.Unsubscribe("socket", msg))
 }
 
-// Tests that the channel works correctly when it receives a catchup
+// Tests that the oldchannel works correctly when it receives a catchup
 func Test_Chirp_Channel_Catchup(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -171,7 +171,7 @@ func Test_Chirp_Channel_Catchup(t *testing.T) {
 	}
 }
 
-// Tests that the channel works when it receives a broadcast message
+// Tests that the oldchannel works when it receives a broadcast message
 func Test_Chirp_Channel_Broadcast(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -227,7 +227,7 @@ func Test_Chirp_Channel_Broadcast(t *testing.T) {
 	require.Equal(t, broadBuf, fakeSock.msg)
 }
 
-// Tests that the channel works correctly when receiving an add chirp message
+// Tests that the oldchannel works correctly when receiving an add chirp message
 func Test_Send_Chirp(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -298,7 +298,7 @@ func Test_Send_Chirp(t *testing.T) {
 	require.Equal(t, checkData64, msg2[0].Data)
 }
 
-// Tests that the channel works correctly when receiving a delete chirp message
+// Tests that the oldchannel works correctly when receiving a delete chirp message
 func Test_Delete_Chirp(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -417,7 +417,7 @@ func Test_Delete_Chirp(t *testing.T) {
 	require.Equal(t, checkData64Delete, msg[1].Data)
 }
 
-// Tests that the channel doesn't throw an error if it receives a delete before an add, but
+// Tests that the oldchannel doesn't throw an error if it receives a delete before an add, but
 // rather retries to process it after a small delay to check out-of-order receiving.
 func Test_Out_Of_Order_Delete(t *testing.T) {
 	// Create the hub
@@ -511,7 +511,7 @@ func Test_Out_Of_Order_Delete(t *testing.T) {
 	pub2.Params.Message = m
 	pub2.Params.Channel = chirpChannelName
 
-	// publish delete chirp message, no error as the channel received the Add
+	// publish delete chirp message, no error as the oldchannel received the Add
 	// Chirp later and processed it before retrying to delete it.
 	require.NoError(t, cha.Publish(pub2, socket.ClientSocket{}))
 }
@@ -542,7 +542,7 @@ type fakeHub struct {
 	messageChan chan socket.IncomingMessage
 
 	sync.RWMutex
-	channelByID map[string]channel.Channel
+	channelByID map[string]oldchannel.Channel
 
 	closedSockets chan string
 
@@ -559,11 +559,11 @@ type fakeHub struct {
 
 	log zerolog.Logger
 
-	laoFac channel.LaoFactory
+	laoFac oldchannel.LaoFactory
 }
 
 // NewFakeHub returns a fake Hub.
-func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac oldchannel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
@@ -576,7 +576,7 @@ func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 
 	hub := fakeHub{
 		messageChan:     make(chan socket.IncomingMessage),
-		channelByID:     make(map[string]channel.Channel),
+		channelByID:     make(map[string]oldchannel.Channel),
 		closedSockets:   make(chan string),
 		pubKeyOwner:     publicOrg,
 		pubKeyServ:      pubServ,
@@ -591,7 +591,7 @@ func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 	return &hub, nil
 }
 
-func (h *fakeHub) RegisterNewChannel(channeID string, channel channel.Channel) {
+func (h *fakeHub) RegisterNewChannel(channeID string, channel oldchannel.Channel) {
 	h.Lock()
 	h.channelByID[channeID] = channel
 	h.Unlock()
@@ -604,22 +604,22 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	return point, secret
 }
 
-// GetPubKeyOwner implements channel.HubFunctionalities
+// GetPubKeyOwner implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPubKeyOwner() kyber.Point {
 	return h.pubKeyOwner
 }
 
-// GetPubKeyServ implements channel.HubFunctionalities
+// GetPubKeyServ implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
 }
 
-// GetClientServerAddress implements channel.HubFunctionalities
+// GetClientServerAddress implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetClientServerAddress() string {
 	return ""
 }
 
-// Sign implements channel.HubFunctionalities
+// Sign implements oldchannel.HubFunctionalities
 func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	signatureBuf, err := schnorr.Sign(crypto.Suite, h.secKeyServ, data)
 	if err != nil {
@@ -628,10 +628,10 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	return signatureBuf, nil
 }
 
-// NotifyWitnessMessage implements channel.HubFunctionalities
+// NotifyWitnessMessage implements oldchannel.HubFunctionalities
 func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
 
-// GetPeersInfo implements channel.HubFunctionalities
+// GetPeersInfo implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPeersInfo() []mgreetserver.GreetServerParams {
 	return nil
 }
@@ -640,7 +640,8 @@ func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
 }
 
-func (h *fakeHub) NotifyNewChannel(channelID string, channel channel.Channel, socket socket.Socket) {}
+func (h *fakeHub) NotifyNewChannel(channelID string, channel oldchannel.Channel, socket socket.Socket) {
+}
 
 func (h *fakeHub) GetServerNumber() int {
 	return 0

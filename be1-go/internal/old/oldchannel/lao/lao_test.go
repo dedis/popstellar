@@ -21,7 +21,7 @@ import (
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
+	"popstellar/internal/old/oldchannel"
 	"popstellar/internal/validation"
 	"strconv"
 	"sync"
@@ -132,7 +132,7 @@ func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	require.Error(t, channel.Unsubscribe("inexistingSocket", message))
 }
 
-// Tests that the channel works when it receives a broadcast message
+// Tests that the oldchannel works when it receives a broadcast message
 func TestLAOChannel_Broadcast(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
@@ -145,7 +145,7 @@ func TestLAOChannel_Broadcast(t *testing.T) {
 	require.NoError(t, err)
 	laoChannel := channel.(*Channel)
 
-	// Creates a sockSocket subscribed to the channel
+	// Creates a sockSocket subscribed to the oldchannel
 	fakeSock := &fakeSocket{id: "sockSocket"}
 	laoChannel.sockets.Upsert(fakeSock)
 
@@ -212,7 +212,7 @@ func TestLAOChannel_Catchup(t *testing.T) {
 	messages[0] = mmessage.Message{MessageID: "0"}
 	messages[1] = mmessage.Message{MessageID: "1"}
 
-	// Create the channel
+	// Create the oldchannel
 	channel, err := NewChannel("channel0", fakeHub, messages[0], nolog, keypair.public, nil)
 	require.NoError(t, err)
 
@@ -381,7 +381,7 @@ func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
 
 	m := mmessage.Message{MessageID: "0"}
 
-	// Create the channel
+	// Create the oldchannel
 	channel, err := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
 	require.NoError(t, err)
 
@@ -405,7 +405,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 
 	m := mmessage.Message{MessageID: "0"}
 
-	// Create the channel
+	// Create the oldchannel
 	channel, err := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
 	require.NoError(t, err)
 
@@ -661,7 +661,7 @@ func Test_LAOChannel_Witness_Message(t *testing.T) {
 	fakeHub, err := NewFakeHub("", organizerPk, nolog, nil)
 	require.NoError(t, err)
 
-	// Create new Lao channel
+	// Create new Lao oldchannel
 	m := mmessage.Message{MessageID: "0"}
 	channel, err := NewChannel(sampleLao, fakeHub, m, nolog, organizerPk, nil)
 	require.NoError(t, err)
@@ -669,7 +669,7 @@ func Test_LAOChannel_Witness_Message(t *testing.T) {
 	// Publish roll_call_create message
 	require.NoError(t, channel.Publish(sampleRollCallCreatePublish, nil))
 
-	// Publish witness message and catchup on channel to get the message back
+	// Publish witness message and catchup on oldchannel to get the message back
 	require.NoError(t, channel.Publish(sampleWitnessMessagePublish, nil))
 	catchupAnswer := channel.Catchup(mcatchup.Catchup{ID: 0})
 
@@ -683,12 +683,12 @@ func Test_LAOChannel_Witness_Message_Not_Received_Yet(t *testing.T) {
 	fakeHub, err := NewFakeHub("", organizerPk, nolog, nil)
 	require.NoError(t, err)
 
-	// Create new Lao channel
+	// Create new Lao oldchannel
 	m := mmessage.Message{MessageID: "0"}
 	channel, err := NewChannel(sampleLao, fakeHub, m, nolog, organizerPk, nil)
 	require.NoError(t, err)
 
-	// Publish witness message and catchup on channel to get the message back
+	// Publish witness message and catchup on oldchannel to get the message back
 	require.NoError(t, channel.Publish(sampleWitnessMessagePublish, nil))
 
 	// Publish roll_call_create message
@@ -728,7 +728,7 @@ type fakeHub struct {
 	messageChan chan socket.IncomingMessage
 
 	sync.RWMutex
-	channelByID map[string]channel.Channel
+	channelByID map[string]oldchannel.Channel
 
 	closedSockets chan string
 
@@ -745,11 +745,11 @@ type fakeHub struct {
 
 	log zerolog.Logger
 
-	laoFac channel.LaoFactory
+	laoFac oldchannel.LaoFactory
 }
 
 // NewFakeHub returns a fake Hub.
-func NewFakeHub(clientAddress string, publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+func NewFakeHub(clientAddress string, publicOrg kyber.Point, log zerolog.Logger, laoFac oldchannel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
@@ -763,7 +763,7 @@ func NewFakeHub(clientAddress string, publicOrg kyber.Point, log zerolog.Logger,
 	hub := fakeHub{
 		clientAddress:   clientAddress,
 		messageChan:     make(chan socket.IncomingMessage),
-		channelByID:     make(map[string]channel.Channel),
+		channelByID:     make(map[string]oldchannel.Channel),
 		closedSockets:   make(chan string),
 		pubKeyOwner:     publicOrg,
 		pubKeyServ:      pubServ,
@@ -785,36 +785,36 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	return point, secret
 }
 
-func (h *fakeHub) NotifyNewChannel(channeID string, channel channel.Channel, socket socket.Socket) {
+func (h *fakeHub) NotifyNewChannel(channeID string, channel oldchannel.Channel, socket socket.Socket) {
 	h.Lock()
 	h.channelByID[channeID] = channel
 	h.Unlock()
 }
 
-// GetPubKeyOwner implements channel.HubFunctionalities
+// GetPubKeyOwner implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPubKeyOwner() kyber.Point {
 	return h.pubKeyOwner
 }
 
-// GetPubKeyServ implements channel.HubFunctionalities
+// GetPubKeyServ implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
 }
 
-// GetClientServerAddress implements channel.HubFunctionalities
+// GetClientServerAddress implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetClientServerAddress() string {
 	return h.clientAddress
 }
 
-// Sign implements channel.HubFunctionalities
+// Sign implements oldchannel.HubFunctionalities
 func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	return nil, nil
 }
 
-// NotifyWitnessMessage implements channel.HubFunctionalities
+// NotifyWitnessMessage implements oldchannel.HubFunctionalities
 func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
 
-// GetPeersInfo implements channel.HubFunctionalities
+// GetPeersInfo implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPeersInfo() []mgreetserver.GreetServerParams {
 	peer1 := mgreetserver.GreetServerParams{
 		PublicKey:     "",

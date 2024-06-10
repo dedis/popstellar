@@ -15,9 +15,9 @@ import (
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
-	"popstellar/internal/old/channel/registry"
 	"popstellar/internal/old/inbox"
+	"popstellar/internal/old/oldchannel"
+	"popstellar/internal/old/oldchannel/registry"
 	"popstellar/internal/validation"
 	"strconv"
 	"sync"
@@ -35,25 +35,25 @@ const (
 
 // Channel is used to handle reaction messages.
 type Channel struct {
-	sockets   channel.Sockets
+	sockets   oldchannel.Sockets
 	inbox     *inbox.Inbox
 	attendees *attendees
 
-	// channel path
+	// oldchannel path
 	channelID string
 
-	hub channel.HubFunctionalities
+	hub oldchannel.HubFunctionalities
 	log zerolog.Logger
 
 	registry registry.MessageRegistry
 }
 
-// NewChannel returns a new initialized reaction channel
-func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) *Channel {
-	log = log.With().Str("channel", "reaction").Logger()
+// NewChannel returns a new initialized reaction oldchannel
+func NewChannel(channelPath string, hub oldchannel.HubFunctionalities, log zerolog.Logger) *Channel {
+	log = log.With().Str("oldchannel", "reaction").Logger()
 
 	newChannel := &Channel{
-		sockets:   channel.NewSockets(),
+		sockets:   oldchannel.NewSockets(),
 		inbox:     inbox.NewInbox(channelPath),
 		channelID: channelPath,
 		attendees: newAttendees(),
@@ -67,7 +67,7 @@ func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.
 }
 
 // ---
-// Publish-subscribe / channel.Channel implementation
+// Publish-subscribe / oldchannel.Channel implementation
 // ---
 
 // Subscribe is used to handle a subscribe message from the client.
@@ -89,13 +89,13 @@ func (c *Channel) Unsubscribe(socketID string, msg method2.Unsubscribe) error {
 	ok := c.sockets.Delete(socketID)
 
 	if !ok {
-		return manswer.NewError(-2, "client is not subscribed to this channel")
+		return manswer.NewError(-2, "client is not subscribed to this oldchannel")
 	}
 
 	return nil
 }
 
-// Publish is used to handle publish messages in the reaction channel.
+// Publish is used to handle publish messages in the reaction oldchannel.
 func (c *Channel) Publish(publish mpublish.Publish, socket socket.Socket) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
@@ -104,7 +104,7 @@ func (c *Channel) Publish(publish mpublish.Publish, socket socket.Socket) error 
 	err := c.verifyMessage(publish.Params.Message)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message on a "+
-			"reaction channel: %w", err)
+			"reaction oldchannel: %w", err)
 	}
 
 	err = c.handleMessage(publish.Params.Message, socket)
@@ -131,7 +131,7 @@ func (c *Channel) Broadcast(broadcast mbroadcast.Broadcast, socket socket.Socket
 	err := c.verifyMessage(broadcast.Params.Message)
 	if err != nil {
 		return xerrors.Errorf("failed to verify broadcast message on a "+
-			"reaction channel: %w", err)
+			"reaction oldchannel: %w", err)
 	}
 
 	err = c.handleMessage(broadcast.Params.Message, socket)
@@ -163,7 +163,7 @@ func (c *Channel) handleMessage(msg mmessage.Message, socket socket.Socket) erro
 	return nil
 }
 
-// NewReactionRegistry creates a new registry for the consensus channel
+// NewReactionRegistry creates a new registry for the consensus oldchannel
 func (c *Channel) NewReactionRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
@@ -323,7 +323,7 @@ func (c *Channel) broadcastToAllClients(msg mmessage.Message) error {
 // Others
 // ---
 
-// AddAttendee adds an attendee to the reaction channel.
+// AddAttendee adds an attendee to the reaction oldchannel.
 func (c *Channel) AddAttendee(key string) {
 	c.attendees.add(key)
 }

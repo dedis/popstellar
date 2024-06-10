@@ -23,7 +23,7 @@ import (
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
+	"popstellar/internal/old/oldchannel"
 	"sync"
 	"testing"
 	"time"
@@ -729,7 +729,7 @@ func Test_Create_LAO(t *testing.T) {
 
 	require.Equal(t, publish.ID, sock.resultID)
 
-	// we are expecting the lao channel factor be called with the right
+	// we are expecting the lao oldchannel factor be called with the right
 	// arguments.
 	require.Equal(t, rootPrefix+data.ID, fakeChannelFac.chanID)
 	require.Equal(t, msg.Data, fakeChannelFac.msg.Data)
@@ -738,7 +738,7 @@ func Test_Create_LAO(t *testing.T) {
 	require.Equal(t, msg.Signature, fakeChannelFac.msg.Signature)
 	require.Equal(t, msg.WitnessSignatures, fakeChannelFac.msg.WitnessSignatures)
 
-	// the server should have saved the channel locally
+	// the server should have saved the oldchannel locally
 
 	require.Contains(t, hub.channelByID.GetTable(), rootPrefix+data.ID)
 
@@ -947,7 +947,7 @@ func Test_Handle_Answer(t *testing.T) {
 }
 
 // Check that if the server receives a publish message from an end user, it will call the
-// publish function on the appropriate channel.
+// publish function on the appropriate oldchannel.
 func Test_Handle_Publish_From_Client(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -1009,12 +1009,12 @@ func Test_Handle_Publish_From_Client(t *testing.T) {
 	require.NoError(t, sock.err)
 	require.Equal(t, publish.ID, sock.resultID)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, publish, c.publish)
 }
 
 // Check that if the server receives a publish message from an end user, it will call the
-// publish function on the appropriate channel.
+// publish function on the appropriate oldchannel.
 func Test_Handle_Publish_From_Server(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -1076,7 +1076,7 @@ func Test_Handle_Publish_From_Server(t *testing.T) {
 	require.NoError(t, sock.err)
 	require.Equal(t, publish.ID, sock.resultID)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, publish, c.publish)
 }
 
@@ -1143,7 +1143,7 @@ func Test_Receive_Publish_Twice(t *testing.T) {
 	require.NoError(t, sock.err)
 	require.Equal(t, publish.ID, sock.resultID)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, publish, c.publish)
 
 	// Receive the same message again
@@ -1241,7 +1241,7 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 
 	require.Equal(t, 0, sock.resultID)
 
-	// we are expecting the lao channel factor be called with the right
+	// we are expecting the lao oldchannel factor be called with the right
 	// arguments.
 	require.Equal(t, rootPrefix+data.ID, fakeChannelFac.chanID)
 	require.Equal(t, msg.Data, fakeChannelFac.msg.Data)
@@ -1250,7 +1250,7 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 	require.Equal(t, msg.Signature, fakeChannelFac.msg.Signature)
 	require.Equal(t, msg.WitnessSignatures, fakeChannelFac.msg.WitnessSignatures)
 
-	// the server should have saved the channel locally
+	// the server should have saved the oldchannel locally
 
 	require.Contains(t, hub.channelByID.GetTable(), rootPrefix+data.ID)
 	channel, _ := hub.channelByID.Get(rootPrefix + laoID)
@@ -1346,7 +1346,7 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 }
 
 // Check that if the server receives a subscribe message, it will call the
-// subscribe function on the appropriate channel.
+// subscribe function on the appropriate oldchannel.
 func Test_Handle_Subscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -1391,7 +1391,7 @@ func Test_Handle_Subscribe(t *testing.T) {
 	require.NoError(t, sock.err)
 	require.Equal(t, subscribe.ID, sock.resultID)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, subscribe, c.subscribe)
 
 	// check that there is no errors with messages from witness too
@@ -1404,12 +1404,12 @@ func Test_Handle_Subscribe(t *testing.T) {
 	require.NoError(t, sock.err)
 	require.Equal(t, subscribe.ID, sock.resultID)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, subscribe, c.subscribe)
 }
 
 // Check that if the server receives an unsubscribe message, it will call the
-// unsubscribe function on the appropriate channel.
+// unsubscribe function on the appropriate oldchannel.
 func TestServer_Handle_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -1454,7 +1454,7 @@ func TestServer_Handle_Unsubscribe(t *testing.T) {
 	require.NoError(t, sock.err)
 	require.Equal(t, unsubscribe.ID, sock.resultID)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, unsubscribe, c.unsubscribe)
 	require.Equal(t, sock.id, c.socketID)
 
@@ -1468,13 +1468,13 @@ func TestServer_Handle_Unsubscribe(t *testing.T) {
 	require.NoError(t, sock.err)
 	require.Equal(t, unsubscribe.ID, sock.resultID)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, unsubscribe, c.unsubscribe)
 	require.Equal(t, sock.id, c.socketID)
 }
 
 // Check that if the server receives a catchup message, it will call the
-// catchup function on the appropriate channel.
+// catchup function on the appropriate oldchannel.
 func TestServer_Handle_Catchup(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -1484,7 +1484,7 @@ func TestServer_Handle_Catchup(t *testing.T) {
 		},
 	}
 
-	// set fake messages on the channel
+	// set fake messages on the oldchannel
 	c := &fakeChannel{
 		msgs: fakeMessages,
 	}
@@ -1528,11 +1528,11 @@ func TestServer_Handle_Catchup(t *testing.T) {
 	require.NoError(t, sock.err)
 	require.Equal(t, catchup.ID, sock.resultID)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, catchup, c.catchup)
 	require.Equal(t, fakeMessages, c.msgs)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, catchup, c.catchup)
 	require.Equal(t, fakeMessages, c.msgs)
 }
@@ -1592,8 +1592,8 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 		},
 
 		Params: struct {
-			Channel string           "json:\"channel\""
-			Message mmessage.Message "json:\"message\""
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: rootPrefix + laoID,
 			Message: msg,
@@ -1617,7 +1617,7 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 	require.Equal(t, broadcastBuf, sock.msg)
 	sock.Unlock()
 
-	// check that the channel has been called with the broadcast message
+	// check that the oldchannel has been called with the broadcast message
 	c.Lock()
 	require.Equal(t, broadcast, c.broadcast)
 	c.Unlock()
@@ -1988,28 +1988,28 @@ func generateKeyPair(t *testing.T) keypair {
 	return keypair{point, pkbuf, secret}
 }
 
-// fakeChannelFac implements a channel.LaoFactory function. It takes care
+// fakeChannelFac implements a oldchannel.LaoFactory function. It takes care
 // of keeping what has been provided to that function for check in the tests.
 type fakeChannelFac struct {
 	chanID string
 	msg    mmessage.Message
-	c      channel.Channel
+	c      oldchannel.Channel
 	log    zerolog.Logger
 }
 
-// newChannel implement the type channel.LaoFactory
-func (c *fakeChannelFac) newChannel(channelID string, hub channel.HubFunctionalities,
+// newChannel implement the type oldchannel.LaoFactory
+func (c *fakeChannelFac) newChannel(channelID string, hub oldchannel.HubFunctionalities,
 	msg mmessage.Message, log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket,
-) (channel.Channel, error) {
+) (oldchannel.Channel, error) {
 	c.chanID = channelID
 	c.msg = msg
 	c.log = log
 	return c.c, nil
 }
 
-// fakeChannel is a fake implementation of a channel
+// fakeChannel is a fake implementation of a oldchannel
 //
-// - implements channel.Channel
+// - implements oldchannel.Channel
 type fakeChannel struct {
 	sync.Mutex
 
@@ -2028,7 +2028,7 @@ type fakeChannel struct {
 	msgs []mmessage.Message
 }
 
-// Subscribe implements channel.Channel
+// Subscribe implements oldchannel.Channel
 func (f *fakeChannel) Subscribe(socket socket.Socket, msg msubscribe.Subscribe) error {
 	f.Lock()
 	defer f.Unlock()
@@ -2038,7 +2038,7 @@ func (f *fakeChannel) Subscribe(socket socket.Socket, msg msubscribe.Subscribe) 
 	return nil
 }
 
-// Unsubscribe implements channel.Channel
+// Unsubscribe implements oldchannel.Channel
 func (f *fakeChannel) Unsubscribe(socketID string, msg method2.Unsubscribe) error {
 	f.Lock()
 	defer f.Unlock()
@@ -2048,7 +2048,7 @@ func (f *fakeChannel) Unsubscribe(socketID string, msg method2.Unsubscribe) erro
 	return nil
 }
 
-// Publish implements channel.Channel
+// Publish implements oldchannel.Channel
 func (f *fakeChannel) Publish(msg mpublish.Publish, socket socket.Socket) error {
 	f.Lock()
 	defer f.Unlock()
@@ -2057,7 +2057,7 @@ func (f *fakeChannel) Publish(msg mpublish.Publish, socket socket.Socket) error 
 	return nil
 }
 
-// Catchup implements channel.Channel
+// Catchup implements oldchannel.Channel
 func (f *fakeChannel) Catchup(msg mcatchup.Catchup) []mmessage.Message {
 	f.Lock()
 	defer f.Unlock()
@@ -2066,7 +2066,7 @@ func (f *fakeChannel) Catchup(msg mcatchup.Catchup) []mmessage.Message {
 	return f.msgs
 }
 
-// Broadcast implements channel.Channel
+// Broadcast implements oldchannel.Channel
 func (f *fakeChannel) Broadcast(msg mbroadcast.Broadcast, _ socket.Socket) error {
 	f.Lock()
 	defer f.Unlock()

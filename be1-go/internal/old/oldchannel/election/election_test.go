@@ -20,7 +20,7 @@ import (
 	"popstellar/internal/handler/method/subscribe/msubscribe"
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
+	"popstellar/internal/old/oldchannel"
 	"popstellar/internal/validation"
 	"sync"
 	"testing"
@@ -40,7 +40,7 @@ const (
 	relativeMsgDataExamplePath string = "../../../../../protocol/examples/messageData"
 )
 
-// Tests that the channel creation fails if two questions are the same
+// Tests that the oldchannel creation fails if two questions are the same
 func Test_Creation_Fails_If_Identical_Questions(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -72,16 +72,16 @@ func Test_Creation_Fails_If_Identical_Questions(t *testing.T) {
 	attendees := make(map[string]struct{})
 	attendees[base64.URLEncoding.EncodeToString(keypair.publicBuf)] = struct{}{}
 	channelPath := "/root/" + electionSetup.Lao + "/" + electionSetup.ID
-	// Creates channel with two identical questions
+	// Creates oldchannel with two identical questions
 	_, err = NewChannel(channelPath, mmessage.Message{MessageID: "0"}, electionSetup, attendees, fakeHub, nolog, keypair.public)
 	//NewChannel returns an error if the questions are not valid
 	require.Error(t, err)
 }
 
-// Tests that the channel works correctly when it receives a subscribe
+// Tests that the oldchannel works correctly when it receives a subscribe
 func Test_Election_Channel_Subscribe(t *testing.T) {
 
-	// create election channel: election with one question
+	// create election oldchannel: election with one question
 	electChannel, _ := newFakeChannel(t, false)
 
 	file := filepath.Join(relativeQueryExamplePath, "subscribe", "subscribe.json")
@@ -101,10 +101,10 @@ func Test_Election_Channel_Subscribe(t *testing.T) {
 	require.True(t, electChannel.sockets.Delete("socket"))
 }
 
-// Tests that the channel works correctly when it receives an unsubscribe
+// Tests that the oldchannel works correctly when it receives an unsubscribe
 func Test_Election_Channel_Unsubscribe(t *testing.T) {
 
-	// create election channel: election with one question
+	// create election oldchannel: election with one question
 	electChannel, _ := newFakeChannel(t, false)
 
 	file := filepath.Join(relativeQueryExamplePath, "unsubscribe", "unsubscribe.json")
@@ -125,11 +125,11 @@ func Test_Election_Channel_Unsubscribe(t *testing.T) {
 	require.False(t, electChannel.sockets.Delete("socket"))
 }
 
-// Test that the channel throws an error when it receives an unsubscribe from a
+// Test that the oldchannel throws an error when it receives an unsubscribe from a
 // non-subscribed source
 func Test_General_Channel_Wrong_Unsubscribe(t *testing.T) {
 
-	// create election channel: election with one question
+	// create election oldchannel: election with one question
 	electChannel, _ := newFakeChannel(t, false)
 
 	file := filepath.Join(relativeQueryExamplePath, "unsubscribe", "unsubscribe.json")
@@ -141,13 +141,13 @@ func Test_General_Channel_Wrong_Unsubscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	err = electChannel.Unsubscribe("socket", unsub)
-	require.Error(t, err, "client is not subscribed to this channel")
+	require.Error(t, err, "client is not subscribed to this oldchannel")
 }
 
-// Tests that the channel works correctly when it receives a catchup
+// Tests that the oldchannel works correctly when it receives a catchup
 func Test_Election_Channel_Catchup(t *testing.T) {
 
-	// create election channel: election with one question
+	// create election oldchannel: election with one question
 	electChannel, _ := newFakeChannel(t, false)
 
 	// Create the messages
@@ -180,13 +180,13 @@ func Test_Election_Channel_Catchup(t *testing.T) {
 	}
 }
 
-// Tests that the channel works when it receives a broadcast message
+// Tests that the oldchannel works when it receives a broadcast message
 func Test_Election_Channel_Broadcast(t *testing.T) {
 
-	// create election channel: election with one question
+	// create election oldchannel: election with one question
 	electChannel, _ := newFakeChannel(t, false)
 
-	// create a fakeSocket that is listening to the channel
+	// create a fakeSocket that is listening to the oldchannel
 	fakeSock := &fakeSocket{id: "socket"}
 	electChannel.sockets.Upsert(fakeSock)
 
@@ -203,15 +203,15 @@ func Test_Election_Channel_Broadcast(t *testing.T) {
 	require.Error(t, electChannel.Broadcast(broadcast, nil))
 }
 
-// Tests that the channel works correctly when it receives a cast vote and
+// Tests that the oldchannel works correctly when it receives a cast vote and
 // end the election correctly
 func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 
-	// create election channel: election with one question
+	// create election oldchannel: election with one question
 	electChannel, pkOrganizer := newFakeChannel(t, false)
 	electChannel.started = true
 
-	// create a fakeSocket that is listening to the channel
+	// create a fakeSocket that is listening to the oldchannel
 	fakeSock := &fakeSocket{id: "socket"}
 	electChannel.sockets.Upsert(fakeSock)
 
@@ -253,7 +253,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 	pub.Params.Message = m
 	pub.Params.Channel = electChannel.channelID
 
-	// publish the cast vote on the election channel
+	// publish the cast vote on the election oldchannel
 	require.NoError(t, electChannel.Publish(pub, socket.ClientSocket{}))
 
 	// check new vote is in the valid votes map
@@ -293,7 +293,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 	// wrap the message in a publish
 	pub.Params.Message = m
 
-	// publish the end election on the election channel
+	// publish the end election on the election oldchannel
 	require.NoError(t, electChannel.Publish(pub, socket.ClientSocket{}))
 
 	// check that the listening socket has received the election results
@@ -312,10 +312,10 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 	require.Equal(t, "election", result.Object)
 }
 
-// Tests that the channel gathers correctly the results
+// Tests that the oldchannel gathers correctly the results
 func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 
-	// create election channel: election with one question
+	// create election oldchannel: election with one question
 	electChannel, pkOrganizer := newFakeChannel(t, false)
 
 	// check the created election has only one question
@@ -390,7 +390,7 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 }
 
 func Test_Update_Vote_Works(t *testing.T) {
-	// create election channel: election with one question
+	// create election oldchannel: election with one question
 	electChannel, _ := newFakeChannel(t, false)
 
 	// get cast vote message data
@@ -424,10 +424,10 @@ func Test_Update_Vote_Works(t *testing.T) {
 
 func Test_Publish_Election_Open(t *testing.T) {
 
-	// create election channel: election with one question
+	// create election oldchannel: election with one question
 	electChannel, pkOrganizer := newFakeChannel(t, false)
 
-	// create a fakeSocket that is listening to the channel
+	// create a fakeSocket that is listening to the oldchannel
 	fakeSock := &fakeSocket{id: "socket"}
 	electChannel.sockets.Upsert(fakeSock)
 
@@ -469,7 +469,7 @@ func Test_Publish_Election_Open(t *testing.T) {
 	pub.Params.Message = m
 	pub.Params.Channel = electChannel.channelID
 
-	// publish the election open on the election channel
+	// publish the election open on the election oldchannel
 	err = electChannel.Publish(pub, socket.ClientSocket{})
 	require.NoError(t, err)
 
@@ -477,7 +477,7 @@ func Test_Publish_Election_Open(t *testing.T) {
 
 func Test_Process_Election_Open(t *testing.T) {
 
-	// create election channel: election with one question
+	// create election oldchannel: election with one question
 	electChannel, _ := newFakeChannel(t, false)
 
 	file := filepath.Join(relativeMsgDataExamplePath, "election_open", "election_open.json")
@@ -511,7 +511,7 @@ func Test_Process_Election_Open(t *testing.T) {
 }
 
 func Test_Sending_Election_Key(t *testing.T) {
-	// create secret ballot election channel: election with one question
+	// create secret ballot election oldchannel: election with one question
 	electChannel, _ := newFakeChannel(t, true)
 
 	require.Equal(t, mlao.SecretBallot, electChannel.electionType)
@@ -533,7 +533,7 @@ func Test_Sending_Election_Key(t *testing.T) {
 	err = keyPoint.UnmarshalBinary(key)
 	require.NoError(t, err)
 
-	// Compare the key received and the public key of the channel
+	// Compare the key received and the public key of the oldchannel
 	require.True(t, electChannel.pubElectionKey.Equal(keyPoint))
 }
 
@@ -572,7 +572,7 @@ func Test_Decrypt(t *testing.T) {
 		slice32[i] = 0
 	}
 
-	// create secret ballot election channel: election with one question
+	// create secret ballot election oldchannel: election with one question
 	electChannel, _ := newFakeChannel(t, true)
 
 	// vote is not base64
@@ -675,7 +675,7 @@ type fakeHub struct {
 	messageChan chan socket.IncomingMessage
 
 	sync.RWMutex
-	channelByID map[string]channel.Channel
+	channelByID map[string]oldchannel.Channel
 
 	closedSockets chan string
 
@@ -692,13 +692,13 @@ type fakeHub struct {
 
 	log zerolog.Logger
 
-	laoFac channel.LaoFactory
+	laoFac oldchannel.LaoFactory
 
 	fakeSock fakeSocket
 }
 
 // NewFakeHub returns a fake Hub.
-func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac oldchannel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
@@ -711,7 +711,7 @@ func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 
 	hub := fakeHub{
 		messageChan:     make(chan socket.IncomingMessage),
-		channelByID:     make(map[string]channel.Channel),
+		channelByID:     make(map[string]oldchannel.Channel),
 		closedSockets:   make(chan string),
 		pubKeyOwner:     publicOrg,
 		pubKeyServ:      pubServ,
@@ -727,28 +727,28 @@ func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 	return &hub, nil
 }
 
-func (h *fakeHub) NotifyNewChannel(channeID string, channel channel.Channel, socket socket.Socket) {
+func (h *fakeHub) NotifyNewChannel(channeID string, channel oldchannel.Channel, socket socket.Socket) {
 	h.Lock()
 	h.channelByID[channeID] = channel
 	h.Unlock()
 }
 
-// GetPubKeyOwner implements channel.HubFunctionalities
+// GetPubKeyOwner implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPubKeyOwner() kyber.Point {
 	return h.pubKeyOwner
 }
 
-// GetPubKeyServ implements channel.HubFunctionalities
+// GetPubKeyServ implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
 }
 
-// GetClientServerAddress implements channel.HubFunctionalities
+// GetClientServerAddress implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetClientServerAddress() string {
 	return ""
 }
 
-// Sign implements channel.HubFunctionalities
+// Sign implements oldchannel.HubFunctionalities
 func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	signatureBuf, err := schnorr.Sign(crypto.Suite, h.secKeyServ, data)
 	if err != nil {
@@ -757,10 +757,10 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	return signatureBuf, nil
 }
 
-// NotifyWitnessMessage implements channel.HubFunctionalities
+// NotifyWitnessMessage implements oldchannel.HubFunctionalities
 func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
 
-// GetPeersInfo implements channel.HubFunctionalities
+// GetPeersInfo implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPeersInfo() []mgreetserver.GreetServerParams {
 	return nil
 }

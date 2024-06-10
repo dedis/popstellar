@@ -7,7 +7,7 @@ import (
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
 	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
-	"popstellar/internal/old/channel"
+	"popstellar/internal/old/oldchannel"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -21,7 +21,7 @@ func init() {
 }
 
 func TestVerify_LaoState(t *testing.T) {
-	// create the channel
+	// create the oldchannel
 	laoChannel, ok := newFakeChannel(t).(*Channel)
 	require.True(t, ok)
 
@@ -78,7 +78,7 @@ func TestVerify_LaoState(t *testing.T) {
 }
 
 func TestVerify_RollCallCreate(t *testing.T) {
-	// create the channel
+	// create the oldchannel
 	laoChannel, ok := newFakeChannel(t).(*Channel)
 	require.True(t, ok)
 
@@ -108,7 +108,7 @@ func TestVerify_RollCallCreate(t *testing.T) {
 }
 
 func TestVerify_RollCallOpen(t *testing.T) {
-	// create the channel
+	// create the oldchannel
 	laoChannel, ok := newFakeChannel(t).(*Channel)
 	require.True(t, ok)
 
@@ -138,7 +138,7 @@ func TestVerify_RollCallOpen(t *testing.T) {
 }
 
 func TestVerify_RollCallClose(t *testing.T) {
-	// create the channel
+	// create the oldchannel
 	laoChannel, ok := newFakeChannel(t).(*Channel)
 	require.True(t, ok)
 
@@ -168,7 +168,7 @@ func TestVerify_RollCallClose(t *testing.T) {
 }
 
 func TestVerify_ElectionSetup(t *testing.T) {
-	// create the channel
+	// create the oldchannel
 	laoChannel, ok := newFakeChannel(t).(*Channel)
 	require.True(t, ok)
 
@@ -233,14 +233,14 @@ func TestVerify_ElectionSetup(t *testing.T) {
 // -----------------------------------------------------------------------------
 // Utility functions
 
-func newFakeChannel(t *testing.T) channel.Channel {
+func newFakeChannel(t *testing.T) oldchannel.Channel {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
 	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	numMessages := 1
 
 	messages := make([]mmessage.Message, numMessages)

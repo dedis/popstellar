@@ -52,11 +52,11 @@ const (
 	    		)`
 
 	createChannel = `
-	CREATE TABLE IF NOT EXISTS channel (
+	CREATE TABLE IF NOT EXISTS oldchannel (
 	    		channelPath TEXT,
 	    		typeID TEXT,
 	    		laoPath TEXT NULL,
-	    		FOREIGN KEY (laoPath) REFERENCES channel(channelPath),
+	    		FOREIGN KEY (laoPath) REFERENCES oldchannel(channelPath),
 	    		FOREIGN KEY (typeID) REFERENCES channelType(ID),
 	    		PRIMARY KEY (channelPath)
 	            )`
@@ -66,7 +66,7 @@ const (
 	    		channelPath TEXT,
 	    		publicKey TEXT,
 	    		secretKey TEXT NULL,
-	    		FOREIGN KEY (channelPath) REFERENCES channel(channelPath),
+	    		FOREIGN KEY (channelPath) REFERENCES oldchannel(channelPath),
 	    		PRIMARY KEY (channelPath)
 	            )`
 
@@ -76,7 +76,7 @@ const (
 	    		messageID TEXT,
 	    		isBaseChannel BOOLEAN,
 	    		FOREIGN KEY (messageID) REFERENCES message(messageID),
-	    		FOREIGN KEY (channelPath) REFERENCES channel(channelPath),
+	    		FOREIGN KEY (channelPath) REFERENCES oldchannel(channelPath),
 	    		PRIMARY KEY (channelPath, messageID)
 	            )`
 
@@ -119,8 +119,8 @@ const (
 const (
 	insertChannelMessage           = `INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)`
 	insertMessage                  = `INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)`
-	insertChannel                  = `INSERT INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
-	insertOrIgnoreChannel          = `INSERT OR IGNORE INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
+	insertChannel                  = `INSERT INTO oldchannel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
+	insertOrIgnoreChannel          = `INSERT OR IGNORE INTO oldchannel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
 	insertChannelType              = `INSERT INTO channelType (type) VALUES (?)`
 	insertKeys                     = `INSERT INTO key (channelPath, publicKey, secretKey) VALUES (?, ?, ?)`
 	insertPublicKey                = `INSERT INTO key (channelPath, publicKey) VALUES (?, ?)`
@@ -152,9 +152,9 @@ const (
 
 	selectMessage = `SELECT message FROM message WHERE messageID = ?`
 
-	selectAllChannels = `SELECT channelPath FROM channel`
+	selectAllChannels = `SELECT channelPath FROM oldchannel`
 
-	selectChannelType = `SELECT type FROM channelType JOIN channel on channel.typeID = channelType.ID WHERE channelPath = ?`
+	selectChannelType = `SELECT type FROM channelType JOIN oldchannel on oldchannel.typeID = channelType.ID WHERE channelPath = ?`
 
 	selectAllMessagesFromChannel = `
     SELECT message.message
@@ -163,7 +163,7 @@ const (
     WHERE channelMessage.channelPath = ?
     ORDER BY message.storedTime DESC`
 
-	selectChannelPath = `SELECT channelPath FROM channel WHERE channelPath = ?`
+	selectChannelPath = `SELECT channelPath FROM oldchannel WHERE channelPath = ?`
 
 	selectMessageID = `SELECT messageID FROM message WHERE messageID = ?`
 
@@ -206,7 +206,7 @@ const (
     FROM key 
     WHERE channelPath = (
         SELECT laoPath 
-        FROM channel 
+        FROM oldchannel 
         WHERE channelPath = ?
     )
 `
@@ -255,7 +255,7 @@ const (
         FROM message
         JOIN channelMessage ON message.messageID = channelMessage.messageID
     ) joined
-    JOIN channel c ON joined.channelPath = c.laoPath
+    JOIN oldchannel c ON joined.channelPath = c.laoPath
     WHERE c.channelPath = ?
       AND json_extract(joined.messageData, '$.object') = ?
       AND json_extract(joined.messageData, '$.action') = ?

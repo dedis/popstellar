@@ -48,7 +48,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	for channel, channelType := range channels {
 		_, err = tx.Exec(insertChannel, channel, channelTypeToID[channelType], laoPath)
 		if err != nil {
-			return poperrors.NewDatabaseInsertErrorMsg("channel %s: %v", channel, err)
+			return poperrors.NewDatabaseInsertErrorMsg("oldchannel %s: %v", channel, err)
 		}
 	}
 
@@ -58,12 +58,12 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	}
 	_, err = tx.Exec(insertChannelMessage, messagedata.Root, msg.MessageID, true)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("relation lao create message and root channel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation lao create message and root oldchannel: %v", err)
 	}
 
 	_, err = tx.Exec(insertChannelMessage, laoPath, msg.MessageID, false)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("relation lao create message and lao channel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation lao create message and lao oldchannel: %v", err)
 	}
 
 	_, err = tx.Exec(insertPublicKey, laoPath, organizerPubBuf)
@@ -76,7 +76,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	}
 	_, err = tx.Exec(insertChannelMessage, laoPath, laoGreetMsg.MessageID, false)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("relation lao greet message lao channel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation lao greet message lao oldchannel: %v", err)
 	}
 
 	err = tx.Commit()
@@ -96,7 +96,7 @@ func (s *SQLite) HasChannel(channelPath string) (bool, error) {
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	} else if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return false, poperrors.NewDatabaseSelectErrorMsg("channel: %v", err)
+		return false, poperrors.NewDatabaseSelectErrorMsg("oldchannel: %v", err)
 	} else {
 		return true, nil
 	}

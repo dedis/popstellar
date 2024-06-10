@@ -16,7 +16,7 @@ import (
 const (
 	laoIDBase64   = "lao id is %s, should be base64URL encoded"
 	elecIDBase64  = "election id is %s, should be base64URL encoded"
-	elecIDFormat  = "election channel id is %s, should be formatted as /root/laoID/electionID"
+	elecIDFormat  = "election oldchannel id is %s, should be formatted as /root/laoID/electionID"
 	laoIDCompare  = "lao id is %s, should be %s"
 	elecIDCompare = "election id is %s, should be %s"
 )
@@ -37,7 +37,7 @@ func (c *Channel) verifyMessageElectionOpen(electionOpen melection2.ElectionOpen
 		return xerrors.Errorf(elecIDBase64, electionOpen.Election)
 	}
 
-	// split channel to [lao id, election id]
+	// split oldchannel to [lao id, election id]
 	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
 
 	IDs := strings.Split(noRoot, "/")
@@ -48,12 +48,12 @@ func (c *Channel) verifyMessageElectionOpen(electionOpen melection2.ElectionOpen
 	laoID := IDs[0]
 	electionID := IDs[1]
 
-	// verify if lao id is the same as the channel
+	// verify if lao id is the same as the oldchannel
 	if electionOpen.Lao != laoID {
 		return xerrors.Errorf(laoIDCompare, laoID, electionOpen.Lao)
 	}
 
-	// verify if election id is the same as the channel
+	// verify if election id is the same as the oldchannel
 	if electionOpen.Election != electionID {
 		return xerrors.Errorf(elecIDCompare, electionID, electionOpen.Election)
 	}
@@ -93,7 +93,7 @@ func (c *Channel) verifyMessageCastVote(castVote melection2.VoteCastVote) error 
 		return xerrors.Errorf(elecIDBase64, castVote.Election)
 	}
 
-	// split channel to [lao id, election id]
+	// split oldchannel to [lao id, election id]
 	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
@@ -102,12 +102,12 @@ func (c *Channel) verifyMessageCastVote(castVote melection2.VoteCastVote) error 
 	laoID := IDs[0]
 	electionID := IDs[1]
 
-	// verify if lao id is the same as the channel
+	// verify if lao id is the same as the oldchannel
 	if castVote.Lao != laoID {
 		return xerrors.Errorf(laoIDCompare, laoID, castVote.Lao)
 	}
 
-	// verify if election id is the same as the channel
+	// verify if election id is the same as the oldchannel
 	if castVote.Election != electionID {
 		return xerrors.Errorf(elecIDCompare, electionID, castVote.Election)
 	}
@@ -160,7 +160,7 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd melection2.ElectionEnd) e
 		return xerrors.Errorf(elecIDBase64, electionEnd.Election)
 	}
 
-	// split channel to [lao id, election id]
+	// split oldchannel to [lao id, election id]
 	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
@@ -169,12 +169,12 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd melection2.ElectionEnd) e
 	laoID := IDs[0]
 	electionID := IDs[1]
 
-	// verify if lao id is the same as the channel
+	// verify if lao id is the same as the oldchannel
 	if electionEnd.Lao != laoID {
 		return xerrors.Errorf(laoIDCompare, laoID, electionEnd.Lao)
 	}
 
-	// verify if election id is the same as the channel
+	// verify if election id is the same as the oldchannel
 	if electionEnd.Election != electionID {
 		return xerrors.Errorf(elecIDCompare, electionID, electionEnd.Election)
 	}

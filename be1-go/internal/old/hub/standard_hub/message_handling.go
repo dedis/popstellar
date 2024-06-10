@@ -36,7 +36,7 @@ const (
 	maxRetry            = 10
 )
 
-// handleRootChannelPublishMessage handles an incoming publish message on the root channel.
+// handleRootChannelPublishMessage handles an incoming publish message on the root oldchannel.
 func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish mpublish.Publish) error {
 	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
 	if err != nil {
@@ -90,7 +90,7 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish mpubli
 	return nil
 }
 
-// handleRootChannelPublishMessage handles an incoming publish message on the root channel.
+// handleRootChannelPublishMessage handles an incoming publish message on the root oldchannel.
 func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 	broadcast mbroadcast.Broadcast,
 ) error {
@@ -152,7 +152,7 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 	return nil
 }
 
-// handleRootCatchup handles an incoming catchup message on the root channel
+// handleRootCatchup handles an incoming catchup message on the root oldchannel
 func (h *Hub) handleRootCatchup(senderSocket socket.Socket,
 	byteMessage []byte,
 ) ([]mmessage.Message, int, error) {
@@ -165,7 +165,7 @@ func (h *Hub) handleRootCatchup(senderSocket socket.Socket,
 
 	if catchup.Params.Channel != rootChannel {
 		return nil, catchup.ID, xerrors.Errorf("server catchup message can only " +
-			"be sent on /root channel")
+			"be sent on /root oldchannel")
 	}
 
 	messages := h.hubInbox.GetRootMessages()
@@ -350,7 +350,7 @@ func (h *Hub) handleSubscribe(socket socket.Socket, byteMessage []byte) (int, er
 
 	channel, err := h.getChan(subscribe.Params.Channel)
 	if err != nil {
-		return subscribe.ID, xerrors.Errorf("failed to get subscribe channel: %v", err)
+		return subscribe.ID, xerrors.Errorf("failed to get subscribe oldchannel: %v", err)
 	}
 
 	err = channel.Subscribe(socket, subscribe)
@@ -371,7 +371,7 @@ func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, 
 
 	channel, err := h.getChan(unsubscribe.Params.Channel)
 	if err != nil {
-		return unsubscribe.ID, xerrors.Errorf("failed to get unsubscribe channel: %v", err)
+		return unsubscribe.ID, xerrors.Errorf("failed to get unsubscribe oldchannel: %v", err)
 	}
 
 	err = channel.Unsubscribe(socket.ID(), unsubscribe)
@@ -398,7 +398,7 @@ func (h *Hub) handleCatchup(socket socket.Socket,
 
 	channel, err := h.getChan(catchup.Params.Channel)
 	if err != nil {
-		return nil, catchup.ID, xerrors.Errorf("failed to get catchup channel: %v", err)
+		return nil, catchup.ID, xerrors.Errorf("failed to get catchup oldchannel: %v", err)
 	}
 
 	msg := channel.Catchup(catchup)
@@ -478,7 +478,7 @@ func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error 
 
 //-----------------------Helper methods for message handling---------------------------
 
-// getMissingIds compares two maps of channel Ids associated to slices of message Ids to
+// getMissingIds compares two maps of oldchannel Ids associated to slices of message Ids to
 // determine the missing Ids from the storedIds map with respect to the receivedIds map
 func getMissingIds(receivedIds map[string][]string, storedIds map[string][]string, blacklist *hub_state.ThreadSafeSlice[string]) map[string][]string {
 	missingIds := make(map[string][]string)
@@ -608,7 +608,7 @@ func (h *Hub) loopOverMessages(messages *map[string][]json.RawMessage, senderSoc
 		}
 		// Update the list of messages to process during the next iteration
 		(*messages)[channel] = newMessageArray
-		// if no messages left for the channel, remove the channel from the map
+		// if no messages left for the oldchannel, remove the oldchannel from the map
 		if len(newMessageArray) == 0 {
 			delete(*messages, channel)
 		}

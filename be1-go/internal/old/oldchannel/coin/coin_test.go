@@ -17,7 +17,7 @@ import (
 	"popstellar/internal/handler/method/subscribe/msubscribe"
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
+	"popstellar/internal/old/oldchannel"
 	"popstellar/internal/validation"
 	"sync"
 	"testing"
@@ -33,7 +33,7 @@ import (
 
 const protocolRelativePath string = "../../../validation/protocol"
 
-// Tests that the channel works correctly when it receives a subscribe
+// Tests that the oldchannel works correctly when it receives a subscribe
 func Test_General_Channel_Subscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -61,7 +61,7 @@ func Test_General_Channel_Subscribe(t *testing.T) {
 	require.True(t, channelDC.sockets.Delete("socket"))
 }
 
-// Tests that the channel works correctly when it receives an unsubscribe
+// Tests that the oldchannel works correctly when it receives an unsubscribe
 func Test_General_Channel_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -90,7 +90,7 @@ func Test_General_Channel_Unsubscribe(t *testing.T) {
 	require.False(t, channelDC.sockets.Delete("socket"))
 }
 
-// Test that the channel throws an error when it receives an unsubscribe from a
+// Test that the oldchannel throws an error when it receives an unsubscribe from a
 // non-subscribed source
 func Test_General_Channel_Wrong_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
@@ -112,10 +112,10 @@ func Test_General_Channel_Wrong_Unsubscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	err = channelDC.Unsubscribe("socket", message)
-	require.Error(t, err, "client is not subscribed to this channel")
+	require.Error(t, err, "client is not subscribed to this oldchannel")
 }
 
-// Tests that the channel works correctly when it receives a catchup
+// Tests that the oldchannel works correctly when it receives a catchup
 func Test_Coin_Channel_Catchup(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -127,7 +127,7 @@ func Test_Coin_Channel_Catchup(t *testing.T) {
 	numMessages := 5
 	messages := make([]mmessage.Message, numMessages)
 
-	// Create the channel
+	// Create the oldchannel
 	channel := NewChannel("channel0", fakeHub, nolog)
 
 	channelDC, ok := channel.(*Channel)
@@ -157,7 +157,7 @@ func Test_Coin_Channel_Catchup(t *testing.T) {
 	}
 }
 
-// Tests that the channel throws an error when it receives a publish message
+// Tests that the oldchannel throws an error when it receives a publish message
 func Test_General_Channel_Publish(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -165,7 +165,7 @@ func Test_General_Channel_Publish(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	channel := NewChannel("channel0", fakeHub, nolog)
 
 	channelDC, ok := channel.(*Channel)
@@ -184,7 +184,7 @@ func Test_General_Channel_Publish(t *testing.T) {
 	require.Error(t, err, "nothing should be directly published in the general")
 }
 
-// Tests that the channel works correctly when it receives a transaction
+// Tests that the oldchannel works correctly when it receives a transaction
 func Test_SendTransaction(t *testing.T) {
 	// Create the hub
 
@@ -197,7 +197,7 @@ func Test_SendTransaction(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
@@ -241,7 +241,7 @@ func Test_SendTransaction(t *testing.T) {
 	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
 }
 
-// Tests that the channel works correctly when it receives a large transaction
+// Tests that the oldchannel works correctly when it receives a large transaction
 func Test_SendTransactionMaxAmount(t *testing.T) {
 	// Create the hub
 
@@ -254,7 +254,7 @@ func Test_SendTransactionMaxAmount(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
@@ -298,7 +298,7 @@ func Test_SendTransactionMaxAmount(t *testing.T) {
 	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
 }
 
-// Tests that the channel rejects transactions that exceed the maximum amount
+// Tests that the oldchannel rejects transactions that exceed the maximum amount
 func Test_SendTransactionOverflowAmount(t *testing.T) {
 	// Create the hub
 
@@ -311,7 +311,7 @@ func Test_SendTransactionOverflowAmount(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
@@ -355,7 +355,7 @@ func Test_SendTransactionOverflowAmount(t *testing.T) {
 	require.Error(t, channel.Publish(message, socket.ClientSocket{}))
 }
 
-// Tests that the channel accepts transactions with zero amounts
+// Tests that the oldchannel accepts transactions with zero amounts
 func Test_SendTransactionZeroAmount(t *testing.T) {
 	// Create the hub
 
@@ -368,7 +368,7 @@ func Test_SendTransactionZeroAmount(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
@@ -412,7 +412,7 @@ func Test_SendTransactionZeroAmount(t *testing.T) {
 	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
 }
 
-// Tests that the channel rejects transactions with negative amounts
+// Tests that the oldchannel rejects transactions with negative amounts
 func Test_SendTransactionNegativeAmount(t *testing.T) {
 	// Create the hub
 
@@ -425,7 +425,7 @@ func Test_SendTransactionNegativeAmount(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
@@ -469,7 +469,7 @@ func Test_SendTransactionNegativeAmount(t *testing.T) {
 	require.Error(t, channel.Publish(message, socket.ClientSocket{}))
 }
 
-// Tests that the channel throw an error when receiving an incomplete json message
+// Tests that the oldchannel throw an error when receiving an incomplete json message
 func Test_SendTransaction_MissingData(t *testing.T) {
 	// Create the hub
 
@@ -482,7 +482,7 @@ func Test_SendTransaction_MissingData(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
@@ -518,7 +518,7 @@ func Test_SendTransaction_MissingData(t *testing.T) {
 	require.Contains(t, err.Error(), "failed to validate schema:")
 }
 
-// Tests that the channel works correctly when it receives a Transaction with wrong id
+// Tests that the oldchannel works correctly when it receives a Transaction with wrong id
 func Test_SendTransactionWrongId(t *testing.T) {
 	// Create the hub
 
@@ -531,7 +531,7 @@ func Test_SendTransactionWrongId(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
@@ -577,7 +577,7 @@ func Test_SendTransactionWrongId(t *testing.T) {
 	require.Contains(t, err.Error(), "transaction id is not valid")
 }
 
-// Tests that the channel works correctly when it receives a transaction
+// Tests that the oldchannel works correctly when it receives a transaction
 func Test_SendTransactionBadSignature(t *testing.T) {
 	// Create the hub
 
@@ -590,7 +590,7 @@ func Test_SendTransactionBadSignature(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
@@ -635,7 +635,7 @@ func Test_SendTransactionBadSignature(t *testing.T) {
 	require.Error(t, err)
 }
 
-// Tests that the channel works correctly when it receives a transaction
+// Tests that the oldchannel works correctly when it receives a transaction
 func Test_SendTransactionCoinbase(t *testing.T) {
 	// Create the hub
 
@@ -648,7 +648,7 @@ func Test_SendTransactionCoinbase(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
+	// Create the oldchannel
 	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
@@ -718,7 +718,7 @@ type fakeHub struct {
 	messageChan chan socket.IncomingMessage
 
 	sync.RWMutex
-	channelByID map[string]channel.Channel
+	channelByID map[string]oldchannel.Channel
 
 	closedSockets chan string
 
@@ -735,11 +735,11 @@ type fakeHub struct {
 
 	log zerolog.Logger
 
-	laoFac channel.LaoFactory
+	laoFac oldchannel.LaoFactory
 }
 
 // NewFakeHub returns a fake Hub.
-func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac oldchannel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
@@ -752,7 +752,7 @@ func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 
 	hub := fakeHub{
 		messageChan:     make(chan socket.IncomingMessage),
-		channelByID:     make(map[string]channel.Channel),
+		channelByID:     make(map[string]oldchannel.Channel),
 		closedSockets:   make(chan string),
 		pubKeyOwner:     publicOrg,
 		pubKeyServ:      pubServ,
@@ -774,28 +774,28 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	return point, secret
 }
 
-func (h *fakeHub) RegisterNewChannel(channeID string, channel channel.Channel) {
+func (h *fakeHub) RegisterNewChannel(channeID string, channel oldchannel.Channel) {
 	h.Lock()
 	h.channelByID[channeID] = channel
 	h.Unlock()
 }
 
-// GetPubKeyOwner implements channel.HubFunctionalities
+// GetPubKeyOwner implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPubKeyOwner() kyber.Point {
 	return h.pubKeyOwner
 }
 
-// GetPubKeyServ implements channel.HubFunctionalities
+// GetPubKeyServ implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
 }
 
-// GetClientServerAddress implements channel.HubFunctionalities
+// GetClientServerAddress implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetClientServerAddress() string {
 	return ""
 }
 
-// Sign implements channel.HubFunctionalities
+// Sign implements oldchannel.HubFunctionalities
 func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	signatureBuf, err := schnorr.Sign(crypto.Suite, h.secKeyServ, data)
 	if err != nil {
@@ -804,10 +804,10 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	return signatureBuf, nil
 }
 
-// NotifyWitnessMessage implements channel.HubFunctionalities
+// NotifyWitnessMessage implements oldchannel.HubFunctionalities
 func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
 
-// GetPeersInfo implements channel.HubFunctionalities
+// GetPeersInfo implements oldchannel.HubFunctionalities
 func (h *fakeHub) GetPeersInfo() []mgreetserver.GreetServerParams {
 	return nil
 }
@@ -816,7 +816,8 @@ func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
 }
 
-func (h *fakeHub) NotifyNewChannel(channelID string, channel channel.Channel, socket socket.Socket) {}
+func (h *fakeHub) NotifyNewChannel(channelID string, channel oldchannel.Channel, socket socket.Socket) {
+}
 
 func (h *fakeHub) GetServerNumber() int {
 	return 0

@@ -41,7 +41,7 @@ type Repository interface {
 	// StoreMessageAndData stores a message inside the database.
 	StoreMessageAndData(channelID string, msg mmessage.Message) error
 
-	// HasChannel returns true if the channel already exists.
+	// HasChannel returns true if the oldchannel already exists.
 	HasChannel(channel string) (bool, error)
 }
 

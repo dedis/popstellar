@@ -185,7 +185,7 @@ func Test_handleChannel(t *testing.T) {
 		contains: "failed to decode data",
 	})
 
-	// Test 12: success to handled message for channel root
+	// Test 12: success to handled message for oldchannel root
 
 	channelPath = "rootMsg"
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
@@ -201,7 +201,7 @@ func Test_handleChannel(t *testing.T) {
 		isError:     false,
 	})
 
-	// Test 13: success to handled message for channel lao
+	// Test 13: success to handled message for oldchannel lao
 
 	channelPath = "laoMsg"
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
@@ -217,7 +217,7 @@ func Test_handleChannel(t *testing.T) {
 		isError:     false,
 	})
 
-	// Test 14: success to handled message for channel election
+	// Test 14: success to handled message for oldchannel election
 
 	channelPath = "electionMsg"
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
@@ -233,7 +233,7 @@ func Test_handleChannel(t *testing.T) {
 		isError:     false,
 	})
 
-	// Test 15: success to handled message for channel chirp
+	// Test 15: success to handled message for oldchannel chirp
 
 	channelPath = "chirpMsg"
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
@@ -249,7 +249,7 @@ func Test_handleChannel(t *testing.T) {
 		isError:     false,
 	})
 
-	// Test 16: success to handled message for channel reaction
+	// Test 16: success to handled message for oldchannel reaction
 
 	channelPath = "reaction"
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
@@ -265,7 +265,7 @@ func Test_handleChannel(t *testing.T) {
 		isError:     false,
 	})
 
-	// Test 17: success to handled message for channel coin
+	// Test 17: success to handled message for oldchannel coin
 
 	channelPath = "coinMsg"
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
@@ -281,7 +281,7 @@ func Test_handleChannel(t *testing.T) {
 		isError:     false,
 	})
 
-	// Test 18: success to handled message for channel coin
+	// Test 18: success to handled message for oldchannel coin
 
 	channelPath = "coinMsg"
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())

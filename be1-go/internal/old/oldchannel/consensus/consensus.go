@@ -16,9 +16,9 @@ import (
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
-	"popstellar/internal/old/channel/registry"
 	"popstellar/internal/old/inbox"
+	"popstellar/internal/old/oldchannel"
+	"popstellar/internal/old/oldchannel/registry"
 	"popstellar/internal/validation"
 	"strconv"
 	"sync"
@@ -49,13 +49,13 @@ const (
 	slowTimeout = 5 * time.Minute
 )
 
-// Channel defines a consensus channel
+// Channel defines a consensus oldchannel
 type Channel struct {
 	sync.Mutex
 
 	clock clock.Clock
 
-	sockets channel.Sockets
+	sockets oldchannel.Sockets
 
 	inbox *inbox.Inbox
 
@@ -64,7 +64,7 @@ type Channel struct {
 
 	organizerPubKey kyber.Point
 
-	hub channel.HubFunctionalities
+	hub oldchannel.HubFunctionalities
 
 	attendees map[string]struct{}
 
@@ -115,17 +115,17 @@ type ElectInstance struct {
 	negativeAcceptors map[string]int
 }
 
-// NewChannel returns a new initialized consensus channel
-func NewChannel(channelID string, hub channel.HubFunctionalities,
-	log zerolog.Logger, organizerPubKey kyber.Point) channel.Channel {
+// NewChannel returns a new initialized consensus oldchannel
+func NewChannel(channelID string, hub oldchannel.HubFunctionalities,
+	log zerolog.Logger, organizerPubKey kyber.Point) oldchannel.Channel {
 
 	inbox := inbox.NewInbox(channelID)
 
-	log = log.With().Str("channel", "consensus").Logger()
+	log = log.With().Str("oldchannel", "consensus").Logger()
 
 	newChannel := &Channel{
 		clock:           clock.New(),
-		sockets:         channel.NewSockets(),
+		sockets:         oldchannel.NewSockets(),
 		inbox:           inbox,
 		channelID:       channelID,
 		organizerPubKey: organizerPubKey,
@@ -147,7 +147,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities,
 }
 
 // ---
-// Publish-subscribe / channel.Channel implementation
+// Publish-subscribe / oldchannel.Channel implementation
 // ---
 
 // Subscribe is used to handle a subscribe message from the client
@@ -165,13 +165,13 @@ func (c *Channel) Unsubscribe(socketID string, msg method2.Unsubscribe) error {
 
 	ok := c.sockets.Delete(socketID)
 	if !ok {
-		return manswer.NewError(-2, "client is not subscribed to this channel")
+		return manswer.NewError(-2, "client is not subscribed to this oldchannel")
 	}
 
 	return nil
 }
 
-// Publish handles publish messages for the consensus channel
+// Publish handles publish messages for the consensus oldchannel
 func (c *Channel) Publish(publish mpublish.Publish, socket socket.Socket) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
@@ -235,7 +235,7 @@ func (c *Channel) handleMessage(msg mmessage.Message, socket socket.Socket) erro
 	return nil
 }
 
-// NewConsensusRegistry creates a new registry for the consensus channel
+// NewConsensusRegistry creates a new registry for the consensus oldchannel
 func (c *Channel) NewConsensusRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
@@ -291,7 +291,7 @@ func (c *Channel) processConsensusElect(message mmessage.Message, msgData interf
 
 	consensusInstance.lastSent = messagedata.ConsensusActionElectAccept
 
-	// Start a channel linked to the message id
+	// Start a oldchannel linked to the message id
 	go c.startTimer(consensusInstance, message.MessageID)
 
 	return nil
@@ -547,7 +547,7 @@ func (c *Channel) processConsensusPropose(_ mmessage.Message, msgData interface{
 
 	electInstance.timeoutChan <- messagedata.ConsensusActionPropose
 
-	// If the server has no client subscribed to the consensus channel, it
+	// If the server has no client subscribed to the consensus oldchannel, it
 	// doesn't take part in it
 	if c.sockets.Len() == 0 {
 		return nil
@@ -830,7 +830,7 @@ func (c *Channel) nextMessage(i *ConsensusInstance, messageID string) string {
 	return ""
 }
 
-// publishNewMessage send a publish message on the current channel
+// publishNewMessage send a publish message on the current oldchannel
 func (c *Channel) publishNewMessage(byteMsg []byte) error {
 	encryptedMsg := base64.URLEncoding.EncodeToString(byteMsg)
 
@@ -868,8 +868,8 @@ func (c *Channel) publishNewMessage(byteMsg []byte) error {
 		},
 
 		Params: struct {
-			Channel string           "json:\"channel\""
-			Message mmessage.Message "json:\"message\""
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: c.channelID,
 			Message: msg,

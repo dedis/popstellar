@@ -15,7 +15,7 @@ type Repository struct {
 	mock.Mock
 }
 
-// CheckPrevCreateOrCloseID provides a mock function with given fields: channel, nextID
+// CheckPrevCreateOrCloseID provides a mock function with given fields: oldchannel, nextID
 func (_m *Repository) CheckPrevCreateOrCloseID(channel string, nextID string) (bool, error) {
 	ret := _m.Called(channel, nextID)
 
@@ -43,7 +43,7 @@ func (_m *Repository) CheckPrevCreateOrCloseID(channel string, nextID string) (b
 	return r0, r1
 }
 
-// CheckPrevOpenOrReopenID provides a mock function with given fields: channel, nextID
+// CheckPrevOpenOrReopenID provides a mock function with given fields: oldchannel, nextID
 func (_m *Repository) CheckPrevOpenOrReopenID(channel string, nextID string) (bool, error) {
 	ret := _m.Called(channel, nextID)
 
@@ -131,7 +131,7 @@ func (_m *Repository) GetOrganizerPubKey(laoID string) (kyber.Point, error) {
 	return r0, r1
 }
 
-// GetRollCallState provides a mock function with given fields: channel
+// GetRollCallState provides a mock function with given fields: oldchannel
 func (_m *Repository) GetRollCallState(channel string) (string, error) {
 	ret := _m.Called(channel)
 

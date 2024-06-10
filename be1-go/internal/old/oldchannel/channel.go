@@ -1,4 +1,4 @@
-package channel
+package oldchannel
 
 import (
 	"popstellar/internal/handler/message/mmessage"
@@ -18,11 +18,11 @@ import (
 )
 
 // LaoFactory is the function passed to the hub that it must use to
-// create a new lao channel.
+// create a new lao oldchannel.
 type LaoFactory func(channelID string, hub HubFunctionalities, msg mmessage.Message,
 	log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket) (Channel, error)
 
-// Channel represents a PoP channel - like a LAO.
+// Channel represents a PoP oldchannel - like a LAO.
 type Channel interface {
 	// Subscribe is used to handle a subscribe message.
 	Subscribe(socket socket.Socket, msg msubscribe.Subscribe) error
@@ -31,8 +31,8 @@ type Channel interface {
 	Unsubscribe(socketID string, msg method2.Unsubscribe) error
 
 	// Publish is used to handle a publish message. The sender's socket may be
-	// needed when a message creates a channel, to know if the server should
-	// catchup on this channel or not.
+	// needed when a message creates a oldchannel, to know if the server should
+	// catchup on this oldchannel or not.
 	Publish(msg mpublish.Publish, socket socket.Socket) error
 
 	// Catchup is used to handle a catchup message.
@@ -95,7 +95,7 @@ func (s *Sockets) Delete(ID string) bool {
 	return true
 }
 
-// HubFunctionalities defines the functions needed by a channel from the hub.
+// HubFunctionalities defines the functions needed by a oldchannel from the hub.
 type HubFunctionalities interface {
 	GetPubKeyOwner() kyber.Point
 	GetPubKeyServ() kyber.Point
@@ -109,13 +109,13 @@ type HubFunctionalities interface {
 	GetPeersInfo() []mgreetserver.GreetServerParams
 }
 
-// Broadcastable defines a channel that can broadcast
+// Broadcastable defines a oldchannel that can broadcast
 type Broadcastable interface {
 	Broadcast(msg mbroadcast.Broadcast, _ socket.Socket) error
 	GetChannelPath() string
 }
 
-// LAOFunctionalities defines the functions needed by the LAO from another channel.
+// LAOFunctionalities defines the functions needed by the LAO from another oldchannel.
 type LAOFunctionalities interface {
 	AddAttendee(string)
 }

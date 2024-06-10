@@ -16,9 +16,9 @@ import (
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
 	"popstellar/internal/old/hub/standard_hub/hub_state"
 	"popstellar/internal/old/inbox"
+	"popstellar/internal/old/oldchannel"
 	"popstellar/internal/validation"
 	"strings"
 	"sync"
@@ -32,16 +32,16 @@ import (
 )
 
 const (
-	// rootChannel denotes the id of the root channel
+	// rootChannel denotes the id of the root oldchannel
 	rootChannel = "/root"
 
-	// rootPrefix denotes the prefix for the root channel
+	// rootPrefix denotes the prefix for the root oldchannel
 	// used to keep an image of the laos
 	rootPrefix = rootChannel + "/"
 
 	// Strings used to return error messages
-	rootChannelErr = "failed to handle root channel message: %v"
-	getChannelErr  = "failed to get channel: %v"
+	rootChannelErr = "failed to handle root oldchannel message: %v"
+	getChannelErr  = "failed to get oldchannel: %v"
 
 	// numWorkers denote the number of worker go-routines
 	// allowed to process requests concurrently.
@@ -79,9 +79,9 @@ type Hub struct {
 
 	log zerolog.Logger
 
-	laoFac channel.LaoFactory
+	laoFac oldchannel.LaoFactory
 
-	serverSockets channel.Sockets
+	serverSockets oldchannel.Sockets
 
 	// hubInbox is used to remember the messages that the hub received
 	hubInbox inbox.HubInbox
@@ -101,7 +101,7 @@ type Hub struct {
 
 // NewHub returns a new Hub.
 func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAddress string, log zerolog.Logger,
-	laoFac channel.LaoFactory,
+	laoFac oldchannel.LaoFactory,
 ) (*Hub, error) {
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
@@ -126,7 +126,7 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		workers:             semaphore.NewWeighted(numWorkers),
 		log:                 log,
 		laoFac:              laoFac,
-		serverSockets:       channel.NewSockets(),
+		serverSockets:       oldchannel.NewSockets(),
 		hubInbox:            *inbox.NewHubInbox(rootChannel),
 		queries:             hub_state.NewQueries(log),
 		peers:               hub_state.NewPeers(),
@@ -171,7 +171,7 @@ func (h *Hub) Start() {
 					}
 				}()
 			case id := <-h.closedSockets:
-				h.channelByID.ForEach(func(c channel.Channel) {
+				h.channelByID.ForEach(func(c oldchannel.Channel) {
 					// dummy Unsubscribe message because it's only used for logging...
 					c.Unsubscribe(id, method2.Unsubscribe{})
 				})
@@ -267,14 +267,14 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 	return nil
 }
 
-func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
+func (h *Hub) getChan(channelPath string) (oldchannel.Channel, error) {
 	if !strings.HasPrefix(channelPath, rootPrefix) {
-		return nil, xerrors.Errorf("channel not prefixed with '%s': %q", rootPrefix, channelPath)
+		return nil, xerrors.Errorf("oldchannel not prefixed with '%s': %q", rootPrefix, channelPath)
 	}
 
 	channel, ok := h.channelByID.Get(channelPath)
 	if !ok {
-		return nil, xerrors.Errorf("channel %s does not exist", channelPath)
+		return nil, xerrors.Errorf("oldchannel %s does not exist", channelPath)
 	}
 
 	return channel, nil
@@ -551,29 +551,29 @@ func (h *Hub) createLao(msg mmessage.Message, laoCreate mroot.LaoCreate,
 		return manswer.NewInvalidMessageFieldError("failed to create the LAO: %v", err)
 	}
 
-	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, msg)
+	h.log.Info().Msgf("storing new oldchannel '%s' %v", laoChannelPath, msg)
 
 	h.NotifyNewChannel(laoChannelPath, laoCh, socket)
 
 	return nil
 }
 
-// GetPubKeyOwner implements channel.HubFunctionalities
+// GetPubKeyOwner implements oldchannel.HubFunctionalities
 func (h *Hub) GetPubKeyOwner() kyber.Point {
 	return h.pubKeyOwner
 }
 
-// GetPubKeyServ implements channel.HubFunctionalities
+// GetPubKeyServ implements oldchannel.HubFunctionalities
 func (h *Hub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
 }
 
-// GetClientServerAddress implements channel.HubFunctionalities
+// GetClientServerAddress implements oldchannel.HubFunctionalities
 func (h *Hub) GetClientServerAddress() string {
 	return h.clientServerAddress
 }
 
-// Sign implements channel.HubFunctionalities
+// Sign implements oldchannel.HubFunctionalities
 func (h *Hub) Sign(data []byte) ([]byte, error) {
 	signatureBuf, err := schnorr.Sign(crypto.Suite, h.secKeyServ, data)
 	if err != nil {
@@ -583,17 +583,17 @@ func (h *Hub) Sign(data []byte) ([]byte, error) {
 	return signatureBuf, nil
 }
 
-// GetSchemaValidator implements channel.HubFunctionalities
+// GetSchemaValidator implements oldchannel.HubFunctionalities
 func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
 }
 
-// NotifyNewChannel implements channel.HubFunctionalities
-func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock socket.Socket) {
+// NotifyNewChannel implements oldchannel.HubFunctionalities
+func (h *Hub) NotifyNewChannel(channelID string, channel oldchannel.Channel, sock socket.Socket) {
 	h.channelByID.Set(channelID, channel)
 }
 
-// NotifyWitnessMessage implements channel.HubFunctionalities
+// NotifyWitnessMessage implements oldchannel.HubFunctionalities
 func (h *Hub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {
 	h.hubInbox.AddWitnessSignature(messageId, publicKey, signature)
 }

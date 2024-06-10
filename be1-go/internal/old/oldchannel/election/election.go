@@ -19,9 +19,9 @@ import (
 	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
-	"popstellar/internal/old/channel/registry"
 	"popstellar/internal/old/inbox"
+	"popstellar/internal/old/oldchannel"
+	"popstellar/internal/old/oldchannel/registry"
 	"popstellar/internal/validation"
 	"strconv"
 	"strings"
@@ -42,13 +42,13 @@ var suite = crypto.Suite
 
 // Channel is used to handle election messages.
 type Channel struct {
-	sockets   channel.Sockets
+	sockets   oldchannel.Sockets
 	inbox     *inbox.Inbox
 	channelID string
 
 	// *baseChannel
 
-	// Type of election channel ("OPEN_BALLOT", "SECRET_BALLOT", ...)
+	// Type of election oldchannel ("OPEN_BALLOT", "SECRET_BALLOT", ...)
 	electionType string
 
 	// Keys of the election if secret ballot, nil otherwise
@@ -76,7 +76,7 @@ type Channel struct {
 	// attendees that took part in the roll call string of their PK
 	attendees *attendees
 
-	hub channel.HubFunctionalities
+	hub oldchannel.HubFunctionalities
 
 	log zerolog.Logger
 
@@ -125,17 +125,17 @@ type attendees struct {
 	store map[string]struct{}
 }
 
-// NewChannel returns a new initialized election channel
+// NewChannel returns a new initialized election oldchannel
 func NewChannel(channelPath string, msg mmessage.Message, msgData mlao.ElectionSetup,
-	attendeesMap map[string]struct{}, hub channel.HubFunctionalities,
-	log zerolog.Logger, organizerPubKey kyber.Point) (channel.Channel, error) {
+	attendeesMap map[string]struct{}, hub oldchannel.HubFunctionalities,
+	log zerolog.Logger, organizerPubKey kyber.Point) (oldchannel.Channel, error) {
 
-	log = log.With().Str("channel", "election").Logger()
+	log = log.With().Str("oldchannel", "election").Logger()
 
 	pubKey, secKey := generateKeys()
 
 	newChannel := &Channel{
-		sockets:   channel.NewSockets(),
+		sockets:   oldchannel.NewSockets(),
 		inbox:     inbox.NewInbox(channelPath),
 		channelID: channelPath,
 
@@ -183,7 +183,7 @@ func NewChannel(channelPath string, msg mmessage.Message, msgData mlao.ElectionS
 }
 
 // ---
-// Publish-subscribe / channel.Channel implementation
+// Publish-subscribe / oldchannel.Channel implementation
 // ---
 
 // Subscribe is used to handle a subscribe message from the client.
@@ -205,13 +205,13 @@ func (c *Channel) Unsubscribe(socketID string, msg method2.Unsubscribe) error {
 	ok := c.sockets.Delete(socketID)
 
 	if !ok {
-		return manswer.NewError(-2, "client is not subscribed to this channel")
+		return manswer.NewError(-2, "client is not subscribed to this oldchannel")
 	}
 
 	return nil
 }
 
-// Publish is used to handle publish messages in the election channel.
+// Publish is used to handle publish messages in the election oldchannel.
 func (c *Channel) Publish(publish mpublish.Publish, socket socket.Socket) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
@@ -220,7 +220,7 @@ func (c *Channel) Publish(publish mpublish.Publish, socket socket.Socket) error 
 	err := c.verifyMessage(publish.Params.Message)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message on an "+
-			"election channel: %w", err)
+			"election oldchannel: %w", err)
 	}
 
 	err = c.handleMessage(publish.Params.Message, socket)
@@ -247,7 +247,7 @@ func (c *Channel) Broadcast(broadcast mbroadcast.Broadcast, socket socket.Socket
 	err := c.verifyMessage(broadcast.Params.Message)
 	if err != nil {
 		return xerrors.Errorf("failed to verify broadcast message on an "+
-			"election channel: %w", err)
+			"election oldchannel: %w", err)
 	}
 
 	err = c.handleMessage(broadcast.Params.Message, socket)
@@ -275,7 +275,7 @@ func (c *Channel) handleMessage(msg mmessage.Message, socket socket.Socket) erro
 	return nil
 }
 
-// newElectionRegistry creates a new registry for the election channel
+// newElectionRegistry creates a new registry for the election oldchannel
 func (c *Channel) newElectionRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
@@ -586,7 +586,7 @@ func (c *Channel) createAndSendElectionKey() error {
 
 // getElectionID extracts and returns the electionID from the channelID
 func (c *Channel) getElectionID() string {
-	// split channel to [lao id, election id]
+	// split oldchannel to [lao id, election id]
 	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 
@@ -832,7 +832,7 @@ func updateVote(msgID string, sender string, castVote melection2.VoteCastVote,
 	return nil
 }
 
-// Creates the questions for the election channel or returns nil if they are not valid
+// Creates the questions for the election oldchannel or returns nil if they are not valid
 func getAllQuestionsForElectionChannel(questions []mlao.ElectionSetupQuestion) (map[string]*question, error) {
 	qs := make(map[string]*question)
 	for _, q := range questions {
