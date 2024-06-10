@@ -110,14 +110,14 @@ class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSui
     val server3 = TestProbe()
 
     val connectionMediatorRef = system.actorOf(
-      ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, MessageRegistry())
+      ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, fakeRef, MessageRegistry())
     )
 
     mockMonitor.expectMsg(timeout, ConnectionMediator.Ping())
 
     // Register servers
-    connectionMediatorRef ! ConnectionMediator.NewServerConnected(server1.ref, GreetServer(PublicKey(Base64Data("")), "", "wss://epfl.ch:9000/server"))
-    connectionMediatorRef ! ConnectionMediator.NewServerConnected(server2.ref, GreetServer(PublicKey(Base64Data("")), "", "wss://ethz.ch:9000/server"))
+    connectionMediatorRef ! ConnectionMediator.NewServerConnected(server1.ref, GreetServer(PublicKey(Base64Data("")), "wss://epfl.ch:9000/server", ""))
+    connectionMediatorRef ! ConnectionMediator.NewServerConnected(server2.ref, GreetServer(PublicKey(Base64Data("")), "wss://ethz.ch:9000/server", ""))
     connectionMediatorRef ! ConnectionMediator.NewServerConnected(server3.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
 
     testProbe.send(connectionMediatorRef, ConnectionMediator.GetFederationServer("wss://ethz.ch:9000/server"))

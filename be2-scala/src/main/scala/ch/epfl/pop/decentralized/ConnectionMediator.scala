@@ -99,7 +99,7 @@ final case class ConnectionMediator(
       if (serverMap.isEmpty)
         sender() ! ConnectionMediator.NoPeer()
       else
-        val serverNeeded = serverMap.filter((_, greetServer) => greetServer.serverAddress.equals(serverAddress))
+        val serverNeeded = serverMap.filter((_, greetServer) => greetServer.clientAddress.equals(serverAddress))
         if (serverNeeded.isEmpty)
           sender() ! ConnectionMediator.NoPeer()
         else

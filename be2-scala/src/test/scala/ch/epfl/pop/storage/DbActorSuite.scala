@@ -3,10 +3,10 @@ package ch.epfl.pop.storage
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.{AskableActorRef, ask}
 import akka.testkit.{ImplicitSender, TestKit}
-import ch.epfl.pop.json.MessageDataProtocol.*
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
+import ch.epfl.pop.model.network.method.{Rumor, RumorState}
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.model.objects.Channel.ROOT_CHANNEL_PREFIX
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
@@ -16,13 +16,12 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike
 import org.scalatest.matchers.should.Matchers
+import util.examples.Federation.FederationExpectExample.EXPECT_MESSAGE
+import util.examples.Federation.FederationInitExample.{DATA_INIT_MESSAGE, INIT, INIT_MESSAGE, SENDER}
 import util.examples.MessageExample
 import util.examples.RollCall.{CreateRollCallExamples, OpenRollCallExamples}
 import util.examples.Rumor.RumorExample
-import ch.epfl.pop.model.network.method.Rumor
-import util.examples.Federation.FederationExpectExample.EXPECT_MESSAGE
-import util.examples.Federation.FederationInitExample.{DATA_INIT_MESSAGE, INIT, INIT_MESSAGE, SENDER}
-import ch.epfl.pop.model.network.method.{Rumor, RumorState}
+
 import scala.collection.immutable.HashMap
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
@@ -36,7 +35,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
   val ELECTION_ID: Hash = Hash(Base64Data.encode("electionId"))
   val ELECTION_DATA_KEY: String = "Data:" + s"$ROOT_CHANNEL_PREFIX${LAO_ID.toString}/private/${ELECTION_ID.toString}"
   val KEYPAIR: KeyPair = KeyPair()
-
+  final val keys: (String, String, String) = ("expect", "init", "challenge")
   private val timeout = 3.second
 
   override def afterAll(): Unit = {
@@ -1032,23 +1031,20 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
   test("writeFederationMessage successfully add the message to the db") {
     val initialStorage = InMemoryStorage()
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
-    val keyExpect = "expect"
 
     val message: Message = EXPECT_MESSAGE
-    val writeAsk = dbActor ? DbActor.WriteFederationMessage(keyExpect, message)
+    val writeAsk = dbActor ? DbActor.WriteFederationMessage(keys._1, message)
     val writeAnswer = Await.result(writeAsk, duration)
 
     writeAnswer shouldBe a[DbActor.DbActorAck]
   }
 
   test("readFederationMessage returns Some(message) if message exists in the db, None otherwise") {
-    val keyInit = "init"
-    val keyExpect = "expect"
     val initialStorage = InMemoryStorage()
-    initialStorage.write((keyInit, INIT_MESSAGE.toJsonString))
+    initialStorage.write((keys._2, INIT_MESSAGE.toJsonString))
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
 
-    val readAsk = dbActor ? DbActor.ReadFederationMessage(keyExpect)
+    val readAsk = dbActor ? DbActor.ReadFederationMessage(keys._1)
     val readAnswer = Await.result(readAsk, duration)
 
     readAnswer shouldBe a[DbActor.DbActorReadFederationMessageAck]
@@ -1057,7 +1053,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     message should equal(None)
 
-    val read = dbActor ? DbActor.ReadFederationMessage(keyInit)
+    val read = dbActor ? DbActor.ReadFederationMessage(keys._2)
     val answer = Await.result(read, duration)
 
     answer shouldBe a[DbActor.DbActorReadFederationMessageAck]
@@ -1073,14 +1069,13 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
   test("can WriteFederationMessage and then ReadFederationMessage correctly") {
     val initialStorage = InMemoryStorage()
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
-    val keyInit = "init"
 
-    val writeAsk = dbActor ? DbActor.WriteFederationMessage(keyInit, INIT_MESSAGE)
+    val writeAsk = dbActor ? DbActor.WriteFederationMessage(keys._2, INIT_MESSAGE)
     val writeAnswer = Await.result(writeAsk, duration)
 
     writeAnswer shouldBe a[DbActor.DbActorAck]
 
-    val readAsk = dbActor ? DbActor.ReadFederationMessage(keyInit)
+    val readAsk = dbActor ? DbActor.ReadFederationMessage(keys._2)
     val readAnswer = Await.result(readAsk, duration)
 
     readAnswer shouldBe a[DbActor.DbActorReadFederationMessageAck]
@@ -1094,19 +1089,18 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
   test("deleteFederationMessage successfully deletes the message from the db") {
     val initialStorage = InMemoryStorage()
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
-    val keyInit = "init"
 
-    val writeAsk = dbActor ? DbActor.WriteFederationMessage(keyInit, INIT_MESSAGE)
+    val writeAsk = dbActor ? DbActor.WriteFederationMessage(keys._2, INIT_MESSAGE)
     val writeAnswer = Await.result(writeAsk, duration)
 
     writeAnswer shouldBe a[DbActor.DbActorAck]
 
-    val deleteAsk = dbActor ? DbActor.DeleteFederationMessage(keyInit)
+    val deleteAsk = dbActor ? DbActor.DeleteFederationMessage(keys._2)
     val deleteAnswer = Await.result(deleteAsk, duration)
 
     deleteAnswer shouldBe a[DbActor.DbActorAck]
 
-    val askAgain = dbActor ? DbActor.ReadFederationMessage(keyInit)
+    val askAgain = dbActor ? DbActor.ReadFederationMessage(keys._2)
     val answer = Await.result(askAgain, duration)
 
     answer shouldBe a[DbActor.DbActorReadFederationMessageAck]

@@ -246,7 +246,7 @@ object JsonRpcRequestExample {
   final val RESULT_ELECTION_RPC_TOO_MUCH_VOTES: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithTooMuchVotesResultElection, id)
   final val RESULT_ELECTION_RPC_WRONG_ID: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithWrongIdResultElection, id)
 
-  // for FederationChallenRequest Testing
+  // for FederationChallengeRequest Testing
   private final val rightFederationChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.FEDERATION_CHANNEL_PREFIX)
   private final val wrongFederationChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.CHANNEL_SEPARATOR + "wrong")
   private final val paramsWithChallengeRequest: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, CHALLENGE_REQUEST_MESSAGE)
