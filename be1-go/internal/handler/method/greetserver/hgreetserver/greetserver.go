@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/method"
+	"popstellar/internal/message/method/mgreetserver"
 	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 )
@@ -14,7 +14,7 @@ type Config interface {
 }
 
 type Peers interface {
-	AddPeerInfo(socketID string, info method.GreetServerParams) error
+	AddPeerInfo(socketID string, info mgreetserver.GreetServerParams) error
 	IsPeerGreeted(socketID string) bool
 	AddPeerGreeted(socketID string)
 }
@@ -32,7 +32,7 @@ func New(conf Config, peers Peers) *Handler {
 }
 
 func (h *Handler) Handle(socket socket.Socket, byteMessage []byte) (*int, error) {
-	var greetServer method.GreetServer
+	var greetServer mgreetserver.GreetServer
 	err := json.Unmarshal(byteMessage, &greetServer)
 	if err != nil {
 		return nil, errors.NewJsonUnmarshalError(err.Error())
@@ -62,13 +62,13 @@ func (h *Handler) SendGreetServer(socket socket.Socket) error {
 		return err
 	}
 
-	greetServerParams := method.GreetServerParams{
+	greetServerParams := mgreetserver.GreetServerParams{
 		PublicKey:     serverPublicKey,
 		ServerAddress: serverAddress,
 		ClientAddress: clientAddress,
 	}
 
-	serverGreet := &method.GreetServer{
+	serverGreet := &mgreetserver.GreetServer{
 		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",

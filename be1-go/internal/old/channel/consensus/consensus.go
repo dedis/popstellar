@@ -7,7 +7,11 @@ import (
 	"popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata/mconsensus"
-	method2 "popstellar/internal/message/method"
+	"popstellar/internal/message/method/mbroadcast"
+	"popstellar/internal/message/method/mcatchup"
+	"popstellar/internal/message/method/mpublish"
+	"popstellar/internal/message/method/msubscribe"
+	method2 "popstellar/internal/message/method/munsubscribe"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
@@ -146,7 +150,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities,
 // ---
 
 // Subscribe is used to handle a subscribe message from the client
-func (c *Channel) Subscribe(sock socket.Socket, msg method2.Subscribe) error {
+func (c *Channel) Subscribe(sock socket.Socket, msg msubscribe.Subscribe) error {
 	c.log.Info().Str(msgID, strconv.Itoa(msg.ID)).Msg("received a subscribe")
 
 	c.sockets.Upsert(sock)
@@ -167,7 +171,7 @@ func (c *Channel) Unsubscribe(socketID string, msg method2.Unsubscribe) error {
 }
 
 // Publish handles publish messages for the consensus channel
-func (c *Channel) Publish(publish method2.Publish, socket socket.Socket) error {
+func (c *Channel) Publish(publish mpublish.Publish, socket socket.Socket) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
 		Msg("received a publish")
@@ -186,14 +190,14 @@ func (c *Channel) Publish(publish method2.Publish, socket socket.Socket) error {
 }
 
 // Catchup is used to handle a catchup message.
-func (c *Channel) Catchup(catchup method2.Catchup) []mmessage.Message {
+func (c *Channel) Catchup(catchup mcatchup.Catchup) []mmessage.Message {
 	c.log.Info().Str(msgID, strconv.Itoa(catchup.ID)).Msg("received a catchup")
 
 	return c.inbox.GetSortedMessages()
 }
 
 // Broadcast is used to handle a broadcast message.
-func (c *Channel) Broadcast(broadcast method2.Broadcast, socket socket.Socket) error {
+func (c *Channel) Broadcast(broadcast mbroadcast.Broadcast, socket socket.Socket) error {
 	c.log.Info().Msg("received a broadcast")
 
 	err := c.verifyMessage(broadcast.Params.Message)
@@ -761,7 +765,7 @@ func (c *Channel) verifyMessage(msg mmessage.Message) error {
 func (c *Channel) broadcastToAllClients(msg mmessage.Message) error {
 	c.log.Info().Str(msgID, msg.MessageID).Msg("broadcasting message to all witnesses")
 
-	rpcMessage := method2.Broadcast{
+	rpcMessage := mbroadcast.Broadcast{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -854,7 +858,7 @@ func (c *Channel) publishNewMessage(byteMsg []byte) error {
 		WitnessSignatures: make([]mmessage.WitnessSignature, 0),
 	}
 
-	broadcast := method2.Broadcast{
+	broadcast := mbroadcast.Broadcast{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",

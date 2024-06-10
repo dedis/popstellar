@@ -11,7 +11,14 @@ import (
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata/mlao"
 	"popstellar/internal/message/messagedata/mroot"
-	method2 "popstellar/internal/message/method"
+	"popstellar/internal/message/method/mbroadcast"
+	"popstellar/internal/message/method/mcatchup"
+	"popstellar/internal/message/method/mgetmessagesbyid"
+	"popstellar/internal/message/method/mgreetserver"
+	"popstellar/internal/message/method/mheartbeat"
+	"popstellar/internal/message/method/mpublish"
+	"popstellar/internal/message/method/msubscribe"
+	method2 "popstellar/internal/message/method/munsubscribe"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
@@ -84,7 +91,7 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method2.Publish{
+	publish := mpublish.Publish{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -159,7 +166,7 @@ func Test_Create_LAO_Different_Sender_And_Organizer_Keys(t *testing.T) {
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method2.Publish{
+	publish := mpublish.Publish{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -233,7 +240,7 @@ func Test_Create_LAO_No_Key(t *testing.T) {
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method2.Publish{
+	publish := mpublish.Publish{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -310,7 +317,7 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method2.Publish{
+	publish := mpublish.Publish{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -388,7 +395,7 @@ func Test_Create_LAO_Bad_Signature(t *testing.T) {
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method2.Publish{
+	publish := mpublish.Publish{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -464,7 +471,7 @@ func Test_Create_LAO_Data_Not_Base64(t *testing.T) {
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method2.Publish{
+	publish := mpublish.Publish{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -536,7 +543,7 @@ func Test_Create_Invalid_Json_Schema(t *testing.T) {
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method2.Publish{
+	publish := mpublish.Publish{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -613,7 +620,7 @@ func Test_Create_Invalid_Lao_Id(t *testing.T) {
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method2.Publish{
+	publish := mpublish.Publish{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -689,7 +696,7 @@ func Test_Create_LAO(t *testing.T) {
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method2.Publish{
+	publish := mpublish.Publish{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -772,7 +779,7 @@ func Test_Wrong_Root_Publish(t *testing.T) {
 		Signature:         base64.URLEncoding.EncodeToString(signature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
-	publish := method2.Publish{
+	publish := mpublish.Publish{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -881,7 +888,7 @@ func Test_Handle_Answer(t *testing.T) {
 	answerBisBuf, err := json.Marshal(serverAnswerBis)
 	require.NoError(t, err)
 
-	query := method2.GetMessagesById{
+	query := mgetmessagesbyid.GetMessagesById{
 		Base:   mquery.Base{},
 		ID:     1,
 		Params: nil,
@@ -966,7 +973,7 @@ func Test_Handle_Publish_From_Client(t *testing.T) {
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method2.Publish{
+	publish := mpublish.Publish{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -1033,7 +1040,7 @@ func Test_Handle_Publish_From_Server(t *testing.T) {
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method2.Publish{
+	publish := mpublish.Publish{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -1100,7 +1107,7 @@ func Test_Receive_Publish_Twice(t *testing.T) {
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method2.Publish{
+	publish := mpublish.Publish{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -1199,7 +1206,7 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 	missingMessages := make(map[string][]string)
 	missingMessages["/root"] = []string{msg.MessageID}
 
-	getMessagesByIdQuery := method2.GetMessagesById{
+	getMessagesByIdQuery := mgetmessagesbyid.GetMessagesById{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -1301,7 +1308,7 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 	missingMessages := make(map[string][]string)
 	missingMessages["/root"] = []string{msg.MessageID}
 
-	getMessagesByIdQuery := method2.GetMessagesById{
+	getMessagesByIdQuery := mgetmessagesbyid.GetMessagesById{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -1351,7 +1358,7 @@ func Test_Handle_Subscribe(t *testing.T) {
 
 	hub.channelByID.Set(rootPrefix+laoID, c)
 
-	subscribe := method2.Subscribe{
+	subscribe := msubscribe.Subscribe{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -1488,7 +1495,7 @@ func TestServer_Handle_Catchup(t *testing.T) {
 
 	hub.channelByID.Set(rootPrefix+laoID, c)
 
-	catchup := method2.Catchup{
+	catchup := mcatchup.Catchup{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -1574,7 +1581,7 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	broadcast := method2.Broadcast{
+	broadcast := mbroadcast.Broadcast{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -1634,7 +1641,7 @@ func Test_Send_Heartbeat_Message(t *testing.T) {
 
 	heartbeatMsg := sock.msg
 
-	var heartbeat method2.Heartbeat
+	var heartbeat mheartbeat.Heartbeat
 
 	err = json.Unmarshal(heartbeatMsg, &heartbeat)
 	require.NoError(t, err)
@@ -1672,7 +1679,7 @@ func Test_Handle_Heartbeat(t *testing.T) {
 	missingIds["/root"] = []string{msg2.MessageID}
 	missingIds["/root/channel1"] = idsChannel1
 
-	heartbeatMessage := method2.Heartbeat{
+	heartbeatMessage := mheartbeat.Heartbeat{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -1693,7 +1700,7 @@ func Test_Handle_Heartbeat(t *testing.T) {
 	require.NoError(t, sock.err)
 
 	// socket should receive a getMessagesById query after handling of heartbeat
-	var getMessagesById method2.GetMessagesById
+	var getMessagesById mgetmessagesbyid.GetMessagesById
 
 	err = json.Unmarshal(sock.msg, &getMessagesById)
 	require.NoError(t, err)
@@ -1734,7 +1741,7 @@ func Test_Handle_GetMessagesById(t *testing.T) {
 	missingMessages["/root"] = []mmessage.Message{msg2}
 	missingMessages["/root/channel1"] = res2
 
-	getMessagesById := method2.GetMessagesById{
+	getMessagesById := mgetmessagesbyid.GetMessagesById{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -1780,7 +1787,7 @@ func Test_Send_GreetServer_Message(t *testing.T) {
 
 	greetServerMsg := sock.msg
 
-	var greetServer method2.GreetServer
+	var greetServer mgreetserver.GreetServer
 	err = json.Unmarshal(greetServerMsg, &greetServer)
 	require.NoError(t, err)
 	require.Equal(t, mquery.MethodGreetServer, greetServer.Method)
@@ -1802,13 +1809,13 @@ func Test_Handle_GreetServer_First_Time(t *testing.T) {
 
 	sock := &fakeSocket{}
 
-	serverInfo := method2.GreetServerParams{
+	serverInfo := mgreetserver.GreetServerParams{
 		PublicKey:     "",
 		ServerAddress: "ws://localhost:9003/server",
 		ClientAddress: "ws://localhost:9002/client",
 	}
 
-	serverGreet := method2.GreetServer{
+	serverGreet := mgreetserver.GreetServer{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -1829,7 +1836,7 @@ func Test_Handle_GreetServer_First_Time(t *testing.T) {
 	require.NoError(t, sock.err)
 
 	// socket should receive a server greet back after handling of server greet
-	var serverGreetResponse method2.GreetServer
+	var serverGreetResponse mgreetserver.GreetServer
 
 	err = json.Unmarshal(sock.msg, &serverGreetResponse)
 	require.NoError(t, err)
@@ -1857,13 +1864,13 @@ func Test_Handle_GreetServer_Already_Greeted(t *testing.T) {
 	// reset socket message
 	sock.msg = nil
 
-	serverInfo := method2.GreetServerParams{
+	serverInfo := mgreetserver.GreetServerParams{
 		PublicKey:     "",
 		ServerAddress: "ws://localhost:9003/server",
 		ClientAddress: "ws://localhost:9002/client",
 	}
 
-	serverGreet := method2.GreetServer{
+	serverGreet := mgreetserver.GreetServer{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -1895,19 +1902,19 @@ func Test_Handle_GreetServer_Already_Received(t *testing.T) {
 	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
-	serverInfo1 := method2.GreetServerParams{
+	serverInfo1 := mgreetserver.GreetServerParams{
 		PublicKey:     "",
 		ServerAddress: "ws://localhost:9003/server",
 		ClientAddress: "ws://localhost:9002/client",
 	}
 
-	serverInfo2 := method2.GreetServerParams{
+	serverInfo2 := mgreetserver.GreetServerParams{
 		PublicKey:     "",
 		ServerAddress: "ws://localhost:9005/server",
 		ClientAddress: "ws://localhost:9004/client",
 	}
 
-	serverGreet1 := method2.GreetServer{
+	serverGreet1 := mgreetserver.GreetServer{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -1917,7 +1924,7 @@ func Test_Handle_GreetServer_Already_Received(t *testing.T) {
 		Params: serverInfo1,
 	}
 
-	serverGreet2 := method2.GreetServer{
+	serverGreet2 := mgreetserver.GreetServer{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -2005,11 +2012,11 @@ func (c *fakeChannelFac) newChannel(channelID string, hub channel.HubFunctionali
 type fakeChannel struct {
 	sync.Mutex
 
-	subscribe   method2.Subscribe
+	subscribe   msubscribe.Subscribe
 	unsubscribe method2.Unsubscribe
-	publish     method2.Publish
-	catchup     method2.Catchup
-	broadcast   method2.Broadcast
+	publish     mpublish.Publish
+	catchup     mcatchup.Catchup
+	broadcast   mbroadcast.Broadcast
 
 	// set by the subscribe
 	socket socket.Socket
@@ -2021,7 +2028,7 @@ type fakeChannel struct {
 }
 
 // Subscribe implements channel.Channel
-func (f *fakeChannel) Subscribe(socket socket.Socket, msg method2.Subscribe) error {
+func (f *fakeChannel) Subscribe(socket socket.Socket, msg msubscribe.Subscribe) error {
 	f.Lock()
 	defer f.Unlock()
 
@@ -2041,7 +2048,7 @@ func (f *fakeChannel) Unsubscribe(socketID string, msg method2.Unsubscribe) erro
 }
 
 // Publish implements channel.Channel
-func (f *fakeChannel) Publish(msg method2.Publish, socket socket.Socket) error {
+func (f *fakeChannel) Publish(msg mpublish.Publish, socket socket.Socket) error {
 	f.Lock()
 	defer f.Unlock()
 
@@ -2050,7 +2057,7 @@ func (f *fakeChannel) Publish(msg method2.Publish, socket socket.Socket) error {
 }
 
 // Catchup implements channel.Channel
-func (f *fakeChannel) Catchup(msg method2.Catchup) []mmessage.Message {
+func (f *fakeChannel) Catchup(msg mcatchup.Catchup) []mmessage.Message {
 	f.Lock()
 	defer f.Unlock()
 
@@ -2059,7 +2066,7 @@ func (f *fakeChannel) Catchup(msg method2.Catchup) []mmessage.Message {
 }
 
 // Broadcast implements channel.Channel
-func (f *fakeChannel) Broadcast(msg method2.Broadcast, _ socket.Socket) error {
+func (f *fakeChannel) Broadcast(msg mbroadcast.Broadcast, _ socket.Socket) error {
 	f.Lock()
 	defer f.Unlock()
 

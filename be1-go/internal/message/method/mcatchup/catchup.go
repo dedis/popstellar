@@ -1,4 +1,4 @@
-package method
+package mcatchup
 
 import "popstellar/internal/message/mquery"
 

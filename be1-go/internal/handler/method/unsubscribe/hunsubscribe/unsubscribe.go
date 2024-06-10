@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/messagedata/root/hroot"
-	"popstellar/internal/message/method"
+	"popstellar/internal/message/method/munsubscribe"
 	"popstellar/internal/network/socket"
 )
 
@@ -21,7 +21,7 @@ func New(subs Subscribers) *Handler {
 }
 
 func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
-	var unsubscribe method.Unsubscribe
+	var unsubscribe munsubscribe.Unsubscribe
 	err := json.Unmarshal(msg, &unsubscribe)
 	if err != nil {
 		return nil, errors.NewJsonUnmarshalError(err.Error())

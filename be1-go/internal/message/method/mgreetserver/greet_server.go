@@ -1,4 +1,4 @@
-package method
+package mgreetserver
 
 import "popstellar/internal/message/mquery"
 

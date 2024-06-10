@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"popstellar/internal/errors"
 	"popstellar/internal/logger"
-	"popstellar/internal/message/method"
+	"popstellar/internal/message/method/mpublish"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/network/socket"
 	"strings"
@@ -40,7 +40,7 @@ func New(hub Hub, db Repository, messageHandler MessageHandler) *Handler {
 }
 
 func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
-	var publish method.Publish
+	var publish mpublish.Publish
 	err := json.Unmarshal(msg, &publish)
 	if err != nil {
 		return nil, errors.NewJsonUnmarshalError(err.Error())

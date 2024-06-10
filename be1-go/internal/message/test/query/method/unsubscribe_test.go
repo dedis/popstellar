@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/method"
+	"popstellar/internal/message/method/munsubscribe"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -29,7 +29,7 @@ func Test_Unsubscribe(t *testing.T) {
 
 	require.Equal(t, mjsonrpc.RPCTypeQuery, rpctype)
 
-	var unsubscribe method.Unsubscribe
+	var unsubscribe munsubscribe.Unsubscribe
 
 	err = json.Unmarshal(buf, &unsubscribe)
 	require.NoError(t, err)

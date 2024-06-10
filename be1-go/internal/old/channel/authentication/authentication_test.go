@@ -21,7 +21,9 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/logger"
 	"popstellar/internal/message/messagedata/mauthentification"
-	method2 "popstellar/internal/message/method"
+	"popstellar/internal/message/method/mbroadcast"
+	"popstellar/internal/message/method/mgreetserver"
+	method2 "popstellar/internal/message/method/mpublish"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
@@ -285,7 +287,7 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 func (h *fakeHub) NotifyWitnessMessage(_ string, _ string, _ string) {}
 
 // GetPeersInfo implements channel.HubFunctionalities
-func (h *fakeHub) GetPeersInfo() []method2.GreetServerParams {
+func (h *fakeHub) GetPeersInfo() []mgreetserver.GreetServerParams {
 	return nil
 }
 
@@ -299,7 +301,7 @@ func (h *fakeHub) GetServerNumber() int {
 	return 0
 }
 
-func (h *fakeHub) SendAndHandleMessage(_ method2.Broadcast) error {
+func (h *fakeHub) SendAndHandleMessage(_ mbroadcast.Broadcast) error {
 	return nil
 }
 

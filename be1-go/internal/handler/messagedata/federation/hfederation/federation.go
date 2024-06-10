@@ -14,7 +14,8 @@ import (
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/logger"
 	"popstellar/internal/message/messagedata/mfederation"
-	method2 "popstellar/internal/message/method"
+	"popstellar/internal/message/method/mpublish"
+	method2 "popstellar/internal/message/method/msubscribe"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
@@ -502,14 +503,14 @@ func (h *Handler) createMessage(data mmessage.MessageData) (mmessage.Message, er
 }
 
 func (h *Handler) publishTo(msg mmessage.Message, channelPath string) error {
-	publishMsg := method2.Publish{
+	publishMsg := mpublish.Publish{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: "publish",
 		},
-		Params: method2.PublishParams{
+		Params: mpublish.PublishParams{
 			Channel: channelPath,
 			Message: msg,
 		},

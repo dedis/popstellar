@@ -8,7 +8,11 @@ import (
 	"popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata/mroot"
-	method2 "popstellar/internal/message/method"
+	"popstellar/internal/message/method/mbroadcast"
+	"popstellar/internal/message/method/mgetmessagesbyid"
+	"popstellar/internal/message/method/mgreetserver"
+	"popstellar/internal/message/method/mheartbeat"
+	method2 "popstellar/internal/message/method/munsubscribe"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
@@ -204,7 +208,7 @@ func (h *Hub) GetServerNumber() int {
 
 // SendAndHandleMessage sends a publish message to all other known servers and
 // handle it
-func (h *Hub) SendAndHandleMessage(msg method2.Broadcast) error {
+func (h *Hub) SendAndHandleMessage(msg mbroadcast.Broadcast) error {
 	byteMsg, err := json.Marshal(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to marshal publish message: %v", err)
@@ -236,13 +240,13 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 		return xerrors.Errorf("failed to marshal server public key: %v", err)
 	}
 
-	serverInfo := method2.GreetServerParams{
+	serverInfo := mgreetserver.GreetServerParams{
 		PublicKey:     base64.URLEncoding.EncodeToString(pk),
 		ServerAddress: h.serverServerAddress,
 		ClientAddress: h.clientServerAddress,
 	}
 
-	serverGreet := &method2.GreetServer{
+	serverGreet := &mgreetserver.GreetServer{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -457,7 +461,7 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[string][]string) error {
 	queryId := h.queries.GetNextID()
 
-	getMessagesById := method2.GetMessagesById{
+	getMessagesById := mgetmessagesbyid.GetMessagesById{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -482,7 +486,7 @@ func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[s
 
 // sendHeartbeatToServers sends a heartbeat message to all servers
 func (h *Hub) sendHeartbeatToServers() {
-	heartbeatMessage := method2.Heartbeat{
+	heartbeatMessage := mheartbeat.Heartbeat{
 		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -594,7 +598,7 @@ func (h *Hub) NotifyWitnessMessage(messageId string, publicKey string, signature
 	h.hubInbox.AddWitnessSignature(messageId, publicKey, signature)
 }
 
-func (h *Hub) GetPeersInfo() []method2.GreetServerParams {
+func (h *Hub) GetPeersInfo() []mgreetserver.GreetServerParams {
 	return h.peers.GetAllPeersInfo()
 }
 

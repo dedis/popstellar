@@ -10,7 +10,12 @@ import (
 	"popstellar/internal/crypto"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata/mchirp"
-	method2 "popstellar/internal/message/method"
+	"popstellar/internal/message/method/mbroadcast"
+	"popstellar/internal/message/method/mcatchup"
+	"popstellar/internal/message/method/mgreetserver"
+	"popstellar/internal/message/method/mpublish"
+	"popstellar/internal/message/method/msubscribe"
+	method2 "popstellar/internal/message/method/munsubscribe"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
@@ -52,7 +57,7 @@ func Test_Chirp_Channel_Subscribe(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var msg method2.Subscribe
+	var msg msubscribe.Subscribe
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
 
@@ -155,7 +160,7 @@ func Test_Chirp_Channel_Catchup(t *testing.T) {
 	}
 
 	// Compute the catchup method
-	catchupAnswer := cha.Catchup(method2.Catchup{ID: 0})
+	catchupAnswer := cha.Catchup(mcatchup.Catchup{ID: 0})
 
 	// Check that the order of the messages is the same in `messages` and in
 	// `catchupAnswer`
@@ -200,7 +205,7 @@ func Test_Chirp_Channel_Broadcast(t *testing.T) {
 	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
-	var msg method2.Broadcast
+	var msg mbroadcast.Broadcast
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
 
@@ -264,7 +269,7 @@ func Test_Send_Chirp(t *testing.T) {
 	bufCreatePub, err := os.ReadFile(fileCreatePub)
 	require.NoError(t, err)
 
-	var msg method2.Publish
+	var msg mpublish.Publish
 
 	err = json.Unmarshal(bufCreatePub, &msg)
 	require.NoError(t, err)
@@ -274,7 +279,7 @@ func Test_Send_Chirp(t *testing.T) {
 
 	require.NoError(t, cha.Publish(msg, socket.ClientSocket{}))
 
-	msg2 := generalCha.Catchup(method2.Catchup{ID: 0})
+	msg2 := generalCha.Catchup(mcatchup.Catchup{ID: 0})
 
 	checkData := mchirp.ChirpNotifyAdd{
 		Object:    "chirp",
@@ -337,7 +342,7 @@ func Test_Delete_Chirp(t *testing.T) {
 	bufCreatePub, err := os.ReadFile(fileCreatePub)
 	require.NoError(t, err)
 
-	var pub method2.Publish
+	var pub mpublish.Publish
 
 	err = json.Unmarshal(bufCreatePub, &pub)
 	require.NoError(t, err)
@@ -382,7 +387,7 @@ func Test_Delete_Chirp(t *testing.T) {
 	// publish delete chirp message
 	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
 
-	msg := generalCha.Catchup(method2.Catchup{ID: 0})
+	msg := generalCha.Catchup(mcatchup.Catchup{ID: 0})
 
 	checkDataAdd := mchirp.ChirpNotifyAdd{
 		Object:    "chirp",
@@ -457,7 +462,7 @@ func Test_Out_Of_Order_Delete(t *testing.T) {
 	bufCreatePub, err := os.ReadFile(fileCreatePub)
 	require.NoError(t, err)
 
-	var pub method2.Publish
+	var pub mpublish.Publish
 
 	err = json.Unmarshal(bufCreatePub, &pub)
 	require.NoError(t, err)
@@ -475,7 +480,7 @@ func Test_Out_Of_Order_Delete(t *testing.T) {
 	}()
 
 	// because of the go routine, we need another publish variable for the delete chirp
-	var pub2 method2.Publish
+	var pub2 mpublish.Publish
 	// create delete chirp message
 	file = filepath.Join(relativeMsgDataExamplePath, "chirp_delete_publish",
 		"chirp_delete_publish.json")
@@ -626,7 +631,7 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
 
 // GetPeersInfo implements channel.HubFunctionalities
-func (h *fakeHub) GetPeersInfo() []method2.GreetServerParams {
+func (h *fakeHub) GetPeersInfo() []mgreetserver.GreetServerParams {
 	return nil
 }
 
@@ -640,7 +645,7 @@ func (h *fakeHub) GetServerNumber() int {
 	return 0
 }
 
-func (h *fakeHub) SendAndHandleMessage(msg method2.Broadcast) error {
+func (h *fakeHub) SendAndHandleMessage(msg mbroadcast.Broadcast) error {
 	return nil
 }
 

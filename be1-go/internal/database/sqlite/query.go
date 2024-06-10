@@ -6,7 +6,7 @@ import (
 	"errors"
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/method"
+	"popstellar/internal/message/method/mrumor"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/mquery"
 	"strings"
@@ -264,19 +264,19 @@ func (s *SQLite) AddMessageToMyRumor(messageID string) (int, error) {
 	return count, nil
 }
 
-func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
+func (s *SQLite) GetAndIncrementMyRumor() (bool, mrumor.Rumor, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
 	tx, err := s.database.Begin()
 	if err != nil {
-		return false, method.Rumor{}, poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
+		return false, mrumor.Rumor{}, poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
 	}
 	defer tx.Rollback()
 
 	rows, err := s.database.Query(selectMyRumorMessages, true, serverKeysPath, serverKeysPath)
 	if err != nil {
-		return false, method.Rumor{}, poperrors.NewDatabaseSelectErrorMsg("current rumor messages: %v", err)
+		return false, mrumor.Rumor{}, poperrors.NewDatabaseSelectErrorMsg("current rumor messages: %v", err)
 	}
 	defer rows.Close()
 
@@ -285,51 +285,51 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
 		var msgBytes []byte
 		var channelPath string
 		if err = rows.Scan(&msgBytes, &channelPath); err != nil {
-			return false, method.Rumor{}, poperrors.NewDatabaseScanErrorMsg(err.Error())
+			return false, mrumor.Rumor{}, poperrors.NewDatabaseScanErrorMsg(err.Error())
 		}
 
 		var msg mmessage.Message
 		if err = json.Unmarshal(msgBytes, &msg); err != nil {
-			return false, method.Rumor{}, poperrors.NewInternalServerError("failed to unmarshal current rumor message: %v", err)
+			return false, mrumor.Rumor{}, poperrors.NewInternalServerError("failed to unmarshal current rumor message: %v", err)
 		}
 
 		messages[channelPath] = append(messages[channelPath], msg)
 	}
 
 	if len(messages) == 0 {
-		return false, method.Rumor{}, nil
+		return false, mrumor.Rumor{}, nil
 	}
 
 	var rumorID int
 	var sender string
 	err = tx.QueryRow(selectMyRumorInfos, serverKeysPath).Scan(&rumorID, &sender)
 	if err != nil {
-		return false, method.Rumor{}, poperrors.NewDatabaseSelectErrorMsg("current rumor id and sender: %v", err)
+		return false, mrumor.Rumor{}, poperrors.NewDatabaseSelectErrorMsg("current rumor id and sender: %v", err)
 	}
 
 	rumor := newRumor(rumorID, sender, messages)
 
 	_, err = tx.Exec(insertRumor, rumorID+1, sender)
 	if err != nil {
-		return false, method.Rumor{}, poperrors.NewDatabaseInsertErrorMsg("rumor: %v", err)
+		return false, mrumor.Rumor{}, poperrors.NewDatabaseInsertErrorMsg("rumor: %v", err)
 	}
 
 	err = tx.Commit()
 	if err != nil {
-		return false, method.Rumor{}, poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
+		return false, mrumor.Rumor{}, poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 	}
 
 	return true, rumor, nil
 }
 
-func newRumor(rumorID int, sender string, messages map[string][]mmessage.Message) method.Rumor {
-	params := method.ParamsRumor{
+func newRumor(rumorID int, sender string, messages map[string][]mmessage.Message) mrumor.Rumor {
+	params := mrumor.ParamsRumor{
 		RumorID:  rumorID,
 		SenderID: sender,
 		Messages: messages,
 	}
 
-	return method.Rumor{
+	return mrumor.Rumor{
 		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",

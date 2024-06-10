@@ -7,7 +7,7 @@ import (
 	"golang.org/x/xerrors"
 	"popstellar/internal/generator"
 	mocks2 "popstellar/internal/handler/method/heartbeat/hheartbeat/mocks"
-	"popstellar/internal/message/method"
+	"popstellar/internal/message/method/mgetmessagesbyid"
 	"popstellar/internal/network/socket/mocks"
 	"testing"
 )
@@ -61,7 +61,7 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	db.On("GetParamsForGetMessageByID", heartbeatMsgIDs1).Return(expected1, nil)
 	queries.On("GetNextID").Return(1)
-	queries.On("AddQuery", 1, mock2.AnythingOfType("method.GetMessagesById"))
+	queries.On("AddQuery", 1, mock2.AnythingOfType("mgetmessagesbyid.GetMessagesById"))
 
 	args = append(args, input{
 		name:     "Test 1",
@@ -128,7 +128,7 @@ func Test_handleHeartbeat(t *testing.T) {
 				require.NoError(t, err)
 				require.NotNil(t, arg.socket.Msg)
 
-				var getMessageByID method.GetMessagesById
+				var getMessageByID mgetmessagesbyid.GetMessagesById
 				err := json.Unmarshal(arg.socket.Msg, &getMessageByID)
 				require.NoError(t, err)
 				require.Equal(t, arg.expected, getMessageByID.Params)

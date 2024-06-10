@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/method"
+	"popstellar/internal/message/method/mgreetserver"
 	"testing"
 )
 
@@ -28,7 +28,7 @@ func Test_GreetServer(t *testing.T) {
 
 	require.Equal(t, mjsonrpc.RPCTypeQuery, rpctype)
 
-	var greetServer method.GreetServer
+	var greetServer mgreetserver.GreetServer
 
 	err = json.Unmarshal(buf, &greetServer)
 	require.NoError(t, err)

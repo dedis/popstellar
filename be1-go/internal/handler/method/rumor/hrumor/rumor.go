@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"popstellar/internal/errors"
 	"popstellar/internal/logger"
-	"popstellar/internal/message/method"
+	"popstellar/internal/message/method/mrumor"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/network/socket"
 	"sort"
@@ -14,7 +14,7 @@ const maxRetry = 10
 
 type Queries interface {
 	GetNextID() int
-	AddRumorQuery(id int, query method.Rumor)
+	AddRumorQuery(id int, query mrumor.Rumor)
 }
 
 type Sockets interface {
@@ -54,7 +54,7 @@ func New(queries Queries, sockets Sockets, db Repository,
 }
 
 func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
-	var rumor method.Rumor
+	var rumor mrumor.Rumor
 	err := json.Unmarshal(msg, &rumor)
 	if err != nil {
 		return nil, errors.NewJsonUnmarshalError(err.Error())
@@ -157,7 +157,7 @@ func (h *Handler) sortChannels(msgsByChannel map[string][]mmessage.Message) []st
 	return sortedChannelIDs
 }
 
-func (h *Handler) SendRumor(socket socket.Socket, rumor method.Rumor) {
+func (h *Handler) SendRumor(socket socket.Socket, rumor mrumor.Rumor) {
 	id := h.queries.GetNextID()
 	rumor.ID = id
 

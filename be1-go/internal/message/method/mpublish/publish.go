@@ -1,18 +1,20 @@
-package method
+package mpublish
 
 import (
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/mquery"
 )
 
-// Broadcast defines a JSON RPC broadcast message
-type Broadcast struct {
+// Publish defines a JSON RPC publish message
+type Publish struct {
 	mquery.Base
 
-	Params BroadcastParams `json:"params"`
+	ID int `json:"id"`
+
+	Params PublishParams `json:"params"`
 }
 
-type BroadcastParams struct {
+type PublishParams struct {
 	Channel string           `json:"channel"`
 	Message mmessage.Message `json:"message"`
 }

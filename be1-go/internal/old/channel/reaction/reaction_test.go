@@ -10,7 +10,12 @@ import (
 	"popstellar/internal/crypto"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata/mreaction"
-	method2 "popstellar/internal/message/method"
+	"popstellar/internal/message/method/mbroadcast"
+	"popstellar/internal/message/method/mcatchup"
+	"popstellar/internal/message/method/mgreetserver"
+	"popstellar/internal/message/method/mpublish"
+	"popstellar/internal/message/method/msubscribe"
+	method2 "popstellar/internal/message/method/munsubscribe"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
@@ -54,7 +59,7 @@ func TestReactionChannel_Subscribe(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var message method2.Subscribe
+	var message msubscribe.Subscribe
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
@@ -169,7 +174,7 @@ func TestReactionChannel_Broadcast(t *testing.T) {
 	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
-	var message method2.Broadcast
+	var message mbroadcast.Broadcast
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
@@ -227,7 +232,7 @@ func Test_Catchup(t *testing.T) {
 	}
 
 	// Compute the catchup method
-	catchupAnswer := cha.Catchup(method2.Catchup{ID: 0})
+	catchupAnswer := cha.Catchup(mcatchup.Catchup{ID: 0})
 
 	// Check that the order of the messages is the same in `messages` and in
 	// `catchupAnswer`
@@ -279,7 +284,7 @@ func Test_SendReaction(t *testing.T) {
 	bufCreatePub, err := os.ReadFile(fileCreatePub)
 	require.NoError(t, err)
 
-	var message method2.Publish
+	var message mpublish.Publish
 
 	err = json.Unmarshal(bufCreatePub, &message)
 	require.NoError(t, err)
@@ -332,7 +337,7 @@ func Test_DeleteAbsentReaction_MustFail(t *testing.T) {
 	bufCreatePub, err := os.ReadFile(fileCreatePub)
 	require.NoError(t, err)
 
-	var pub method2.Publish
+	var pub mpublish.Publish
 
 	err = json.Unmarshal(bufCreatePub, &pub)
 	require.NoError(t, err)
@@ -388,7 +393,7 @@ func Test_DeleteReaction(t *testing.T) {
 	bufCreatePub, err := os.ReadFile(fileCreatePub)
 	require.NoError(t, err)
 
-	var pub method2.Publish
+	var pub mpublish.Publish
 
 	err = json.Unmarshal(bufCreatePub, &pub)
 	require.NoError(t, err)
@@ -490,7 +495,7 @@ func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 	bufCreatePub, err := os.ReadFile(fileCreatePub)
 	require.NoError(t, err)
 
-	var pub method2.Publish
+	var pub mpublish.Publish
 
 	err = json.Unmarshal(bufCreatePub, &pub)
 	require.NoError(t, err)
@@ -507,7 +512,7 @@ func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 
 	// we create a new Publish variable for the delete message, as the previous
 	// one has not yet been used for the add reaction
-	var pub2 method2.Publish
+	var pub2 mpublish.Publish
 	// Create delete reaction message
 	file = filepath.Join(relativePath, "reaction_delete", "reaction_delete.json")
 	buf, err = os.ReadFile(file)
@@ -670,7 +675,7 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
 
 // GetPeersInfo implements channel.HubFunctionalities
-func (h *fakeHub) GetPeersInfo() []method2.GreetServerParams {
+func (h *fakeHub) GetPeersInfo() []mgreetserver.GreetServerParams {
 	return nil
 }
 
@@ -684,7 +689,7 @@ func (h *fakeHub) GetServerNumber() int {
 	return 0
 }
 
-func (h *fakeHub) SendAndHandleMessage(msg method2.Broadcast) error {
+func (h *fakeHub) SendAndHandleMessage(msg mbroadcast.Broadcast) error {
 	return nil
 }
 

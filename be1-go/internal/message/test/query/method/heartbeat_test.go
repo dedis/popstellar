@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/method"
+	"popstellar/internal/message/method/mheartbeat"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -29,7 +29,7 @@ func Test_Heartbeat(t *testing.T) {
 
 	require.Equal(t, mjsonrpc.RPCTypeQuery, rpctype)
 
-	var heartbeat method.Heartbeat
+	var heartbeat mheartbeat.Heartbeat
 
 	err = json.Unmarshal(buf, &heartbeat)
 	require.NoError(t, err)

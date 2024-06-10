@@ -3,7 +3,7 @@ package hcatchup
 import (
 	"encoding/json"
 	"popstellar/internal/errors"
-	"popstellar/internal/message/method"
+	"popstellar/internal/message/method/mcatchup"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/network/socket"
 )
@@ -24,7 +24,7 @@ func New(db Repository) *Handler {
 }
 
 func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
-	var catchup method.Catchup
+	var catchup mcatchup.Catchup
 
 	err := json.Unmarshal(msg, &catchup)
 	if err != nil {

@@ -1,4 +1,4 @@
-package method
+package mgetmessagesbyid
 
 import (
 	"popstellar/internal/message/mquery"

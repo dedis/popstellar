@@ -1,4 +1,4 @@
-package method
+package mrumor
 
 import (
 	"popstellar/internal/message/mmessage"

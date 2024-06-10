@@ -27,7 +27,8 @@ import (
 	"popstellar/internal/handler/method/unsubscribe/hunsubscribe"
 	"popstellar/internal/handler/query/hquery"
 	"popstellar/internal/logger"
-	method2 "popstellar/internal/message/method"
+	"popstellar/internal/message/method/mheartbeat"
+	method2 "popstellar/internal/message/method/mrumor"
 	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/state"
@@ -332,7 +333,7 @@ func (h *Hub) runHeartbeat() {
 
 // sendHeartbeat sends a heartbeat message to all servers
 func (h *Hub) sendHeartbeat() error {
-	heartbeatMessage := method2.Heartbeat{
+	heartbeatMessage := mheartbeat.Heartbeat{
 		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",

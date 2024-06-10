@@ -6,7 +6,7 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/logger"
-	"popstellar/internal/message/method"
+	"popstellar/internal/message/method/mrumor"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/network/socket"
 	"sort"
@@ -20,7 +20,7 @@ const (
 type Queries interface {
 	SetQueryReceived(ID int) error
 	IsRumorQuery(queryID int) bool
-	GetRumorFromPastQuery(queryID int) (method.Rumor, bool)
+	GetRumorFromPastQuery(queryID int) (mrumor.Rumor, bool)
 }
 
 type MessageHandler interface {
@@ -28,7 +28,7 @@ type MessageHandler interface {
 }
 
 type RumorSender interface {
-	SendRumor(socket socket.Socket, rumor method.Rumor)
+	SendRumor(socket socket.Socket, rumor mrumor.Rumor)
 }
 
 type Handlers struct {

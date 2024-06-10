@@ -11,7 +11,12 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/messagedata/melection"
 	"popstellar/internal/message/messagedata/mlao"
-	method2 "popstellar/internal/message/method"
+	"popstellar/internal/message/method/mbroadcast"
+	"popstellar/internal/message/method/mcatchup"
+	"popstellar/internal/message/method/mgreetserver"
+	"popstellar/internal/message/method/mpublish"
+	"popstellar/internal/message/method/msubscribe"
+	method2 "popstellar/internal/message/method/munsubscribe"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
@@ -82,7 +87,7 @@ func Test_Election_Channel_Subscribe(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var sub method2.Subscribe
+	var sub msubscribe.Subscribe
 	err = json.Unmarshal(buf, &sub)
 	require.NoError(t, err)
 
@@ -164,7 +169,7 @@ func Test_Election_Channel_Catchup(t *testing.T) {
 	}
 
 	// Compute the catchup method
-	catchupAnswer := electChannel.Catchup(method2.Catchup{ID: 0})
+	catchupAnswer := electChannel.Catchup(mcatchup.Catchup{ID: 0})
 
 	// Check that the order of the messages is the same in `messages` and in
 	// `catchupAnswer`
@@ -190,7 +195,7 @@ func Test_Election_Channel_Broadcast(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var broadcast method2.Broadcast
+	var broadcast mbroadcast.Broadcast
 	err = json.Unmarshal(buf, &broadcast)
 	require.NoError(t, err)
 
@@ -239,7 +244,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 	bufCreatePub, err := os.ReadFile(fileCreatePub)
 	require.NoError(t, err)
 
-	var pub method2.Publish
+	var pub mpublish.Publish
 
 	err = json.Unmarshal(bufCreatePub, &pub)
 	require.NoError(t, err)
@@ -291,7 +296,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 	require.NoError(t, electChannel.Publish(pub, socket.ClientSocket{}))
 
 	// check that the listening socket has received the election results
-	var broad method2.Broadcast
+	var broad mbroadcast.Broadcast
 	err = json.Unmarshal(fakeSock.msg, &broad)
 	require.NoError(t, err)
 
@@ -455,7 +460,7 @@ func Test_Publish_Election_Open(t *testing.T) {
 	bufCreatePub, err := os.ReadFile(fileCreatePub)
 	require.NoError(t, err)
 
-	var pub method2.Publish
+	var pub mpublish.Publish
 
 	err = json.Unmarshal(bufCreatePub, &pub)
 	require.NoError(t, err)
@@ -511,7 +516,7 @@ func Test_Sending_Election_Key(t *testing.T) {
 	require.Equal(t, mlao.SecretBallot, electChannel.electionType)
 
 	// Compute the catchup method
-	catchupAnswer := electChannel.Catchup(method2.Catchup{ID: 0})
+	catchupAnswer := electChannel.Catchup(mcatchup.Catchup{ID: 0})
 
 	electionKeyMsg := catchupAnswer[1]
 
@@ -755,7 +760,7 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
 
 // GetPeersInfo implements channel.HubFunctionalities
-func (h *fakeHub) GetPeersInfo() []method2.GreetServerParams {
+func (h *fakeHub) GetPeersInfo() []mgreetserver.GreetServerParams {
 	return nil
 }
 
@@ -767,7 +772,7 @@ func (h *fakeHub) GetServerNumber() int {
 	return 1
 }
 
-func (h *fakeHub) SendAndHandleMessage(msg method2.Broadcast) error {
+func (h *fakeHub) SendAndHandleMessage(msg mbroadcast.Broadcast) error {
 	byteMsg, err := json.Marshal(msg)
 	if err != nil {
 		return err

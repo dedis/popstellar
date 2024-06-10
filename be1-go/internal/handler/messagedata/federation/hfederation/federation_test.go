@@ -13,7 +13,9 @@ import (
 	generator2 "popstellar/internal/generator"
 	"popstellar/internal/handler/messagedata/federation/hfederation/mocks"
 	"popstellar/internal/message/messagedata/mfederation"
-	method2 "popstellar/internal/message/method"
+	"popstellar/internal/message/method/mbroadcast"
+	"popstellar/internal/message/method/mpublish"
+	method2 "popstellar/internal/message/method/msubscribe"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/mquery"
 	mock2 "popstellar/internal/network/socket/mocks"
@@ -353,7 +355,7 @@ func Test_handleRequestChallenge(t *testing.T) {
 	require.NoError(t, err)
 
 	require.NotNil(t, fakeSocket.Msg)
-	var broadcastMsg method2.Broadcast
+	var broadcastMsg mbroadcast.Broadcast
 	err = json.Unmarshal(fakeSocket.Msg, &broadcastMsg)
 	require.NoError(t, err)
 
@@ -494,7 +496,7 @@ func Test_handleFederationInit(t *testing.T) {
 	case <-time.After(time.Second):
 		require.Fail(t, "Timed out waiting for expected message")
 	}
-	var publishMsg method2.Publish
+	var publishMsg mpublish.Publish
 	err = json.Unmarshal(msgBytes, &publishMsg)
 	require.NoError(t, err)
 	require.Equal(t, mquery.MethodPublish, publishMsg.Method)
@@ -581,14 +583,14 @@ func Test_handleFederationChallenge(t *testing.T) {
 	// The same federation result message should be received by both sockets
 	// on fakeSocket1, representing the organizer, it should be in a broadcast
 	require.NotNil(t, fakeSocket1.Msg)
-	var broadcastMsg method2.Broadcast
+	var broadcastMsg mbroadcast.Broadcast
 	err = json.Unmarshal(fakeSocket1.Msg, &broadcastMsg)
 	require.NoError(t, err)
 	require.Equal(t, mquery.MethodBroadcast, broadcastMsg.Method)
 
 	// on fakeSocket2, representing the other server, it should in a publish
 	require.NotNil(t, fakeSocket2.Msg)
-	var publishMsg method2.Publish
+	var publishMsg mpublish.Publish
 	err = json.Unmarshal(fakeSocket2.Msg, &publishMsg)
 	require.NoError(t, err)
 	require.Equal(t, mquery.MethodPublish, publishMsg.Method)
@@ -674,7 +676,7 @@ func Test_handleFederationResult(t *testing.T) {
 	require.NoError(t, err)
 
 	require.NotNil(t, fakeSocket.Msg)
-	var broadcastMsg method2.Broadcast
+	var broadcastMsg mbroadcast.Broadcast
 	err = json.Unmarshal(fakeSocket.Msg, &broadcastMsg)
 	require.NoError(t, err)
 

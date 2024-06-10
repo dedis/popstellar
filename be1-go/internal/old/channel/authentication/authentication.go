@@ -12,7 +12,11 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/message/messagedata/mauthentification"
-	method2 "popstellar/internal/message/method"
+	"popstellar/internal/message/method/mbroadcast"
+	"popstellar/internal/message/method/mcatchup"
+	"popstellar/internal/message/method/mpublish"
+	"popstellar/internal/message/method/msubscribe"
+	method2 "popstellar/internal/message/method/munsubscribe"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
@@ -102,7 +106,7 @@ func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.
 // ---
 
 // Subscribe : for authentication messages, we explicitly forbid subscription from clients.
-func (c *Channel) Subscribe(_ socket.Socket, _ method2.Subscribe) error {
+func (c *Channel) Subscribe(_ socket.Socket, _ msubscribe.Subscribe) error {
 	return xerrors.New("It is not possible to subscribe to the authentication channel.")
 }
 
@@ -112,7 +116,7 @@ func (c *Channel) Unsubscribe(_ string, _ method2.Unsubscribe) error {
 }
 
 // Publish is used to handle publish messages in the authentication channel.
-func (c *Channel) Publish(publish method2.Publish, socket socket.Socket) error {
+func (c *Channel) Publish(publish mpublish.Publish, socket socket.Socket) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
 		Msg("received a publish")
@@ -132,13 +136,13 @@ func (c *Channel) Publish(publish method2.Publish, socket socket.Socket) error {
 }
 
 // Catchup is used to handle a catchup message.
-func (c *Channel) Catchup(_ method2.Catchup) []mmessage.Message {
+func (c *Channel) Catchup(_ mcatchup.Catchup) []mmessage.Message {
 	c.log.Error().Msg("Catchup is not allowed on the authentication channel")
 	return nil
 }
 
 // Broadcast is forbidden, as authentication messages must be kept secret.
-func (c *Channel) Broadcast(_ method2.Broadcast, _ socket.Socket) error {
+func (c *Channel) Broadcast(_ mbroadcast.Broadcast, _ socket.Socket) error {
 	return xerrors.New("Broadcasting is not allowed on the authentication channel")
 }
 

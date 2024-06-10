@@ -1,7 +1,12 @@
 package channel
 
 import (
-	method2 "popstellar/internal/message/method"
+	"popstellar/internal/message/method/mbroadcast"
+	"popstellar/internal/message/method/mcatchup"
+	"popstellar/internal/message/method/mgreetserver"
+	"popstellar/internal/message/method/mpublish"
+	"popstellar/internal/message/method/msubscribe"
+	method2 "popstellar/internal/message/method/munsubscribe"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/validation"
@@ -20,7 +25,7 @@ type LaoFactory func(channelID string, hub HubFunctionalities, msg mmessage.Mess
 // Channel represents a PoP channel - like a LAO.
 type Channel interface {
 	// Subscribe is used to handle a subscribe message.
-	Subscribe(socket socket.Socket, msg method2.Subscribe) error
+	Subscribe(socket socket.Socket, msg msubscribe.Subscribe) error
 
 	// Unsubscribe is used to handle an unsubscribe message.
 	Unsubscribe(socketID string, msg method2.Unsubscribe) error
@@ -28,13 +33,13 @@ type Channel interface {
 	// Publish is used to handle a publish message. The sender's socket may be
 	// needed when a message creates a channel, to know if the server should
 	// catchup on this channel or not.
-	Publish(msg method2.Publish, socket socket.Socket) error
+	Publish(msg mpublish.Publish, socket socket.Socket) error
 
 	// Catchup is used to handle a catchup message.
-	Catchup(msg method2.Catchup) []mmessage.Message
+	Catchup(msg mcatchup.Catchup) []mmessage.Message
 
 	// Broadcast is used to handle a broadcast message.
-	Broadcast(msg method2.Broadcast, socket socket.Socket) error
+	Broadcast(msg mbroadcast.Broadcast, socket socket.Socket) error
 }
 
 // NewSockets returns a new initialized Sockets
@@ -98,15 +103,15 @@ type HubFunctionalities interface {
 	GetSchemaValidator() validation.SchemaValidator
 	NotifyNewChannel(channelID string, channel Channel, socket socket.Socket)
 	GetServerNumber() int
-	SendAndHandleMessage(method2.Broadcast) error
+	SendAndHandleMessage(mbroadcast.Broadcast) error
 	NotifyWitnessMessage(messageId string, publicKey string, signature string)
 	GetClientServerAddress() string
-	GetPeersInfo() []method2.GreetServerParams
+	GetPeersInfo() []mgreetserver.GreetServerParams
 }
 
 // Broadcastable defines a channel that can broadcast
 type Broadcastable interface {
-	Broadcast(msg method2.Broadcast, _ socket.Socket) error
+	Broadcast(msg mbroadcast.Broadcast, _ socket.Socket) error
 	GetChannelPath() string
 }
 

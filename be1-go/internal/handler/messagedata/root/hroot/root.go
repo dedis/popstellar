@@ -9,7 +9,7 @@ import (
 	"popstellar/internal/handler/message/hmessage"
 	"popstellar/internal/message/messagedata/mlao"
 	"popstellar/internal/message/messagedata/mroot"
-	"popstellar/internal/message/method"
+	"popstellar/internal/message/method/mgreetserver"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/validation"
 )
@@ -38,7 +38,7 @@ type Subscribers interface {
 }
 
 type Peers interface {
-	GetAllPeersInfo() []method.GreetServerParams
+	GetAllPeersInfo() []mgreetserver.GreetServerParams
 }
 
 type Repository interface {

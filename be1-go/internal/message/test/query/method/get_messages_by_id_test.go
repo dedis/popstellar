@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/method"
+	"popstellar/internal/message/method/mgetmessagesbyid"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -29,7 +29,7 @@ func Test_GetMessagesById(t *testing.T) {
 
 	require.Equal(t, mjsonrpc.RPCTypeQuery, rpctype)
 
-	var getMessagesById method.GetMessagesById
+	var getMessagesById mgetmessagesbyid.GetMessagesById
 
 	err = json.Unmarshal(buf, &getMessagesById)
 	require.NoError(t, err)

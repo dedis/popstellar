@@ -3,7 +3,7 @@ package hgetmessagesbyid
 import (
 	"encoding/json"
 	"popstellar/internal/errors"
-	"popstellar/internal/message/method"
+	"popstellar/internal/message/method/mgetmessagesbyid"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/network/socket"
 )
@@ -23,7 +23,7 @@ func New(db Repository) *Handler {
 }
 
 func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
-	var getMessagesById method.GetMessagesById
+	var getMessagesById mgetmessagesbyid.GetMessagesById
 	err := json.Unmarshal(msg, &getMessagesById)
 	if err != nil {
 		return nil, errors.NewJsonUnmarshalError(err.Error())

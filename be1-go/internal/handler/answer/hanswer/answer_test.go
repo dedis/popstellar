@@ -12,7 +12,7 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/generator"
 	"popstellar/internal/message/messagedata/mroot"
-	"popstellar/internal/message/method"
+	"popstellar/internal/message/method/mrumor"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/state"
@@ -39,7 +39,7 @@ func (n *nullMessageHandler) Handle(channelPath string, msg mmessage.Message, fr
 
 type nullRumorSender struct{}
 
-func (n *nullRumorSender) SendRumor(socket socket.Socket, rumor method.Rumor) {
+func (n *nullRumorSender) SendRumor(socket socket.Socket, rumor mrumor.Rumor) {
 }
 
 func Test_handleMessagesByChannel(t *testing.T) {

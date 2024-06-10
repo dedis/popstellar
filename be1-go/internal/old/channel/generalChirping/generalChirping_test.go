@@ -7,7 +7,12 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/crypto"
-	method2 "popstellar/internal/message/method"
+	"popstellar/internal/message/method/mbroadcast"
+	"popstellar/internal/message/method/mcatchup"
+	"popstellar/internal/message/method/mgreetserver"
+	"popstellar/internal/message/method/mpublish"
+	"popstellar/internal/message/method/msubscribe"
+	method2 "popstellar/internal/message/method/munsubscribe"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
@@ -39,7 +44,7 @@ func Test_General_Channel_Subscribe(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var message method2.Subscribe
+	var message msubscribe.Subscribe
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
@@ -128,7 +133,7 @@ func Test_Consensus_Channel_Catchup(t *testing.T) {
 	}
 
 	// Compute the catchup method
-	catchupAnswer := channel.Catchup(method2.Catchup{ID: 0})
+	catchupAnswer := channel.Catchup(mcatchup.Catchup{ID: 0})
 
 	// Check that the order of the messages is the same in `messages` and in
 	// `catchupAnswer`
@@ -154,7 +159,7 @@ func Test_General_Channel_Publish(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var message method2.Publish
+	var message mpublish.Publish
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
@@ -278,7 +283,7 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
 
 // GetPeersInfo implements channel.HubFunctionalities
-func (h *fakeHub) GetPeersInfo() []method2.GreetServerParams {
+func (h *fakeHub) GetPeersInfo() []mgreetserver.GreetServerParams {
 	return nil
 }
 
@@ -292,7 +297,7 @@ func (h *fakeHub) GetServerNumber() int {
 	return 0
 }
 
-func (h *fakeHub) SendAndHandleMessage(msg method2.Broadcast) error {
+func (h *fakeHub) SendAndHandleMessage(msg mbroadcast.Broadcast) error {
 	return nil
 }
 

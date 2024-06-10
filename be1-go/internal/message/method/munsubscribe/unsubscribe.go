@@ -1,4 +1,4 @@
-package method
+package munsubscribe
 
 import "popstellar/internal/message/mquery"
 

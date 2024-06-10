@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/handler/messagedata/coin/hcoin/mocks"
-	"popstellar/internal/message/method"
+	"popstellar/internal/message/method/mbroadcast"
 	"popstellar/internal/message/mmessage"
 	mocks2 "popstellar/internal/network/socket/mocks"
 	"popstellar/internal/state"
@@ -106,7 +106,7 @@ func Test_handleChannelCoin(t *testing.T) {
 				for _, s := range i.sockets {
 					require.NotNil(t, s.Msg)
 
-					var msg method.Broadcast
+					var msg mbroadcast.Broadcast
 					err := json.Unmarshal(s.Msg, &msg)
 					require.NoError(t, err)
 

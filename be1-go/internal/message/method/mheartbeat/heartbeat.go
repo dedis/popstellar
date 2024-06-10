@@ -1,4 +1,4 @@
-package method
+package mheartbeat
 
 import (
 	"popstellar/internal/message/mquery"
