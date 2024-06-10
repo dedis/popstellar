@@ -111,7 +111,16 @@ func (h *Handler) handleChirpAdd(channelID string, msg message.Message) error {
 		return err
 	}
 
-	return h.verifyChirpMessage(channelID, msg, data)
+	err = data.Verify()
+	if err != nil {
+		return err
+	}
+
+	if !strings.HasSuffix(channelID, msg.Sender) {
+		return errors.NewAccessDeniedError("only the owner of the channelPath can post chirps")
+	}
+
+	return nil
 }
 
 func (h *Handler) handleChirpDelete(channelID string, msg message.Message) error {
@@ -121,9 +130,13 @@ func (h *Handler) handleChirpDelete(channelID string, msg message.Message) error
 		return err
 	}
 
-	err = h.verifyChirpMessage(channelID, msg, data)
+	err = data.Verify()
 	if err != nil {
 		return err
+	}
+
+	if !strings.HasSuffix(channelID, msg.Sender) {
+		return errors.NewAccessDeniedError("only the owner of the channelPath can post chirps")
 	}
 
 	msgToDeleteExists, err := h.db.HasMessage(data.ChirpID)
@@ -132,19 +145,6 @@ func (h *Handler) handleChirpDelete(channelID string, msg message.Message) error
 	}
 	if !msgToDeleteExists {
 		return errors.NewInvalidResourceError("cannot delete unknown chirp")
-	}
-
-	return nil
-}
-
-func (h *Handler) verifyChirpMessage(channelID string, msg message.Message, chirpMsg messagedata.Verifiable) error {
-	err := chirpMsg.Verify()
-	if err != nil {
-		return err
-	}
-
-	if !strings.HasSuffix(channelID, msg.Sender) {
-		return errors.NewAccessDeniedError("only the owner of the channelPath can post chirps")
 	}
 
 	return nil
