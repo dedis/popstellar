@@ -1,18 +1,19 @@
-package messagedata
+package mauthentification
 
 import (
+	"embed"
 	"encoding/json"
 	"github.com/stretchr/testify/require"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/authentification/mauthentification"
 	"testing"
 )
 
+//go:embed testdata/*.json
+var testData embed.FS
+
 // TestAuthUserInterfaceFunctions tests the basic interface methods of messagedata
 func TestAuthUserInterfaceFunctions(t *testing.T) {
-	var authMsg mauthentification.AuthenticateUser
+	var authMsg AuthenticateUser
 	require.Equal(t, messagedata.AuthObject, authMsg.GetObject())
 	require.Equal(t, messagedata.AuthAction, authMsg.GetAction())
 	require.Empty(t, authMsg.NewEmpty())
@@ -21,7 +22,7 @@ func TestAuthUserInterfaceFunctions(t *testing.T) {
 // TestVerify runs multiple times the verification method on different jsons
 func TestVerify(t *testing.T) {
 
-	var authUser mauthentification.AuthenticateUser
+	var authUser AuthenticateUser
 
 	// action and object are constant
 	object, action := "popcha", "authenticate"
@@ -30,7 +31,7 @@ func TestVerify(t *testing.T) {
 	getTestValid := func(file string, shouldBeValid bool) func(*testing.T) {
 		return func(t *testing.T) {
 			// read the example file
-			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "popcha_authenticate", file))
+			buf, err := testData.ReadFile("testdata/" + file)
 			require.NoError(t, err)
 
 			// check on the object and action

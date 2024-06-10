@@ -54,6 +54,11 @@ test-data:
 	# Message
 	cp -r ../protocol/examples/messageData/lao_create/. ./internal/handler/message/mmessage/testdata
 
+	# MessageData
+
+	# Authentification
+	cp -r ../protocol/examples/messageData/popcha_authenticate/. ./internal/handler/messagedata/authentification/mauthentification/testdata
+
 clean:
 	rm -rf ./internal/validation/protocol
 
@@ -72,6 +77,11 @@ clean:
 
 	# Message
 	rm -rf ./internal/handler/message/mmessage/testdata
+
+	# MessageData
+
+	# Authentification
+	rm -rf ./internal/handler/messagedata/authentification/mauthentification/testdata
 
 fmt:
 	gofmt -s -w ./
