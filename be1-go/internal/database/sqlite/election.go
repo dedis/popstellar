@@ -8,9 +8,9 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/crypto"
 	poperrors "popstellar/internal/errors"
+	"popstellar/internal/handler/messagedata/election/telection"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/types/tmessagedata/telection"
 	"time"
 )
 

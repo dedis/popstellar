@@ -7,7 +7,7 @@ import (
 	"errors"
 	"go.dedis.ch/kyber/v3"
 	poperrors "popstellar/internal/errors"
-	messageHandler "popstellar/internal/handler/hmessage"
+	messageHandler "popstellar/internal/handler/message/hmessage"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"time"

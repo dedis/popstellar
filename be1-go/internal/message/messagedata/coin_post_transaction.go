@@ -6,8 +6,8 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
+	"popstellar/internal/handler/messagedata/coin/tcoin"
 	message2 "popstellar/internal/message/query/method/message"
-	"popstellar/internal/types/tmessagedata/tcoin"
 	"strconv"
 )
 

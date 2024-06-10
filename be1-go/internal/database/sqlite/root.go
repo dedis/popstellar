@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	poperrors "popstellar/internal/errors"
-	"popstellar/internal/handler/hmessagedata/hroot"
+	"popstellar/internal/handler/messagedata/root/hroot"
 	"popstellar/internal/message/query/method/message"
 	"time"
 )

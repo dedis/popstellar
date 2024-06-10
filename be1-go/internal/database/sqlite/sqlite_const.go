@@ -1,7 +1,7 @@
 package sqlite
 
 import (
-	"popstellar/internal/handler/hmessage"
+	"popstellar/internal/handler/message/hmessage"
 )
 
 const (
