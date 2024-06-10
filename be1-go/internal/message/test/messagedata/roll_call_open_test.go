@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/lao/mlao"
 	"testing"
 
@@ -17,7 +17,7 @@ func Test_Roll_Call_Open(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	object, action, err := mmessage.GetObjectAndAction(buf)
+	object, action, err := messagedata.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "roll_call", object)
@@ -38,7 +38,7 @@ func Test_Roll_Call_Open(t *testing.T) {
 func Test_Roll_Call_Open_Interface_Functions(t *testing.T) {
 	var msg mlao.RollCallOpen
 
-	require.Equal(t, mmessage.RollCallObject, msg.GetObject())
-	require.Equal(t, mmessage.RollCallActionOpen, msg.GetAction())
+	require.Equal(t, messagedata.RollCallObject, msg.GetObject())
+	require.Equal(t, messagedata.RollCallActionOpen, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }

@@ -8,6 +8,7 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/generator"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/lao/hlao/mocks"
 	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/handler/messagedata/root/hroot"
@@ -295,7 +296,7 @@ func newLaoStateMsg(t *testing.T, organizer, laoID string) mmessage.Message {
 func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation, start, end int64, isError bool,
 	mockRepository *mocks.Repository) mmessage.Message {
 
-	createID := mmessage.Hash(
+	createID := messagedata.Hash(
 		mlao2.RollCallFlag,
 		strings.ReplaceAll(laoID, hroot.RootPrefix, ""),
 		strconv.Itoa(int(creation)),
@@ -314,7 +315,7 @@ func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation,
 func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, openedAt int64, isError bool,
 	mockRepository *mocks.Repository) mmessage.Message {
 
-	openID := mmessage.Hash(
+	openID := messagedata.Hash(
 		mlao2.RollCallFlag,
 		strings.ReplaceAll(laoID, hroot.RootPrefix, ""),
 		base64.URLEncoding.EncodeToString([]byte("opens")),
@@ -336,7 +337,7 @@ func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, opene
 func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, closedAt int64, isError bool,
 	mockRepository *mocks.Repository) mmessage.Message {
 
-	closeID := mmessage.Hash(
+	closeID := messagedata.Hash(
 		mlao2.RollCallFlag,
 		strings.ReplaceAll(laoID, hroot.RootPrefix, ""),
 		base64.URLEncoding.EncodeToString([]byte("closes")),
@@ -366,7 +367,7 @@ func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 	createdAt, start, end int64,
 	isError bool, mockRepository *mocks.Repository) mmessage.Message {
 
-	electionSetupID := mmessage.Hash(
+	electionSetupID := messagedata.Hash(
 		mlao2.ElectionFlag,
 		setupLao,
 		strconv.Itoa(int(createdAt)),
@@ -382,7 +383,7 @@ func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 		questionField = ""
 	}
 
-	questionID := mmessage.Hash("Question", electionSetupID, questionField)
+	questionID := messagedata.Hash("Question", electionSetupID, questionField)
 	questions = append(questions, mlao2.ElectionSetupQuestion{
 		ID:            questionID,
 		Question:      question,

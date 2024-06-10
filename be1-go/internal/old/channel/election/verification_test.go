@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	melection2 "popstellar/internal/handler/messagedata/election/melection"
 	"testing"
 
@@ -23,7 +24,7 @@ func TestVerify_ElectionOpen(t *testing.T) {
 
 	object, action := "election", "open"
 
-	obj, act, err := mmessage.GetObjectAndAction(buf)
+	obj, act, err := messagedata.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, object, obj)
@@ -45,7 +46,7 @@ func TestVerify_ElectionOpen(t *testing.T) {
 				"election_open", file))
 			require.NoError(t, err)
 
-			obj, act, err = mmessage.GetObjectAndAction(buf)
+			obj, act, err = messagedata.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)
@@ -184,7 +185,7 @@ func TestVerify_CastVote_Open_Ballot(t *testing.T) {
 	// object and action
 	object, action := "election", "cast_vote"
 
-	obj, act, err := mmessage.GetObjectAndAction(buf)
+	obj, act, err := messagedata.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, object, obj)
@@ -206,7 +207,7 @@ func TestVerify_CastVote_Open_Ballot(t *testing.T) {
 				"vote_cast_vote", file))
 			require.NoError(t, err)
 
-			obj, act, err = mmessage.GetObjectAndAction(buf)
+			obj, act, err = messagedata.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)
@@ -241,7 +242,7 @@ func TestVerify_CastVote_Secret_Ballot(t *testing.T) {
 	// object and action
 	object, action := "election", "cast_vote"
 
-	obj, act, err := mmessage.GetObjectAndAction(buf)
+	obj, act, err := messagedata.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, object, obj)
@@ -263,7 +264,7 @@ func TestVerify_CastVote_Secret_Ballot(t *testing.T) {
 				"vote_cast_vote", file))
 			require.NoError(t, err)
 
-			obj, act, err = mmessage.GetObjectAndAction(buf)
+			obj, act, err = messagedata.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)
@@ -340,7 +341,7 @@ func TestVerify_ElectionEnd(t *testing.T) {
 		Data:              buf64,
 		Sender:            pkOrganizer,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(buf64, "h"),
+		MessageID:         messagedata.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -355,7 +356,7 @@ func TestVerify_ElectionEnd(t *testing.T) {
 	// object and action
 	object, action := "election", "end"
 
-	obj, act, err := mmessage.GetObjectAndAction(buf)
+	obj, act, err := messagedata.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, object, obj)
@@ -376,7 +377,7 @@ func TestVerify_ElectionEnd(t *testing.T) {
 			buf, err = os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_end", file))
 			require.NoError(t, err)
 
-			obj, act, err = mmessage.GetObjectAndAction(buf)
+			obj, act, err = messagedata.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)
@@ -445,7 +446,7 @@ func TestVerifyRegisteredVotes_Badly_Sorted(t *testing.T) {
 	}
 
 	// votes must be sorted by by vote id
-	expected := mmessage.Hash("vote1.1", "vote2.1", "vote2.2", "vote1.2")
+	expected := messagedata.Hash("vote1.1", "vote2.1", "vote2.2", "vote1.2")
 
 	end := melection2.ElectionEnd{
 		RegisteredVotes: expected,
@@ -484,7 +485,7 @@ func TestVerifyRegisteredVotes_OK(t *testing.T) {
 	}
 
 	// votes must be sorted by by vote id
-	expected := mmessage.Hash("vote1.1", "vote1.2", "vote2.1", "vote2.2")
+	expected := messagedata.Hash("vote1.1", "vote1.2", "vote2.1", "vote2.2")
 
 	end := melection2.ElectionEnd{
 		RegisteredVotes: expected,

@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 )
 
 // LaoCreate defines a message data
@@ -30,7 +30,7 @@ func (message LaoCreate) Verify() error {
 	}
 
 	// verify lao id
-	expectedLaoID := mmessage.Hash(
+	expectedLaoID := messagedata.Hash(
 		message.Organizer,
 		fmt.Sprintf("%d", message.Creation),
 		message.Name,
@@ -68,15 +68,15 @@ func (message LaoCreate) Verify() error {
 
 // GetObject implements MessageData
 func (LaoCreate) GetObject() string {
-	return mmessage.LAOObject
+	return messagedata.LAOObject
 }
 
 // GetAction implements MessageData
 func (LaoCreate) GetAction() string {
-	return mmessage.LAOActionCreate
+	return messagedata.LAOActionCreate
 }
 
 // NewEmpty implements MessageData
-func (LaoCreate) NewEmpty() mmessage.MessageData {
+func (LaoCreate) NewEmpty() messagedata.MessageData {
 	return &LaoCreate{}
 }

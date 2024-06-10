@@ -3,7 +3,7 @@ package mlao
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"strconv"
 )
 
@@ -46,7 +46,7 @@ func (message ElectionSetup) Verify(laoID string) error {
 	}
 
 	// verify election setup message id
-	expectedID := mmessage.Hash(
+	expectedID := messagedata.Hash(
 		ElectionFlag,
 		laoID,
 		strconv.Itoa(int(message.CreatedAt)),
@@ -79,16 +79,16 @@ func (message ElectionSetup) Verify(laoID string) error {
 
 // GetObject implements MessageData
 func (ElectionSetup) GetObject() string {
-	return mmessage.ElectionObject
+	return messagedata.ElectionObject
 }
 
 // GetAction implements MessageData
 func (ElectionSetup) GetAction() string {
-	return mmessage.ElectionActionSetup
+	return messagedata.ElectionActionSetup
 }
 
 // NewEmpty implements MessageData
-func (ElectionSetup) NewEmpty() mmessage.MessageData {
+func (ElectionSetup) NewEmpty() messagedata.MessageData {
 	return &ElectionSetup{}
 }
 
@@ -117,7 +117,7 @@ func (q ElectionSetupQuestion) Verify(electionSetupID string) error {
 		return errors.NewInvalidMessageFieldError("failed to decode Question id: %v", err)
 	}
 
-	expectedID := mmessage.Hash(
+	expectedID := messagedata.Hash(
 		questionFlag,
 		electionSetupID,
 		q.Question,

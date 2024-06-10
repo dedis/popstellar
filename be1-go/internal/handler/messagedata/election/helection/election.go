@@ -10,6 +10,7 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	melection2 "popstellar/internal/handler/messagedata/election/melection"
 	"popstellar/internal/handler/messagedata/election/telection"
 	"popstellar/internal/handler/messagedata/lao/mlao"
@@ -97,7 +98,7 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 		return err
 	}
 
-	object, action, err := mmessage.GetObjectAndAction(jsonData)
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
@@ -105,11 +106,11 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 	storeMessage := true
 
 	switch object + "#" + action {
-	case mmessage.ElectionObject + "#" + mmessage.VoteActionCastVote:
+	case messagedata.ElectionObject + "#" + messagedata.VoteActionCastVote:
 		err = h.handleVoteCastVote(msg, channelPath)
-	case mmessage.ElectionObject + "#" + mmessage.ElectionActionOpen:
+	case messagedata.ElectionObject + "#" + messagedata.ElectionActionOpen:
 		err = h.handleElectionOpen(msg, channelPath)
-	case mmessage.ElectionObject + "#" + mmessage.ElectionActionEnd:
+	case messagedata.ElectionObject + "#" + messagedata.ElectionActionEnd:
 		err = h.handleElectionEnd(msg, channelPath)
 		storeMessage = false
 	default:
@@ -387,7 +388,7 @@ func (h *Handler) verifyVote(vote melection2.Vote, channelPath, electionID strin
 		return errors.NewInvalidMessageFieldError("invalid election type: %s", electionType)
 	}
 
-	hash := mmessage.Hash(voteFlag, electionID, string(question.ID), voteString)
+	hash := messagedata.Hash(voteFlag, electionID, string(question.ID), voteString)
 	if vote.ID != hash {
 		return errors.NewInvalidMessageFieldError("vote ID is not the expected hash")
 	}
@@ -407,7 +408,7 @@ func (h *Handler) verifyRegisteredVotes(electionEnd melection2.ElectionEnd,
 	sort.Strings(voteIDs)
 
 	// hash all valid vote ids
-	validVotesHash := mmessage.Hash(voteIDs...)
+	validVotesHash := messagedata.Hash(voteIDs...)
 
 	// compare registered votes with local saved votes
 	if electionEnd.RegisteredVotes != validVotesHash {
@@ -447,7 +448,7 @@ func (h *Handler) createElectionResult(questions map[string]telection.Question, 
 		Data:              buf64,
 		Sender:            base64.URLEncoding.EncodeToString(serverPubBuf),
 		Signature:         signature,
-		MessageID:         mmessage.Hash(buf64, signature),
+		MessageID:         messagedata.Hash(buf64, signature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -492,8 +493,8 @@ func (h *Handler) computeElectionResult(questions map[string]telection.Question,
 	}
 
 	resultElection := melection2.ElectionResult{
-		Object:    mmessage.ElectionObject,
-		Action:    mmessage.ElectionActionResult,
+		Object:    messagedata.ElectionObject,
+		Action:    messagedata.ElectionActionResult,
 		Questions: result,
 	}
 

@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"strings"
 )
 
@@ -77,7 +77,7 @@ func (message VoteCastVote) Verify(electionPath string) error {
 	}
 
 	// split channel to [lao id, election id]
-	noRoot := strings.ReplaceAll(electionPath, mmessage.RootPrefix, "")
+	noRoot := strings.ReplaceAll(electionPath, messagedata.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
 		return errors.NewInvalidMessageFieldError("failed to split channel: %v", electionPath)
@@ -101,15 +101,15 @@ func (message VoteCastVote) Verify(electionPath string) error {
 
 // GetObject implements MessageData
 func (VoteCastVote) GetObject() string {
-	return mmessage.ElectionObject
+	return messagedata.ElectionObject
 }
 
 // GetAction implements MessageData
 func (VoteCastVote) GetAction() string {
-	return mmessage.VoteActionCastVote
+	return messagedata.VoteActionCastVote
 }
 
 // NewEmpty implements MessageData
-func (VoteCastVote) NewEmpty() mmessage.MessageData {
+func (VoteCastVote) NewEmpty() messagedata.MessageData {
 	return &VoteCastVote{}
 }

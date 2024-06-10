@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/coin/mcoin"
 	"testing"
 
@@ -17,7 +17,7 @@ func Test_Coin_Post_Transaction(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	object, action, err := mmessage.GetObjectAndAction(buf)
+	object, action, err := messagedata.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "coin", object)
@@ -46,8 +46,8 @@ func Test_Coin_Post_Transaction(t *testing.T) {
 func Test_Coin_Post_Transaction_Interface_Functions(t *testing.T) {
 	var msg mcoin.PostTransaction
 
-	require.Equal(t, mmessage.CoinObject, msg.GetObject())
-	require.Equal(t, mmessage.CoinActionPostTransaction, msg.GetAction())
+	require.Equal(t, messagedata.CoinObject, msg.GetObject())
+	require.Equal(t, messagedata.CoinActionPostTransaction, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }
 
@@ -62,7 +62,7 @@ func Test_Coin_Post_Transaction_Verify(t *testing.T) {
 			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "coin", file))
 			require.NoError(t, err)
 
-			obj, act, err := mmessage.GetObjectAndAction(buf)
+			obj, act, err := messagedata.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)

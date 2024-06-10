@@ -3,7 +3,7 @@ package mlao
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 )
 
 // LaoUpdate defines a message data
@@ -50,15 +50,15 @@ func (message LaoUpdate) Verify() error {
 
 // GetObject implements MessageData
 func (LaoUpdate) GetObject() string {
-	return mmessage.LAOObject
+	return messagedata.LAOObject
 }
 
 // GetAction implements MessageData
 func (LaoUpdate) GetAction() string {
-	return mmessage.LAOActionUpdate
+	return messagedata.LAOActionUpdate
 }
 
 // NewEmpty implements MessageData
-func (LaoUpdate) NewEmpty() mmessage.MessageData {
+func (LaoUpdate) NewEmpty() messagedata.MessageData {
 	return &LaoUpdate{}
 }

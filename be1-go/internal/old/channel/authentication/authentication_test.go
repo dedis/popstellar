@@ -20,6 +20,7 @@ import (
 	"path/filepath"
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/authentification/mauthentification"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/greetserver/mgreetserver"
@@ -80,8 +81,8 @@ func TestJWTToken(t *testing.T) {
 func TestURIParamsConstruction(t *testing.T) {
 	// creating a fake authorization message
 	authMsg := &mauthentification.AuthenticateUser{
-		Object:          mmessage.AuthObject,
-		Action:          mmessage.AuthAction,
+		Object:          messagedata.AuthObject,
+		Action:          messagedata.AuthAction,
 		ClientID:        "cl1ent",
 		Nonce:           "n0nce",
 		Identifier:      xid.New().String(),
@@ -134,7 +135,7 @@ func Test_Authenticate_User(t *testing.T) {
 		Data:              buf64,
 		Sender:            "OuAhDgVgD0M2PIMTs8wyqxkg7N_ScEQu87k35i4zCsg=",
 		Signature:         "h",
-		MessageID:         mmessage.Hash(buf64, "h"),
+		MessageID:         messagedata.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 

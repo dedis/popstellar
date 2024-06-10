@@ -9,6 +9,7 @@ import (
 	"popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	melection2 "popstellar/internal/handler/messagedata/election/melection"
 	"popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
@@ -536,8 +537,8 @@ func (c *Channel) createAndSendElectionKey() error {
 	}
 
 	msgData := melection2.ElectionKey{
-		Object:   mmessage.ElectionObject,
-		Action:   mmessage.ElectionActionKey,
+		Object:   messagedata.ElectionObject,
+		Action:   messagedata.ElectionActionKey,
 		Election: c.getElectionID(),
 		Key:      base64.URLEncoding.EncodeToString(ekBuf),
 	}
@@ -569,7 +570,7 @@ func (c *Channel) createAndSendElectionKey() error {
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(skBuf),
 		Signature:         signature,
-		MessageID:         mmessage.Hash(newData64, signature),
+		MessageID:         messagedata.Hash(newData64, signature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -586,7 +587,7 @@ func (c *Channel) createAndSendElectionKey() error {
 // getElectionID extracts and returns the electionID from the channelID
 func (c *Channel) getElectionID() string {
 	// split channel to [lao id, election id]
-	noRoot := strings.ReplaceAll(c.channelID, mmessage.RootPrefix, "")
+	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 
 	return IDs[1]
@@ -643,7 +644,7 @@ func (c *Channel) broadcastElectionResult() error {
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(pkBuf),
 		Signature:         signature,
-		MessageID:         mmessage.Hash(newData64, signature),
+		MessageID:         messagedata.Hash(newData64, signature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -659,8 +660,8 @@ func (c *Channel) gatherResults(questions map[string]*question,
 	log.Info().Msgf("gathering results for the election")
 
 	resultElection := melection2.ElectionResult{
-		Object:    mmessage.ElectionObject,
-		Action:    mmessage.ElectionActionResult,
+		Object:    messagedata.ElectionObject,
+		Action:    messagedata.ElectionActionResult,
 		Questions: []melection2.ElectionResultQuestion{},
 	}
 

@@ -2,7 +2,7 @@ package lao
 
 import (
 	"encoding/base64"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
 	"strconv"
 	"strings"
@@ -30,7 +30,7 @@ func (c *Channel) verifyMessageLaoState(laoState mlao2.LaoState) error {
 	}
 
 	// verify if a lao message id is the same as the lao id
-	expectedID := strings.ReplaceAll(c.channelID, mmessage.RootPrefix, "")
+	expectedID := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
 	if expectedID != laoState.ID {
 		return xerrors.Errorf("lao id is %s, should be %s", laoState.ID, expectedID)
 	}
@@ -100,9 +100,9 @@ func (c *Channel) verifyMessageRollCallCreate(rollCallCreate *mlao2.RollCallCrea
 	}
 
 	// verify roll call create message id
-	expectedID := mmessage.Hash(
+	expectedID := messagedata.Hash(
 		rollCallFlag,
-		strings.ReplaceAll(c.channelID, mmessage.RootPrefix, ""),
+		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
 		strconv.Itoa(int(rollCallCreate.Creation)),
 		rollCallCreate.Name,
 	)
@@ -165,9 +165,9 @@ func (c *Channel) verifyMessageRollCallOpen(rollCallOpen mlao2.RollCallOpen) err
 	}
 
 	// verify roll call open message update id
-	expectedID := mmessage.Hash(
+	expectedID := messagedata.Hash(
 		rollCallFlag,
-		strings.ReplaceAll(c.channelID, mmessage.RootPrefix, ""),
+		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
 		rollCallOpen.Opens,
 		strconv.Itoa(int(rollCallOpen.OpenedAt)),
 	)
@@ -206,9 +206,9 @@ func (c *Channel) verifyMessageRollCallClose(rollCallClose *mlao2.RollCallClose)
 	}
 
 	// verify roll call close message update id
-	expectedID := mmessage.Hash(
+	expectedID := messagedata.Hash(
 		rollCallFlag,
-		strings.ReplaceAll(c.channelID, mmessage.RootPrefix, ""),
+		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
 		rollCallClose.Closes,
 		strconv.Itoa(int(rollCallClose.ClosedAt)),
 	)
@@ -252,7 +252,7 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup mlao2.ElectionSetup) 
 	}
 
 	// verify lao id is channel's lao id
-	laoID := strings.ReplaceAll(c.channelID, mmessage.RootPrefix, "")
+	laoID := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
 	if electionSetup.Lao != laoID {
 		return xerrors.Errorf("lao id is %s, should be %s", electionSetup.Lao, laoID)
 	}
@@ -264,7 +264,7 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup mlao2.ElectionSetup) 
 	}
 
 	// verify election setup message id
-	expectedID := mmessage.Hash(
+	expectedID := messagedata.Hash(
 		electionFlag,
 		laoID,
 		strconv.Itoa(int(electionSetup.CreatedAt)),
@@ -362,7 +362,7 @@ func verifyElectionSetupQuestion(question mlao2.ElectionSetupQuestion,
 	}
 
 	// verify question id
-	expectedID := mmessage.Hash(
+	expectedID := messagedata.Hash(
 		questionFlag,
 		electionID,
 		question.Question,

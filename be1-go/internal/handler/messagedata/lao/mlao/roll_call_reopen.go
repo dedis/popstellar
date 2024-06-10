@@ -1,7 +1,7 @@
 package mlao
 
 import (
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 )
 
 // RollCallReOpen defines a message data
@@ -17,15 +17,15 @@ type RollCallReOpen struct {
 
 // GetObject implements MessageData
 func (RollCallReOpen) GetObject() string {
-	return mmessage.RollCallObject
+	return messagedata.RollCallObject
 }
 
 // GetAction implements MessageData
 func (RollCallReOpen) GetAction() string {
-	return mmessage.RollCallActionReOpen
+	return messagedata.RollCallActionReOpen
 }
 
 // NewEmpty implements MessageData
-func (RollCallReOpen) NewEmpty() mmessage.MessageData {
+func (RollCallReOpen) NewEmpty() messagedata.MessageData {
 	return &RollCallReOpen{}
 }

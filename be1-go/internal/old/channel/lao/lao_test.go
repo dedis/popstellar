@@ -11,6 +11,7 @@ import (
 	"popstellar/internal/crypto"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
@@ -162,7 +163,7 @@ func TestLAOChannel_Broadcast(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -272,7 +273,7 @@ func TestLAOChannel_Publish_LaoUpdate(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -319,7 +320,7 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -338,7 +339,7 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 	err = json.Unmarshal(bufState, &mState)
 	require.NoError(t, err)
 
-	mState.ModificationID = mmessage.Hash(bufb64, publicKey64)
+	mState.ModificationID = messagedata.Hash(bufb64, publicKey64)
 	mState.ModificationSignatures = []mlao2.ModificationSignature{}
 
 	mStateBuf, err := json.Marshal(mState)
@@ -350,7 +351,7 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 		Data:              bufState64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufState64, publicKey64),
+		MessageID:         messagedata.Hash(bufState64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -427,7 +428,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 		Data:              bufCreate64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufCreate64, publicKey64),
+		MessageID:         messagedata.Hash(bufCreate64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -461,7 +462,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 		Data:              bufOpen64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufOpen64, publicKey64),
+		MessageID:         messagedata.Hash(bufOpen64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -485,7 +486,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 		Data:              bufClose64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufClose64, publicKey64),
+		MessageID:         messagedata.Hash(bufClose64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -518,7 +519,7 @@ func TestLAOChannel_Rollcall_Open_Not_Organizer(t *testing.T) {
 	fakeHub, err := NewFakeHub("", keypairOrg.public, nolog, nil)
 	require.NoError(t, err)
 
-	laoId := mmessage.Hash(base64.URLEncoding.EncodeToString(keypairOrg.
+	laoId := messagedata.Hash(base64.URLEncoding.EncodeToString(keypairOrg.
 		publicBuf), strconv.FormatInt(time.Now().Unix(), 10), "Lao 1")
 	laoChannel := "/root/" + laoId
 
@@ -546,7 +547,7 @@ func TestLAOChannel_Rollcall_Close_Not_Organizer(t *testing.T) {
 	fakeHub, err := NewFakeHub("", keypairOrg.public, nolog, nil)
 	require.NoError(t, err)
 
-	laoId := mmessage.Hash(base64.URLEncoding.EncodeToString(keypairOrg.
+	laoId := messagedata.Hash(base64.URLEncoding.EncodeToString(keypairOrg.
 		publicBuf), strconv.FormatInt(time.Now().Unix(), 10), "Lao 1")
 	laoChannel := "/root/" + laoId
 
@@ -596,7 +597,7 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -644,8 +645,8 @@ func TestLAOChannel_Sends_Greeting(t *testing.T) {
 	err = greetMsg.UnmarshalData(&laoGreet)
 	require.NoError(t, err)
 
-	require.Equal(t, mmessage.LAOObject, laoGreet.Object)
-	require.Equal(t, mmessage.LAOActionGreet, laoGreet.Action)
+	require.Equal(t, messagedata.LAOObject, laoGreet.Object)
+	require.Equal(t, messagedata.LAOActionGreet, laoGreet.Action)
 	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", laoGreet.LaoID)
 	require.Equal(t, publicKey64, laoGreet.Frontend)
 	require.Equal(t, "ws://localhost:9000/client", laoGreet.Address)
@@ -964,7 +965,7 @@ func createPublish(t *testing.T, sender keypair, laoId string,
 		Data:              data64,
 		Sender:            senderPk,
 		Signature:         base64.URLEncoding.EncodeToString(signature),
-		MessageID:         mmessage.Hash(data64, senderPk),
+		MessageID:         messagedata.Hash(data64, senderPk),
 		WitnessSignatures: nil,
 	}
 
@@ -993,7 +994,7 @@ func createRollCallCreate(t *testing.T, sender keypair,
 
 	now := time.Now().Unix()
 	rollcallName := "Roll Call"
-	rollcallId := mmessage.Hash("R", laoId, strconv.FormatInt(now, 10), rollcallName)
+	rollcallId := messagedata.Hash("R", laoId, strconv.FormatInt(now, 10), rollcallName)
 	rollcallCreate, err := json.Marshal(mlao2.RollCallCreate{
 		Object:        "roll_call",
 		Action:        "create",
@@ -1016,7 +1017,7 @@ func createRollCallOpen(t *testing.T, sender keypair,
 	laoId string, rollcallId string) mpublish.Publish {
 
 	openAt := time.Now().Unix()
-	updateId := mmessage.Hash("R", laoId, rollcallId, strconv.FormatInt(openAt, 10))
+	updateId := messagedata.Hash("R", laoId, rollcallId, strconv.FormatInt(openAt, 10))
 
 	rollcallOpen, err := json.Marshal(mlao2.RollCallOpen{
 		Object:   "roll_call",
@@ -1036,7 +1037,7 @@ func createRollCallClose(t *testing.T, sender keypair,
 	laoId string, openId string) mpublish.Publish {
 
 	closeAt := time.Now().Unix()
-	updateId := mmessage.Hash("R", laoId, openId, strconv.FormatInt(closeAt, 10))
+	updateId := messagedata.Hash("R", laoId, openId, strconv.FormatInt(closeAt, 10))
 	attendees := []string{base64.URLEncoding.EncodeToString(sender.publicBuf)}
 
 	rollcallClose, err := json.Marshal(mlao2.RollCallClose{

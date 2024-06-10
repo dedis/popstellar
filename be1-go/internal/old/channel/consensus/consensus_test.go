@@ -10,6 +10,7 @@ import (
 	"popstellar/internal/crypto"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	mconsensus2 "popstellar/internal/handler/messagedata/consensus/mconsensus"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
@@ -186,7 +187,7 @@ func Test_Consensus_Channel_Broadcast(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -250,7 +251,7 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -354,7 +355,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -478,7 +479,7 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -600,7 +601,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -706,7 +707,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	// Add a new consensus instance to the channel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = proposerRole
-	consensusInstance.lastSent = mmessage.ConsensusActionPrepare
+	consensusInstance.lastSent = messagedata.ConsensusActionPrepare
 
 	// Add a new elect instance to the consensus instance
 	consensusInstance.createElectInstance(messageID, 1)
@@ -726,7 +727,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -850,7 +851,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -957,7 +958,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	consensusInstance.role = proposerRole
 	consensusInstance.proposedTry = 4
 	consensusInstance.proposedValue = true
-	consensusInstance.lastSent = mmessage.ConsensusActionPropose
+	consensusInstance.lastSent = messagedata.ConsensusActionPropose
 
 	// Add a new elect instance to the consensus instance
 	consensusInstance.createElectInstance(messageID, 1)
@@ -977,7 +978,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1099,7 +1100,7 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1198,7 +1199,7 @@ func Test_Consensus_Publish_Failure(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1274,7 +1275,7 @@ func Test_Publish_New_Message(t *testing.T) {
 		Data:              data64,
 		Sender:            base64.URLEncoding.EncodeToString(pubKeyServBuf),
 		Signature:         signature,
-		MessageID:         mmessage.Hash(data64, signature),
+		MessageID:         messagedata.Hash(data64, signature),
 		WitnessSignatures: make([]mmessage.WitnessSignature, 0),
 	}
 
@@ -1327,7 +1328,7 @@ func Test_Timeout_Elect(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1443,7 +1444,7 @@ func Test_Timeout_Prepare(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1573,7 +1574,7 @@ func Test_Timeout_Promise(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1685,7 +1686,7 @@ func Test_Timeout_Propose(t *testing.T) {
 	// Add a new consensus instance to the channel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = proposerRole
-	consensusInstance.lastSent = mmessage.ConsensusActionPrepare
+	consensusInstance.lastSent = messagedata.ConsensusActionPrepare
 
 	// Add a new elect instance to the consensus instance
 	consensusInstance.createElectInstance(messageID, 1)
@@ -1705,7 +1706,7 @@ func Test_Timeout_Propose(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1837,7 +1838,7 @@ func Test_Timeout_Accept(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 

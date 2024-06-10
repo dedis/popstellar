@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/election/melection"
 	"testing"
 
@@ -17,7 +17,7 @@ func Test_Election_End(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	object, action, err := mmessage.GetObjectAndAction(buf)
+	object, action, err := messagedata.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "election", object)
@@ -39,7 +39,7 @@ func Test_Election_End(t *testing.T) {
 func Test_Election_End_Interface_Functions(t *testing.T) {
 	var msg melection.ElectionEnd
 
-	require.Equal(t, mmessage.ElectionObject, msg.GetObject())
-	require.Equal(t, mmessage.ElectionActionEnd, msg.GetAction())
+	require.Equal(t, messagedata.ElectionObject, msg.GetObject())
+	require.Equal(t, messagedata.ElectionActionEnd, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }

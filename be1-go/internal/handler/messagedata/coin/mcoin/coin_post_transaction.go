@@ -6,7 +6,7 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/coin/tcoin"
 	"strconv"
 )
@@ -128,7 +128,7 @@ func (message PostTransaction) verifyTransactionId() error {
 
 	hashFields = append(hashFields, version)
 
-	expectedID := mmessage.Hash(hashFields...)
+	expectedID := messagedata.Hash(hashFields...)
 
 	if message.TransactionID != expectedID {
 		return errors.NewInvalidMessageFieldError("transaction id is not valid: %s != %s", message.TransactionID, expectedID)
@@ -181,15 +181,15 @@ func (message PostTransaction) verifySignature() error {
 
 // GetObject implements MessageData
 func (PostTransaction) GetObject() string {
-	return mmessage.CoinObject
+	return messagedata.CoinObject
 }
 
 // GetAction implements MessageData
 func (PostTransaction) GetAction() string {
-	return mmessage.CoinActionPostTransaction
+	return messagedata.CoinActionPostTransaction
 }
 
 // NewEmpty implements MessageData
-func (PostTransaction) NewEmpty() mmessage.MessageData {
+func (PostTransaction) NewEmpty() messagedata.MessageData {
 	return &PostTransaction{}
 }

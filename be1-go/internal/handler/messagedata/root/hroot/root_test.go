@@ -9,6 +9,7 @@ import (
 	"popstellar/internal/handler/generator"
 	messageHandler "popstellar/internal/handler/message/hmessage"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/root/hroot/mocks"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
@@ -113,7 +114,7 @@ func Test_handleChannelRoot(t *testing.T) {
 
 func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepository *mocks.Repository, isError bool) mmessage.Message {
 	creation := time.Now().Unix()
-	laoID := mmessage.Hash(
+	laoID := messagedata.Hash(
 		organizer,
 		fmt.Sprintf("%d", creation),
 		goodLaoName,

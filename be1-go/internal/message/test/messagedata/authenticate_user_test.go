@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/authentification/mauthentification"
 	"testing"
 )
@@ -13,8 +13,8 @@ import (
 // TestAuthUserInterfaceFunctions tests the basic interface methods of messagedata
 func TestAuthUserInterfaceFunctions(t *testing.T) {
 	var authMsg mauthentification.AuthenticateUser
-	require.Equal(t, mmessage.AuthObject, authMsg.GetObject())
-	require.Equal(t, mmessage.AuthAction, authMsg.GetAction())
+	require.Equal(t, messagedata.AuthObject, authMsg.GetObject())
+	require.Equal(t, messagedata.AuthAction, authMsg.GetAction())
 	require.Empty(t, authMsg.NewEmpty())
 }
 
@@ -34,7 +34,7 @@ func TestVerify(t *testing.T) {
 			require.NoError(t, err)
 
 			// check on the object and action
-			obj, act, err := mmessage.GetObjectAndAction(buf)
+			obj, act, err := messagedata.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)

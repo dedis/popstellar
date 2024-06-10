@@ -16,3 +16,4 @@ configServer4.json
 /internal/handler/method/publish/mpublish/testdata/
 /internal/handler/method/subscribe/msubscribe/testdata/
 /internal/handler/method/unsubscribe/munsubscribe/testdata/
+/internal/handler/message/mmessage/testdata/

@@ -10,6 +10,7 @@ import (
 	"popstellar/internal/crypto"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	mchirp2 "popstellar/internal/handler/messagedata/chirp/mchirp"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
@@ -197,7 +198,7 @@ func Test_Chirp_Channel_Broadcast(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(buf64, "h"),
+		MessageID:         messagedata.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -259,7 +260,7 @@ func Test_Send_Chirp(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(buf64, "h"),
+		MessageID:         messagedata.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -284,7 +285,7 @@ func Test_Send_Chirp(t *testing.T) {
 	checkData := mchirp2.ChirpNotifyAdd{
 		Object:    "chirp",
 		Action:    "notify_add",
-		ChirpID:   mmessage.Hash(buf64, "h"),
+		ChirpID:   messagedata.Hash(buf64, "h"),
 		Channel:   generalName,
 		Timestamp: 1634760180,
 	}
@@ -330,7 +331,7 @@ func Test_Delete_Chirp(t *testing.T) {
 		Data:              buf64add,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(buf64add, "h"),
+		MessageID:         messagedata.Hash(buf64add, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -377,7 +378,7 @@ func Test_Delete_Chirp(t *testing.T) {
 		Data:              buf64delete,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(buf64delete, "h"),
+		MessageID:         messagedata.Hash(buf64delete, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -392,7 +393,7 @@ func Test_Delete_Chirp(t *testing.T) {
 	checkDataAdd := mchirp2.ChirpNotifyAdd{
 		Object:    "chirp",
 		Action:    "notify_add",
-		ChirpID:   mmessage.Hash(buf64add, "h"),
+		ChirpID:   messagedata.Hash(buf64add, "h"),
 		Channel:   generalName,
 		Timestamp: 1634760180,
 	}
@@ -403,7 +404,7 @@ func Test_Delete_Chirp(t *testing.T) {
 	checkDataDelete := mchirp2.ChirpNotifyDelete{
 		Object:    "chirp",
 		Action:    "notify_delete",
-		ChirpID:   mmessage.Hash(buf64delete, "h"),
+		ChirpID:   messagedata.Hash(buf64delete, "h"),
 		Channel:   generalName,
 		Timestamp: 1634760180,
 	}
@@ -450,7 +451,7 @@ func Test_Out_Of_Order_Delete(t *testing.T) {
 		Data:              buf64add,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(buf64add, "h"),
+		MessageID:         messagedata.Hash(buf64add, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -503,7 +504,7 @@ func Test_Out_Of_Order_Delete(t *testing.T) {
 		Data:              buf64delete,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(buf64delete, "h"),
+		MessageID:         messagedata.Hash(buf64delete, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 

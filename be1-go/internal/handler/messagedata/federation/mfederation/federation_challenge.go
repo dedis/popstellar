@@ -3,7 +3,7 @@ package mfederation
 import (
 	"encoding/hex"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 )
 
 // FederationChallenge defines a message data
@@ -18,16 +18,16 @@ type FederationChallenge struct {
 
 // GetObject implements MessageData
 func (FederationChallenge) GetObject() string {
-	return mmessage.FederationObject
+	return messagedata.FederationObject
 }
 
 // GetAction implements MessageData
 func (FederationChallenge) GetAction() string {
-	return mmessage.FederationActionChallenge
+	return messagedata.FederationActionChallenge
 }
 
 // NewEmpty implements MessageData
-func (FederationChallenge) NewEmpty() mmessage.MessageData {
+func (FederationChallenge) NewEmpty() messagedata.MessageData {
 	return &FederationChallenge{}
 }
 

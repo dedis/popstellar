@@ -9,6 +9,7 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/generator"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/election/helection/mocks"
 	"popstellar/internal/handler/messagedata/election/telection"
 	"popstellar/internal/handler/messagedata/lao/mlao"
@@ -95,7 +96,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 4 Error when Election is already started or ended
 	args = append(args, input{
 		name: "Test 4",
-		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionOpen,
+		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen,
 			-1, true, db),
 		channelPath: channelPath,
 		isError:     true,
@@ -108,7 +109,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 5 Error when ElectionOpen opened at before createdAt
 	args = append(args, input{
 		name: "Test 5",
-		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionSetup,
+		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionSetup,
 			2, true, db),
 		channelPath: channelPath,
 		isError:     true,
@@ -125,7 +126,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 6: Success when ElectionOpen is valid
 	args = append(args, input{
 		name: "Test 6",
-		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionSetup,
+		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionSetup,
 			1, false, db),
 		channelPath: channelPath,
 		isError:     false,
@@ -172,7 +173,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 10 Error when ElectionEnd is not started
 	args = append(args, input{
 		name: "Test 10",
-		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionEnd, "",
+		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionEnd, "",
 			-1, true, db),
 		channelPath: channelPath,
 		isError:     true,
@@ -186,7 +187,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 11 Error when ElectionEnd creation time is before ElectionSetup creation time
 	args = append(args, input{
 		name: "Test 11",
-		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionOpen, "",
+		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, "",
 			2, true, db),
 		channelPath: channelPath,
 		isError:     true,
@@ -197,12 +198,12 @@ func Test_handleChannelElection(t *testing.T) {
 	electionID = base64.URLEncoding.EncodeToString([]byte("electionID6"))
 	channelPath = "/root/" + laoID + "/" + electionID
 
-	wrongVotes := mmessage.Hash("wrongVotes")
+	wrongVotes := messagedata.Hash("wrongVotes")
 
 	// Test 12 Error when ElectionEnd is not the expected hash
 	args = append(args, input{
 		name: "Test 12",
-		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionOpen, wrongVotes,
+		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, wrongVotes,
 			1, true, db),
 		channelPath: channelPath,
 		isError:     true,
@@ -213,7 +214,7 @@ func Test_handleChannelElection(t *testing.T) {
 	electionID = base64.URLEncoding.EncodeToString([]byte("electionID7"))
 	channelPath = "/root/" + laoID + "/" + electionID
 
-	registeredVotes := mmessage.Hash("voteID1", "voteID2", "voteID3")
+	registeredVotes := messagedata.Hash("voteID1", "voteID2", "voteID3")
 
 	err = subs.AddChannel(channelPath)
 	require.NoError(t, err)
@@ -221,7 +222,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 13: Success when ElectionEnd is valid
 	args = append(args, input{
 		name: "Test 13",
-		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionOpen, registeredVotes,
+		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, registeredVotes,
 			1, false, db),
 		channelPath: channelPath,
 		isError:     false,
@@ -368,7 +369,7 @@ func Test_handleChannelElection(t *testing.T) {
 
 	//Test 22 Success when election is already ended
 	questionID := base64.URLEncoding.EncodeToString([]byte("questionID2"))
-	voteID := mmessage.Hash(voteFlag, electionID, questionID, "1")
+	voteID := messagedata.Hash(voteFlag, electionID, questionID, "1")
 
 	votes = []generator.VoteInt{
 		{
@@ -383,7 +384,7 @@ func Test_handleChannelElection(t *testing.T) {
 
 	args = append(args, input{
 		name: "Test 22",
-		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionEnd, mlao.OpenBallot,
+		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionEnd, mlao.OpenBallot,
 			0, votes, questions, ownerPublicKey, db, false),
 		channelPath: channelPath,
 		isError:     false,
@@ -397,7 +398,7 @@ func Test_handleChannelElection(t *testing.T) {
 	//Test 23 Success when election is started
 	args = append(args, input{
 		name: "Test 23",
-		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionOpen, "",
+		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, "",
 			-1, votes, nil, ownerPublicKey, db, true),
 		channelPath: channelPath,
 		isError:     false,
@@ -429,7 +430,7 @@ func newElectionOpenMsg(t *testing.T, owner kyber.Point, sender, laoID, election
 
 	if state != "" {
 		db.On("IsElectionStartedOrEnded", channelPath).
-			Return(state == mmessage.ElectionActionOpen || state == mmessage.ElectionActionEnd, nil)
+			Return(state == messagedata.ElectionActionOpen || state == messagedata.ElectionActionEnd, nil)
 	}
 
 	if !isError {
@@ -448,7 +449,7 @@ func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionI
 
 	if state != "" {
 		db.On("IsElectionStarted", channelPath).
-			Return(state == mmessage.ElectionActionOpen, nil)
+			Return(state == messagedata.ElectionActionOpen, nil)
 	}
 
 	if createdAt >= 0 {
@@ -498,12 +499,12 @@ func newVoteCastVoteIntMsg(t *testing.T, sender, laoID, electionID, electionPath
 	db.On("GetLAOOrganizerPubKey", electionPath).Return(owner, nil)
 	db.On("GetElectionAttendees", electionPath).Return(map[string]struct{}{ownerPubBuf64: {}}, nil)
 
-	if state == mmessage.ElectionActionOpen {
+	if state == messagedata.ElectionActionOpen {
 		db.On("IsElectionStarted", electionPath).
 			Return(true, nil)
 	}
 
-	if state == mmessage.ElectionActionEnd {
+	if state == messagedata.ElectionActionEnd {
 		db.On("IsElectionEnded", electionPath).
 			Return(false, nil)
 		db.On("IsElectionStarted", electionPath).

@@ -8,6 +8,7 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/hmessage"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/handler/messagedata/root/mroot"
 	"popstellar/internal/handler/method/greetserver/mgreetserver"
@@ -88,13 +89,13 @@ func (h *Handler) Handle(_ string, msg mmessage.Message) error {
 		return err
 	}
 
-	object, action, err := mmessage.GetObjectAndAction(jsonData)
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
 
 	switch object + "#" + action {
-	case mmessage.LAOObject + "#" + mmessage.LAOActionCreate:
+	case messagedata.LAOObject + "#" + messagedata.LAOActionCreate:
 		err = h.handleLaoCreate(msg)
 	default:
 		err = errors.NewInvalidMessageFieldError("failed to Handle %s#%s, invalid object#action", object, action)
@@ -218,8 +219,8 @@ func (h *Handler) createLaoGreet(organizerBuf []byte, laoID string) (mmessage.Me
 	}
 
 	msgData := mlao.LaoGreet{
-		Object:   mmessage.LAOObject,
-		Action:   mmessage.LAOActionGreet,
+		Object:   messagedata.LAOObject,
+		Action:   messagedata.LAOActionGreet,
 		LaoID:    laoID,
 		Frontend: base64.URLEncoding.EncodeToString(organizerBuf),
 		Address:  clientServerAddress,
@@ -254,7 +255,7 @@ func (h *Handler) createLaoGreet(organizerBuf []byte, laoID string) (mmessage.Me
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(serverPubBuf),
 		Signature:         signature,
-		MessageID:         mmessage.Hash(newData64, signature),
+		MessageID:         messagedata.Hash(newData64, signature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 

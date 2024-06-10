@@ -1,7 +1,7 @@
 package mlao
 
 import (
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 )
 
 // LaoState defines a message data
@@ -31,15 +31,15 @@ type ModificationSignature struct {
 
 // GetObject implements MessageData
 func (LaoState) GetObject() string {
-	return mmessage.LAOObject
+	return messagedata.LAOObject
 }
 
 // GetAction implements MessageData
 func (LaoState) GetAction() string {
-	return mmessage.LAOActionState
+	return messagedata.LAOActionState
 }
 
 // NewEmpty implements MessageData
-func (LaoState) NewEmpty() mmessage.MessageData {
+func (LaoState) NewEmpty() messagedata.MessageData {
 	return &LaoState{}
 }

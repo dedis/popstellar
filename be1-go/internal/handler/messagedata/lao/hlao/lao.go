@@ -7,6 +7,7 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/election/melection"
 	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/handler/messagedata/root/hroot"
@@ -93,23 +94,23 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 		return err
 	}
 
-	object, action, err := mmessage.GetObjectAndAction(jsonData)
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
 
 	storeMessage := true
 	switch object + "#" + action {
-	case mmessage.RollCallObject + "#" + mmessage.RollCallActionClose:
+	case messagedata.RollCallObject + "#" + messagedata.RollCallActionClose:
 		storeMessage = false
 		err = h.handleRollCallClose(msg, channelPath)
-	case mmessage.RollCallObject + "#" + mmessage.RollCallActionCreate:
+	case messagedata.RollCallObject + "#" + messagedata.RollCallActionCreate:
 		err = h.handleRollCallCreate(msg, channelPath)
-	case mmessage.RollCallObject + "#" + mmessage.RollCallActionOpen:
+	case messagedata.RollCallObject + "#" + messagedata.RollCallActionOpen:
 		err = h.handleRollCallOpen(msg, channelPath)
-	case mmessage.RollCallObject + "#" + mmessage.RollCallActionReOpen:
+	case messagedata.RollCallObject + "#" + messagedata.RollCallActionReOpen:
 		err = h.handleRollCallReOpen(msg, channelPath)
-	case mmessage.ElectionObject + "#" + mmessage.ElectionActionSetup:
+	case messagedata.ElectionObject + "#" + messagedata.ElectionActionSetup:
 		storeMessage = false
 		err = h.handleElectionSetup(msg, channelPath)
 	default:
@@ -314,8 +315,8 @@ func (h *Handler) createElectionKey(electionID string, electionPubKey kyber.Poin
 	}
 
 	msgData := melection.ElectionKey{
-		Object:   mmessage.ElectionObject,
-		Action:   mmessage.ElectionActionKey,
+		Object:   messagedata.ElectionObject,
+		Action:   messagedata.ElectionActionKey,
 		Election: electionID,
 		Key:      base64.URLEncoding.EncodeToString(electionPubBuf),
 	}
@@ -342,7 +343,7 @@ func (h *Handler) createElectionKey(electionID string, electionPubKey kyber.Poin
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(serverPubBuf),
 		Signature:         signature,
-		MessageID:         mmessage.Hash(newData64, signature),
+		MessageID:         messagedata.Hash(newData64, signature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 

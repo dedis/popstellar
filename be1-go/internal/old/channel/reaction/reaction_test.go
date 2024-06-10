@@ -10,6 +10,7 @@ import (
 	"popstellar/internal/crypto"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/reaction/mreaction"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
@@ -163,7 +164,7 @@ func TestReactionChannel_Broadcast(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(buf64, "h"),
+		MessageID:         messagedata.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -273,7 +274,7 @@ func Test_SendReaction(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(buf64, "h"),
+		MessageID:         messagedata.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -326,7 +327,7 @@ func Test_DeleteAbsentReaction_MustFail(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(buf64, "h"),
+		MessageID:         messagedata.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -380,7 +381,7 @@ func Test_DeleteReaction(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(buf64, "h"),
+		MessageID:         messagedata.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -426,7 +427,7 @@ func Test_DeleteReaction(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(buf64, "h"),
+		MessageID:         messagedata.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -482,7 +483,7 @@ func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(buf64, "h"),
+		MessageID:         messagedata.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -535,7 +536,7 @@ func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         mmessage.Hash(buf64, "h"),
+		MessageID:         messagedata.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 

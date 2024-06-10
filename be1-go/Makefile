@@ -51,6 +51,9 @@ test-data:
 	cp -r ../protocol/examples/query/subscribe/. ./internal/handler/method/subscribe/msubscribe/testdata
 	cp -r ../protocol/examples/query/unsubscribe/. ./internal/handler/method/unsubscribe/munsubscribe/testdata
 
+	# Message
+	cp -r ../protocol/examples/messageData/lao_create/. ./internal/handler/message/mmessage/testdata
+
 clean:
 	rm -rf ./internal/validation/protocol
 
@@ -66,6 +69,9 @@ clean:
 	rm -rf ./internal/handler/method/publish/mpublish/testdata
 	rm -rf ./internal/handler/method/subscribe/msubscribe/testdata
 	rm -rf ./internal/handler/method/unsubscribe/munsubscribe/testdata
+
+	# Message
+	rm -rf ./internal/handler/message/mmessage/testdata
 
 fmt:
 	gofmt -s -w ./

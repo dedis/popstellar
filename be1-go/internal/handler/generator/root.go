@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/root/mroot"
 	"testing"
 )
@@ -12,8 +13,8 @@ import (
 func NewLaoCreateMsg(t *testing.T, sender string, ID string, laoName string, creation int64, organizer string,
 	senderSK kyber.Scalar) mmessage.Message {
 	laoCreate := mroot.LaoCreate{
-		Object:    mmessage.LAOObject,
-		Action:    mmessage.LAOActionCreate,
+		Object:    messagedata.LAOObject,
+		Action:    messagedata.LAOActionCreate,
 		ID:        ID,
 		Name:      laoName,
 		Creation:  creation,

@@ -1,13 +1,12 @@
 package mmessage
 
 import (
-	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
+	"popstellar/internal/handler/messagedata"
 )
 
 // Message defines a JSON RPC message
@@ -64,21 +63,10 @@ func (m Message) VerifyMessage() error {
 		return errors.NewInvalidMessageFieldError("failed to verify signature : %v", err)
 	}
 
-	expectedMessageID := Hash(m.Data, m.Signature)
+	expectedMessageID := messagedata.Hash(m.Data, m.Signature)
 	if expectedMessageID != m.MessageID {
 		return errors.NewInvalidActionError("messageID is wrong: expected %s found %s", expectedMessageID, m.MessageID)
 	}
 
 	return nil
-}
-
-// Hash returns the sha256 created from an array of strings
-func Hash(strs ...string) string {
-	h := sha256.New()
-	for _, s := range strs {
-		h.Write([]byte(fmt.Sprintf("%d", len(s))))
-		h.Write([]byte(s))
-	}
-
-	return base64.URLEncoding.EncodeToString(h.Sum(nil))
 }

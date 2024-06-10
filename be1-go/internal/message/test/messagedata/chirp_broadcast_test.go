@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/chirp/mchirp"
 	"testing"
 
@@ -34,7 +34,7 @@ func Test_Chirp_Broadcast_Verify(t *testing.T) {
 			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "chirp_notify_add", file))
 			require.NoError(t, err)
 
-			obj, act, err := mmessage.GetObjectAndAction(buf)
+			obj, act, err := messagedata.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)

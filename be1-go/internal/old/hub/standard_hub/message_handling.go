@@ -7,6 +7,7 @@ import (
 	manswer2 "popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/root/mroot"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
@@ -52,14 +53,14 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish mpubli
 	}
 
 	// get object#action
-	object, action, err := mmessage.GetObjectAndAction(jsonData)
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
 		err := manswer2.NewInvalidMessageFieldError("failed to get object#action: %v", err)
 		return err
 	}
 
 	// must be "lao#create"
-	if object != mmessage.LAOObject || action != mmessage.LAOActionCreate {
+	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
 		err := manswer2.NewInvalidMessageFieldError("only lao#create is allowed on root, "+
 			"but found %s#%s", object, action)
 		return err
@@ -109,7 +110,7 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 	}
 
 	// get object#action
-	object, action, err := mmessage.GetObjectAndAction(jsonData)
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
 		err := xerrors.Errorf("failed to get object#action: %v", err)
 		sock.SendError(nil, err)
@@ -117,7 +118,7 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 	}
 
 	// must be "lao#create"
-	if object != mmessage.LAOObject || action != mmessage.LAOActionCreate {
+	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
 		err := xerrors.Errorf("only lao#create is allowed on root, but found %s#%s",
 			object, action)
 		sock.SendError(nil, err)
@@ -255,7 +256,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 		return publish.ID, manswer2.NewInvalidMessageFieldError("failed to verify signature : %v", err)
 	}
 
-	expectedMessageID := mmessage.Hash(data, signature)
+	expectedMessageID := messagedata.Hash(data, signature)
 	if expectedMessageID != messageID {
 		return publish.ID, manswer2.NewInvalidMessageFieldError(wrongMessageIdError,
 			expectedMessageID, messageID)
@@ -301,7 +302,7 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 	messageID := broadcast.Params.Message.MessageID
 	data := broadcast.Params.Message.Data
 
-	expectedMessageID := mmessage.Hash(data, signature)
+	expectedMessageID := messagedata.Hash(data, signature)
 	if expectedMessageID != messageID {
 		return xerrors.Errorf(wrongMessageIdError,
 			expectedMessageID, messageID)
@@ -524,7 +525,7 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData mmessage.M
 	data := messageData.Data
 	log.Info().Msgf("Received message on %s", targetChannel)
 
-	expectedMessageID := mmessage.Hash(data, signature)
+	expectedMessageID := messagedata.Hash(data, signature)
 	if expectedMessageID != messageID {
 		return xerrors.Errorf(wrongMessageIdError,
 			expectedMessageID, messageID)

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	poperrors "popstellar/internal/errors"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	mfederation2 "popstellar/internal/handler/messagedata/federation/mfederation"
 )
 
@@ -14,8 +14,8 @@ func (s *SQLite) IsChallengeValid(senderPk string, challenge mfederation2.Federa
 
 	var federationChallengeBytes []byte
 	err := s.database.QueryRow(selectValidFederationChallenges, channelPath,
-		senderPk, mmessage.FederationObject,
-		mmessage.FederationActionChallenge, challenge.Value,
+		senderPk, messagedata.FederationObject,
+		messagedata.FederationActionChallenge, challenge.Value,
 		challenge.ValidUntil).Scan(&federationChallengeBytes)
 	if err != nil {
 		return poperrors.NewDatabaseSelectErrorMsg("federation challenge: %v", err)
@@ -39,8 +39,8 @@ func (s *SQLite) RemoveChallenge(challenge mfederation2.FederationChallenge) err
 	defer dbLock.Unlock()
 
 	result, err := s.database.Exec(deleteFederationChallenge,
-		mmessage.FederationObject,
-		mmessage.FederationActionChallenge, challenge.Value,
+		messagedata.FederationObject,
+		messagedata.FederationActionChallenge, challenge.Value,
 		challenge.ValidUntil)
 	if err != nil {
 		return poperrors.NewDatabaseDeleteErrorMsg(err.Error())
@@ -63,8 +63,8 @@ func (s *SQLite) GetFederationExpect(senderPk string, remotePk string, challenge
 	defer dbLock.Unlock()
 
 	rows, err := s.database.Query(selectFederationExpects, channelPath,
-		senderPk, mmessage.FederationObject,
-		mmessage.FederationActionExpect, remotePk)
+		senderPk, messagedata.FederationObject,
+		messagedata.FederationActionExpect, remotePk)
 	if err != nil {
 		return mfederation2.FederationExpect{}, poperrors.NewDatabaseSelectErrorMsg("federation expect messages: %v", err)
 	}
@@ -104,8 +104,8 @@ func (s *SQLite) GetFederationInit(senderPk string, remotePk string, challenge m
 	defer dbLock.Unlock()
 
 	rows, err := s.database.Query(selectFederationExpects, channelPath,
-		senderPk, mmessage.FederationObject,
-		mmessage.FederationActionInit, remotePk)
+		senderPk, messagedata.FederationObject,
+		messagedata.FederationActionInit, remotePk)
 	if err != nil {
 		return mfederation2.FederationInit{}, poperrors.NewDatabaseSelectErrorMsg("federation expect messages: %v", err)
 	}

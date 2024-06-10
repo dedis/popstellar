@@ -3,6 +3,7 @@ package registry
 import (
 	"encoding/base64"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/network/socket"
 
 	"golang.org/x/xerrors"
@@ -16,7 +17,7 @@ type MessageRegistry struct {
 // CallbackData is the data needed to execute a callback
 type CallbackData struct {
 	Callback     func(mmessage.Message, interface{}, socket.Socket) error
-	ConcreteType mmessage.MessageData
+	ConcreteType messagedata.MessageData
 }
 
 // NewMessageRegistry returns a new initialized registry
@@ -42,7 +43,7 @@ func NewMessageRegistry() MessageRegistry {
 //
 //	// when we need to process a message we call "processMsg"
 //	err = registry.processMsg(msg)
-func (m MessageRegistry) Register(msg mmessage.MessageData, f func(mmessage.Message,
+func (m MessageRegistry) Register(msg messagedata.MessageData, f func(mmessage.Message,
 	interface{}, socket.Socket) error) {
 
 	m.registry[msg.GetObject()+"#"+msg.GetAction()] = CallbackData{
@@ -60,7 +61,7 @@ func (m MessageRegistry) Process(msg mmessage.Message, socket socket.Socket) err
 		return xerrors.Errorf("failed to decode message data: %v", err)
 	}
 
-	object, action, err := mmessage.GetObjectAndAction(jsonData)
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
 		return xerrors.Errorf("failed to get object or action: %v", err)
 	}

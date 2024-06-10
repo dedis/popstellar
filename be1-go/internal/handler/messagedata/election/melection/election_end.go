@@ -2,7 +2,7 @@ package melection
 
 import (
 	"encoding/base64"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"strings"
 
 	"popstellar/internal/errors"
@@ -23,16 +23,16 @@ type ElectionEnd struct {
 
 // GetObject implements MessageData
 func (ElectionEnd) GetObject() string {
-	return mmessage.ElectionObject
+	return messagedata.ElectionObject
 }
 
 // GetAction implements MessageData
 func (ElectionEnd) GetAction() string {
-	return mmessage.ElectionActionEnd
+	return messagedata.ElectionActionEnd
 }
 
 // NewEmpty implements MessageData
-func (ElectionEnd) NewEmpty() mmessage.MessageData {
+func (ElectionEnd) NewEmpty() messagedata.MessageData {
 	return &ElectionEnd{}
 }
 
@@ -47,7 +47,7 @@ func (message ElectionEnd) Verify(electionPath string) error {
 		return errors.NewInvalidMessageFieldError("failed to decode election: %v", err)
 	}
 
-	noRoot := strings.ReplaceAll(electionPath, mmessage.RootPrefix, "")
+	noRoot := strings.ReplaceAll(electionPath, messagedata.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
 		return errors.NewInvalidMessageFieldError("failed to split channel: %v", message)

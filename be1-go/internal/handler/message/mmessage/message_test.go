@@ -1,10 +1,8 @@
-package test
+package mmessage
 
 import (
+	"embed"
 	"encoding/base64"
-	"os"
-	"path/filepath"
-	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/handler/messagedata/root/mroot"
 	"testing"
@@ -12,17 +10,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_UnmarshalData(t *testing.T) {
-	messageDataPath := filepath.Join("..", "..", "..", "..", "protocol",
-		"examples", "messageData", "lao_create", "lao_create.json")
+//go:embed testdata/*.json
+var testData embed.FS
 
-	messageDataBuf, err := os.ReadFile(messageDataPath)
+func Test_UnmarshalData(t *testing.T) {
+	messageDataBuf, err := testData.ReadFile("testdata/lao_create.json")
 	require.NoError(t, err)
 
 	laoCreate := mroot.LaoCreate{}
 	electionSetup := mlao.ElectionSetup{}
 
-	msg := mmessage.Message{
+	msg := Message{
 		Data: string(messageDataBuf),
 	}
 
@@ -34,7 +32,7 @@ func Test_UnmarshalData(t *testing.T) {
 
 	messageData := base64.URLEncoding.EncodeToString(messageDataBuf)
 
-	msg = mmessage.Message{
+	msg = Message{
 		Data: messageData,
 	}
 

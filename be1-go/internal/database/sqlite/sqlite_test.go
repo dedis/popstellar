@@ -11,6 +11,7 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/generator"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/election/melection"
 	"popstellar/internal/handler/messagedata/election/telection"
 	"popstellar/internal/handler/messagedata/federation/mfederation"
@@ -802,8 +803,8 @@ func Test_SQLite_IsChallengeValid(t *testing.T) {
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
 
 	challenge := mfederation.FederationChallenge{
-		Object:     mmessage.FederationObject,
-		Action:     mmessage.FederationActionChallenge,
+		Object:     messagedata.FederationObject,
+		Action:     messagedata.FederationActionChallenge,
 		Value:      value,
 		ValidUntil: validUntil,
 	}
@@ -847,8 +848,8 @@ func Test_SQLite_GetFederationExpect(t *testing.T) {
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
 
 	challenge := mfederation.FederationChallenge{
-		Object:     mmessage.FederationObject,
-		Action:     mmessage.FederationActionChallenge,
+		Object:     messagedata.FederationObject,
+		Action:     messagedata.FederationActionChallenge,
 		Value:      value,
 		ValidUntil: validUntil,
 	}
@@ -893,8 +894,8 @@ func Test_SQLite_GetFederationInit(t *testing.T) {
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
 
 	challenge := mfederation.FederationChallenge{
-		Object:     mmessage.FederationObject,
-		Action:     mmessage.FederationActionChallenge,
+		Object:     messagedata.FederationObject,
+		Action:     messagedata.FederationActionChallenge,
 		Value:      value,
 		ValidUntil: validUntil,
 	}

@@ -7,6 +7,7 @@ import (
 	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	mchirp2 "popstellar/internal/handler/messagedata/chirp/mchirp"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
@@ -249,7 +250,7 @@ func (c *Channel) verifyMessage(msg mmessage.Message) error {
 	return nil
 }
 
-func (c *Channel) verifyChirpMessage(msg mmessage.Message, chirpMsg mmessage.Verifiable) error {
+func (c *Channel) verifyChirpMessage(msg mmessage.Message, chirpMsg messagedata.Verifiable) error {
 	err := chirpMsg.Verify()
 	if err != nil {
 		return xerrors.Errorf("invalid chirp message: %v", err)
@@ -308,13 +309,13 @@ func (c *Channel) broadcastViaGeneral(msg mmessage.Message) error {
 		return xerrors.Errorf("failed to decode the data: %v", err)
 	}
 
-	object, action, err := mmessage.GetObjectAndAction(jsonData)
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	action = "notify_" + action
 	if err != nil {
 		return xerrors.Errorf("failed to read the message data: %v", err)
 	}
 
-	timestamp, err := mmessage.GetTime(jsonData)
+	timestamp, err := messagedata.GetTime(jsonData)
 	if err != nil {
 		return xerrors.Errorf("failed to read the message data: %v", err)
 	}

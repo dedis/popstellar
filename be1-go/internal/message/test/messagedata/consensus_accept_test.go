@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/consensus/mconsensus"
 	"testing"
 
@@ -17,7 +17,7 @@ func Test_Consensus_Accept(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	object, action, err := mmessage.GetObjectAndAction(buf)
+	object, action, err := messagedata.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "consensus", object)
@@ -43,8 +43,8 @@ func Test_Consensus_Accept(t *testing.T) {
 func Test_Consensus_Accept_Interface_Functions(t *testing.T) {
 	var msg mconsensus.ConsensusAccept
 
-	require.Equal(t, mmessage.ConsensusObject, msg.GetObject())
-	require.Equal(t, mmessage.ConsensusActionAccept, msg.GetAction())
+	require.Equal(t, messagedata.ConsensusObject, msg.GetObject())
+	require.Equal(t, messagedata.ConsensusActionAccept, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }
 
@@ -59,7 +59,7 @@ func Test_Consensus_Accept_Verify(t *testing.T) {
 			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "consensus_accept", file))
 			require.NoError(t, err)
 
-			obj, act, err := mmessage.GetObjectAndAction(buf)
+			obj, act, err := messagedata.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)

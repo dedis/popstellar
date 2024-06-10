@@ -1,7 +1,7 @@
 package mfederation
 
 import (
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 )
 
 // FederationChallengeRequest defines a message data
@@ -15,15 +15,15 @@ type FederationChallengeRequest struct {
 
 // GetObject implements MessageData
 func (FederationChallengeRequest) GetObject() string {
-	return mmessage.FederationObject
+	return messagedata.FederationObject
 }
 
 // GetAction implements MessageData
 func (FederationChallengeRequest) GetAction() string {
-	return mmessage.FederationActionChallengeRequest
+	return messagedata.FederationActionChallengeRequest
 }
 
 // NewEmpty implements MessageData
-func (FederationChallengeRequest) NewEmpty() mmessage.MessageData {
+func (FederationChallengeRequest) NewEmpty() messagedata.MessageData {
 	return &FederationChallengeRequest{}
 }

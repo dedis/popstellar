@@ -2,7 +2,7 @@ package mchirp
 
 import (
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 )
 
 // ChirpAdd defines a message data
@@ -28,15 +28,15 @@ func (message ChirpAdd) Verify() error {
 
 // GetObject implements MessageData
 func (ChirpAdd) GetObject() string {
-	return mmessage.ChirpObject
+	return messagedata.ChirpObject
 }
 
 // GetAction implements MessageData
 func (ChirpAdd) GetAction() string {
-	return mmessage.ChirpActionAdd
+	return messagedata.ChirpActionAdd
 }
 
 // NewEmpty implements MessageData
-func (ChirpAdd) NewEmpty() mmessage.MessageData {
+func (ChirpAdd) NewEmpty() messagedata.MessageData {
 	return &ChirpAdd{}
 }

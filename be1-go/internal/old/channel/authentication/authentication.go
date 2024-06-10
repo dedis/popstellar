@@ -12,6 +12,7 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/authentification/mauthentification"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
@@ -273,7 +274,7 @@ func constructRedirectURIParams(c *Channel, data *mauthentification.Authenticate
 	}
 
 	// create ppid for the identifier
-	ppid := base64.URLEncoding.EncodeToString([]byte(mmessage.Hash(data.Identifier)))
+	ppid := base64.URLEncoding.EncodeToString([]byte(messagedata.Hash(data.Identifier)))
 
 	// add the ppid entry for tracking the given identifier
 	c.addPPIDEntry(identifier(data.Identifier), identifier(ppid))

@@ -6,6 +6,7 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	mchirp2 "popstellar/internal/handler/messagedata/chirp/mchirp"
 	"popstellar/internal/handler/messagedata/root/hroot"
 	"popstellar/internal/validation"
@@ -57,15 +58,15 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 		return err
 	}
 
-	object, action, err := mmessage.GetObjectAndAction(jsonData)
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
 
 	switch object + "#" + action {
-	case mmessage.ChirpObject + "#" + mmessage.ChirpActionAdd:
+	case messagedata.ChirpObject + "#" + messagedata.ChirpActionAdd:
 		err = h.handleChirpAdd(channelPath, msg)
-	case mmessage.ChirpObject + "#" + mmessage.ChirpActionDelete:
+	case messagedata.ChirpObject + "#" + messagedata.ChirpActionDelete:
 		err = h.handleChirpDelete(channelPath, msg)
 	default:
 		err = errors.NewInvalidMessageFieldError("failed to Handle %s#%s, invalid object#action", object, action)
@@ -155,13 +156,13 @@ func (h *Handler) createChirpNotify(channelID string, msg mmessage.Message) (mme
 		return mmessage.Message{}, errors.NewInvalidMessageFieldError("failed to decode the data: %v", err)
 	}
 
-	object, action, err := mmessage.GetObjectAndAction(jsonData)
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	action = "notify_" + action
 	if err != nil {
 		return mmessage.Message{}, err
 	}
 
-	timestamp, err := mmessage.GetTime(jsonData)
+	timestamp, err := messagedata.GetTime(jsonData)
 	if err != nil {
 		return mmessage.Message{}, err
 	}
@@ -195,7 +196,7 @@ func (h *Handler) createChirpNotify(channelID string, msg mmessage.Message) (mme
 
 	signature64 := base64.URLEncoding.EncodeToString(signatureBuf)
 
-	messageID64 := mmessage.Hash(data64, signature64)
+	messageID64 := messagedata.Hash(data64, signature64)
 
 	newMsg := mmessage.Message{
 		Data:              data64,

@@ -3,7 +3,7 @@ package mchirp
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 )
 
 // ChirpNotifyDelete defines a message data
@@ -36,15 +36,15 @@ func (message ChirpNotifyDelete) Verify() error {
 
 // GetObject implements MessageData
 func (ChirpNotifyDelete) GetObject() string {
-	return mmessage.ChirpObject
+	return messagedata.ChirpObject
 }
 
 // GetAction implements MessageData
 func (ChirpNotifyDelete) GetAction() string {
-	return mmessage.ChirpActionNotifyDelete
+	return messagedata.ChirpActionNotifyDelete
 }
 
 // NewEmpty implements MessageData
-func (ChirpNotifyDelete) NewEmpty() mmessage.MessageData {
+func (ChirpNotifyDelete) NewEmpty() messagedata.MessageData {
 	return &ChirpNotifyDelete{}
 }

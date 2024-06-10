@@ -8,6 +8,7 @@ import (
 	"popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
@@ -723,8 +724,8 @@ func (c *Channel) createAndSendLAOGreet() error {
 	}
 
 	msgData := mlao2.LaoGreet{
-		Object:   mmessage.LAOObject,
-		Action:   mmessage.LAOActionGreet,
+		Object:   messagedata.LAOObject,
+		Action:   messagedata.LAOActionGreet,
 		LaoID:    c.extractLaoID(),
 		Frontend: base64.URLEncoding.EncodeToString(orgPkBuf),
 		Address:  c.hub.GetClientServerAddress(),
@@ -758,7 +759,7 @@ func (c *Channel) createAndSendLAOGreet() error {
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(skBuf),
 		Signature:         signature,
-		MessageID:         mmessage.Hash(newData64, signature),
+		MessageID:         messagedata.Hash(newData64, signature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -773,7 +774,7 @@ func (c *Channel) createAndSendLAOGreet() error {
 }
 
 func (c *Channel) extractLaoID() string {
-	return strings.ReplaceAll(c.channelID, mmessage.RootPrefix, "")
+	return strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
 }
 
 // checkPrevID is a helper method which validates the roll call ID.

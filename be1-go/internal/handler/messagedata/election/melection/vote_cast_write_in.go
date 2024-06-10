@@ -1,7 +1,7 @@
 package melection
 
 import (
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 )
 
 // VoteCastWriteIn defines a message data
@@ -26,15 +26,15 @@ type WriteInVote struct {
 
 // GetObject implements MessageData
 func (VoteCastWriteIn) GetObject() string {
-	return mmessage.ElectionObject
+	return messagedata.ElectionObject
 }
 
 // GetAction implements MessageData
 func (VoteCastWriteIn) GetAction() string {
-	return mmessage.VoteActionWriteIn
+	return messagedata.VoteActionWriteIn
 }
 
 // NewEmpty implements MessageData
-func (VoteCastWriteIn) NewEmpty() mmessage.MessageData {
+func (VoteCastWriteIn) NewEmpty() messagedata.MessageData {
 	return &VoteCastVote{}
 }

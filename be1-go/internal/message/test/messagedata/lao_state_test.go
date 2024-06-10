@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/lao/mlao"
 	"testing"
 
@@ -17,7 +17,7 @@ func Test_Lao_State(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	object, action, err := mmessage.GetObjectAndAction(buf)
+	object, action, err := messagedata.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "lao", object)
@@ -49,7 +49,7 @@ func Test_Lao_State(t *testing.T) {
 func Test_Lao_State_Interface_Functions(t *testing.T) {
 	var msg mlao.LaoState
 
-	require.Equal(t, mmessage.LAOObject, msg.GetObject())
-	require.Equal(t, mmessage.LAOActionState, msg.GetAction())
+	require.Equal(t, messagedata.LAOObject, msg.GetObject())
+	require.Equal(t, messagedata.LAOActionState, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }

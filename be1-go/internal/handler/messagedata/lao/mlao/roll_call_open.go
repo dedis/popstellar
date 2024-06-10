@@ -3,7 +3,7 @@ package mlao
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"strconv"
 	"strings"
 )
@@ -24,9 +24,9 @@ func (message RollCallOpen) Verify(laoPath string) error {
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode roll call update ID: %v", err)
 	}
-	expectedID := mmessage.Hash(
+	expectedID := messagedata.Hash(
 		RollCallFlag,
-		strings.ReplaceAll(laoPath, mmessage.RootPrefix, ""),
+		strings.ReplaceAll(laoPath, messagedata.RootPrefix, ""),
 		message.Opens,
 		strconv.Itoa(int(message.OpenedAt)),
 	)
@@ -49,15 +49,15 @@ func (message RollCallOpen) Verify(laoPath string) error {
 
 // GetObject implements MessageData
 func (RollCallOpen) GetObject() string {
-	return mmessage.RollCallObject
+	return messagedata.RollCallObject
 }
 
 // GetAction implements MessageData
 func (RollCallOpen) GetAction() string {
-	return mmessage.RollCallActionOpen
+	return messagedata.RollCallActionOpen
 }
 
 // NewEmpty implements MessageData
-func (RollCallOpen) NewEmpty() mmessage.MessageData {
+func (RollCallOpen) NewEmpty() messagedata.MessageData {
 	return &RollCallOpen{}
 }

@@ -12,6 +12,7 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/generator"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/root/mroot"
 	"popstellar/internal/handler/method/rumor/mrumor"
 	"popstellar/internal/network/socket"
@@ -65,11 +66,11 @@ func Test_handleMessagesByChannel(t *testing.T) {
 	now := time.Now().Unix()
 	name := "LAO X"
 
-	laoID := mmessage.Hash(base64.URLEncoding.EncodeToString(publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    mmessage.LAOObject,
-		Action:    mmessage.LAOActionCreate,
+		Object:    messagedata.LAOObject,
+		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -89,7 +90,7 @@ func Test_handleMessagesByChannel(t *testing.T) {
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         mmessage.Hash(dataBase64, signatureBase64),
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 

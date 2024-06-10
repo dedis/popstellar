@@ -3,7 +3,7 @@ package mlao
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"strconv"
 	"strings"
 )
@@ -38,9 +38,9 @@ func (message RollCallCreate) Verify(laoPath string) error {
 	}
 
 	// verify roll call create message id
-	expectedID := mmessage.Hash(
+	expectedID := messagedata.Hash(
 		RollCallFlag,
-		strings.ReplaceAll(laoPath, mmessage.RootPrefix, ""),
+		strings.ReplaceAll(laoPath, messagedata.RootPrefix, ""),
 		strconv.Itoa(int(message.Creation)),
 		message.Name,
 	)
@@ -69,15 +69,15 @@ func (message RollCallCreate) Verify(laoPath string) error {
 
 // GetObject implements MessageData
 func (RollCallCreate) GetObject() string {
-	return mmessage.RollCallObject
+	return messagedata.RollCallObject
 }
 
 // GetAction implements MessageData
 func (RollCallCreate) GetAction() string {
-	return mmessage.RollCallActionCreate
+	return messagedata.RollCallActionCreate
 }
 
 // NewEmpty implements MessageData
-func (RollCallCreate) NewEmpty() mmessage.MessageData {
+func (RollCallCreate) NewEmpty() messagedata.MessageData {
 	return &RollCallCreate{}
 }

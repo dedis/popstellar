@@ -8,6 +8,7 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"testing"
 )
 
@@ -23,7 +24,7 @@ func newMessage(t *testing.T, sender string, senderSK kyber.Scalar, data []byte)
 		signature64 = base64.URLEncoding.EncodeToString(signatureBuf)
 	}
 
-	messageID64 := mmessage.Hash(data64, signature64)
+	messageID64 := messagedata.Hash(data64, signature64)
 
 	return mmessage.Message{
 		Data:              data64,
