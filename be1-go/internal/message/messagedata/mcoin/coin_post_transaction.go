@@ -7,7 +7,6 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/messagedata/coin/tcoin"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/mmessage"
 	"strconv"
 )
@@ -182,15 +181,15 @@ func (message PostTransaction) verifySignature() error {
 
 // GetObject implements MessageData
 func (PostTransaction) GetObject() string {
-	return messagedata.CoinObject
+	return mmessage.CoinObject
 }
 
 // GetAction implements MessageData
 func (PostTransaction) GetAction() string {
-	return messagedata.CoinActionPostTransaction
+	return mmessage.CoinActionPostTransaction
 }
 
 // NewEmpty implements MessageData
-func (PostTransaction) NewEmpty() messagedata.MessageData {
+func (PostTransaction) NewEmpty() mmessage.MessageData {
 	return &PostTransaction{}
 }

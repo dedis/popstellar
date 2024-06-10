@@ -9,7 +9,6 @@ import (
 	"popstellar/internal/crypto"
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/messagedata/election/telection"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/melection"
 	"popstellar/internal/message/messagedata/mlao"
 	"popstellar/internal/message/mmessage"
@@ -71,8 +70,8 @@ func (s *SQLite) getElectionState(electionPath string) (string, error) {
 	var state string
 	err := s.database.QueryRow(selectLastElectionMessage,
 		electionPath,
-		messagedata.ElectionObject,
-		messagedata.VoteActionCastVote).
+		mmessage.ElectionObject,
+		mmessage.VoteActionCastVote).
 		Scan(&state)
 
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
@@ -90,7 +89,7 @@ func (s *SQLite) IsElectionStartedOrEnded(electionPath string) (bool, error) {
 		return false, err
 	}
 
-	return state == messagedata.ElectionActionOpen || state == messagedata.ElectionActionEnd, nil
+	return state == mmessage.ElectionActionOpen || state == mmessage.ElectionActionEnd, nil
 }
 
 func (s *SQLite) IsElectionStarted(electionPath string) (bool, error) {
@@ -101,7 +100,7 @@ func (s *SQLite) IsElectionStarted(electionPath string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return state == messagedata.ElectionActionOpen, nil
+	return state == mmessage.ElectionActionOpen, nil
 }
 
 func (s *SQLite) IsElectionEnded(electionPath string) (bool, error) {
@@ -112,7 +111,7 @@ func (s *SQLite) IsElectionEnded(electionPath string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return state == messagedata.ElectionActionEnd, nil
+	return state == mmessage.ElectionActionEnd, nil
 }
 
 func (s *SQLite) GetElectionCreationTime(electionPath string) (int64, error) {
@@ -120,7 +119,7 @@ func (s *SQLite) GetElectionCreationTime(electionPath string) (int64, error) {
 	defer dbLock.Unlock()
 
 	var creationTime int64
-	err := s.database.QueryRow(selectElectionCreationTime, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).
+	err := s.database.QueryRow(selectElectionCreationTime, electionPath, mmessage.ElectionObject, mmessage.ElectionActionSetup).
 		Scan(&creationTime)
 	if err != nil {
 		return 0, poperrors.NewDatabaseSelectErrorMsg("election creation time: %v", err)
@@ -135,8 +134,8 @@ func (s *SQLite) GetElectionType(electionPath string) (string, error) {
 	var electionType string
 	err := s.database.QueryRow(selectElectionType,
 		electionPath,
-		messagedata.ElectionObject,
-		messagedata.ElectionActionSetup).
+		mmessage.ElectionObject,
+		mmessage.ElectionActionSetup).
 		Scan(&electionType)
 
 	if err != nil {
@@ -152,10 +151,10 @@ func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{},
 	var rollCallCloseBytes []byte
 	err := s.database.QueryRow(selectElectionAttendees,
 		electionPath,
-		messagedata.RollCallObject,
-		messagedata.RollCallActionClose,
-		messagedata.RollCallObject,
-		messagedata.RollCallActionClose,
+		mmessage.RollCallObject,
+		mmessage.RollCallActionClose,
+		mmessage.RollCallObject,
+		mmessage.RollCallActionClose,
 	).Scan(&rollCallCloseBytes)
 
 	if err != nil {
@@ -178,7 +177,7 @@ func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{},
 func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (mlao.ElectionSetup, error) {
 
 	var electionSetupBytes []byte
-	err := tx.QueryRow(selectElectionSetup, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).
+	err := tx.QueryRow(selectElectionSetup, electionPath, mmessage.ElectionObject, mmessage.ElectionActionSetup).
 		Scan(&electionSetupBytes)
 	if err != nil {
 		return mlao.ElectionSetup{}, poperrors.NewDatabaseSelectErrorMsg("election setup message data: %v", err)
@@ -240,7 +239,7 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 		return nil, err
 	}
 
-	rows, err := tx.Query(selectCastVotes, electionPath, messagedata.ElectionObject, messagedata.VoteActionCastVote)
+	rows, err := tx.Query(selectCastVotes, electionPath, mmessage.ElectionObject, mmessage.VoteActionCastVote)
 	if err != nil {
 		return nil, poperrors.NewDatabaseSelectErrorMsg("cast vote messages: %v", err)
 	}

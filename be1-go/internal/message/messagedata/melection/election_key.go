@@ -1,6 +1,8 @@
 package melection
 
-import "popstellar/internal/message/messagedata"
+import (
+	"popstellar/internal/message/mmessage"
+)
 
 // ElectionKey defines a message data
 type ElectionKey struct {
@@ -12,15 +14,15 @@ type ElectionKey struct {
 
 // GetObject implements MessageData
 func (ElectionKey) GetObject() string {
-	return messagedata.ElectionObject
+	return mmessage.ElectionObject
 }
 
 // GetAction implements MessageData
 func (ElectionKey) GetAction() string {
-	return messagedata.ElectionActionKey
+	return mmessage.ElectionActionKey
 }
 
 // NewEmpty implements MessageData
-func (ElectionKey) NewEmpty() messagedata.MessageData {
+func (ElectionKey) NewEmpty() mmessage.MessageData {
 	return &ElectionKey{}
 }

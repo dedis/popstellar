@@ -2,7 +2,6 @@ package lao
 
 import (
 	"encoding/base64"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mlao"
 	"popstellar/internal/message/mmessage"
 	"strconv"
@@ -31,7 +30,7 @@ func (c *Channel) verifyMessageLaoState(laoState mlao.LaoState) error {
 	}
 
 	// verify if a lao message id is the same as the lao id
-	expectedID := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	expectedID := strings.ReplaceAll(c.channelID, mmessage.RootPrefix, "")
 	if expectedID != laoState.ID {
 		return xerrors.Errorf("lao id is %s, should be %s", laoState.ID, expectedID)
 	}
@@ -103,7 +102,7 @@ func (c *Channel) verifyMessageRollCallCreate(rollCallCreate *mlao.RollCallCreat
 	// verify roll call create message id
 	expectedID := mmessage.Hash(
 		rollCallFlag,
-		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
+		strings.ReplaceAll(c.channelID, mmessage.RootPrefix, ""),
 		strconv.Itoa(int(rollCallCreate.Creation)),
 		rollCallCreate.Name,
 	)
@@ -168,7 +167,7 @@ func (c *Channel) verifyMessageRollCallOpen(rollCallOpen mlao.RollCallOpen) erro
 	// verify roll call open message update id
 	expectedID := mmessage.Hash(
 		rollCallFlag,
-		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
+		strings.ReplaceAll(c.channelID, mmessage.RootPrefix, ""),
 		rollCallOpen.Opens,
 		strconv.Itoa(int(rollCallOpen.OpenedAt)),
 	)
@@ -209,7 +208,7 @@ func (c *Channel) verifyMessageRollCallClose(rollCallClose *mlao.RollCallClose) 
 	// verify roll call close message update id
 	expectedID := mmessage.Hash(
 		rollCallFlag,
-		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
+		strings.ReplaceAll(c.channelID, mmessage.RootPrefix, ""),
 		rollCallClose.Closes,
 		strconv.Itoa(int(rollCallClose.ClosedAt)),
 	)
@@ -253,7 +252,7 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup mlao.ElectionSetup) e
 	}
 
 	// verify lao id is channel's lao id
-	laoID := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	laoID := strings.ReplaceAll(c.channelID, mmessage.RootPrefix, "")
 	if electionSetup.Lao != laoID {
 		return xerrors.Errorf("lao id is %s, should be %s", electionSetup.Lao, laoID)
 	}

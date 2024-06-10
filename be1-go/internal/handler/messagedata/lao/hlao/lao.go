@@ -7,7 +7,6 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/messagedata/root/hroot"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/melection"
 	"popstellar/internal/message/messagedata/mlao"
 	"popstellar/internal/message/mmessage"
@@ -94,23 +93,23 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 		return err
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := mmessage.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
 
 	storeMessage := true
 	switch object + "#" + action {
-	case messagedata.RollCallObject + "#" + messagedata.RollCallActionClose:
+	case mmessage.RollCallObject + "#" + mmessage.RollCallActionClose:
 		storeMessage = false
 		err = h.handleRollCallClose(msg, channelPath)
-	case messagedata.RollCallObject + "#" + messagedata.RollCallActionCreate:
+	case mmessage.RollCallObject + "#" + mmessage.RollCallActionCreate:
 		err = h.handleRollCallCreate(msg, channelPath)
-	case messagedata.RollCallObject + "#" + messagedata.RollCallActionOpen:
+	case mmessage.RollCallObject + "#" + mmessage.RollCallActionOpen:
 		err = h.handleRollCallOpen(msg, channelPath)
-	case messagedata.RollCallObject + "#" + messagedata.RollCallActionReOpen:
+	case mmessage.RollCallObject + "#" + mmessage.RollCallActionReOpen:
 		err = h.handleRollCallReOpen(msg, channelPath)
-	case messagedata.ElectionObject + "#" + messagedata.ElectionActionSetup:
+	case mmessage.ElectionObject + "#" + mmessage.ElectionActionSetup:
 		storeMessage = false
 		err = h.handleElectionSetup(msg, channelPath)
 	default:
@@ -315,8 +314,8 @@ func (h *Handler) createElectionKey(electionID string, electionPubKey kyber.Poin
 	}
 
 	msgData := melection.ElectionKey{
-		Object:   messagedata.ElectionObject,
-		Action:   messagedata.ElectionActionKey,
+		Object:   mmessage.ElectionObject,
+		Action:   mmessage.ElectionActionKey,
 		Election: electionID,
 		Key:      base64.URLEncoding.EncodeToString(electionPubBuf),
 	}

@@ -8,7 +8,6 @@ import (
 	"go.dedis.ch/kyber/v3"
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/message/hmessage"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mlao"
 	"popstellar/internal/message/mmessage"
 	"time"
@@ -19,7 +18,7 @@ func (s *SQLite) GetRollCallState(channelPath string) (string, error) {
 	defer dbLock.Unlock()
 
 	var state string
-	err := s.database.QueryRow(selectLastRollCallMessage, messagedata.RollCallObject, channelPath).Scan(&state)
+	err := s.database.QueryRow(selectLastRollCallMessage, mmessage.RollCallObject, channelPath).Scan(&state)
 	if err != nil {
 		return "", poperrors.NewDatabaseSelectErrorMsg(err.Error())
 	}
@@ -33,8 +32,8 @@ func (s *SQLite) CheckPrevOpenOrReopenID(channel, nextID string) (bool, error) {
 	var lastMsg []byte
 	var lastAction string
 
-	err := s.database.QueryRow(selectLastRollCallMessageInList, channel, messagedata.RollCallObject,
-		messagedata.RollCallActionOpen, messagedata.RollCallActionReOpen).Scan(&lastMsg, &lastAction)
+	err := s.database.QueryRow(selectLastRollCallMessageInList, channel, mmessage.RollCallObject,
+		mmessage.RollCallActionOpen, mmessage.RollCallActionReOpen).Scan(&lastMsg, &lastAction)
 
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
@@ -43,14 +42,14 @@ func (s *SQLite) CheckPrevOpenOrReopenID(channel, nextID string) (bool, error) {
 	}
 
 	switch lastAction {
-	case messagedata.RollCallActionOpen:
+	case mmessage.RollCallActionOpen:
 		var rollCallOpen mlao.RollCallOpen
 		err = json.Unmarshal(lastMsg, &rollCallOpen)
 		if err != nil {
 			return false, poperrors.NewInternalServerError("failed to unmarshal last roll call open message: %v", err)
 		}
 		return rollCallOpen.UpdateID == nextID, nil
-	case messagedata.RollCallActionReOpen:
+	case mmessage.RollCallActionReOpen:
 		var rollCallReOpen mlao.RollCallReOpen
 		err = json.Unmarshal(lastMsg, &rollCallReOpen)
 		if err != nil {
@@ -69,8 +68,8 @@ func (s *SQLite) CheckPrevCreateOrCloseID(channel, nextID string) (bool, error) 
 	var lastMsg []byte
 	var lastAction string
 
-	err := s.database.QueryRow(selectLastRollCallMessageInList, channel, messagedata.RollCallObject,
-		messagedata.RollCallActionCreate, messagedata.RollCallActionClose).Scan(&lastMsg, &lastAction)
+	err := s.database.QueryRow(selectLastRollCallMessageInList, channel, mmessage.RollCallObject,
+		mmessage.RollCallActionCreate, mmessage.RollCallActionClose).Scan(&lastMsg, &lastAction)
 
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
@@ -79,14 +78,14 @@ func (s *SQLite) CheckPrevCreateOrCloseID(channel, nextID string) (bool, error) 
 	}
 
 	switch lastAction {
-	case messagedata.RollCallActionCreate:
+	case mmessage.RollCallActionCreate:
 		var rollCallCreate mlao.RollCallCreate
 		err = json.Unmarshal(lastMsg, &rollCallCreate)
 		if err != nil {
 			return false, poperrors.NewInternalServerError("failed to unmarshal last roll call create message: %v", err)
 		}
 		return rollCallCreate.ID == nextID, nil
-	case messagedata.RollCallActionClose:
+	case mmessage.RollCallActionClose:
 		var rollCallClose mlao.RollCallClose
 		err = json.Unmarshal(lastMsg, &rollCallClose)
 		if err != nil {
@@ -103,7 +102,7 @@ func (s *SQLite) GetLaoWitnesses(laoPath string) (map[string]struct{}, error) {
 	defer dbLock.Unlock()
 
 	var witnesses []string
-	err := s.database.QueryRow(selectLaoWitnesses, laoPath, messagedata.LAOObject, messagedata.LAOActionCreate).Scan(&witnesses)
+	err := s.database.QueryRow(selectLaoWitnesses, laoPath, mmessage.LAOObject, mmessage.LAOActionCreate).Scan(&witnesses)
 	if err != nil {
 		return nil, poperrors.NewDatabaseSelectErrorMsg("lao witnesses: %v", err)
 	}

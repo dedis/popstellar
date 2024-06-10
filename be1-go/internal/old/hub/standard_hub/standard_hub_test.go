@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mlao"
 	"popstellar/internal/message/messagedata/mroot"
 	method2 "popstellar/internal/message/method"
@@ -59,8 +58,8 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 	laoID := mmessage.Hash(base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    mmessage.LAOObject,
+		Action:    mmessage.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -134,8 +133,8 @@ func Test_Create_LAO_Different_Sender_And_Organizer_Keys(t *testing.T) {
 	laoID := mmessage.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    mmessage.LAOObject,
+		Action:    mmessage.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -208,8 +207,8 @@ func Test_Create_LAO_No_Key(t *testing.T) {
 	laoID := mmessage.Hash(base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    mmessage.LAOObject,
+		Action:    mmessage.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -284,8 +283,8 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 	laoID := mmessage.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    mmessage.LAOObject,
+		Action:    mmessage.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -362,8 +361,8 @@ func Test_Create_LAO_Bad_Signature(t *testing.T) {
 	laoID := mmessage.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    mmessage.LAOObject,
+		Action:    mmessage.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -439,8 +438,8 @@ func Test_Create_LAO_Data_Not_Base64(t *testing.T) {
 	laoID := mmessage.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    mmessage.LAOObject,
+		Action:    mmessage.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -588,8 +587,8 @@ func Test_Create_Invalid_Lao_Id(t *testing.T) {
 	trueLaoId := mmessage.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    mmessage.LAOObject,
+		Action:    mmessage.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -664,8 +663,8 @@ func Test_Create_LAO(t *testing.T) {
 	laoID := mmessage.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    mmessage.LAOObject,
+		Action:    mmessage.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -752,8 +751,8 @@ func Test_Wrong_Root_Publish(t *testing.T) {
 	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	data := mlao.LaoState{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    mmessage.LAOObject,
+		Action:    mmessage.LAOActionCreate,
 		ID:        laoID,
 		Name:      "channel0",
 		Creation:  123,
@@ -1168,8 +1167,8 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 	laoID := mmessage.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    mmessage.LAOObject,
+		Action:    mmessage.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  int64(creationTime),
@@ -1269,8 +1268,8 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 	laoID := mmessage.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    mmessage.LAOObject,
+		Action:    mmessage.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  int64(creationTime),

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mlao"
+	"popstellar/internal/message/mmessage"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -17,7 +17,7 @@ func Test_Meeting_Create(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "meeting", object)
@@ -41,7 +41,7 @@ func Test_Meeting_Create(t *testing.T) {
 func Test_Meeting_Create_Interface_Functions(t *testing.T) {
 	var msg mlao.MeetingCreate
 
-	require.Equal(t, messagedata.MeetingObject, msg.GetObject())
-	require.Equal(t, messagedata.MeetingActionCreate, msg.GetAction())
+	require.Equal(t, mmessage.MeetingObject, msg.GetObject())
+	require.Equal(t, mmessage.MeetingActionCreate, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }

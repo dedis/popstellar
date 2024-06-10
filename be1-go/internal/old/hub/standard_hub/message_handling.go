@@ -6,7 +6,6 @@ import (
 	"popstellar/internal/crypto"
 	manswer2 "popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mroot"
 	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
@@ -46,14 +45,14 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 	}
 
 	// get object#action
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := mmessage.GetObjectAndAction(jsonData)
 	if err != nil {
 		err := manswer2.NewInvalidMessageFieldError("failed to get object#action: %v", err)
 		return err
 	}
 
 	// must be "lao#create"
-	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
+	if object != mmessage.LAOObject || action != mmessage.LAOActionCreate {
 		err := manswer2.NewInvalidMessageFieldError("only lao#create is allowed on root, "+
 			"but found %s#%s", object, action)
 		return err
@@ -103,7 +102,7 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 	}
 
 	// get object#action
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := mmessage.GetObjectAndAction(jsonData)
 	if err != nil {
 		err := xerrors.Errorf("failed to get object#action: %v", err)
 		sock.SendError(nil, err)
@@ -111,7 +110,7 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 	}
 
 	// must be "lao#create"
-	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
+	if object != mmessage.LAOObject || action != mmessage.LAOActionCreate {
 		err := xerrors.Errorf("only lao#create is allowed on root, but found %s#%s",
 			object, action)
 		sock.SendError(nil, err)

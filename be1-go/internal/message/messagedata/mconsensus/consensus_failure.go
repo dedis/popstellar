@@ -3,7 +3,7 @@ package mconsensus
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
-	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/mmessage"
 )
 
 // ConsensusFailure defines a message data
@@ -43,15 +43,15 @@ func (message ConsensusFailure) Verify() error {
 
 // GetObject implements MessageData
 func (ConsensusFailure) GetObject() string {
-	return messagedata.ConsensusObject
+	return mmessage.ConsensusObject
 }
 
 // GetAction implements MessageData
 func (ConsensusFailure) GetAction() string {
-	return messagedata.ConsensusActionFailure
+	return mmessage.ConsensusActionFailure
 }
 
 // NewEmpty implements MessageData
-func (ConsensusFailure) NewEmpty() messagedata.MessageData {
+func (ConsensusFailure) NewEmpty() mmessage.MessageData {
 	return &ConsensusFailure{}
 }

@@ -3,7 +3,6 @@ package mlao
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/mmessage"
 	"strconv"
 )
@@ -80,16 +79,16 @@ func (message ElectionSetup) Verify(laoID string) error {
 
 // GetObject implements MessageData
 func (ElectionSetup) GetObject() string {
-	return messagedata.ElectionObject
+	return mmessage.ElectionObject
 }
 
 // GetAction implements MessageData
 func (ElectionSetup) GetAction() string {
-	return messagedata.ElectionActionSetup
+	return mmessage.ElectionActionSetup
 }
 
 // NewEmpty implements MessageData
-func (ElectionSetup) NewEmpty() messagedata.MessageData {
+func (ElectionSetup) NewEmpty() mmessage.MessageData {
 	return &ElectionSetup{}
 }
 

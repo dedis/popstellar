@@ -11,7 +11,6 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
 	"popstellar/internal/generator"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mroot"
 	"popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
@@ -69,8 +68,8 @@ func Test_handleMessagesByChannel(t *testing.T) {
 	laoID := mmessage.Hash(base64.URLEncoding.EncodeToString(publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    mmessage.LAOObject,
+		Action:    mmessage.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,

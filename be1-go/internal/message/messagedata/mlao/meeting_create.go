@@ -2,7 +2,7 @@ package mlao
 
 import (
 	"encoding/json"
-	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/mmessage"
 )
 
 // MeetingCreate defines a message data
@@ -27,15 +27,15 @@ type MeetingCreate struct {
 
 // GetObject implements MessageData
 func (MeetingCreate) GetObject() string {
-	return messagedata.MeetingObject
+	return mmessage.MeetingObject
 }
 
 // GetAction implements MessageData
 func (MeetingCreate) GetAction() string {
-	return messagedata.MeetingActionCreate
+	return mmessage.MeetingActionCreate
 }
 
 // NewEmpty implements MessageData
-func (MeetingCreate) NewEmpty() messagedata.MessageData {
+func (MeetingCreate) NewEmpty() mmessage.MessageData {
 	return &MeetingCreate{}
 }

@@ -8,7 +8,6 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/melection"
 	"popstellar/internal/message/messagedata/mlao"
 	method2 "popstellar/internal/message/method"
@@ -533,8 +532,8 @@ func (c *Channel) createAndSendElectionKey() error {
 	}
 
 	msgData := melection.ElectionKey{
-		Object:   messagedata.ElectionObject,
-		Action:   messagedata.ElectionActionKey,
+		Object:   mmessage.ElectionObject,
+		Action:   mmessage.ElectionActionKey,
 		Election: c.getElectionID(),
 		Key:      base64.URLEncoding.EncodeToString(ekBuf),
 	}
@@ -583,7 +582,7 @@ func (c *Channel) createAndSendElectionKey() error {
 // getElectionID extracts and returns the electionID from the channelID
 func (c *Channel) getElectionID() string {
 	// split channel to [lao id, election id]
-	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	noRoot := strings.ReplaceAll(c.channelID, mmessage.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 
 	return IDs[1]
@@ -656,8 +655,8 @@ func (c *Channel) gatherResults(questions map[string]*question,
 	log.Info().Msgf("gathering results for the election")
 
 	resultElection := melection.ElectionResult{
-		Object:    messagedata.ElectionObject,
-		Action:    messagedata.ElectionActionResult,
+		Object:    mmessage.ElectionObject,
+		Action:    mmessage.ElectionActionResult,
 		Questions: []melection.ElectionResultQuestion{},
 	}
 

@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"popstellar/internal/handler/answer/manswer"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/melection"
 	"popstellar/internal/message/messagedata/mlao"
 	"popstellar/internal/message/mmessage"
@@ -39,7 +38,7 @@ func (c *Channel) verifyMessageElectionOpen(electionOpen melection.ElectionOpen)
 	}
 
 	// split channel to [lao id, election id]
-	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	noRoot := strings.ReplaceAll(c.channelID, mmessage.RootPrefix, "")
 
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
@@ -95,7 +94,7 @@ func (c *Channel) verifyMessageCastVote(castVote melection.VoteCastVote) error {
 	}
 
 	// split channel to [lao id, election id]
-	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	noRoot := strings.ReplaceAll(c.channelID, mmessage.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
 		return xerrors.Errorf(elecIDFormat, c.channelID)
@@ -162,7 +161,7 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd melection.ElectionEnd) er
 	}
 
 	// split channel to [lao id, election id]
-	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	noRoot := strings.ReplaceAll(c.channelID, mmessage.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
 		return xerrors.Errorf(elecIDFormat, c.channelID)

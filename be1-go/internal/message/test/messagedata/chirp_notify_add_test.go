@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mchirp"
+	"popstellar/internal/message/mmessage"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -17,7 +17,7 @@ func Test_Chirp_Notify_Add(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "chirp", object)
@@ -38,8 +38,8 @@ func Test_Chirp_Notify_Add(t *testing.T) {
 func Test_Chirp_Notify_Add_Interface_Functions(t *testing.T) {
 	var msg mchirp.ChirpNotifyAdd
 
-	require.Equal(t, messagedata.ChirpObject, msg.GetObject())
-	require.Equal(t, messagedata.ChirpActionNotifyAdd, msg.GetAction())
+	require.Equal(t, mmessage.ChirpObject, msg.GetObject())
+	require.Equal(t, mmessage.ChirpActionNotifyAdd, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }
 
@@ -54,7 +54,7 @@ func Test_Chirp_Notify_Add_Verify(t *testing.T) {
 			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "chirp_notify_add", file))
 			require.NoError(t, err)
 
-			obj, act, err := messagedata.GetObjectAndAction(buf)
+			obj, act, err := mmessage.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)

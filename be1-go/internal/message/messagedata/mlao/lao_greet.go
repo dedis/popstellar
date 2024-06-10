@@ -1,6 +1,8 @@
 package mlao
 
-import "popstellar/internal/message/messagedata"
+import (
+	"popstellar/internal/message/mmessage"
+)
 
 // LaoGreet defines a message data
 type LaoGreet struct {
@@ -19,15 +21,15 @@ type Peer struct {
 
 // GetObject implements MessageData
 func (LaoGreet) GetObject() string {
-	return messagedata.LAOObject
+	return mmessage.LAOObject
 }
 
 // GetAction implements MessageData
 func (LaoGreet) GetAction() string {
-	return messagedata.LAOActionGreet
+	return mmessage.LAOActionGreet
 }
 
 // NewEmpty implements MessageData
-func (LaoGreet) NewEmpty() messagedata.MessageData {
+func (LaoGreet) NewEmpty() mmessage.MessageData {
 	return &LaoGreet{}
 }

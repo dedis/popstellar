@@ -20,7 +20,6 @@ import (
 	"path/filepath"
 	"popstellar/internal/crypto"
 	"popstellar/internal/logger"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mauthentification"
 	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
@@ -79,8 +78,8 @@ func TestJWTToken(t *testing.T) {
 func TestURIParamsConstruction(t *testing.T) {
 	// creating a fake authorization message
 	authMsg := &mauthentification.AuthenticateUser{
-		Object:          messagedata.AuthObject,
-		Action:          messagedata.AuthAction,
+		Object:          mmessage.AuthObject,
+		Action:          mmessage.AuthAction,
 		ClientID:        "cl1ent",
 		Nonce:           "n0nce",
 		Identifier:      xid.New().String(),

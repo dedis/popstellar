@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/melection"
+	"popstellar/internal/message/mmessage"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -17,7 +17,7 @@ func Test_Vote_Cast_Vote(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "election", object)
@@ -44,8 +44,8 @@ func Test_Vote_Cast_Vote(t *testing.T) {
 func Test_Vote_Cast_Vote_Interface_Functions(t *testing.T) {
 	var msg melection.VoteCastVote
 
-	require.Equal(t, messagedata.ElectionObject, msg.GetObject())
-	require.Equal(t, messagedata.VoteActionCastVote, msg.GetAction())
+	require.Equal(t, mmessage.ElectionObject, msg.GetObject())
+	require.Equal(t, mmessage.VoteActionCastVote, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }
 

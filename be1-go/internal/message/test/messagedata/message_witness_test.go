@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mlao"
+	"popstellar/internal/message/mmessage"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -17,7 +17,7 @@ func Test_Message_Witness(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "message", object)
@@ -37,7 +37,7 @@ func Test_Message_Witness(t *testing.T) {
 func Test_Message_Witness_Interface_Functions(t *testing.T) {
 	var msg mlao.MessageWitness
 
-	require.Equal(t, messagedata.MessageObject, msg.GetObject())
-	require.Equal(t, messagedata.MessageActionWitness, msg.GetAction())
+	require.Equal(t, mmessage.MessageObject, msg.GetObject())
+	require.Equal(t, mmessage.MessageActionWitness, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }

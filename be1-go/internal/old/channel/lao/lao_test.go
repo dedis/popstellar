@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"popstellar/internal/crypto"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mlao"
 	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
@@ -640,8 +639,8 @@ func TestLAOChannel_Sends_Greeting(t *testing.T) {
 	err = greetMsg.UnmarshalData(&laoGreet)
 	require.NoError(t, err)
 
-	require.Equal(t, messagedata.LAOObject, laoGreet.Object)
-	require.Equal(t, messagedata.LAOActionGreet, laoGreet.Action)
+	require.Equal(t, mmessage.LAOObject, laoGreet.Object)
+	require.Equal(t, mmessage.LAOActionGreet, laoGreet.Action)
 	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", laoGreet.LaoID)
 	require.Equal(t, publicKey64, laoGreet.Frontend)
 	require.Equal(t, "ws://localhost:9000/client", laoGreet.Address)

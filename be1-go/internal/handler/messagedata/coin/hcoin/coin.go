@@ -3,7 +3,6 @@ package hcoin
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mcoin"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/validation"
@@ -44,13 +43,13 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 		return err
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := mmessage.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
 
 	switch object + "#" + action {
-	case messagedata.CoinObject + "#" + messagedata.CoinActionPostTransaction:
+	case mmessage.CoinObject + "#" + mmessage.CoinActionPostTransaction:
 		err = h.handleCoinPostTransaction(msg)
 	default:
 		err = errors.NewInvalidActionError("failed to Handle %s#%s, invalid object#action", object, action)

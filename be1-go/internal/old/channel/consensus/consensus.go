@@ -6,7 +6,6 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mconsensus"
 	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
@@ -285,7 +284,7 @@ func (c *Channel) processConsensusElect(message mmessage.Message, msgData interf
 		consensusInstance.role = proposerRole
 	}
 
-	consensusInstance.lastSent = messagedata.ConsensusActionElectAccept
+	consensusInstance.lastSent = mmessage.ConsensusActionElectAccept
 
 	// Start a channel linked to the message id
 	go c.startTimer(consensusInstance, message.MessageID)
@@ -338,11 +337,11 @@ func (c *Channel) processConsensusElectAccept(message mmessage.Message, msgData 
 		return nil
 	}
 
-	if nextMessage == messagedata.ConsensusActionFailure {
+	if nextMessage == mmessage.ConsensusActionFailure {
 		return c.electAcceptFailure(consensusInstance, data.MessageID)
 	}
 
-	electInstance.timeoutChan <- messagedata.ConsensusActionElectAccept
+	electInstance.timeoutChan <- mmessage.ConsensusActionElectAccept
 
 	if consensusInstance.proposedTry >= consensusInstance.promisedTry {
 		consensusInstance.proposedTry++
@@ -358,7 +357,7 @@ func (c *Channel) processConsensusElectAccept(message mmessage.Message, msgData 
 		return xerrors.Errorf("failed to create consensus#prepare message: %v", err)
 	}
 
-	consensusInstance.lastSent = messagedata.ConsensusActionPrepare
+	consensusInstance.lastSent = mmessage.ConsensusActionPrepare
 
 	err = c.publishNewMessage(byteMsg)
 	if err != nil {
@@ -403,7 +402,7 @@ func (c *Channel) processConsensusPrepare(_ mmessage.Message, msgData interface{
 		return xerrors.Errorf(consensusFinished, data.InstanceID)
 	}
 
-	electInstance.timeoutChan <- messagedata.ConsensusActionPrepare
+	electInstance.timeoutChan <- mmessage.ConsensusActionPrepare
 
 	if consensusInstance.promisedTry >= data.Value.ProposedTry {
 		return nil
@@ -418,7 +417,7 @@ func (c *Channel) processConsensusPrepare(_ mmessage.Message, msgData interface{
 
 	// The proposer will timeout as if having last sent a prepare message
 	if consensusInstance.role == acceptorRole {
-		consensusInstance.lastSent = messagedata.ConsensusActionPromise
+		consensusInstance.lastSent = mmessage.ConsensusActionPromise
 	}
 
 	err = c.publishNewMessage(byteMsg)
@@ -475,11 +474,11 @@ func (c *Channel) processConsensusPromise(msg mmessage.Message, msgData interfac
 		return nil
 	}
 
-	if consensusInstance.lastSent != messagedata.ConsensusActionPrepare {
+	if consensusInstance.lastSent != mmessage.ConsensusActionPrepare {
 		return nil
 	}
 
-	electInstance.timeoutChan <- messagedata.ConsensusActionPromise
+	electInstance.timeoutChan <- mmessage.ConsensusActionPromise
 
 	highestAccepted := int64(-1)
 	highestAcceptedValue := true
@@ -496,7 +495,7 @@ func (c *Channel) processConsensusPromise(msg mmessage.Message, msgData interfac
 		return xerrors.Errorf("failed to create consensus#propose message: %v", err)
 	}
 
-	consensusInstance.lastSent = messagedata.ConsensusActionPropose
+	consensusInstance.lastSent = mmessage.ConsensusActionPropose
 
 	err = c.publishNewMessage(byteMsg)
 	if err != nil {
@@ -541,7 +540,7 @@ func (c *Channel) processConsensusPropose(_ mmessage.Message, msgData interface{
 		return xerrors.Errorf(consensusFinished, data.InstanceID)
 	}
 
-	electInstance.timeoutChan <- messagedata.ConsensusActionPropose
+	electInstance.timeoutChan <- mmessage.ConsensusActionPropose
 
 	// If the server has no client subscribed to the consensus channel, it
 	// doesn't take part in it
@@ -563,7 +562,7 @@ func (c *Channel) processConsensusPropose(_ mmessage.Message, msgData interface{
 
 	// The proposer will timeout as if having last sent a propose message
 	if consensusInstance.role == acceptorRole {
-		consensusInstance.lastSent = messagedata.ConsensusActionAccept
+		consensusInstance.lastSent = mmessage.ConsensusActionAccept
 	}
 
 	err = c.publishNewMessage(byteMsg)
@@ -627,11 +626,11 @@ func (c *Channel) processConsensusAccept(msg mmessage.Message, msgData interface
 		return nil
 	}
 
-	if consensusInstance.lastSent != messagedata.ConsensusActionPropose {
+	if consensusInstance.lastSent != mmessage.ConsensusActionPropose {
 		return nil
 	}
 
-	electInstance.timeoutChan <- messagedata.ConsensusActionAccept
+	electInstance.timeoutChan <- mmessage.ConsensusActionAccept
 
 	consensusInstance.decided = true
 	consensusInstance.decision = consensusInstance.proposedValue
@@ -641,7 +640,7 @@ func (c *Channel) processConsensusAccept(msg mmessage.Message, msgData interface
 		return xerrors.Errorf("failed to create new consensus#learn message")
 	}
 
-	consensusInstance.lastSent = messagedata.ConsensusActionLearn
+	consensusInstance.lastSent = mmessage.ConsensusActionLearn
 	err = c.publishNewMessage(byteMsg)
 	if err != nil {
 		return err
@@ -685,7 +684,7 @@ func (c *Channel) processConsensusLearn(_ mmessage.Message, msgData interface{},
 	if consensusInstance.decided || electInstance.failed {
 		return nil
 	}
-	electInstance.timeoutChan <- messagedata.ConsensusActionLearn
+	electInstance.timeoutChan <- mmessage.ConsensusActionLearn
 
 	consensusInstance.decided = true
 	consensusInstance.decision = data.Value.Decision
@@ -729,7 +728,7 @@ func (c *Channel) processConsensusFailure(_ mmessage.Message, msgData interface{
 		return nil
 	}
 
-	electInstance.timeoutChan <- messagedata.ConsensusActionFailure
+	electInstance.timeoutChan <- mmessage.ConsensusActionFailure
 
 	electInstance.failed = true
 
@@ -815,12 +814,12 @@ func (c *Channel) nextMessage(i *ConsensusInstance, messageID string) string {
 
 	// If enough rejection, failure of the consensus
 	if len(electInstance.negativeAcceptors) >= (electInstance.acceptorNumber/2 + 1) {
-		return messagedata.ConsensusActionFailure
+		return mmessage.ConsensusActionFailure
 	}
 
 	// If enough acception, go to next step of the consensus
 	if len(electInstance.positiveAcceptors) >= (electInstance.acceptorNumber/2 + 1) {
-		return messagedata.ConsensusActionPrepare
+		return mmessage.ConsensusActionPrepare
 	}
 
 	return ""
@@ -973,15 +972,15 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 		case action := <-timeoutChan:
 			switch action {
 			// Stop the timer when receiving one action finishing it
-			case messagedata.ConsensusActionLearn,
-				messagedata.ConsensusActionFailure:
+			case mmessage.ConsensusActionLearn,
+				mmessage.ConsensusActionFailure:
 				return
 
-			case messagedata.ConsensusActionElectAccept,
-				messagedata.ConsensusActionPrepare,
-				messagedata.ConsensusActionPromise,
-				messagedata.ConsensusActionPropose,
-				messagedata.ConsensusActionAccept:
+			case mmessage.ConsensusActionElectAccept,
+				mmessage.ConsensusActionPrepare,
+				mmessage.ConsensusActionPromise,
+				mmessage.ConsensusActionPropose,
+				mmessage.ConsensusActionAccept:
 
 			default:
 				c.log.Error().Msgf("action %s isn't a recognised action", action)
@@ -990,12 +989,12 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 
 		case <-c.clock.After(fastTimeout):
 			switch instance.lastSent {
-			case messagedata.ConsensusActionElectAccept:
+			case mmessage.ConsensusActionElectAccept:
 				select {
 				case action := <-timeoutChan:
 					// Stop the timer when receiving one action finishing it
-					if action == messagedata.ConsensusActionLearn ||
-						action == messagedata.ConsensusActionFailure {
+					if action == mmessage.ConsensusActionLearn ||
+						action == mmessage.ConsensusActionFailure {
 						return
 					}
 
@@ -1004,16 +1003,16 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 					return
 				}
 
-			case messagedata.ConsensusActionPrepare,
-				messagedata.ConsensusActionPropose:
+			case mmessage.ConsensusActionPrepare,
+				mmessage.ConsensusActionPropose:
 
 				instance.role = acceptorRole
 
 				select {
 				case action := <-timeoutChan:
 					// Stop the timer when receiving one action finishing it
-					if action == messagedata.ConsensusActionLearn ||
-						action == messagedata.ConsensusActionFailure {
+					if action == mmessage.ConsensusActionLearn ||
+						action == mmessage.ConsensusActionFailure {
 						return
 					}
 
@@ -1022,14 +1021,14 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 					return
 				}
 
-			case messagedata.ConsensusActionPromise,
-				messagedata.ConsensusActionAccept:
+			case mmessage.ConsensusActionPromise,
+				mmessage.ConsensusActionAccept:
 
 				c.timeoutFailure(instance, messageID)
 				return
 
-			case messagedata.ConsensusActionLearn,
-				messagedata.ConsensusActionFailure:
+			case mmessage.ConsensusActionLearn,
+				mmessage.ConsensusActionFailure:
 				return
 			}
 		}

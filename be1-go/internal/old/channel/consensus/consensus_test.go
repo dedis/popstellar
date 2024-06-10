@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"popstellar/internal/crypto"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mconsensus"
 	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
@@ -702,7 +701,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	// Add a new consensus instance to the channel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = proposerRole
-	consensusInstance.lastSent = messagedata.ConsensusActionPrepare
+	consensusInstance.lastSent = mmessage.ConsensusActionPrepare
 
 	// Add a new elect instance to the consensus instance
 	consensusInstance.createElectInstance(messageID, 1)
@@ -953,7 +952,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	consensusInstance.role = proposerRole
 	consensusInstance.proposedTry = 4
 	consensusInstance.proposedValue = true
-	consensusInstance.lastSent = messagedata.ConsensusActionPropose
+	consensusInstance.lastSent = mmessage.ConsensusActionPropose
 
 	// Add a new elect instance to the consensus instance
 	consensusInstance.createElectInstance(messageID, 1)
@@ -1681,7 +1680,7 @@ func Test_Timeout_Propose(t *testing.T) {
 	// Add a new consensus instance to the channel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = proposerRole
-	consensusInstance.lastSent = messagedata.ConsensusActionPrepare
+	consensusInstance.lastSent = mmessage.ConsensusActionPrepare
 
 	// Add a new elect instance to the consensus instance
 	consensusInstance.createElectInstance(messageID, 1)

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/melection"
 	"popstellar/internal/message/mmessage"
 	"testing"
@@ -24,7 +23,7 @@ func TestVerify_ElectionOpen(t *testing.T) {
 
 	object, action := "election", "open"
 
-	obj, act, err := messagedata.GetObjectAndAction(buf)
+	obj, act, err := mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, object, obj)
@@ -46,7 +45,7 @@ func TestVerify_ElectionOpen(t *testing.T) {
 				"election_open", file))
 			require.NoError(t, err)
 
-			obj, act, err = messagedata.GetObjectAndAction(buf)
+			obj, act, err = mmessage.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)
@@ -185,7 +184,7 @@ func TestVerify_CastVote_Open_Ballot(t *testing.T) {
 	// object and action
 	object, action := "election", "cast_vote"
 
-	obj, act, err := messagedata.GetObjectAndAction(buf)
+	obj, act, err := mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, object, obj)
@@ -207,7 +206,7 @@ func TestVerify_CastVote_Open_Ballot(t *testing.T) {
 				"vote_cast_vote", file))
 			require.NoError(t, err)
 
-			obj, act, err = messagedata.GetObjectAndAction(buf)
+			obj, act, err = mmessage.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)
@@ -242,7 +241,7 @@ func TestVerify_CastVote_Secret_Ballot(t *testing.T) {
 	// object and action
 	object, action := "election", "cast_vote"
 
-	obj, act, err := messagedata.GetObjectAndAction(buf)
+	obj, act, err := mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, object, obj)
@@ -264,7 +263,7 @@ func TestVerify_CastVote_Secret_Ballot(t *testing.T) {
 				"vote_cast_vote", file))
 			require.NoError(t, err)
 
-			obj, act, err = messagedata.GetObjectAndAction(buf)
+			obj, act, err = mmessage.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)
@@ -356,7 +355,7 @@ func TestVerify_ElectionEnd(t *testing.T) {
 	// object and action
 	object, action := "election", "end"
 
-	obj, act, err := messagedata.GetObjectAndAction(buf)
+	obj, act, err := mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, object, obj)
@@ -377,7 +376,7 @@ func TestVerify_ElectionEnd(t *testing.T) {
 			buf, err = os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_end", file))
 			require.NoError(t, err)
 
-			obj, act, err = messagedata.GetObjectAndAction(buf)
+			obj, act, err = mmessage.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)

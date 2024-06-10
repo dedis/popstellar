@@ -10,7 +10,6 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/messagedata/election/telection"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/melection"
 	"popstellar/internal/message/messagedata/mlao"
 	"popstellar/internal/message/mmessage"
@@ -98,7 +97,7 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 		return err
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := mmessage.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
@@ -106,11 +105,11 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 	storeMessage := true
 
 	switch object + "#" + action {
-	case messagedata.ElectionObject + "#" + messagedata.VoteActionCastVote:
+	case mmessage.ElectionObject + "#" + mmessage.VoteActionCastVote:
 		err = h.handleVoteCastVote(msg, channelPath)
-	case messagedata.ElectionObject + "#" + messagedata.ElectionActionOpen:
+	case mmessage.ElectionObject + "#" + mmessage.ElectionActionOpen:
 		err = h.handleElectionOpen(msg, channelPath)
-	case messagedata.ElectionObject + "#" + messagedata.ElectionActionEnd:
+	case mmessage.ElectionObject + "#" + mmessage.ElectionActionEnd:
 		err = h.handleElectionEnd(msg, channelPath)
 		storeMessage = false
 	default:
@@ -493,8 +492,8 @@ func (h *Handler) computeElectionResult(questions map[string]telection.Question,
 	}
 
 	resultElection := melection.ElectionResult{
-		Object:    messagedata.ElectionObject,
-		Action:    messagedata.ElectionActionResult,
+		Object:    mmessage.ElectionObject,
+		Action:    mmessage.ElectionActionResult,
 		Questions: result,
 	}
 

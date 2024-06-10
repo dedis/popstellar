@@ -6,7 +6,6 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mchirp"
 	method2 "popstellar/internal/message/method"
 	"popstellar/internal/message/mmessage"
@@ -197,7 +196,7 @@ func (c *Channel) VerifyBroadcastMessage(broadcast method2.Broadcast) error {
 	return nil
 }
 
-func (c *Channel) verifyNotifyChirp(msg mmessage.Message, chirpMsg messagedata.Verifiable) error {
+func (c *Channel) verifyNotifyChirp(msg mmessage.Message, chirpMsg mmessage.Verifiable) error {
 	err := chirpMsg.Verify()
 	if err != nil {
 		return xerrors.Errorf("invalid chirp broadcast message: %v", err)

@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/messagedata/root/hroot"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mreaction"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/validation"
@@ -52,7 +51,7 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 		return err
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := mmessage.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
@@ -67,9 +66,9 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 	}
 
 	switch object + "#" + action {
-	case messagedata.ReactionObject + "#" + messagedata.ReactionActionAdd:
+	case mmessage.ReactionObject + "#" + mmessage.ReactionActionAdd:
 		err = h.handleReactionAdd(msg)
-	case messagedata.ReactionObject + "#" + messagedata.ReactionActionDelete:
+	case mmessage.ReactionObject + "#" + mmessage.ReactionActionDelete:
 		err = h.handleReactionDelete(msg)
 	default:
 		err = errors.NewInvalidMessageFieldError("failed to Handle %s#%s, invalid object#action", object, action)

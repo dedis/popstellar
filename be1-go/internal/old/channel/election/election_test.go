@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/crypto"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/melection"
 	"popstellar/internal/message/messagedata/mlao"
 	method2 "popstellar/internal/message/method"
@@ -53,7 +52,7 @@ func Test_Creation_Fails_If_Identical_Questions(t *testing.T) {
 	// object and action
 	object, action := "election", "setup"
 
-	obj, act, err := messagedata.GetObjectAndAction(buf)
+	obj, act, err := mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, object, obj)
@@ -322,7 +321,7 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 	require.NoError(t, err)
 
 	object, action := "election", "cast_vote"
-	obj, act, err := messagedata.GetObjectAndAction(buf)
+	obj, act, err := mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
@@ -356,7 +355,7 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 	require.NoError(t, err)
 
 	object, action = "election", "result"
-	obj, act, err = messagedata.GetObjectAndAction(buf)
+	obj, act, err = mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
@@ -623,7 +622,7 @@ func newFakeChannel(t *testing.T, secret bool) (*Channel, string) {
 	// object and action
 	object, action := "election", "setup"
 
-	obj, act, err := messagedata.GetObjectAndAction(buf)
+	obj, act, err := mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, object, obj)

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mconsensus"
+	"popstellar/internal/message/mmessage"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -17,7 +17,7 @@ func Test_Consensus_Elect(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "consensus", object)
@@ -46,8 +46,8 @@ func Test_Consensus_Elect(t *testing.T) {
 func Test_Consensus_Elect_Interface_Functions(t *testing.T) {
 	var msg mconsensus.ConsensusElect
 
-	require.Equal(t, messagedata.ConsensusObject, msg.GetObject())
-	require.Equal(t, messagedata.ConsensusActionElect, msg.GetAction())
+	require.Equal(t, mmessage.ConsensusObject, msg.GetObject())
+	require.Equal(t, mmessage.ConsensusActionElect, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }
 
@@ -62,7 +62,7 @@ func Test_Consensus_Elect_Verify(t *testing.T) {
 			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "consensus_elect", file))
 			require.NoError(t, err)
 
-			obj, act, err := messagedata.GetObjectAndAction(buf)
+			obj, act, err := mmessage.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)

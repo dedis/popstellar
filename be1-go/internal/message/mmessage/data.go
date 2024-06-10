@@ -1,4 +1,4 @@
-package messagedata
+package mmessage
 
 import (
 	"encoding/json"

@@ -10,7 +10,6 @@ import (
 	"popstellar/internal/generator"
 	"popstellar/internal/handler/messagedata/election/helection/mocks"
 	"popstellar/internal/handler/messagedata/election/telection"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mlao"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/state"
@@ -96,7 +95,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 4 Error when Election is already started or ended
 	args = append(args, input{
 		name: "Test 4",
-		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen,
+		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionOpen,
 			-1, true, db),
 		channelPath: channelPath,
 		isError:     true,
@@ -109,7 +108,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 5 Error when ElectionOpen opened at before createdAt
 	args = append(args, input{
 		name: "Test 5",
-		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionSetup,
+		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionSetup,
 			2, true, db),
 		channelPath: channelPath,
 		isError:     true,
@@ -126,7 +125,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 6: Success when ElectionOpen is valid
 	args = append(args, input{
 		name: "Test 6",
-		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionSetup,
+		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionSetup,
 			1, false, db),
 		channelPath: channelPath,
 		isError:     false,
@@ -173,7 +172,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 10 Error when ElectionEnd is not started
 	args = append(args, input{
 		name: "Test 10",
-		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionEnd, "",
+		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionEnd, "",
 			-1, true, db),
 		channelPath: channelPath,
 		isError:     true,
@@ -187,7 +186,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 11 Error when ElectionEnd creation time is before ElectionSetup creation time
 	args = append(args, input{
 		name: "Test 11",
-		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, "",
+		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionOpen, "",
 			2, true, db),
 		channelPath: channelPath,
 		isError:     true,
@@ -203,7 +202,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 12 Error when ElectionEnd is not the expected hash
 	args = append(args, input{
 		name: "Test 12",
-		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, wrongVotes,
+		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionOpen, wrongVotes,
 			1, true, db),
 		channelPath: channelPath,
 		isError:     true,
@@ -222,7 +221,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 13: Success when ElectionEnd is valid
 	args = append(args, input{
 		name: "Test 13",
-		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, registeredVotes,
+		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionOpen, registeredVotes,
 			1, false, db),
 		channelPath: channelPath,
 		isError:     false,
@@ -384,7 +383,7 @@ func Test_handleChannelElection(t *testing.T) {
 
 	args = append(args, input{
 		name: "Test 22",
-		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionEnd, mlao.OpenBallot,
+		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionEnd, mlao.OpenBallot,
 			0, votes, questions, ownerPublicKey, db, false),
 		channelPath: channelPath,
 		isError:     false,
@@ -398,7 +397,7 @@ func Test_handleChannelElection(t *testing.T) {
 	//Test 23 Success when election is started
 	args = append(args, input{
 		name: "Test 23",
-		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, "",
+		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, mmessage.ElectionActionOpen, "",
 			-1, votes, nil, ownerPublicKey, db, true),
 		channelPath: channelPath,
 		isError:     false,
@@ -430,7 +429,7 @@ func newElectionOpenMsg(t *testing.T, owner kyber.Point, sender, laoID, election
 
 	if state != "" {
 		db.On("IsElectionStartedOrEnded", channelPath).
-			Return(state == messagedata.ElectionActionOpen || state == messagedata.ElectionActionEnd, nil)
+			Return(state == mmessage.ElectionActionOpen || state == mmessage.ElectionActionEnd, nil)
 	}
 
 	if !isError {
@@ -449,7 +448,7 @@ func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionI
 
 	if state != "" {
 		db.On("IsElectionStarted", channelPath).
-			Return(state == messagedata.ElectionActionOpen, nil)
+			Return(state == mmessage.ElectionActionOpen, nil)
 	}
 
 	if createdAt >= 0 {
@@ -499,12 +498,12 @@ func newVoteCastVoteIntMsg(t *testing.T, sender, laoID, electionID, electionPath
 	db.On("GetLAOOrganizerPubKey", electionPath).Return(owner, nil)
 	db.On("GetElectionAttendees", electionPath).Return(map[string]struct{}{ownerPubBuf64: {}}, nil)
 
-	if state == messagedata.ElectionActionOpen {
+	if state == mmessage.ElectionActionOpen {
 		db.On("IsElectionStarted", electionPath).
 			Return(true, nil)
 	}
 
-	if state == messagedata.ElectionActionEnd {
+	if state == mmessage.ElectionActionEnd {
 		db.On("IsElectionEnded", electionPath).
 			Return(false, nil)
 		db.On("IsElectionStarted", electionPath).

@@ -3,7 +3,7 @@ package mreaction
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
-	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/mmessage"
 )
 
 // ReactionDelete defines a message data
@@ -34,15 +34,15 @@ func (message ReactionDelete) Verify() error {
 
 // GetObject implements MessageData
 func (ReactionDelete) GetObject() string {
-	return messagedata.ReactionObject
+	return mmessage.ReactionObject
 }
 
 // GetAction implements MessageData
 func (ReactionDelete) GetAction() string {
-	return messagedata.ReactionActionDelete
+	return mmessage.ReactionActionDelete
 }
 
 // NewEmpty implements MessageData
-func (ReactionDelete) NewEmpty() messagedata.MessageData {
+func (ReactionDelete) NewEmpty() mmessage.MessageData {
 	return &ReactionDelete{}
 }

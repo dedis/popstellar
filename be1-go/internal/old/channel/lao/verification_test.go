@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/messagedata/mlao"
 	"popstellar/internal/message/mmessage"
 	"popstellar/internal/old/channel"
@@ -32,7 +31,7 @@ func TestVerify_LaoState(t *testing.T) {
 	// object and action
 	object, action := "lao", "state"
 
-	obj, act, err := messagedata.GetObjectAndAction(buf)
+	obj, act, err := mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, object, obj)
@@ -53,7 +52,7 @@ func TestVerify_LaoState(t *testing.T) {
 			buf, err = os.ReadFile(filepath.Join(relativeExamplePath, "lao_state", file))
 			require.NoError(t, err)
 
-			obj, act, err = messagedata.GetObjectAndAction(buf)
+			obj, act, err = mmessage.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)
@@ -91,7 +90,7 @@ func TestVerify_RollCallCreate(t *testing.T) {
 	// object and action
 	object, action := "roll_call", "create"
 
-	obj, act, err := messagedata.GetObjectAndAction(buf)
+	obj, act, err := mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, object, obj)
@@ -121,7 +120,7 @@ func TestVerify_RollCallOpen(t *testing.T) {
 	// object and action
 	object, action := "roll_call", "open"
 
-	obj, act, err := messagedata.GetObjectAndAction(buf)
+	obj, act, err := mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, object, obj)
@@ -151,7 +150,7 @@ func TestVerify_RollCallClose(t *testing.T) {
 	// object and action
 	object, action := "roll_call", "close"
 
-	obj, act, err := messagedata.GetObjectAndAction(buf)
+	obj, act, err := mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, object, obj)
@@ -179,7 +178,7 @@ func TestVerify_ElectionSetup(t *testing.T) {
 	// object and action
 	object, action := "election", "setup"
 
-	obj, act, err := messagedata.GetObjectAndAction(buf)
+	obj, act, err := mmessage.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, object, obj)
@@ -200,7 +199,7 @@ func TestVerify_ElectionSetup(t *testing.T) {
 			buf, err = os.ReadFile(filepath.Join(relativeExamplePath, "election_setup", file))
 			require.NoError(t, err)
 
-			obj, act, err = messagedata.GetObjectAndAction(buf)
+			obj, act, err = mmessage.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)

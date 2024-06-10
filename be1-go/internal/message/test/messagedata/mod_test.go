@@ -3,7 +3,6 @@ package messagedata
 import (
 	"os"
 	"path/filepath"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/mmessage"
 	"testing"
 
@@ -25,7 +24,7 @@ func Test_GetObjectAndAction(t *testing.T) {
 				"test_messages", file))
 			require.NoError(t, err)
 
-			_, _, err = messagedata.GetObjectAndAction(buf)
+			_, _, err = mmessage.GetObjectAndAction(buf)
 			require.Error(t, err)
 		}
 	}
@@ -43,7 +42,7 @@ func Test_GetTime(t *testing.T) {
 				"test_messages", file))
 			require.NoError(t, err)
 
-			_, err = messagedata.GetTime(buf)
+			_, err = mmessage.GetTime(buf)
 			require.Error(t, err)
 		}
 	}

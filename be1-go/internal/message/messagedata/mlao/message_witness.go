@@ -1,6 +1,8 @@
 package mlao
 
-import "popstellar/internal/message/messagedata"
+import (
+	"popstellar/internal/message/mmessage"
+)
 
 // MessageWitness defines a message data
 type MessageWitness struct {
@@ -12,15 +14,15 @@ type MessageWitness struct {
 
 // GetObject implements MessageData
 func (MessageWitness) GetObject() string {
-	return messagedata.MessageObject
+	return mmessage.MessageObject
 }
 
 // GetAction implements MessageData
 func (MessageWitness) GetAction() string {
-	return messagedata.MessageActionWitness
+	return mmessage.MessageActionWitness
 }
 
 // NewEmpty implements MessageData
-func (MessageWitness) NewEmpty() messagedata.MessageData {
+func (MessageWitness) NewEmpty() mmessage.MessageData {
 	return &MessageWitness{}
 }

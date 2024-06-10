@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"popstellar/internal/errors"
-	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/mmessage"
 )
 
@@ -69,15 +68,15 @@ func (message LaoCreate) Verify() error {
 
 // GetObject implements MessageData
 func (LaoCreate) GetObject() string {
-	return messagedata.LAOObject
+	return mmessage.LAOObject
 }
 
 // GetAction implements MessageData
 func (LaoCreate) GetAction() string {
-	return messagedata.LAOActionCreate
+	return mmessage.LAOActionCreate
 }
 
 // NewEmpty implements MessageData
-func (LaoCreate) NewEmpty() messagedata.MessageData {
+func (LaoCreate) NewEmpty() mmessage.MessageData {
 	return &LaoCreate{}
 }

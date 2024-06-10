@@ -2,7 +2,7 @@ package melection
 
 import (
 	"encoding/base64"
-	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/mmessage"
 	"strings"
 
 	"popstellar/internal/errors"
@@ -21,16 +21,16 @@ type ElectionOpen struct {
 
 // GetObject implements MessageData
 func (ElectionOpen) GetObject() string {
-	return messagedata.ElectionObject
+	return mmessage.ElectionObject
 }
 
 // GetAction implements MessageData
 func (ElectionOpen) GetAction() string {
-	return messagedata.ElectionActionOpen
+	return mmessage.ElectionActionOpen
 }
 
 // NewEmpty implements MessageData
-func (ElectionOpen) NewEmpty() messagedata.MessageData {
+func (ElectionOpen) NewEmpty() mmessage.MessageData {
 	return &ElectionOpen{}
 }
 
@@ -44,7 +44,7 @@ func (message ElectionOpen) Verify(electionPath string) error {
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode election: %v", err)
 	}
-	noRoot := strings.ReplaceAll(electionPath, messagedata.RootPrefix, "")
+	noRoot := strings.ReplaceAll(electionPath, mmessage.RootPrefix, "")
 
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {

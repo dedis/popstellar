@@ -5,7 +5,7 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
-	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/mmessage"
 )
 
 // AuthenticateUser is a message containing the user authentication information
@@ -23,7 +23,7 @@ type AuthenticateUser struct {
 }
 
 // NewEmpty creates an empty auth user message
-func (msg AuthenticateUser) NewEmpty() messagedata.MessageData {
+func (msg AuthenticateUser) NewEmpty() mmessage.MessageData {
 	return &AuthenticateUser{}
 }
 
@@ -53,10 +53,10 @@ func (msg AuthenticateUser) Verify() error {
 
 // GetObject implements MessageData
 func (AuthenticateUser) GetObject() string {
-	return messagedata.AuthObject
+	return mmessage.AuthObject
 }
 
 // GetAction implements MessageData
 func (AuthenticateUser) GetAction() string {
-	return messagedata.AuthAction
+	return mmessage.AuthAction
 }
