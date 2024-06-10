@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/crypto"
-	"popstellar/internal/generator"
+	"popstellar/internal/handler/generator"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata/election/helection/mocks"
 	"popstellar/internal/handler/messagedata/election/telection"

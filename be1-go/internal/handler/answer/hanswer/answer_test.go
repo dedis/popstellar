@@ -10,7 +10,7 @@ import (
 	"io"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
-	"popstellar/internal/generator"
+	"popstellar/internal/handler/generator"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata/root/mroot"
 	"popstellar/internal/handler/method/rumor/mrumor"

@@ -3,7 +3,7 @@ package hsubscribe
 import (
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/errors"
-	"popstellar/internal/generator"
+	"popstellar/internal/handler/generator"
 	"popstellar/internal/handler/method/subscribe/hsubscribe/mocks"
 	mocks2 "popstellar/internal/network/socket/mocks"
 	"testing"

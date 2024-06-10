@@ -3,7 +3,7 @@ package hunsubscribe
 import (
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/errors"
-	"popstellar/internal/generator"
+	"popstellar/internal/handler/generator"
 	"popstellar/internal/handler/method/unsubscribe/hunsubscribe/mocks"
 	mocks2 "popstellar/internal/network/socket/mocks"
 	"testing"

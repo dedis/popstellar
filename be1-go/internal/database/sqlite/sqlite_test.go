@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/crypto"
-	generator2 "popstellar/internal/generator"
+	"popstellar/internal/handler/generator"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata/election/melection"
 	"popstellar/internal/handler/messagedata/election/telection"
@@ -277,7 +277,7 @@ func Test_SQLite_StoreLaoWithLaoGreet(t *testing.T) {
 
 	laoID := "laoID"
 
-	laoCreateMsg := generator2.NewLaoCreateMsg(t, "sender1", laoID, "laoName", 123456789,
+	laoCreateMsg := generator.NewLaoCreateMsg(t, "sender1", laoID, "laoName", 123456789,
 		organizerPubBuf64, nil)
 
 	laoGreet := mlao2.LaoGreet{
@@ -348,9 +348,9 @@ func Test_SQLite_GetRollCallState(t *testing.T) {
 	defer lite.Close()
 	defer os.RemoveAll(dir)
 
-	rollCallCreate := generator2.NewRollCallCreateMsg(t, "sender1", "name", "createID", 1, 2, 10, nil)
-	rollCallOpen := generator2.NewRollCallOpenMsg(t, "sender1", "openID", "createID", 4, nil)
-	rollCallClose := generator2.NewRollCallCloseMsg(t, "sender1", "closeID", "openID", 8, nil, nil)
+	rollCallCreate := generator.NewRollCallCreateMsg(t, "sender1", "name", "createID", 1, 2, 10, nil)
+	rollCallOpen := generator.NewRollCallOpenMsg(t, "sender1", "openID", "createID", 4, nil)
+	rollCallClose := generator.NewRollCallCloseMsg(t, "sender1", "closeID", "openID", 8, nil, nil)
 	states := []string{"create", "open", "close"}
 	messages := []mmessage.Message{rollCallCreate, rollCallOpen, rollCallClose}
 
@@ -369,8 +369,8 @@ func Test_SQLite_CheckPrevOpenOrReopenID(t *testing.T) {
 	defer lite.Close()
 	defer os.RemoveAll(dir)
 
-	rollCallOpen := generator2.NewRollCallOpenMsg(t, "sender1", "openID", "createID", 4, nil)
-	rollCallReopen := generator2.NewRollCallReOpenMsg(t, "sender1", "reopenID", "closeID", 12, nil)
+	rollCallOpen := generator.NewRollCallOpenMsg(t, "sender1", "openID", "createID", 4, nil)
+	rollCallReopen := generator.NewRollCallReOpenMsg(t, "sender1", "reopenID", "closeID", 12, nil)
 
 	err = lite.StoreMessageAndData("channel1", rollCallOpen)
 	require.NoError(t, err)
@@ -393,8 +393,8 @@ func Test_SQLite_CheckPrevCreateOrCloseID(t *testing.T) {
 	defer lite.Close()
 	defer os.RemoveAll(dir)
 
-	rollCallCreate := generator2.NewRollCallCreateMsg(t, "sender1", "name", "createID", 1, 2, 10, nil)
-	rollCallClose := generator2.NewRollCallCloseMsg(t, "sender1", "closeID", "openID", 8, nil, nil)
+	rollCallCreate := generator.NewRollCallCreateMsg(t, "sender1", "name", "createID", 1, 2, 10, nil)
+	rollCallClose := generator.NewRollCallCloseMsg(t, "sender1", "closeID", "openID", 8, nil, nil)
 
 	err = lite.StoreMessageAndData("channel1", rollCallCreate)
 	require.NoError(t, err)
@@ -420,7 +420,7 @@ func Test_SQLite_StoreRollCallClose(t *testing.T) {
 	channels := []string{"channel1", "channel2", "channel3"}
 	laoID := "laoID"
 
-	rollCallClose := generator2.NewRollCallCloseMsg(t, "sender1", "closeID", "openID", 8, nil, nil)
+	rollCallClose := generator.NewRollCallCloseMsg(t, "sender1", "closeID", "openID", 8, nil, nil)
 
 	err = lite.StoreRollCallClose(channels, laoID, rollCallClose)
 	require.NoError(t, err)
@@ -451,7 +451,7 @@ func Test_SQLite_StoreElectionWithElectionKey(t *testing.T) {
 	electionPubBuf, err := point.MarshalBinary()
 	require.NoError(t, err)
 
-	electionSetupMsg := generator2.NewElectionSetupMsg(t, "sender1", "ID1", laoID, "electionName",
+	electionSetupMsg := generator.NewElectionSetupMsg(t, "sender1", "ID1", laoID, "electionName",
 		"version", 1, 2, 3, nil, nil)
 
 	electionKey := melection.ElectionKey{
@@ -501,7 +501,7 @@ func Test_SQLite_StoreElection(t *testing.T) {
 	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	point := crypto.Suite.Point().Mul(secret, nil)
 
-	electionSetupMsg := generator2.NewElectionSetupMsg(t, "sender1", "ID1", laoID, "electionName",
+	electionSetupMsg := generator.NewElectionSetupMsg(t, "sender1", "ID1", laoID, "electionName",
 		"version", 1, 2, 3, nil, nil)
 
 	err = lite.StoreElection(laoID, electionID, point, secret, electionSetupMsg)
@@ -535,7 +535,7 @@ func Test_SQLite_IsElectionStartedOrTerminated(t *testing.T) {
 	require.NoError(t, err)
 	require.False(t, ok)
 
-	electionOpenMsg := generator2.NewElectionOpenMsg(t, "sender1", laoID, electionID, 1, nil)
+	electionOpenMsg := generator.NewElectionOpenMsg(t, "sender1", laoID, electionID, 1, nil)
 
 	err = lite.StoreMessageAndData(electionID, electionOpenMsg)
 	require.NoError(t, err)
@@ -551,7 +551,7 @@ func Test_SQLite_IsElectionStartedOrTerminated(t *testing.T) {
 	require.NoError(t, err)
 	require.False(t, ok)
 
-	electionCloseMsg := generator2.NewElectionCloseMsg(t, "sender1", laoID, electionID, "", 1, nil)
+	electionCloseMsg := generator.NewElectionCloseMsg(t, "sender1", laoID, electionID, "", 1, nil)
 
 	err = lite.StoreMessageAndData(electionID, electionCloseMsg)
 	require.NoError(t, err)
@@ -578,7 +578,7 @@ func Test_SQLite_GetElectionCreationTimeAndType(t *testing.T) {
 	electionPath := "electionPath"
 	creationTime := int64(123456789)
 
-	electionSetupMsg := generator2.NewElectionSetupMsg(t, "sender1", "ID1", laoPath, "electionName",
+	electionSetupMsg := generator.NewElectionSetupMsg(t, "sender1", "ID1", laoPath, "electionName",
 		mlao2.OpenBallot, creationTime, 2, 3, nil, nil)
 
 	err = lite.StoreMessageAndData(electionPath, electionSetupMsg)
@@ -604,7 +604,7 @@ func Test_SQLite_GetElectionAttendees(t *testing.T) {
 	attendees := []string{"attendee1", "attendee2", "attendee3"}
 	expected := map[string]struct{}{"attendee1": {}, "attendee2": {}, "attendee3": {}}
 
-	rollCallCloseMsg := generator2.NewRollCallCloseMsg(t, "sender1", "closeID", "openID", 8, attendees, nil)
+	rollCallCloseMsg := generator.NewRollCallCloseMsg(t, "sender1", "closeID", "openID", 8, attendees, nil)
 
 	err = lite.StoreMessageAndData(laoID, rollCallCloseMsg)
 	require.NoError(t, err)
@@ -636,7 +636,7 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 		},
 	}
 
-	electionSetupMsg := generator2.NewElectionSetupMsg(t, "sender1", "ID1", laoPath, "electionName",
+	electionSetupMsg := generator.NewElectionSetupMsg(t, "sender1", "ID1", laoPath, "electionName",
 		mlao2.OpenBallot, 1, 2, 3, questions, nil)
 
 	err = lite.StoreMessageAndData(electionPath, electionSetupMsg)
@@ -653,9 +653,9 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 	require.NoError(t, err)
 
 	// Add votes to the election
-	vote1 := generator2.VoteString{ID: "voteID1", Question: "questionID1", Vote: "Option1"}
-	votes := []generator2.VoteString{vote1}
-	castVoteMsg := generator2.NewVoteCastVoteStringMsg(t, "sender1", laoID, electionID,
+	vote1 := generator.VoteString{ID: "voteID1", Question: "questionID1", Vote: "Option1"}
+	votes := []generator.VoteString{vote1}
+	castVoteMsg := generator.NewVoteCastVoteStringMsg(t, "sender1", laoID, electionID,
 		1, votes, nil)
 
 	err = lite.StoreMessageAndData(electionPath, castVoteMsg)
@@ -672,9 +672,9 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 	require.Equal(t, expected, result)
 
 	// Add more votes to the election
-	vote2 := generator2.VoteString{ID: "voteID2", Question: "questionID1", Vote: "Option2"}
-	votes = []generator2.VoteString{vote2}
-	castVoteMsg = generator2.NewVoteCastVoteStringMsg(t, "sender1", laoID, electionID,
+	vote2 := generator.VoteString{ID: "voteID2", Question: "questionID1", Vote: "Option2"}
+	votes = []generator.VoteString{vote2}
+	castVoteMsg = generator.NewVoteCastVoteStringMsg(t, "sender1", laoID, electionID,
 		2, votes, nil)
 
 	err = lite.StoreMessageAndData(electionPath, castVoteMsg)
@@ -701,8 +701,8 @@ func Test_SQLite_StoreElectionEndWithResult(t *testing.T) {
 	laoID := "laoID"
 	electionID := "electionID"
 
-	electionEndMsg := generator2.NewElectionCloseMsg(t, "sender1", laoID, electionID, "", 1, nil)
-	electionResultMsg := generator2.NewElectionResultMsg(t, "sender2", nil, nil)
+	electionEndMsg := generator.NewElectionCloseMsg(t, "sender1", laoID, electionID, "", 1, nil)
+	electionResultMsg := generator.NewElectionResultMsg(t, "sender2", nil, nil)
 
 	err = lite.StoreElectionEndWithResult(electionPath, electionEndMsg, electionResultMsg)
 	require.NoError(t, err)
@@ -722,7 +722,7 @@ func Test_SQLite_StoreChirpMessages(t *testing.T) {
 	chirpPath := "chirpID"
 	generalChirpPath := "generalChirpID"
 
-	chirpMsg := generator2.NewChirpAddMsg(t, "sender1", nil, 1)
+	chirpMsg := generator.NewChirpAddMsg(t, "sender1", nil, 1)
 	generalChirpMsg := mmessage.Message{
 		Data:      base64.URLEncoding.EncodeToString([]byte("data")),
 		Sender:    "sender1",
@@ -754,7 +754,7 @@ func Test_SQLite_IsAttendee(t *testing.T) {
 	attendees := []string{"attendee1", "attendee2", "attendee3"}
 	laoID := "laoID"
 
-	rollCallCloseMsg := generator2.NewRollCallCloseMsg(t, "sender1", "closeID", "openID",
+	rollCallCloseMsg := generator.NewRollCallCloseMsg(t, "sender1", "closeID", "openID",
 		8, attendees, nil)
 
 	err = lite.StoreMessageAndData(laoID, rollCallCloseMsg)
@@ -776,7 +776,7 @@ func Test_SQLite_GetReactionSender(t *testing.T) {
 	defer lite.Close()
 	defer os.RemoveAll(dir)
 
-	reactionAddMsg := generator2.NewReactionAddMsg(t, "sender1", nil, "", "chirpID", 1)
+	reactionAddMsg := generator.NewReactionAddMsg(t, "sender1", nil, "", "chirpID", 1)
 
 	sender, err := lite.GetReactionSender(reactionAddMsg.MessageID)
 	require.NoError(t, err)
@@ -808,7 +808,7 @@ func Test_SQLite_IsChallengeValid(t *testing.T) {
 		ValidUntil: validUntil,
 	}
 
-	challengeMsg := generator2.NewFederationChallenge(t, sender, value,
+	challengeMsg := generator.NewFederationChallenge(t, sender, value,
 		validUntil, nil)
 
 	err = lite.StoreMessageAndData(fedPath, challengeMsg)
@@ -853,10 +853,10 @@ func Test_SQLite_GetFederationExpect(t *testing.T) {
 		ValidUntil: validUntil,
 	}
 
-	challengeMsg := generator2.NewFederationChallenge(t, organizer, value,
+	challengeMsg := generator.NewFederationChallenge(t, organizer, value,
 		validUntil, nil)
 
-	expectMsg := generator2.NewFederationExpect(t, organizer, laoId,
+	expectMsg := generator.NewFederationExpect(t, organizer, laoId,
 		serverAddressA, organizer2, challengeMsg, nil)
 
 	_, err = lite.GetFederationExpect(organizer, organizer2, challenge, fedPath)
@@ -899,10 +899,10 @@ func Test_SQLite_GetFederationInit(t *testing.T) {
 		ValidUntil: validUntil,
 	}
 
-	challengeMsg := generator2.NewFederationChallenge(t, organizer, value,
+	challengeMsg := generator.NewFederationChallenge(t, organizer, value,
 		validUntil, nil)
 
-	expectMsg := generator2.NewFederationInit(t, organizer, laoId,
+	expectMsg := generator.NewFederationInit(t, organizer, laoId,
 		serverAddressA, organizer2, challengeMsg, nil)
 
 	_, err = lite.GetFederationInit(organizer, organizer2, challenge, fedPath)

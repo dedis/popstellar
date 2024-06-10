@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/crypto"
-	"popstellar/internal/generator"
+	"popstellar/internal/handler/generator"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata/chirp/hchirp/mocks"
 	"popstellar/internal/handler/messagedata/root/hroot"

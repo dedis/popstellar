@@ -2,7 +2,7 @@ package hquery
 
 import (
 	"github.com/stretchr/testify/require"
-	"popstellar/internal/generator"
+	"popstellar/internal/handler/generator"
 	"popstellar/internal/handler/query/hquery/mocks"
 	mocks2 "popstellar/internal/network/socket/mocks"
 	"testing"
