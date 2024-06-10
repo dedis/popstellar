@@ -1,30 +1,23 @@
 package messagedata
 
 import (
-	"os"
-	"path/filepath"
-	"popstellar/internal/handler/messagedata"
+	"embed"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-var relativeExamplePath string
-
-func init() {
-	relativeExamplePath = filepath.Join("..", "..", "..", "..", "..", "protocol",
-		"examples", "messageData")
-}
+//go:embed testdata/*.json
+var testData embed.FS
 
 func Test_GetObjectAndAction(t *testing.T) {
 	testWrongExamples := func(file string) func(*testing.T) {
 		return func(t *testing.T) {
 			// read the bad example file
-			buf, err := os.ReadFile(filepath.Join(relativeExamplePath,
-				"test_messages", file))
+			buf, err := testData.ReadFile("testdata/" + file)
 			require.NoError(t, err)
 
-			_, _, err = messagedata.GetObjectAndAction(buf)
+			_, _, err = GetObjectAndAction(buf)
 			require.Error(t, err)
 		}
 	}
@@ -38,11 +31,10 @@ func Test_GetTime(t *testing.T) {
 	testWrongExamples := func(file string) func(*testing.T) {
 		return func(t *testing.T) {
 			// read the bad example file
-			buf, err := os.ReadFile(filepath.Join(relativeExamplePath,
-				"test_messages", file))
+			buf, err := testData.ReadFile("testdata/" + file)
 			require.NoError(t, err)
 
-			_, err = messagedata.GetTime(buf)
+			_, err = GetTime(buf)
 			require.Error(t, err)
 		}
 	}
@@ -61,10 +53,10 @@ func Test_Hash(t *testing.T) {
 	data4 := []string{"text 🥰", "🏉", "more text🎃️", "♠️"}
 
 	// the expected hash has been taken from the Scala system
-	require.Equal(t, messagedata.Hash(data1...), "61I7DQkiMtdHFM5VygjbFqrVmn4NAl0wSVxkj6Q5iDw=")
-	require.Equal(t, messagedata.Hash(), "47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU=")
-	require.Equal(t, messagedata.Hash(data2), "8BMmJjQMPhtD0QwVor1uVB3B_PyMMyIbIvaDHcOQnTg=")
-	require.Equal(t, messagedata.Hash(data3), "ht7cQAkPdd6o-ZFVW6gTbt0gEIEUcr5FTDgOaeW8BOU=")
-	require.Equal(t, messagedata.Hash(data4...), "wANKJFj9q_ncRKalYmK4yozUpet33JaFXVQEpMcHdfU=")
+	require.Equal(t, Hash(data1...), "61I7DQkiMtdHFM5VygjbFqrVmn4NAl0wSVxkj6Q5iDw=")
+	require.Equal(t, Hash(), "47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU=")
+	require.Equal(t, Hash(data2), "8BMmJjQMPhtD0QwVor1uVB3B_PyMMyIbIvaDHcOQnTg=")
+	require.Equal(t, Hash(data3), "ht7cQAkPdd6o-ZFVW6gTbt0gEIEUcr5FTDgOaeW8BOU=")
+	require.Equal(t, Hash(data4...), "wANKJFj9q_ncRKalYmK4yozUpet33JaFXVQEpMcHdfU=")
 
 }

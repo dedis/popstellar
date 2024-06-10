@@ -55,6 +55,7 @@ test-data:
 	cp -r ../protocol/examples/messageData/lao_create/. ./internal/handler/message/mmessage/testdata
 
 	# MessageData
+	cp -r ../protocol/examples/messageData/test_messages/. ./internal/handler/messagedata/testdata
 
 	# Authentification
 	cp -r ../protocol/examples/messageData/popcha_authenticate/. ./internal/handler/messagedata/authentication/mauthentication/testdata
@@ -124,6 +125,7 @@ clean:
 	rm -rf ./internal/handler/message/mmessage/testdata
 
 	# MessageData
+	rm -rf ./internal/handler/messagedata/testdata
 
 	# Authentication
 	rm -rf ./internal/handler/messagedata/authentication/mauthentication/testdata
