@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/crypto"
 	messageHandler "popstellar/internal/handler/message"
+	"popstellar/internal/handler/messagedata/root/mocks"
 	"popstellar/internal/message/query/method/message"
-	mock2 "popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
@@ -43,7 +43,7 @@ func Test_handleChannelRoot(t *testing.T) {
 
 	conf := state.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey,
 		"clientAddress", "serverAddress")
-	db := mock2.NewRepository(t)
+	db := mocks.NewRepository(t)
 
 	subs := state.NewSubscribers()
 	peers := state.NewPeers()
@@ -111,7 +111,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	}
 }
 
-func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepository *mock2.Repository, isError bool) message.Message {
+func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepository *mocks.Repository, isError bool) message.Message {
 	creation := time.Now().Unix()
 	laoID := message.Hash(
 		organizer,
