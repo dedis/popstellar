@@ -3,9 +3,9 @@ package hjsonrpc
 import (
 	"encoding/base64"
 	"github.com/stretchr/testify/require"
-	"popstellar/internal/handler/generator"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/network/socket/mocks"
+	generator2 "popstellar/internal/test/generator"
 	"popstellar/internal/validation"
 	"testing"
 )
@@ -43,18 +43,18 @@ func Test_handleIncomingMessage(t *testing.T) {
 
 	args = append(args, input{
 		name:     "Test 1",
-		message:  generator.NewNothingQuery(t, 999),
+		message:  generator2.NewNothingQuery(t, 999),
 		contains: "failed to validate schema:",
 	})
 
 	// Test 2: failed to handled popanswer because wrong publish popanswer format
 
-	msg := generator.NewNothingMsg(t, base64.URLEncoding.EncodeToString([]byte("sender")), nil)
+	msg := generator2.NewNothingMsg(t, base64.URLEncoding.EncodeToString([]byte("sender")), nil)
 	msg.MessageID = "wrong messageID"
 
 	args = append(args, input{
 		name:     "Test 2",
-		message:  generator.NewPublishQuery(t, 1, "/root/lao1", msg),
+		message:  generator2.NewPublishQuery(t, 1, "/root/lao1", msg),
 		contains: "failed to validate schema:",
 	})
 

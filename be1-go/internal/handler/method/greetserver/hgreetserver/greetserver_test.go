@@ -3,9 +3,9 @@ package hgreetserver
 import (
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/generator"
 	mocks2 "popstellar/internal/handler/method/greetserver/hgreetserver/mocks"
 	"popstellar/internal/network/socket/mocks"
+	"popstellar/internal/test/generator"
 	"testing"
 )
 
