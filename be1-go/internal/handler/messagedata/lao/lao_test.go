@@ -6,10 +6,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/crypto"
+	"popstellar/internal/handler/messagedata/lao/mocks"
 	"popstellar/internal/handler/messagedata/root"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
-	mock2 "popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
@@ -37,7 +37,7 @@ func Test_handleChannelLao(t *testing.T) {
 
 	subs := state.NewSubscribers()
 
-	db := mock2.NewRepository(t)
+	db := mocks.NewRepository(t)
 
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
@@ -293,7 +293,7 @@ func newLaoStateMsg(t *testing.T, organizer, laoID string) message.Message {
 }
 
 func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation, start, end int64, isError bool,
-	mockRepository *mock2.Repository) message.Message {
+	mockRepository *mocks.Repository) message.Message {
 
 	createID := message.Hash(
 		messagedata.RollCallFlag,
@@ -312,7 +312,7 @@ func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation,
 }
 
 func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, openedAt int64, isError bool,
-	mockRepository *mock2.Repository) message.Message {
+	mockRepository *mocks.Repository) message.Message {
 
 	openID := message.Hash(
 		messagedata.RollCallFlag,
@@ -334,7 +334,7 @@ func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, opene
 }
 
 func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, closedAt int64, isError bool,
-	mockRepository *mock2.Repository) message.Message {
+	mockRepository *mocks.Repository) message.Message {
 
 	closeID := message.Hash(
 		messagedata.RollCallFlag,
@@ -364,7 +364,7 @@ func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, clo
 func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 	setupLao, laoID, electionName, question, version string,
 	createdAt, start, end int64,
-	isError bool, mockRepository *mock2.Repository) message.Message {
+	isError bool, mockRepository *mocks.Repository) message.Message {
 
 	electionSetupID := message.Hash(
 		messagedata.ElectionFlag,
