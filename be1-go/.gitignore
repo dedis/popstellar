@@ -26,3 +26,4 @@ configServer4.json
 /internal/handler/messagedata/reaction/mreaction/testdata/
 /internal/handler/messagedata/testdata/
 /internal/handler/messagedata/coin/hcoin/testdata/
+/internal/validation/protocol/
