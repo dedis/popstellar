@@ -1,7 +1,7 @@
 package sqlite
 
 import (
-	"popstellar/internal/handler/message/hmessage"
+	"popstellar/internal/handler/messagedata"
 )
 
 const (
@@ -9,31 +9,27 @@ const (
 )
 
 var channelTypeToID = map[string]string{
-	hmessage.RootType:         "1",
-	hmessage.LaoType:          "2",
-	hmessage.ElectionType:     "3",
-	hmessage.ChirpType:        "4",
-	hmessage.ReactionType:     "5",
-	hmessage.ConsensusType:    "6",
-	hmessage.PopChaType:       "7",
-	hmessage.CoinType:         "8",
-	hmessage.AuthType:         "9",
-	hmessage.GeneralChirpType: "10",
-	hmessage.FederationType:   "11",
+	messagedata.RootObject:       "1",
+	messagedata.LAOObject:        "2",
+	messagedata.ElectionObject:   "3",
+	messagedata.ChirpObject:      "4",
+	messagedata.ReactionObject:   "5",
+	messagedata.ConsensusObject:  "6",
+	messagedata.CoinObject:       "7",
+	messagedata.AuthObject:       "8",
+	messagedata.FederationObject: "9",
 }
 
 var channelTypes = []string{
-	hmessage.RootType,
-	hmessage.LaoType,
-	hmessage.ElectionType,
-	hmessage.ChirpType,
-	hmessage.ReactionType,
-	hmessage.ConsensusType,
-	hmessage.PopChaType,
-	hmessage.CoinType,
-	hmessage.AuthType,
-	hmessage.GeneralChirpType,
-	hmessage.FederationType,
+	messagedata.RootObject,
+	messagedata.LAOObject,
+	messagedata.ElectionObject,
+	messagedata.ChirpObject,
+	messagedata.ReactionObject,
+	messagedata.ConsensusObject,
+	messagedata.CoinObject,
+	messagedata.AuthObject,
+	messagedata.FederationObject,
 }
 
 const foreignKeyOff = `PRAGMA foreign_keys = OFF;`

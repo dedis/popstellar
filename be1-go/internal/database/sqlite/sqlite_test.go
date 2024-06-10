@@ -264,7 +264,7 @@ func Test_SQLite_StoreLaoWithLaoGreet(t *testing.T) {
 		"laoPath":  "lao",
 		"channel1": "chirp",
 		"channel2": "coin",
-		"channel3": "auth",
+		"channel3": "popcha",
 		"channel4": "consensus",
 		"channel5": "reaction"}
 

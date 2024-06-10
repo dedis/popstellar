@@ -6,20 +6,6 @@ import (
 	"popstellar/internal/handler/messagedata"
 )
 
-const (
-	RootType         = "root"
-	LaoType          = "lao"
-	ElectionType     = "election"
-	ChirpType        = "chirp"
-	ReactionType     = "reaction"
-	ConsensusType    = "consensus"
-	CoinType         = "coin"
-	AuthType         = "auth"
-	PopChaType       = "popcha"
-	GeneralChirpType = "generalChirp"
-	FederationType   = "federation"
-)
-
 type Repository interface {
 
 	// HasMessage returns true if the message already exists.
