@@ -231,7 +231,7 @@ func (h *Handler) createNewAttendeeChannels(channelPath string, rollCallClose ml
 }
 
 func (h *Handler) handleElectionSetup(msg mmessage.Message, channelPath string) error {
-	var electionSetup melection.ElectionSetup
+	var electionSetup mlao2.ElectionSetup
 	err := msg.UnmarshalData(&electionSetup)
 	if err != nil {
 		return err
@@ -283,11 +283,11 @@ func (h *Handler) verifySenderLao(channelPath string, msg mmessage.Message) erro
 	return nil
 }
 
-func (h *Handler) storeElection(msg mmessage.Message, electionSetup melection.ElectionSetup, channelPath string) error {
+func (h *Handler) storeElection(msg mmessage.Message, electionSetup mlao2.ElectionSetup, channelPath string) error {
 	electionPubKey, electionSecretKey := h.generateKeys()
 	electionPath := channelPath + "/" + electionSetup.ID
 
-	if electionSetup.Version == melection.SecretBallot {
+	if electionSetup.Version == mlao2.SecretBallot {
 		electionKeyMsg, err := h.createElectionKey(electionSetup.ID, electionPubKey)
 		if err != nil {
 			return err

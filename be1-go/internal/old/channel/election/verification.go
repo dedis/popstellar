@@ -6,6 +6,7 @@ import (
 	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/handler/messagedata"
 	melection2 "popstellar/internal/handler/messagedata/election/melection"
+	"popstellar/internal/handler/messagedata/lao/mlao"
 	"sort"
 	"strings"
 
@@ -262,13 +263,13 @@ func (c *Channel) verifyVote(vote melection2.Vote, electionID string) error {
 
 	var vs string
 	switch c.electionType {
-	case melection2.OpenBallot:
+	case mlao.OpenBallot:
 		v, ok := vote.Vote.(int)
 		if !ok {
 			return manswer.NewErrorf(-4, "votes in open ballot should be int")
 		}
 		vs = fmt.Sprintf("%d", v)
-	case melection2.SecretBallot:
+	case mlao.SecretBallot:
 		vs, ok = vote.Vote.(string)
 		if !ok {
 			return manswer.NewErrorf(-4, "votes in secret ballot should be string")

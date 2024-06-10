@@ -580,7 +580,7 @@ func Test_SQLite_GetElectionCreationTimeAndType(t *testing.T) {
 	creationTime := int64(123456789)
 
 	electionSetupMsg := generator2.NewElectionSetupMsg(t, "sender1", "ID1", laoPath, "electionName",
-		melection.OpenBallot, creationTime, 2, 3, nil, nil)
+		mlao2.OpenBallot, creationTime, 2, 3, nil, nil)
 
 	err = lite.StoreMessageAndData(electionPath, electionSetupMsg)
 	require.NoError(t, err)
@@ -591,7 +591,7 @@ func Test_SQLite_GetElectionCreationTimeAndType(t *testing.T) {
 
 	electionType, err := lite.GetElectionType(electionPath)
 	require.NoError(t, err)
-	require.Equal(t, melection.OpenBallot, electionType)
+	require.Equal(t, mlao2.OpenBallot, electionType)
 }
 
 func Test_SQLite_GetElectionAttendees(t *testing.T) {
@@ -628,7 +628,7 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 	laoPath := "laoPath"
 	laoID := "laoID"
 	electionID := "electionID"
-	questions := []melection.ElectionSetupQuestion{
+	questions := []mlao2.ElectionSetupQuestion{
 		{
 			ID:            "questionID1",
 			Question:      "question1",
@@ -638,7 +638,7 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 	}
 
 	electionSetupMsg := generator2.NewElectionSetupMsg(t, "sender1", "ID1", laoPath, "electionName",
-		melection.OpenBallot, 1, 2, 3, questions, nil)
+		mlao2.OpenBallot, 1, 2, 3, questions, nil)
 
 	err = lite.StoreMessageAndData(electionPath, electionSetupMsg)
 	require.NoError(t, err)
@@ -646,7 +646,7 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 	data64, err := base64.URLEncoding.DecodeString(electionSetupMsg.Data)
 	require.NoError(t, err)
 
-	var electionSetup melection.ElectionSetup
+	var electionSetup mlao2.ElectionSetup
 	err = json.Unmarshal(data64, &electionSetup)
 	require.NoError(t, err)
 

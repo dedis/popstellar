@@ -10,8 +10,8 @@ import (
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/election/helection/mocks"
-	"popstellar/internal/handler/messagedata/election/melection"
 	"popstellar/internal/handler/messagedata/election/telection"
+	"popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/state"
 	"popstellar/internal/test/generator"
 	"popstellar/internal/validation"
@@ -319,7 +319,7 @@ func Test_handleChannelElection(t *testing.T) {
 
 	args = append(args, input{
 		name: "Test 19",
-		msg: newVoteCastVoteStringMsg(t, ownerPubBuf64, laoID, electionID, channelPath, melection.OpenBallot,
+		msg: newVoteCastVoteStringMsg(t, ownerPubBuf64, laoID, electionID, channelPath, mlao.OpenBallot,
 			0, stringVotes, questions, ownerPublicKey, db),
 		channelPath: channelPath,
 		isError:     true,
@@ -341,7 +341,7 @@ func Test_handleChannelElection(t *testing.T) {
 
 	args = append(args, input{
 		name: "Test 20",
-		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, "", melection.SecretBallot,
+		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, "", mlao.SecretBallot,
 			0, intVotes, questions, ownerPublicKey, db, true),
 		channelPath: channelPath,
 		isError:     true,
@@ -356,7 +356,7 @@ func Test_handleChannelElection(t *testing.T) {
 
 	args = append(args, input{
 		name: "Test 21",
-		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, "", melection.OpenBallot,
+		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, "", mlao.OpenBallot,
 			0, intVotes, questions, ownerPublicKey, db, true),
 		channelPath: channelPath,
 		isError:     true,
@@ -384,7 +384,7 @@ func Test_handleChannelElection(t *testing.T) {
 
 	args = append(args, input{
 		name: "Test 22",
-		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionEnd, melection.OpenBallot,
+		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionEnd, mlao.OpenBallot,
 			0, votes, questions, ownerPublicKey, db, false),
 		channelPath: channelPath,
 		isError:     false,
@@ -483,7 +483,7 @@ func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionI
 	}
 
 	if !isError {
-		db.On("GetElectionType", channelPath).Return(melection.OpenBallot, nil)
+		db.On("GetElectionType", channelPath).Return(mlao.OpenBallot, nil)
 		db.On("StoreElectionEndWithResult", channelPath, msg, mock.AnythingOfType("mmessage.Message")).
 			Return(nil)
 	}

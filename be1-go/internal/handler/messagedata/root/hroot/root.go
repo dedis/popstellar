@@ -9,6 +9,7 @@ import (
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/lao/mlao"
+	"popstellar/internal/handler/messagedata/root/mroot"
 	"popstellar/internal/handler/method/greetserver/mgreetserver"
 	"popstellar/internal/validation"
 )
@@ -92,7 +93,7 @@ func (h *Handler) Handle(_ string, msg mmessage.Message) error {
 
 func (h *Handler) handleLaoCreate(msg mmessage.Message) error {
 
-	var laoCreate mlao.LaoCreate
+	var laoCreate mroot.LaoCreate
 	err := msg.UnmarshalData(&laoCreate)
 	if err != nil {
 		return err
@@ -113,7 +114,7 @@ func (h *Handler) handleLaoCreate(msg mmessage.Message) error {
 	return h.createLaoAndChannels(msg, laoGreetMsg, organizerPubBuf, laoPath)
 }
 
-func (h *Handler) verifyLaoCreation(msg mmessage.Message, laoCreate mlao.LaoCreate, laoPath string) ([]byte, error) {
+func (h *Handler) verifyLaoCreation(msg mmessage.Message, laoCreate mroot.LaoCreate, laoPath string) ([]byte, error) {
 
 	ok, err := h.db.HasChannel(laoPath)
 	if err != nil {

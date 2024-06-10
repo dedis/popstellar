@@ -3,8 +3,8 @@ package mmessage
 import (
 	"embed"
 	"encoding/base64"
-	"popstellar/internal/handler/messagedata/election/melection"
 	"popstellar/internal/handler/messagedata/lao/mlao"
+	"popstellar/internal/handler/messagedata/root/mroot"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -17,8 +17,8 @@ func Test_UnmarshalData(t *testing.T) {
 	messageDataBuf, err := testData.ReadFile("testdata/lao_create.json")
 	require.NoError(t, err)
 
-	laoCreate := mlao.LaoCreate{}
-	electionSetup := melection.ElectionSetup{}
+	laoCreate := mroot.LaoCreate{}
+	electionSetup := mlao.ElectionSetup{}
 
 	msg := Message{
 		Data: string(messageDataBuf),

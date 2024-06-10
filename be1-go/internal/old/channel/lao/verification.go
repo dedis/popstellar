@@ -3,7 +3,6 @@ package lao
 import (
 	"encoding/base64"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/election/melection"
 	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
 	"strconv"
 	"strings"
@@ -244,7 +243,7 @@ func (c *Channel) verifyMessageRollCallClose(rollCallClose *mlao2.RollCallClose)
 }
 
 // verifyMessageElectionSetup checks the election#setup message data is valid.
-func (c *Channel) verifyMessageElectionSetup(electionSetup melection.ElectionSetup) error {
+func (c *Channel) verifyMessageElectionSetup(electionSetup mlao2.ElectionSetup) error {
 	c.log.Info().Msgf("verifying election#setup message of election with id %s", electionSetup.ID)
 
 	// verify lao id is base64URL encoded
@@ -282,8 +281,8 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup melection.ElectionSet
 
 	// verify ballot type is correct
 	switch electionSetup.Version {
-	case melection.OpenBallot:
-	case melection.SecretBallot:
+	case mlao2.OpenBallot:
+	case mlao2.SecretBallot:
 	default:
 		return xerrors.Errorf("Version should not be %s", electionSetup.Version)
 	}
@@ -353,7 +352,7 @@ func verifyElectionSetupTime(createdAt, start, end int64) error {
 }
 
 // verifyElectionSetupQuestion checks the question of an election setup message is valid.
-func verifyElectionSetupQuestion(question melection.ElectionSetupQuestion,
+func verifyElectionSetupQuestion(question mlao2.ElectionSetupQuestion,
 	electionID string) error {
 
 	// verify question id is base64URL encoded

@@ -8,7 +8,7 @@ import (
 	"popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/handler/messagedata/lao/mlao"
+	"popstellar/internal/handler/messagedata/root/mroot"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/getmessagesbyid/mgetmessagesbyid"
 	"popstellar/internal/handler/method/greetserver/mgreetserver"
@@ -504,7 +504,7 @@ func (h *Hub) sendHeartbeatToServers() {
 }
 
 // createLao creates a new LAO using the data in the publish parameter.
-func (h *Hub) createLao(msg mmessage.Message, laoCreate mlao.LaoCreate,
+func (h *Hub) createLao(msg mmessage.Message, laoCreate mroot.LaoCreate,
 	socket socket.Socket,
 ) error {
 	laoChannelPath := rootPrefix + laoCreate.ID

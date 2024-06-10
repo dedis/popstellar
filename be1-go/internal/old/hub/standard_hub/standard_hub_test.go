@@ -12,6 +12,7 @@ import (
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/lao/mlao"
+	"popstellar/internal/handler/messagedata/root/mroot"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
 	"popstellar/internal/handler/method/getmessagesbyid/mgetmessagesbyid"
@@ -64,7 +65,7 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
 	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := mlao.LaoCreate{
+	data := mroot.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
@@ -139,7 +140,7 @@ func Test_Create_LAO_Different_Sender_And_Organizer_Keys(t *testing.T) {
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
 	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := mlao.LaoCreate{
+	data := mroot.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
@@ -213,7 +214,7 @@ func Test_Create_LAO_No_Key(t *testing.T) {
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
 	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := mlao.LaoCreate{
+	data := mroot.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
@@ -289,7 +290,7 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
 	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := mlao.LaoCreate{
+	data := mroot.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
@@ -367,7 +368,7 @@ func Test_Create_LAO_Bad_Signature(t *testing.T) {
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
 	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := mlao.LaoCreate{
+	data := mroot.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
@@ -444,7 +445,7 @@ func Test_Create_LAO_Data_Not_Base64(t *testing.T) {
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
 	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := mlao.LaoCreate{
+	data := mroot.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
@@ -593,7 +594,7 @@ func Test_Create_Invalid_Lao_Id(t *testing.T) {
 	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), "wrongName")
 	trueLaoId := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := mlao.LaoCreate{
+	data := mroot.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
@@ -669,7 +670,7 @@ func Test_Create_LAO(t *testing.T) {
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
 	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := mlao.LaoCreate{
+	data := mroot.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
@@ -1173,7 +1174,7 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
 	laoID := messagedata.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
 
-	data := mlao.LaoCreate{
+	data := mroot.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
@@ -1274,7 +1275,7 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
 	laoID := messagedata.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
 
-	data := mlao.LaoCreate{
+	data := mroot.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,

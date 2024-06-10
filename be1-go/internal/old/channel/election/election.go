@@ -11,6 +11,7 @@ import (
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
 	melection2 "popstellar/internal/handler/messagedata/election/melection"
+	"popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
 	"popstellar/internal/handler/method/publish/mpublish"
@@ -125,7 +126,7 @@ type attendees struct {
 }
 
 // NewChannel returns a new initialized election channel
-func NewChannel(channelPath string, msg mmessage.Message, msgData melection2.ElectionSetup,
+func NewChannel(channelPath string, msg mmessage.Message, msgData mlao.ElectionSetup,
 	attendeesMap map[string]struct{}, hub channel.HubFunctionalities,
 	log zerolog.Logger, organizerPubKey kyber.Point) (channel.Channel, error) {
 
@@ -169,7 +170,7 @@ func NewChannel(channelPath string, msg mmessage.Message, msgData melection2.Ele
 
 	newChannel.inbox.StoreMessage(msg)
 
-	if newChannel.electionType != melection2.SecretBallot {
+	if newChannel.electionType != mlao.SecretBallot {
 		return newChannel, nil
 	}
 
@@ -704,11 +705,11 @@ func (c *Channel) getVoteIndex(vote validVote) (int, bool) {
 	elecType := c.electionType
 	switch elecType {
 	// open ballot votes have the index in plain text
-	case melection2.OpenBallot:
+	case mlao.OpenBallot:
 		index, _ := vote.index.(int)
 		return index, true
 	// secret ballot votes must be decrypted to get the index
-	case melection2.SecretBallot:
+	case mlao.SecretBallot:
 		temp, _ := vote.index.(string)
 		index, err := c.decryptVote(temp)
 		if err != nil {
@@ -832,7 +833,7 @@ func updateVote(msgID string, sender string, castVote melection2.VoteCastVote,
 }
 
 // Creates the questions for the election channel or returns nil if they are not valid
-func getAllQuestionsForElectionChannel(questions []melection2.ElectionSetupQuestion) (map[string]*question, error) {
+func getAllQuestionsForElectionChannel(questions []mlao.ElectionSetupQuestion) (map[string]*question, error) {
 	qs := make(map[string]*question)
 	for _, q := range questions {
 		ballotOpts := make([]string, len(q.BallotOptions))

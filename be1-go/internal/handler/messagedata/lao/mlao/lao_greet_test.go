@@ -1,12 +1,16 @@
 package mlao
 
 import (
+	"embed"
 	"encoding/json"
 	"popstellar/internal/handler/messagedata"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
+
+//go:embed testdata/*.json
+var testData embed.FS
 
 func Test_Lao_Greet(t *testing.T) {
 	buf, err := testData.ReadFile("testdata/greeting.json")

@@ -84,12 +84,11 @@ test-data:
 	cp -r ../protocol/examples/messageData/election_end/. ./internal/handler/messagedata/election/melection/testdata
 	cp -r ../protocol/examples/messageData/election_key/. ./internal/handler/messagedata/election/melection/testdata
 	cp -r ../protocol/examples/messageData/election_open/. ./internal/handler/messagedata/election/melection/testdata
-	cp -r ../protocol/examples/messageData/election_setup/. ./internal/handler/messagedata/election/melection/testdata
 	cp -r ../protocol/examples/messageData/election_result.json ./internal/handler/messagedata/election/melection/testdata
 	cp -r ../protocol/examples/messageData/vote_cast_vote/. ./internal/handler/messagedata/election/melection/testdata
 
 	# Lao
-	cp -r ../protocol/examples/messageData/lao_create/. ./internal/handler/messagedata/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/election_setup/. ./internal/handler/messagedata/lao/mlao/testdata
 	cp -r ../protocol/examples/messageData/lao_greet/. ./internal/handler/messagedata/lao/mlao/testdata
 	cp -r ../protocol/examples/messageData/lao_state/. ./internal/handler/messagedata/lao/mlao/testdata
 	cp -r ../protocol/examples/messageData/lao_update/. ./internal/handler/messagedata/lao/mlao/testdata
@@ -104,6 +103,9 @@ test-data:
 	# Reaction
 	cp -r ../protocol/examples/messageData/reaction_add/. ./internal/handler/messagedata/reaction/mreaction/testdata
 	cp -r ../protocol/examples/messageData/reaction_delete/. ./internal/handler/messagedata/reaction/mreaction/testdata
+
+	# Root
+	cp -r ../protocol/examples/messageData/lao_create/. ./internal/handler/messagedata/root/mroot/testdata
 
 
 clean:
@@ -149,6 +151,9 @@ clean:
 
 	# Reaction
 	rm -rf ./internal/handler/messagedata/reaction/mreaction/testdata
+
+	# Root
+	rm -rf ./internal/handler/messagedata/root/mroot/testdata
 
 fmt:
 	gofmt -s -w ./
