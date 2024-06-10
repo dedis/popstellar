@@ -408,8 +408,15 @@ final case class DbActor(
 
       beforeMessageID match {
         case Some(msgID) =>
-          val indexOfMessage = pagedCatchupList.indexOf(msgID)
-          if (indexOfMessage != -1 && indexOfMessage != 0) {
+          var indexOfMessage = -1
+          var count = 0
+          for msg <- pagedCatchupList do
+            if(msg.message_id.toString == msgID){
+              indexOfMessage = count
+            }
+            count = count + 1
+
+          if (indexOfMessage != -1) {
             var startingIndex = indexOfMessage - numberOfMessages
             if (startingIndex < 0) {
               startingIndex = 0
@@ -454,8 +461,15 @@ final case class DbActor(
 
       beforeMessageID match {
         case Some(msgID) =>
-          val indexOfMessage = pagedCatchupList.indexOf(msgID)
-          if (indexOfMessage != -1 && indexOfMessage != 0) {
+          var indexOfMessage = -1
+          var count = 0
+          for msg <- pagedCatchupList do
+            if (msg.message_id.toString == msgID) {
+              indexOfMessage = count
+            }
+            count = count + 1
+
+          if (indexOfMessage != -1) {
             var startingIndex = indexOfMessage - numberOfMessages
             if (startingIndex < 0) {
               startingIndex = 0
