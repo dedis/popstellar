@@ -1,20 +1,15 @@
-package messagedata
+package melection
 
 import (
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/election/melection"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_Election_Key(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "election_key", "election_key.json")
-
-	buf, err := os.ReadFile(file)
+	buf, err := testData.ReadFile("testdata/election_key.json")
 	require.NoError(t, err)
 
 	object, action, err := messagedata.GetObjectAndAction(buf)
@@ -23,7 +18,7 @@ func Test_Election_Key(t *testing.T) {
 	require.Equal(t, "election", object)
 	require.Equal(t, "key", action)
 
-	var msg melection.ElectionKey
+	var msg ElectionKey
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -35,7 +30,7 @@ func Test_Election_Key(t *testing.T) {
 }
 
 func Test_Key_New_Empty(t *testing.T) {
-	var msg melection.ElectionKey
+	var msg ElectionKey
 
 	require.Empty(t, msg.NewEmpty())
 }

@@ -1,20 +1,19 @@
-package messagedata
+package melection
 
 import (
+	"embed"
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/election/melection"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Election_End(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "election_end", "election_end.json")
+//go:embed testdata/*.json
+var testData embed.FS
 
-	buf, err := os.ReadFile(file)
+func Test_Election_End(t *testing.T) {
+	buf, err := testData.ReadFile("testdata/election_end.json")
 	require.NoError(t, err)
 
 	object, action, err := messagedata.GetObjectAndAction(buf)
@@ -23,7 +22,7 @@ func Test_Election_End(t *testing.T) {
 	require.Equal(t, "election", object)
 	require.Equal(t, "end", action)
 
-	var msg melection.ElectionEnd
+	var msg ElectionEnd
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -37,7 +36,7 @@ func Test_Election_End(t *testing.T) {
 }
 
 func Test_Election_End_Interface_Functions(t *testing.T) {
-	var msg melection.ElectionEnd
+	var msg ElectionEnd
 
 	require.Equal(t, messagedata.ElectionObject, msg.GetObject())
 	require.Equal(t, messagedata.ElectionActionEnd, msg.GetAction())

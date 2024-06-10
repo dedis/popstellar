@@ -78,6 +78,13 @@ test-data:
 	cp -r ../protocol/examples/messageData/consensus_promise/. ./internal/handler/messagedata/consensus/mconsensus/testdata
 	cp -r ../protocol/examples/messageData/consensus_propose/. ./internal/handler/messagedata/consensus/mconsensus/testdata
 
+	# Election
+	cp -r ../protocol/examples/messageData/election_end/. ./internal/handler/messagedata/election/melection/testdata
+	cp -r ../protocol/examples/messageData/election_key/. ./internal/handler/messagedata/election/melection/testdata
+	cp -r ../protocol/examples/messageData/election_open/. ./internal/handler/messagedata/election/melection/testdata
+	cp -r ../protocol/examples/messageData/election_result.json ./internal/handler/messagedata/election/melection/testdata
+	cp -r ../protocol/examples/messageData/vote_cast_vote/. ./internal/handler/messagedata/election/melection/testdata
+
 
 clean:
 	rm -rf ./internal/validation/protocol
@@ -112,6 +119,8 @@ clean:
 	# Consensus
 	rm -rf ./internal/handler/messagedata/consensus/mconsensus/testdata
 
+	# Election
+	rm -rf ./internal/handler/messagedata/election/melection/testdata
 
 fmt:
 	gofmt -s -w ./

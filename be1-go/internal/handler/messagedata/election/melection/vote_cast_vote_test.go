@@ -1,20 +1,15 @@
-package messagedata
+package melection
 
 import (
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/election/melection"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_Vote_Cast_Vote(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "vote_cast_vote", "vote_cast_vote.json")
-
-	buf, err := os.ReadFile(file)
+	buf, err := testData.ReadFile("testdata/vote_cast_vote.json")
 	require.NoError(t, err)
 
 	object, action, err := messagedata.GetObjectAndAction(buf)
@@ -23,7 +18,7 @@ func Test_Vote_Cast_Vote(t *testing.T) {
 	require.Equal(t, "election", object)
 	require.Equal(t, "cast_vote", action)
 
-	var msg melection.VoteCastVote
+	var msg VoteCastVote
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -42,7 +37,7 @@ func Test_Vote_Cast_Vote(t *testing.T) {
 }
 
 func Test_Vote_Cast_Vote_Interface_Functions(t *testing.T) {
-	var msg melection.VoteCastVote
+	var msg VoteCastVote
 
 	require.Equal(t, messagedata.ElectionObject, msg.GetObject())
 	require.Equal(t, messagedata.VoteActionCastVote, msg.GetAction())
@@ -52,12 +47,10 @@ func Test_Vote_Cast_Vote_Interface_Functions(t *testing.T) {
 func Test_Cast_Vote_UnmarshalJSON(t *testing.T) {
 	testWithWrongType := func(obj interface{}) func(*testing.T) {
 		return func(t *testing.T) {
-			file := filepath.Join(relativeExamplePath, "vote_cast_vote", "vote_cast_vote.json")
-
-			buf, err := os.ReadFile(file)
+			buf, err := testData.ReadFile("testdata/vote_cast_vote.json")
 			require.NoError(t, err)
 
-			var msg melection.VoteCastVote
+			var msg VoteCastVote
 
 			err = json.Unmarshal(buf, &msg)
 			require.NoError(t, err)

@@ -21,3 +21,4 @@ configServer4.json
 /internal/handler/messagedata/chirp/mchirp/testdata/
 /internal/handler/messagedata/coin/mcoin/testdata/
 /internal/handler/messagedata/consensus/mconsensus/testdata/
+/internal/handler/messagedata/election/melection/testdata/
