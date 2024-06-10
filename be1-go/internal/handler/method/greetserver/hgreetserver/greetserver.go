@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/handler/method/greetserver/mgreetserver"
 	"popstellar/internal/handler/query/mquery"
-	"popstellar/internal/message/method/mgreetserver"
 	"popstellar/internal/network/socket"
 )
 

@@ -6,8 +6,8 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/method/rumor/mrumor"
 	"popstellar/internal/logger"
-	"popstellar/internal/message/method/mrumor"
 	"popstellar/internal/network/socket"
 	"sort"
 )

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/message/method/mcatchup"
+	"popstellar/internal/handler/method/catchup/mcatchup"
 	"popstellar/internal/network/socket"
 )
 

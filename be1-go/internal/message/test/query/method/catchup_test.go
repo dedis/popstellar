@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/method/mcatchup"
+	"popstellar/internal/handler/method/catchup/mcatchup"
 	"testing"
 
 	"github.com/stretchr/testify/require"

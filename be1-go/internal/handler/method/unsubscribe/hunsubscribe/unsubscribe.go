@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/messagedata/root/hroot"
-	"popstellar/internal/message/method/munsubscribe"
+	"popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/network/socket"
 )
 

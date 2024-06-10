@@ -2,8 +2,8 @@ package state
 
 import (
 	"popstellar/internal/errors"
-	"popstellar/internal/message/method/mgetmessagesbyid"
-	method2 "popstellar/internal/message/method/mrumor"
+	"popstellar/internal/handler/method/getmessagesbyid/mgetmessagesbyid"
+	method2 "popstellar/internal/handler/method/rumor/mrumor"
 	"sync"
 
 	"github.com/rs/zerolog"

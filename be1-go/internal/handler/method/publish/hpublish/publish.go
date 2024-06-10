@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/method/publish/mpublish"
 	"popstellar/internal/logger"
-	"popstellar/internal/message/method/mpublish"
 	"popstellar/internal/network/socket"
 	"strings"
 )

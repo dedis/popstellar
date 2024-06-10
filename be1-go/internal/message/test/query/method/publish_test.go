@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/method/mpublish"
+	"popstellar/internal/handler/method/publish/mpublish"
 	"testing"
 
 	"github.com/stretchr/testify/require"

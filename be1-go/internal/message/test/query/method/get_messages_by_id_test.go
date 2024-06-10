@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/method/mgetmessagesbyid"
+	"popstellar/internal/handler/method/getmessagesbyid/mgetmessagesbyid"
 	"testing"
 
 	"github.com/stretchr/testify/require"

@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/method/mgreetserver"
+	"popstellar/internal/handler/method/greetserver/mgreetserver"
 	"testing"
 )
 

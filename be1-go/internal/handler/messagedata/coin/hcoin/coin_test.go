@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata/coin/hcoin/mocks"
-	"popstellar/internal/message/method/mbroadcast"
+	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	mocks2 "popstellar/internal/network/socket/mocks"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
