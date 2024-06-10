@@ -2,9 +2,9 @@ package reaction
 
 import (
 	"github.com/stretchr/testify/require"
+	"popstellar/internal/handler/messagedata/reaction/mocks"
 	"popstellar/internal/handler/messagedata/root"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
@@ -24,7 +24,7 @@ func Test_handleChannelReaction(t *testing.T) {
 
 	subs := state.NewSubscribers()
 
-	db := mock.NewRepository(t)
+	db := mocks.NewRepository(t)
 
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
@@ -213,7 +213,7 @@ func Test_handleChannelReaction(t *testing.T) {
 }
 
 func newReactionAddMsg(t *testing.T, channelID string, sender string, reactionCodePoint, chirpID string, timestamp int64,
-	db *mock.Repository, hasInvalidField, isNotAttendee bool, subs *state.Subscribers) message.Message {
+	db *mocks.Repository, hasInvalidField, isNotAttendee bool, subs *state.Subscribers) message.Message {
 
 	msg := generator.NewReactionAddMsg(t, sender, nil, reactionCodePoint, chirpID, timestamp)
 
@@ -235,7 +235,7 @@ func newReactionAddMsg(t *testing.T, channelID string, sender string, reactionCo
 }
 
 func newReactionDeleteMsg(t *testing.T, channelID string, sender string, reactionID string, timestamp int64,
-	db *mock.Repository, hasInvalidField, hasNotReaction, isNotOwner, isNotAttendee bool,
+	db *mocks.Repository, hasInvalidField, hasNotReaction, isNotOwner, isNotAttendee bool,
 	subs *state.Subscribers) message.Message {
 
 	msg := generator.NewReactionDeleteMsg(t, sender, nil, reactionID, timestamp)
