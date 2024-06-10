@@ -9,7 +9,7 @@ import (
 	_ "modernc.org/sqlite"
 	"popstellar/internal/crypto"
 	poperrors "popstellar/internal/errors"
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 	"strings"
 	"time"
 )

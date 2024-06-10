@@ -7,10 +7,10 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/hmessage"
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/message/messagedata/mlao"
 	"popstellar/internal/message/messagedata/mroot"
 	"popstellar/internal/message/method/mgreetserver"
-	"popstellar/internal/message/mmessage"
 	"popstellar/internal/validation"
 )
 

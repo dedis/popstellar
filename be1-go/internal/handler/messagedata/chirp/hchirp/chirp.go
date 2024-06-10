@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/errors"
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata/root/hroot"
 	"popstellar/internal/message/messagedata/mchirp"
-	"popstellar/internal/message/mmessage"
 	"popstellar/internal/validation"
 	"strings"
 )

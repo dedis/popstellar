@@ -6,8 +6,8 @@ import (
 	"errors"
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/message/method/mrumor"
-	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/mquery"
 	"strings"
 )

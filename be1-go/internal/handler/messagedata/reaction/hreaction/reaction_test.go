@@ -3,9 +3,9 @@ package hreaction
 import (
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/generator"
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata/reaction/hreaction/mocks"
 	"popstellar/internal/handler/messagedata/root/hroot"
-	"popstellar/internal/message/mmessage"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
 	"strings"

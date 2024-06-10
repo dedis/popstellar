@@ -1,7 +1,7 @@
 package mocks
 
 import (
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/network/socket"
 )
 

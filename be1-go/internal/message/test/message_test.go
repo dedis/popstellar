@@ -4,9 +4,9 @@ import (
 	"encoding/base64"
 	"os"
 	"path/filepath"
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/message/messagedata/mlao"
 	"popstellar/internal/message/messagedata/mroot"
-	"popstellar/internal/message/mmessage"
 	"testing"
 
 	"github.com/stretchr/testify/require"

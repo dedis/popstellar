@@ -2,7 +2,7 @@ package mchirp
 
 import (
 	"popstellar/internal/errors"
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 )
 
 // ChirpAdd defines a message data

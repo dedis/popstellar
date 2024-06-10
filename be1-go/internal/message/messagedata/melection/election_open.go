@@ -2,7 +2,7 @@ package melection
 
 import (
 	"encoding/base64"
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 	"strings"
 
 	"popstellar/internal/errors"

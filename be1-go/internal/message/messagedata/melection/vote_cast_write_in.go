@@ -1,7 +1,7 @@
 package melection
 
 import (
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 )
 
 // VoteCastWriteIn defines a message data

@@ -3,7 +3,7 @@ package mlao
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 )
 
 // LaoUpdate defines a message data

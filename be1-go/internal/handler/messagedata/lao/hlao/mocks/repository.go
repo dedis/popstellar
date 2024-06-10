@@ -5,7 +5,7 @@ package mocks
 import (
 	kyber "go.dedis.ch/kyber/v3"
 
-	message "popstellar/internal/message/mmessage"
+	message "popstellar/internal/handler/message/mmessage"
 
 	mock "github.com/stretchr/testify/mock"
 )

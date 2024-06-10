@@ -3,9 +3,9 @@ package hpublish
 import (
 	"encoding/json"
 	"popstellar/internal/errors"
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/logger"
 	"popstellar/internal/message/method/mpublish"
-	"popstellar/internal/message/mmessage"
 	"popstellar/internal/network/socket"
 	"strings"
 )

@@ -2,7 +2,7 @@ package mlao
 
 import (
 	"encoding/json"
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 )
 
 // MeetingState defines a message data

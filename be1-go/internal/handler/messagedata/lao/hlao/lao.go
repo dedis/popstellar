@@ -6,10 +6,10 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata/root/hroot"
 	"popstellar/internal/message/messagedata/melection"
 	"popstellar/internal/message/messagedata/mlao"
-	"popstellar/internal/message/mmessage"
 	"popstellar/internal/validation"
 	"strings"
 )

@@ -3,8 +3,8 @@
 package mocks
 
 import (
+	message "popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/message/messagedata/mfederation"
-	message "popstellar/internal/message/mmessage"
 
 	kyber "go.dedis.ch/kyber/v3"
 

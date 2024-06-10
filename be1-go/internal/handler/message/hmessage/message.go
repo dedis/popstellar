@@ -2,7 +2,7 @@ package hmessage
 
 import (
 	"popstellar/internal/errors"
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 )
 
 const (

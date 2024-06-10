@@ -4,8 +4,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 	generator2 "popstellar/internal/generator"
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/catchup/hcatchup/mocks"
-	"popstellar/internal/message/mmessage"
 	mocks2 "popstellar/internal/network/socket/mocks"
 	"testing"
 )

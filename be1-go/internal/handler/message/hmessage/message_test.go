@@ -6,7 +6,7 @@ import (
 	"golang.org/x/xerrors"
 	"popstellar/internal/generator"
 	"popstellar/internal/handler/message/hmessage/mocks"
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 	"testing"
 	"time"
 )

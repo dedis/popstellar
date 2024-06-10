@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"popstellar/internal/handler/answer/manswer"
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 	"sync"
 	"testing"
 )

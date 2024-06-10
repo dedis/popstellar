@@ -3,7 +3,7 @@ package messagedata
 import (
 	"os"
 	"path/filepath"
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 	"testing"
 
 	"github.com/stretchr/testify/require"

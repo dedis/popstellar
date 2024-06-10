@@ -3,7 +3,7 @@ package mconsensus
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
-	message2 "popstellar/internal/message/mmessage"
+	message2 "popstellar/internal/handler/message/mmessage"
 )
 
 // ConsensusElect defines a message data

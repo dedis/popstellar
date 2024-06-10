@@ -1,7 +1,7 @@
 package mrumor
 
 import (
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/message/mquery"
 )
 

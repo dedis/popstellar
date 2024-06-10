@@ -3,9 +3,9 @@ package hrumor
 import (
 	"encoding/json"
 	"popstellar/internal/errors"
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/logger"
 	"popstellar/internal/message/method/mrumor"
-	"popstellar/internal/message/mmessage"
 	"popstellar/internal/network/socket"
 	"sort"
 )

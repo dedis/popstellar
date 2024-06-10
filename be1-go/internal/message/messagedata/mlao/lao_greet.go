@@ -1,7 +1,7 @@
 package mlao
 
 import (
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 )
 
 // LaoGreet defines a message data

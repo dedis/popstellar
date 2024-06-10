@@ -3,7 +3,7 @@ package mfederation
 import (
 	"encoding/hex"
 	"popstellar/internal/errors"
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 )
 
 // FederationChallenge defines a message data

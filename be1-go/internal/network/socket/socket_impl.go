@@ -9,7 +9,7 @@ import (
 	poperror "popstellar/internal/errors"
 	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 	"sync"
 	"time"
 )

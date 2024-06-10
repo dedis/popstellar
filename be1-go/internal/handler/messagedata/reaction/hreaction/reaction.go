@@ -3,9 +3,9 @@ package hreaction
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata/root/hroot"
 	"popstellar/internal/message/messagedata/mreaction"
-	"popstellar/internal/message/mmessage"
 	"popstellar/internal/validation"
 	"strings"
 )

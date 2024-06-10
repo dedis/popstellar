@@ -3,8 +3,8 @@ package hcoin
 import (
 	"encoding/base64"
 	"popstellar/internal/errors"
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/message/messagedata/mcoin"
-	"popstellar/internal/message/mmessage"
 	"popstellar/internal/validation"
 )
 

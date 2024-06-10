@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	poperrors "popstellar/internal/errors"
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/message/messagedata/mfederation"
-	"popstellar/internal/message/mmessage"
 )
 
 func (s *SQLite) IsChallengeValid(senderPk string, challenge mfederation.FederationChallenge, channelPath string) error {

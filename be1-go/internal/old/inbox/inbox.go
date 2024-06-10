@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 )
 
 // messageInfo wraps a message with a stored time for sorting.

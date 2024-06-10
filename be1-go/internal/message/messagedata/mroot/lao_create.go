@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"popstellar/internal/errors"
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 )
 
 // LaoCreate defines a message data

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/message/messagedata/mfederation"
-	"popstellar/internal/message/mmessage"
 	"testing"
 )
 

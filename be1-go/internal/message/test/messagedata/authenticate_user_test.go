@@ -5,8 +5,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/message/messagedata/mauthentification"
-	"popstellar/internal/message/mmessage"
 	"testing"
 )
 

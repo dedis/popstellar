@@ -1,13 +1,13 @@
 package channel
 
 import (
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/message/method/mbroadcast"
 	"popstellar/internal/message/method/mcatchup"
 	"popstellar/internal/message/method/mgreetserver"
 	"popstellar/internal/message/method/mpublish"
 	"popstellar/internal/message/method/msubscribe"
 	method2 "popstellar/internal/message/method/munsubscribe"
-	"popstellar/internal/message/mmessage"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/validation"
 	"sync"

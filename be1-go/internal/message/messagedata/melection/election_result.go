@@ -1,7 +1,7 @@
 package melection
 
 import (
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 )
 
 // ElectionResult defines a message data

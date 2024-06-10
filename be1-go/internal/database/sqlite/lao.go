@@ -8,8 +8,8 @@ import (
 	"go.dedis.ch/kyber/v3"
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/message/hmessage"
+	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/message/messagedata/mlao"
-	"popstellar/internal/message/mmessage"
 	"time"
 )
 

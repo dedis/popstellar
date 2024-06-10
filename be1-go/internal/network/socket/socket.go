@@ -7,7 +7,7 @@
 package socket
 
 import (
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 	"time"
 )
 

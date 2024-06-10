@@ -1,7 +1,7 @@
 package mfederation
 
 import (
-	"popstellar/internal/message/mmessage"
+	"popstellar/internal/handler/message/mmessage"
 )
 
 // FederationExpect defines a message data
