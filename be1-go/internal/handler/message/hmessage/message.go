@@ -3,6 +3,7 @@ package hmessage
 import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 )
 
 const (
@@ -77,19 +78,19 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message, fromRumor boo
 	}
 
 	switch channelType {
-	case RootType:
+	case messagedata.RootObject:
 		err = h.handlers.Root.Handle(channelPath, msg)
-	case LaoType:
+	case messagedata.LAOObject:
 		err = h.handlers.Lao.Handle(channelPath, msg)
-	case ElectionType:
+	case messagedata.ElectionObject:
 		err = h.handlers.Election.Handle(channelPath, msg)
-	case ChirpType:
+	case messagedata.ChirpObject:
 		err = h.handlers.Chirp.Handle(channelPath, msg)
-	case ReactionType:
+	case messagedata.ReactionObject:
 		err = h.handlers.Reaction.Handle(channelPath, msg)
-	case CoinType:
+	case messagedata.CoinObject:
 		err = h.handlers.Coin.Handle(channelPath, msg)
-	case FederationType:
+	case messagedata.FederationObject:
 		err = h.handlers.Federation.Handle(channelPath, msg)
 	default:
 		err = errors.NewInvalidResourceError("unknown channelPath type for %s", channelPath)

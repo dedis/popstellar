@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/chirp/hchirp/mocks"
-	"popstellar/internal/handler/messagedata/root/hroot"
 	"popstellar/internal/state"
 	"popstellar/internal/test/generator"
 	"popstellar/internal/validation"
@@ -153,7 +153,7 @@ func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int
 		return msg
 	}
 
-	chirpNotifyChannelID, _ := strings.CutSuffix(channelID, hroot.Social+"/"+msg.Sender)
+	chirpNotifyChannelID, _ := strings.CutSuffix(channelID, messagedata.Social+"/"+msg.Sender)
 
 	err = subs.AddChannel(chirpNotifyChannelID)
 	require.NoError(t, err)
@@ -178,7 +178,7 @@ func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID st
 
 	db.On("HasMessage", chirpID).Return(true, nil)
 
-	chirpNotifyChannelID, _ := strings.CutSuffix(channelID, hroot.Social+"/"+msg.Sender)
+	chirpNotifyChannelID, _ := strings.CutSuffix(channelID, messagedata.Social+"/"+msg.Sender)
 
 	err = subs.AddChannel(chirpNotifyChannelID)
 	require.NoError(t, err)

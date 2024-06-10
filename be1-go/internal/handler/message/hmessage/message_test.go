@@ -6,6 +6,7 @@ import (
 	"golang.org/x/xerrors"
 	"popstellar/internal/handler/message/hmessage/mocks"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/test/generator"
 	"testing"
 	"time"
@@ -190,7 +191,7 @@ func Test_handleChannel(t *testing.T) {
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(RootType, nil)
+	db.On("GetChannelType", channelPath).Return(messagedata.RootObject, nil)
 	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
@@ -206,7 +207,7 @@ func Test_handleChannel(t *testing.T) {
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(LaoType, nil)
+	db.On("GetChannelType", channelPath).Return(messagedata.LAOObject, nil)
 	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
@@ -222,7 +223,7 @@ func Test_handleChannel(t *testing.T) {
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(LaoType, nil)
+	db.On("GetChannelType", channelPath).Return(messagedata.ElectionObject, nil)
 	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
@@ -238,7 +239,7 @@ func Test_handleChannel(t *testing.T) {
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(ChirpType, nil)
+	db.On("GetChannelType", channelPath).Return(messagedata.ChirpObject, nil)
 	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
@@ -254,7 +255,7 @@ func Test_handleChannel(t *testing.T) {
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(ReactionType, nil)
+	db.On("GetChannelType", channelPath).Return(messagedata.ReactionObject, nil)
 	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
@@ -270,7 +271,7 @@ func Test_handleChannel(t *testing.T) {
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(CoinType, nil)
+	db.On("GetChannelType", channelPath).Return(messagedata.CoinObject, nil)
 	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
@@ -286,7 +287,7 @@ func Test_handleChannel(t *testing.T) {
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(FederationType, nil)
+	db.On("GetChannelType", channelPath).Return(messagedata.FederationObject, nil)
 	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{

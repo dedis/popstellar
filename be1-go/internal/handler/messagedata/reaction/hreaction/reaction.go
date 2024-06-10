@@ -6,7 +6,6 @@ import (
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
 	mreaction2 "popstellar/internal/handler/messagedata/reaction/mreaction"
-	"popstellar/internal/handler/messagedata/root/hroot"
 	"popstellar/internal/validation"
 	"strings"
 )
@@ -57,7 +56,7 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 		return err
 	}
 
-	laoPath, _ := strings.CutSuffix(channelPath, hroot.Social+hroot.Reactions)
+	laoPath, _ := strings.CutSuffix(channelPath, messagedata.Social+messagedata.Reactions)
 	isAttendee, err := h.db.IsAttendee(laoPath, msg.Sender)
 	if err != nil {
 		return err

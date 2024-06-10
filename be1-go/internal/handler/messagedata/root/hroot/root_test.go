@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/crypto"
-	messageHandler "popstellar/internal/handler/message/hmessage"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/root/hroot/mocks"
@@ -122,19 +121,19 @@ func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockReposi
 
 	msg := generator2.NewLaoCreateMsg(t, sender, laoID, laoName, creation, organizer, nil)
 
-	mockRepository.On("HasChannel", RootPrefix+laoID).Return(false, nil)
+	mockRepository.On("HasChannel", messagedata.RootPrefix+laoID).Return(false, nil)
 	if !isError {
-		laoPath := RootPrefix + laoID
+		laoPath := messagedata.RootPrefix + laoID
 		organizerBuf, err := base64.URLEncoding.DecodeString(organizer)
 		require.NoError(t, err)
 		channels := map[string]string{
-			laoPath:                      messageHandler.LaoType,
-			laoPath + Social + Chirps:    messageHandler.ChirpType,
-			laoPath + Social + Reactions: messageHandler.ReactionType,
-			laoPath + Consensus:          messageHandler.ConsensusType,
-			laoPath + Coin:               messageHandler.CoinType,
-			laoPath + Auth:               messageHandler.AuthType,
-			laoPath + Federation:         messageHandler.FederationType,
+			laoPath:                          messagedata.LAOObject,
+			laoPath + messagedata.Chirps:     messagedata.ChirpObject,
+			laoPath + messagedata.Reactions:  messagedata.ReactionObject,
+			laoPath + messagedata.Consensus:  messagedata.ConsensusObject,
+			laoPath + messagedata.Coin:       messagedata.CoinObject,
+			laoPath + messagedata.Auth:       messagedata.AuthObject,
+			laoPath + messagedata.Federation: messagedata.FederationObject,
 		}
 		mockRepository.On("StoreLaoWithLaoGreet",
 			channels,

@@ -11,7 +11,6 @@ import (
 	"popstellar/internal/handler/messagedata/election/melection"
 	"popstellar/internal/handler/messagedata/lao/hlao/mocks"
 	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
-	"popstellar/internal/handler/messagedata/root/hroot"
 	"popstellar/internal/state"
 	"popstellar/internal/test/generator"
 	"popstellar/internal/validation"
@@ -299,7 +298,7 @@ func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation,
 
 	createID := messagedata.Hash(
 		mlao2.RollCallFlag,
-		strings.ReplaceAll(laoID, hroot.RootPrefix, ""),
+		strings.ReplaceAll(laoID, messagedata.RootPrefix, ""),
 		strconv.Itoa(int(creation)),
 		goodLaoName,
 	)
@@ -318,7 +317,7 @@ func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, opene
 
 	openID := messagedata.Hash(
 		mlao2.RollCallFlag,
-		strings.ReplaceAll(laoID, hroot.RootPrefix, ""),
+		strings.ReplaceAll(laoID, messagedata.RootPrefix, ""),
 		base64.URLEncoding.EncodeToString([]byte("opens")),
 		strconv.Itoa(int(openedAt)),
 	)
@@ -340,7 +339,7 @@ func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, clo
 
 	closeID := messagedata.Hash(
 		mlao2.RollCallFlag,
-		strings.ReplaceAll(laoID, hroot.RootPrefix, ""),
+		strings.ReplaceAll(laoID, messagedata.RootPrefix, ""),
 		base64.URLEncoding.EncodeToString([]byte("closes")),
 		strconv.Itoa(int(closedAt)),
 	)
@@ -352,7 +351,7 @@ func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, clo
 	if !isError {
 		var channels []string
 		for _, attendee := range attendees {
-			channels = append(channels, laoID+hroot.Social+"/"+attendee)
+			channels = append(channels, laoID+messagedata.Social+"/"+attendee)
 		}
 		mockRepository.On("StoreRollCallClose", channels, laoID, msg).Return(nil)
 	}

@@ -10,7 +10,6 @@ import (
 	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/election/melection"
 	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
-	"popstellar/internal/handler/messagedata/root/hroot"
 	"popstellar/internal/validation"
 	"strings"
 )
@@ -209,7 +208,7 @@ func (h *Handler) createNewAttendeeChannels(channelPath string, rollCallClose ml
 			return nil, errors.NewInvalidMessageFieldError("failed to decode poptoken: %v", err)
 		}
 
-		chirpingChannelPath := channelPath + hroot.Social + "/" + popToken
+		chirpingChannelPath := channelPath + messagedata.Social + "/" + popToken
 		channels = append(channels, chirpingChannelPath)
 	}
 
@@ -243,7 +242,7 @@ func (h *Handler) handleElectionSetup(msg mmessage.Message, channelPath string) 
 		return err
 	}
 
-	laoID, _ := strings.CutPrefix(channelPath, hroot.RootPrefix)
+	laoID, _ := strings.CutPrefix(channelPath, messagedata.RootPrefix)
 
 	err = electionSetup.Verify(laoID)
 	if err != nil {

@@ -6,24 +6,11 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/message/hmessage"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/handler/method/greetserver/mgreetserver"
 	"popstellar/internal/validation"
-)
-
-const (
-	Root       = "/root"
-	RootPrefix = "/root/"
-	Social     = "/social"
-	Chirps     = "/chirps"
-	Reactions  = "/reactions"
-	Consensus  = "/consensus"
-	Coin       = "/coin"
-	Auth       = "/authentication"
-	Federation = "/federation"
 )
 
 type Config interface {
@@ -111,7 +98,7 @@ func (h *Handler) handleLaoCreate(msg mmessage.Message) error {
 		return err
 	}
 
-	laoPath := RootPrefix + laoCreate.ID
+	laoPath := messagedata.RootPrefix + laoCreate.ID
 
 	organizerPubBuf, err := h.verifyLaoCreation(msg, laoCreate, laoPath)
 	if err != nil {
@@ -180,13 +167,13 @@ func (h *Handler) verifyLaoCreation(msg mmessage.Message, laoCreate mlao.LaoCrea
 
 func (h *Handler) createLaoAndChannels(msg, laoGreetMsg mmessage.Message, organizerPubBuf []byte, laoPath string) error {
 	channels := map[string]string{
-		laoPath:                      hmessage.LaoType,
-		laoPath + Social + Chirps:    hmessage.ChirpType,
-		laoPath + Social + Reactions: hmessage.ReactionType,
-		laoPath + Consensus:          hmessage.ConsensusType,
-		laoPath + Coin:               hmessage.CoinType,
-		laoPath + Auth:               hmessage.AuthType,
-		laoPath + Federation:         hmessage.FederationType,
+		laoPath:                          messagedata.LAOObject,
+		laoPath + messagedata.Chirps:     messagedata.ChirpObject,
+		laoPath + messagedata.Reactions:  messagedata.ReactionObject,
+		laoPath + messagedata.Consensus:  messagedata.ConsensusObject,
+		laoPath + messagedata.Coin:       messagedata.CoinObject,
+		laoPath + messagedata.Auth:       messagedata.AuthObject,
+		laoPath + messagedata.Federation: messagedata.FederationObject,
 	}
 
 	err := h.db.StoreLaoWithLaoGreet(channels, laoPath, organizerPubBuf, msg, laoGreetMsg)

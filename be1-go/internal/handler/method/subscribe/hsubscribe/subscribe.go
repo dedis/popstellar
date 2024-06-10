@@ -3,7 +3,7 @@ package hsubscribe
 import (
 	"encoding/json"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/messagedata/root/hroot"
+	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/method/subscribe/msubscribe"
 	"popstellar/internal/network/socket"
 )
@@ -27,7 +27,7 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 		return nil, errors.NewJsonUnmarshalError(err.Error())
 	}
 
-	if hroot.Root == subscribe.Params.Channel {
+	if messagedata.Root == subscribe.Params.Channel {
 		return &subscribe.ID, errors.NewAccessDeniedError("cannot Subscribe to root channel")
 	}
 
