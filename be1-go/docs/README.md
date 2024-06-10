@@ -32,55 +32,77 @@ for their use.
 
 #### Project Structure
 
-The project is organized into different modules as follows:
+The project is organized into different packages/directories as follow:
 
 ```
 ├── cli                         # command line interface
 ├── docs
 └── internal
     ├── crypto                  # defines the cryptographic suite
-    ├── database                # the database implementations
-    ├── docsutils               # utils for the documentation
+    ├── database                # directory with the database implementation packages
+    ├── docsutils               # directory with the utils for the documentation
     ├── errors                  # error type used inside all the project
-    ├── handler                 # all the logic (handlers, message structures, types)
+    ├── handler                 # directory with all the logic (handlers, message structures, types)
     ├── hub                     # builder of the logic flow + entry point of the messages received by the sockets
     ├── logger                  # global logger used inside all the project
     ├── network                 # Websocket connection + socket to receive/send over the Websocket
-    ├── old                     # old backend implementation NEED TO BE DELETED AFTER TOTAL REFACTORING
+    ├── old                     # directory with the old backend implementation NEED TO BE DELETED AFTER TOTAL REFACTORING
     ├── popcha                  # HTTP server and back-end logic for PoPCHA NEED TO BE REFACTOR
     ├── state                   # running state implementations
     ├── test                    # test utils + future integration tests
     └── validation              # validate incoming/outgoing messages
 ```
 
-The entry point is the `cli` with bulk of the implementation logic in the `handler` directory as follows:
+The directory `handler` contains all the modules of the logic of `PopStellar` as follow:
 
 ```
 handler
-├── answer                      # logic for the jsonrpc answers
-├── jsonrpc                     # logic to divide jsonrpc queries and answers
-├── message                     # logic for the message inside a publish, broadcast, get_messages_by_id answer
-├── messagedata                 # logic for the data inside a message
-├── method                      # logic for method inside a jsonrpc query
-└── query                       # logic to divide the jsonrpc query methods
+├── answer                  # logic for the jsonrpc answer
+│
+├── jsonrpc                 # logic to validate the incoming message
+│                                   to switch between the query and answer modules
+│
+├── message                 # logic to check the mid level of a message inside a publish, rumor, and getmessagesbyid answer
+│                                   to switch between the channel modules
+│
+├── messagedata             # directory with all the channel modules
+│   ├── authentication         # for popcha#authenticate
+│   ├── chirp                  # for chirp#add|delete|notify_add|notify_delete
+│   ├── coin                   # for coin#post_transaction
+│   ├── consensus              # for consensus#elect|elect_accept|prepare|promise|propose|accept|learn|failure
+│   ├── election               # for election#key|open|cast_vote|end|result
+│   ├── federation             # for federation#challenge_request|challenge|expect|init|result
+│   ├── lao                    # for lao#update_properties|state|greet
+│   │                                roll_call#create|open|close|reopen
+│   │                                message#witness
+│   │                                meeting#create|state
+│   ├── reaction               # for reaction#add|delete
+│   └── root                   # for lao#create
+│
+├── method                  # directory with all the method modules
+│   ├── broadcast
+│   ├── catchup      
+│   ├── getmessagesbyid
+│   ├── greetserver
+│   ├── heartbeat
+│   ├── publish
+│   ├── rumor
+│   ├── subscribe
+│   └── unsubscribe
+│
+└── query                   # logic to switch between the methods
+                                    to respond an error to the sender in case of error deeper in the flow 
 ```
-Each `method` type, `messagedata` type, etc... directories can be divided up to 3 packages. For example, the implementation of the `election` `messagedata` type is divided as follow:
+
+Each module can have up to 3 packages (handler, message, and type). For example, the implementation of the `election` channel is divided as follow:
 
 ```
-└── messagedata
-    └── election                # logic for all the messages sent on the channel */election
-        ├── helection           # (h for handler) the handler logic for each message sent on this channel
-        ├── melection           # (m for message) the messages structures for the object of type election
-        │                         (also include the message election_setup sent on lao channel)
-        └── telection           # (t for type) the types used to simplify the logic between the handler and the database
+messagedata
+└── election                # everything needed to use the channel */election
+    ├── helection           # (h for handler) all the logic for the messages going inside the channel */election
+    ├── melection           # (m for message) all the messages structures going on the channel */election
+    └── telection           # (t for type) all the types to simplify the logic between the handler and the database
 ```
-
-The following diagram represents the relations between the packages in the
-application.
-
-<div align="center">
-  <img alt="Global architecture" src="images/dependencies/dependencies.png" width="600" />
-</div>
 
 #### Architecture
 
