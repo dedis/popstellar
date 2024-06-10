@@ -1,20 +1,15 @@
-package messagedata
+package mconsensus
 
 import (
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/consensus/mconsensus"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_Consensus_Elect(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "consensus_elect", "elect.json")
-
-	buf, err := os.ReadFile(file)
+	buf, err := testData.ReadFile("testdata/elect.json")
 	require.NoError(t, err)
 
 	object, action, err := messagedata.GetObjectAndAction(buf)
@@ -23,7 +18,7 @@ func Test_Consensus_Elect(t *testing.T) {
 	require.Equal(t, "consensus", object)
 	require.Equal(t, "elect", action)
 
-	var msg mconsensus.ConsensusElect
+	var msg ConsensusElect
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -44,7 +39,7 @@ func Test_Consensus_Elect(t *testing.T) {
 }
 
 func Test_Consensus_Elect_Interface_Functions(t *testing.T) {
-	var msg mconsensus.ConsensusElect
+	var msg ConsensusElect
 
 	require.Equal(t, messagedata.ConsensusObject, msg.GetObject())
 	require.Equal(t, messagedata.ConsensusActionElect, msg.GetAction())
@@ -52,14 +47,14 @@ func Test_Consensus_Elect_Interface_Functions(t *testing.T) {
 }
 
 func Test_Consensus_Elect_Verify(t *testing.T) {
-	var consensusElect mconsensus.ConsensusElect
+	var consensusElect ConsensusElect
 
 	object, action := "consensus", "elect"
 
 	getTestBadExample := func(file string) func(*testing.T) {
 		return func(t *testing.T) {
 			// read the bad example file
-			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "consensus_elect", file))
+			buf, err := testData.ReadFile("testdata/" + file)
 			require.NoError(t, err)
 
 			obj, act, err := messagedata.GetObjectAndAction(buf)

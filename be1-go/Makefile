@@ -68,6 +68,17 @@ test-data:
 	# Coin
 	cp -r ../protocol/examples/messageData/coin/. ./internal/handler/messagedata/coin/mcoin/testdata
 
+	# Consensus
+	cp -r ../protocol/examples/messageData/consensus_accept/. ./internal/handler/messagedata/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_elect/. ./internal/handler/messagedata/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_elect_accept/. ./internal/handler/messagedata/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_failure/. ./internal/handler/messagedata/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_learn/. ./internal/handler/messagedata/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_prepare/. ./internal/handler/messagedata/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_promise/. ./internal/handler/messagedata/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_propose/. ./internal/handler/messagedata/consensus/mconsensus/testdata
+
+
 clean:
 	rm -rf ./internal/validation/protocol
 
@@ -97,6 +108,9 @@ clean:
 
 	# Coin
 	rm -rf ./internal/handler/messagedata/coin/mcoin/testdata
+
+	# Consensus
+	rm -rf ./internal/handler/messagedata/consensus/mconsensus/testdata
 
 
 fmt:
