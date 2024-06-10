@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
+	"popstellar/internal/handler/messagedata/election/melection"
 	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/old/channel"
 	"testing"
@@ -185,7 +186,7 @@ func TestVerify_ElectionSetup(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var electionSetup mlao2.ElectionSetup
+	var electionSetup melection.ElectionSetup
 
 	err = json.Unmarshal(buf, &electionSetup)
 	require.NoError(t, err)

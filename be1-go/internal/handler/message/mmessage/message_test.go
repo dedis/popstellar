@@ -3,7 +3,7 @@ package mmessage
 import (
 	"embed"
 	"encoding/base64"
-	"popstellar/internal/handler/messagedata/lao/mlao"
+	"popstellar/internal/handler/messagedata/election/melection"
 	"popstellar/internal/handler/messagedata/root/mroot"
 	"testing"
 
@@ -18,7 +18,7 @@ func Test_UnmarshalData(t *testing.T) {
 	require.NoError(t, err)
 
 	laoCreate := mroot.LaoCreate{}
-	electionSetup := mlao.ElectionSetup{}
+	electionSetup := melection.ElectionSetup{}
 
 	msg := Message{
 		Data: string(messageDataBuf),

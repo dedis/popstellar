@@ -13,7 +13,6 @@ import (
 	"popstellar/internal/handler/messagedata"
 	melection2 "popstellar/internal/handler/messagedata/election/melection"
 	"popstellar/internal/handler/messagedata/election/telection"
-	"popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/validation"
 	"sort"
 )
@@ -363,14 +362,14 @@ func (h *Handler) verifyVote(vote melection2.Vote, channelPath, electionID strin
 
 	var voteString string
 	switch electionType {
-	case mlao.OpenBallot:
+	case melection2.OpenBallot:
 		voteInt, ok := vote.Vote.(int)
 		if !ok {
 			return errors.NewInvalidMessageFieldError("vote in open ballot should be an integer")
 		}
 		voteString = fmt.Sprintf("%d", voteInt)
 
-	case mlao.SecretBallot:
+	case melection2.SecretBallot:
 		voteString, ok = vote.Vote.(string)
 		if !ok {
 			return errors.NewInvalidMessageFieldError("vote in secret ballot should be a string")
@@ -464,7 +463,7 @@ func (h *Handler) computeElectionResult(questions map[string]telection.Question,
 	result := make([]melection2.ElectionResultQuestion, 0)
 
 	for id, question := range questions {
-		if question.Method != mlao.PluralityMethod {
+		if question.Method != melection2.PluralityMethod {
 			continue
 		}
 
@@ -503,11 +502,11 @@ func (h *Handler) computeElectionResult(questions map[string]telection.Question,
 
 func (h *Handler) getVoteIndex(vote telection.ValidVote, electionType, channelPath string) (int, bool) {
 	switch electionType {
-	case mlao.OpenBallot:
+	case melection2.OpenBallot:
 		index, _ := vote.Index.(int)
 		return index, true
 
-	case mlao.SecretBallot:
+	case melection2.SecretBallot:
 		encryptedVote, _ := vote.Index.(string)
 		index, err := h.decryptVote(encryptedVote, channelPath)
 		if err != nil {

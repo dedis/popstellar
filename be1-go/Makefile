@@ -82,6 +82,7 @@ test-data:
 	cp -r ../protocol/examples/messageData/election_end/. ./internal/handler/messagedata/election/melection/testdata
 	cp -r ../protocol/examples/messageData/election_key/. ./internal/handler/messagedata/election/melection/testdata
 	cp -r ../protocol/examples/messageData/election_open/. ./internal/handler/messagedata/election/melection/testdata
+	cp -r ../protocol/examples/messageData/election_setup/. ./internal/handler/messagedata/election/melection/testdata
 	cp -r ../protocol/examples/messageData/election_result.json ./internal/handler/messagedata/election/melection/testdata
 	cp -r ../protocol/examples/messageData/vote_cast_vote/. ./internal/handler/messagedata/election/melection/testdata
 

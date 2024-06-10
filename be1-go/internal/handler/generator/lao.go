@@ -6,6 +6,7 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
+	"popstellar/internal/handler/messagedata/election/melection"
 	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
 	"testing"
 )
@@ -114,9 +115,9 @@ func NewRollCallCloseMsg(t *testing.T, sender, updateID, closes string, closedAt
 }
 
 func NewElectionSetupMsg(t *testing.T, sender, ID, setupLao, electionName, version string,
-	createdAt, start, end int64, questions []mlao2.ElectionSetupQuestion, senderSK kyber.Scalar) mmessage.Message {
+	createdAt, start, end int64, questions []melection.ElectionSetupQuestion, senderSK kyber.Scalar) mmessage.Message {
 
-	electionSetup := mlao2.ElectionSetup{
+	electionSetup := melection.ElectionSetup{
 		Object:    messagedata.ElectionObject,
 		Action:    messagedata.ElectionActionSetup,
 		ID:        ID,

@@ -175,19 +175,19 @@ func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{},
 	return attendeesMap, nil
 }
 
-func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (mlao2.ElectionSetup, error) {
+func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (melection.ElectionSetup, error) {
 
 	var electionSetupBytes []byte
 	err := tx.QueryRow(selectElectionSetup, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).
 		Scan(&electionSetupBytes)
 	if err != nil {
-		return mlao2.ElectionSetup{}, poperrors.NewDatabaseSelectErrorMsg("election setup message data: %v", err)
+		return melection.ElectionSetup{}, poperrors.NewDatabaseSelectErrorMsg("election setup message data: %v", err)
 	}
 
-	var electionSetup mlao2.ElectionSetup
+	var electionSetup melection.ElectionSetup
 	err = json.Unmarshal(electionSetupBytes, &electionSetup)
 	if err != nil {
-		return mlao2.ElectionSetup{}, poperrors.NewJsonUnmarshalError("election setup message data: %v", err)
+		return melection.ElectionSetup{}, poperrors.NewJsonUnmarshalError("election setup message data: %v", err)
 	}
 	return electionSetup, nil
 }
@@ -273,7 +273,7 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 	return questions, nil
 }
 
-func getQuestionsFromMessage(electionSetup mlao2.ElectionSetup) (map[string]telection.Question, error) {
+func getQuestionsFromMessage(electionSetup melection.ElectionSetup) (map[string]telection.Question, error) {
 
 	questions := make(map[string]telection.Question)
 	for _, question := range electionSetup.Questions {

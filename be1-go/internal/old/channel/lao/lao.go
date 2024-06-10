@@ -9,6 +9,7 @@ import (
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
+	"popstellar/internal/handler/messagedata/election/melection"
 	mlao2 "popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
@@ -263,7 +264,7 @@ func (c *Channel) NewLAORegistry() registry.MessageRegistry {
 	registry.Register(mlao2.RollCallOpen{}, c.processRollCallOpen)
 	registry.Register(mlao2.RollCallReOpen{}, c.processRollCallOpen)
 	registry.Register(mlao2.RollCallClose{}, c.processRollCallClose)
-	registry.Register(mlao2.ElectionSetup{}, c.processElectionObject)
+	registry.Register(melection.ElectionSetup{}, c.processElectionObject)
 	registry.Register(mlao2.MessageWitness{}, c.processMessageWitness)
 
 	return registry
@@ -470,7 +471,7 @@ func (c *Channel) processRollCallClose(msg mmessage.Message, msgData interface{}
 func (c *Channel) processElectionObject(msg mmessage.Message, msgData interface{},
 	senderSocket socket.Socket) error {
 
-	_, ok := msgData.(*mlao2.ElectionSetup)
+	_, ok := msgData.(*melection.ElectionSetup)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a election#setup message", msgData)
 	}
@@ -481,7 +482,7 @@ func (c *Channel) processElectionObject(msg mmessage.Message, msgData interface{
 		return err
 	}
 
-	var electionSetup mlao2.ElectionSetup
+	var electionSetup melection.ElectionSetup
 
 	err = msg.UnmarshalData(&electionSetup)
 	if err != nil {
@@ -643,7 +644,7 @@ func (c *Channel) createCoinChannel(socket socket.Socket, log zerolog.Logger) {
 
 // createElection creates an election in the LAO.
 func (c *Channel) createElection(msg mmessage.Message,
-	setupMsg mlao2.ElectionSetup, socket socket.Socket) error {
+	setupMsg melection.ElectionSetup, socket socket.Socket) error {
 
 	// Check if the Lao ID of the message corresponds to the channel ID
 	channelID := c.channelID[6:]

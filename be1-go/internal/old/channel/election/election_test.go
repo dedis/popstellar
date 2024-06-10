@@ -12,7 +12,6 @@ import (
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
 	melection2 "popstellar/internal/handler/messagedata/election/melection"
-	"popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
 	"popstellar/internal/handler/method/greetserver/mgreetserver"
@@ -64,7 +63,7 @@ func Test_Creation_Fails_If_Identical_Questions(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var electionSetup mlao.ElectionSetup
+	var electionSetup melection2.ElectionSetup
 
 	err = json.Unmarshal(buf, &electionSetup)
 	require.NoError(t, err)
@@ -514,7 +513,7 @@ func Test_Sending_Election_Key(t *testing.T) {
 	// create secret ballot election channel: election with one question
 	electChannel, _ := newFakeChannel(t, true)
 
-	require.Equal(t, mlao.SecretBallot, electChannel.electionType)
+	require.Equal(t, melection2.SecretBallot, electChannel.electionType)
 
 	// Compute the catchup method
 	catchupAnswer := electChannel.Catchup(mcatchup.Catchup{ID: 0})
@@ -634,7 +633,7 @@ func newFakeChannel(t *testing.T, secret bool) (*Channel, string) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var electionSetup mlao.ElectionSetup
+	var electionSetup melection2.ElectionSetup
 
 	err = json.Unmarshal(buf, &electionSetup)
 	require.NoError(t, err)
