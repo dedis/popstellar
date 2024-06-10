@@ -48,7 +48,7 @@ The project is organized into different packages/directories as follow:
     ├── network                 # Websocket connection + socket to receive/send over the Websocket
     ├── old                     # directory with the old backend implementation NEED TO BE DELETED AFTER TOTAL REFACTORING
     ├── popcha                  # HTTP server and back-end logic for PoPCHA NEED TO BE REFACTOR
-    ├── state                   # running state implementations
+    ├── state                   # in memory state implementations
     ├── test                    # test utils + future integration tests
     └── validation              # validate incoming/outgoing messages
 ```
