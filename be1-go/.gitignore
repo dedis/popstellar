@@ -18,3 +18,4 @@ configServer4.json
 /internal/handler/method/unsubscribe/munsubscribe/testdata/
 /internal/handler/message/mmessage/testdata/
 /internal/handler/messagedata/authentication/mauthentification/testdata/
+/internal/handler/messagedata/chirp/mchirp/testdata/

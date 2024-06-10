@@ -1,59 +1,54 @@
-package messagedata
+package mchirp
 
 import (
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/chirp/mchirp"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Chirp_Add(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "chirp_add_publish", "chirp_add_publish.json")
-
-	buf, err := os.ReadFile(file)
+func Test_Chirp_Delete(t *testing.T) {
+	buf, err := testData.ReadFile("testdata/chirp_delete_publish.json")
 	require.NoError(t, err)
 
 	object, action, err := messagedata.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "chirp", object)
-	require.Equal(t, "add", action)
+	require.Equal(t, "delete", action)
 
-	var msg mchirp.ChirpAdd
+	var msg ChirpDelete
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
 
 	require.Equal(t, "chirp", msg.Object)
-	require.Equal(t, "add", msg.Action)
-	require.Equal(t, "I love PoP", msg.Text)
+	require.Equal(t, "delete", msg.Action)
+	require.Equal(t, "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=", msg.ChirpID)
 	require.Equal(t, int64(1634760180), msg.Timestamp)
 
 	err = msg.Verify()
 	require.NoError(t, err)
 }
 
-func Test_Chirp_Add_Interface_Functions(t *testing.T) {
-	var msg mchirp.ChirpAdd
+func Test_Chirp_Delete_Interface_Functions(t *testing.T) {
+	var msg ChirpDelete
 
 	require.Equal(t, messagedata.ChirpObject, msg.GetObject())
-	require.Equal(t, messagedata.ChirpActionAdd, msg.GetAction())
+	require.Equal(t, messagedata.ChirpActionDelete, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }
 
-func Test_Chirp_Add_Verify(t *testing.T) {
-	var chirpAdd mchirp.ChirpAdd
+func Test_Chirp_Delete_Verify(t *testing.T) {
+	var chirpDelete ChirpDelete
 
-	object, action := "chirp", "add"
+	object, action := "chirp", "delete"
 
 	getTestBadExample := func(file string) func(*testing.T) {
 		return func(t *testing.T) {
 			// read the bad example file
-			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "chirp_add_publish", file))
+			buf, err := testData.ReadFile("testdata/" + file)
 			require.NoError(t, err)
 
 			obj, act, err := messagedata.GetObjectAndAction(buf)
@@ -62,13 +57,14 @@ func Test_Chirp_Add_Verify(t *testing.T) {
 			require.Equal(t, object, obj)
 			require.Equal(t, action, act)
 
-			err = json.Unmarshal(buf, &chirpAdd)
+			err = json.Unmarshal(buf, &chirpDelete)
 			require.NoError(t, err)
 
-			err = chirpAdd.Verify()
+			err = chirpDelete.Verify()
 			require.Error(t, err)
 		}
 	}
 
-	t.Run("timestamp is negative", getTestBadExample("wrong_chirp_add_publish_negative_time.json"))
+	t.Run("timestamp is negative", getTestBadExample("wrong_chirp_delete_publish_negative_time.json"))
+	t.Run("chirp id not base64", getTestBadExample("wrong_chirp_delete_publish_not_base_64_chirp_id.json"))
 }

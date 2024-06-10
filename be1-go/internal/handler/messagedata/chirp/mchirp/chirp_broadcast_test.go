@@ -1,23 +1,20 @@
-package messagedata
+package mchirp
 
 import (
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/chirp/mchirp"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_Chirp_Broadcast_Verify(t *testing.T) {
-	var chirpBroadcast mchirp.ChirpBroadcast
+	var chirpBroadcast ChirpBroadcast
 
 	object, action := "chirp", "notify_add"
 
 	// Get valid example
-	buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "chirp_notify_add", "chirp_notify_add.json"))
+	buf, err := testData.ReadFile("testdata/chirp_notify_add.json")
 	require.NoError(t, err)
 
 	err = json.Unmarshal(buf, &chirpBroadcast)
@@ -31,7 +28,7 @@ func Test_Chirp_Broadcast_Verify(t *testing.T) {
 	getTestBadExample := func(file string) func(*testing.T) {
 		return func(t *testing.T) {
 			// read the bad example file
-			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "chirp_notify_add", file))
+			buf, err := testData.ReadFile("testdata/" + file)
 			require.NoError(t, err)
 
 			obj, act, err := messagedata.GetObjectAndAction(buf)

@@ -59,6 +59,12 @@ test-data:
 	# Authentification
 	cp -r ../protocol/examples/messageData/popcha_authenticate/. ./internal/handler/messagedata/authentication/mauthentication/testdata
 
+	# Chirp
+	cp -r ../protocol/examples/messageData/chirp_add_publish/. ./internal/handler/messagedata/chirp/mchirp/testdata
+	cp -r ../protocol/examples/messageData/chirp_delete_publish/. ./internal/handler/messagedata/chirp/mchirp/testdata
+	cp -r ../protocol/examples/messageData/chirp_notify_add/. ./internal/handler/messagedata/chirp/mchirp/testdata
+	cp -r ../protocol/examples/messageData/chirp_notify_delete/. ./internal/handler/messagedata/chirp/mchirp/testdata
+
 clean:
 	rm -rf ./internal/validation/protocol
 
@@ -82,6 +88,10 @@ clean:
 
 	# Authentication
 	rm -rf ./internal/handler/messagedata/authentication/mauthentication/testdata
+
+	# Chirp
+	rm -rf ./internal/handler/messagedata/chirp/mchirp/testdata
+
 
 fmt:
 	gofmt -s -w ./

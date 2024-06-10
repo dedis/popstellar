@@ -1,20 +1,15 @@
-package messagedata
+package mchirp
 
 import (
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/chirp/mchirp"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_Chirp_Notify_Add(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "chirp_notify_add", "chirp_notify_add.json")
-
-	buf, err := os.ReadFile(file)
+	buf, err := testData.ReadFile("testdata/chirp_notify_add.json")
 	require.NoError(t, err)
 
 	object, action, err := messagedata.GetObjectAndAction(buf)
@@ -23,7 +18,7 @@ func Test_Chirp_Notify_Add(t *testing.T) {
 	require.Equal(t, "chirp", object)
 	require.Equal(t, "notify_add", action)
 
-	var msg mchirp.ChirpNotifyAdd
+	var msg ChirpNotifyAdd
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -36,7 +31,7 @@ func Test_Chirp_Notify_Add(t *testing.T) {
 }
 
 func Test_Chirp_Notify_Add_Interface_Functions(t *testing.T) {
-	var msg mchirp.ChirpNotifyAdd
+	var msg ChirpNotifyAdd
 
 	require.Equal(t, messagedata.ChirpObject, msg.GetObject())
 	require.Equal(t, messagedata.ChirpActionNotifyAdd, msg.GetAction())
@@ -44,14 +39,14 @@ func Test_Chirp_Notify_Add_Interface_Functions(t *testing.T) {
 }
 
 func Test_Chirp_Notify_Add_Verify(t *testing.T) {
-	var chirpNotifyAdd mchirp.ChirpNotifyAdd
+	var chirpNotifyAdd ChirpNotifyAdd
 
 	object, action := "chirp", "notify_add"
 
 	getTestBadExample := func(file string) func(*testing.T) {
 		return func(t *testing.T) {
 			// read the bad example file
-			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "chirp_notify_add", file))
+			buf, err := testData.ReadFile("testdata/" + file)
 			require.NoError(t, err)
 
 			obj, act, err := messagedata.GetObjectAndAction(buf)
