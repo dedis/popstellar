@@ -1,11 +1,10 @@
 package hcoin
 
 import (
+	"embed"
 	"encoding/base64"
 	"encoding/json"
 	"github.com/stretchr/testify/require"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
 	"popstellar/internal/handler/messagedata/coin/hcoin/mocks"
@@ -16,7 +15,8 @@ import (
 	"testing"
 )
 
-const coinPath string = "../../../../validation/protocol/examples/messageData/coin"
+//go:embed testdata/*.json
+var testData embed.FS
 
 type inputTestHandleChannelCoin struct {
 	name      string
@@ -125,8 +125,7 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
 
-	file := filepath.Join(coinPath, filename)
-	buf, err := os.ReadFile(file)
+	buf, err := testData.ReadFile("testdata/" + filename)
 	require.NoError(t, err)
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
@@ -171,8 +170,7 @@ func newFailTestHandleChannelCoin(t *testing.T, filename string, name string,
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
 
-	file := filepath.Join(coinPath, filename)
-	buf, err := os.ReadFile(file)
+	buf, err := testData.ReadFile("testdata/" + filename)
 	require.NoError(t, err)
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)

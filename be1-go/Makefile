@@ -67,6 +67,7 @@ test-data:
 	cp -r ../protocol/examples/messageData/chirp_notify_delete/. ./internal/handler/messagedata/chirp/mchirp/testdata
 
 	# Coin
+	cp -r ../protocol/examples/messageData/coin/. ./internal/handler/messagedata/coin/hcoin/testdata
 	cp -r ../protocol/examples/messageData/coin/. ./internal/handler/messagedata/coin/mcoin/testdata
 
 	# Consensus
@@ -134,6 +135,7 @@ clean:
 	rm -rf ./internal/handler/messagedata/chirp/mchirp/testdata
 
 	# Coin
+	rm -rf ./internal/handler/messagedata/coin/hcoin/testdata
 	rm -rf ./internal/handler/messagedata/coin/mcoin/testdata
 
 	# Consensus
