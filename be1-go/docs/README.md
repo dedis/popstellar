@@ -59,13 +59,7 @@ The directory `handler` contains all the modules of the backend logic for PoP as
 handler
 ├── answer                      # logic for the jsonrpc answer
 │
-├── jsonrpc                     # logic to validate the incoming message
-│                                       to switch between the query and answer modules
-│
-├── message                     # logic to validate the signature of a message
-│                                       to switch between the channel modules
-│
-├── messagedata                 # directory with all the channel modules
+├── channel                     # directory with all the channel modules
 │   ├── authentication             # for popcha#authenticate
 │   ├── chirp                      # for chirp#add|delete
 │   ├── coin                       # for coin#post_transaction
@@ -78,6 +72,12 @@ handler
 │   │                                    meeting#create|state
 │   ├── reaction                   # for reaction#add|delete
 │   └── root                       # for lao#create
+│
+├── jsonrpc                     # logic to validate the incoming message
+│                                       to switch between the query and answer modules
+│
+├── message                     # logic to validate the signature of a message
+│                                       to switch between the channel modules
 │
 ├── method                      # directory with all the method modules
 │   ├── broadcast
@@ -98,10 +98,10 @@ Each module can have up to 3 packages (handler, message, and type). For example,
 
 ```
 messagedata
-└── election                    # everything needed to use the channel */election
-    ├── helection               # (h for handler) all the logic for the messages going inside the channel */election
-    ├── melection               # (m for message) all the messages structures going on the channel */election
-    └── telection               # (t for type) all the types to simplify the logic between the handler and the database
+└── election                    # everything needed to use the channel election
+    ├── helection               # (h for handler) all the logic for the messages going on the channel election
+    ├── melection               # (m for message) all the messages structures going on the channel election
+    └── telection               # (t for type) all the types that could be used outside of the module
 ```
 
 #### Architecture
