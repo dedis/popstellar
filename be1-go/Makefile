@@ -57,7 +57,7 @@ test-data:
 	# MessageData
 
 	# Authentification
-	cp -r ../protocol/examples/messageData/popcha_authenticate/. ./internal/handler/messagedata/authentification/mauthentification/testdata
+	cp -r ../protocol/examples/messageData/popcha_authenticate/. ./internal/handler/messagedata/authentication/mauthentication/testdata
 
 clean:
 	rm -rf ./internal/validation/protocol
@@ -80,8 +80,8 @@ clean:
 
 	# MessageData
 
-	# Authentification
-	rm -rf ./internal/handler/messagedata/authentification/mauthentification/testdata
+	# Authentication
+	rm -rf ./internal/handler/messagedata/authentication/mauthentication/testdata
 
 fmt:
 	gofmt -s -w ./

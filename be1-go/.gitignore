@@ -17,4 +17,4 @@ configServer4.json
 /internal/handler/method/subscribe/msubscribe/testdata/
 /internal/handler/method/unsubscribe/munsubscribe/testdata/
 /internal/handler/message/mmessage/testdata/
-/internal/handler/messagedata/authentification/mauthentification/testdata/
+/internal/handler/messagedata/authentication/mauthentification/testdata/

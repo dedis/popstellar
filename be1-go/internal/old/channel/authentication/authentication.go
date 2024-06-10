@@ -13,7 +13,7 @@ import (
 	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/authentification/mauthentification"
+	"popstellar/internal/handler/messagedata/authentication/mauthentication"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
 	"popstellar/internal/handler/method/publish/mpublish"

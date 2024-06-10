@@ -21,7 +21,7 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/authentification/mauthentification"
+	"popstellar/internal/handler/messagedata/authentication/mauthentication"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/greetserver/mgreetserver"
 	method2 "popstellar/internal/handler/method/publish/mpublish"
