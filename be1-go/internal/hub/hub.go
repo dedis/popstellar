@@ -6,25 +6,25 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/database/sqlite"
 	"popstellar/internal/errors"
-	answerHandler "popstellar/internal/handler/answer"
-	"popstellar/internal/handler/jsonrpc"
-	messageHandler "popstellar/internal/handler/message"
-	"popstellar/internal/handler/messagedata/chirp"
-	"popstellar/internal/handler/messagedata/coin"
-	"popstellar/internal/handler/messagedata/election"
-	"popstellar/internal/handler/messagedata/federation"
-	"popstellar/internal/handler/messagedata/lao"
-	"popstellar/internal/handler/messagedata/reaction"
-	"popstellar/internal/handler/messagedata/root"
-	"popstellar/internal/handler/method/catchup"
-	"popstellar/internal/handler/method/getmessagesbyid"
-	"popstellar/internal/handler/method/greetserver"
-	"popstellar/internal/handler/method/heartbeat"
-	"popstellar/internal/handler/method/publish"
-	"popstellar/internal/handler/method/rumor"
-	"popstellar/internal/handler/method/subscribe"
-	"popstellar/internal/handler/method/unsubscribe"
-	queryHandler "popstellar/internal/handler/query"
+	"popstellar/internal/handler/hanswer"
+	"popstellar/internal/handler/hjsonrpc"
+	"popstellar/internal/handler/hmessage"
+	"popstellar/internal/handler/hmessagedata/hchirp"
+	"popstellar/internal/handler/hmessagedata/hcoin"
+	"popstellar/internal/handler/hmessagedata/helection"
+	"popstellar/internal/handler/hmessagedata/hfederation"
+	"popstellar/internal/handler/hmessagedata/hlao"
+	"popstellar/internal/handler/hmessagedata/hreaction"
+	"popstellar/internal/handler/hmessagedata/hroot"
+	"popstellar/internal/handler/hmethod/hcatchup"
+	"popstellar/internal/handler/hmethod/hgetmessagesbyid"
+	"popstellar/internal/handler/hmethod/hgreetserver"
+	"popstellar/internal/handler/hmethod/hheartbeat"
+	"popstellar/internal/handler/hmethod/hpublish"
+	"popstellar/internal/handler/hmethod/hrumor"
+	"popstellar/internal/handler/hmethod/hsubscribe"
+	"popstellar/internal/handler/hmethod/hunsubscribe"
+	"popstellar/internal/handler/hquery"
 	"popstellar/internal/logger"
 	"popstellar/internal/message"
 	"popstellar/internal/message/query"
@@ -153,45 +153,45 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	}
 
 	// Create the message data handlers
-	dataHandlers := messageHandler.DataHandlers{
-		Root:       root.New(conf, &db, subs, peers, schemaValidator),
-		Lao:        lao.New(conf, subs, &db, schemaValidator),
-		Election:   election.New(conf, subs, &db, schemaValidator),
-		Chirp:      chirp.New(conf, subs, &db, schemaValidator),
-		Reaction:   reaction.New(subs, &db, schemaValidator),
-		Coin:       coin.New(subs, &db, schemaValidator),
-		Federation: federation.New(hubParams, subs, &db, schemaValidator),
+	dataHandlers := hmessage.DataHandlers{
+		Root:       hroot.New(conf, &db, subs, peers, schemaValidator),
+		Lao:        hlao.New(conf, subs, &db, schemaValidator),
+		Election:   helection.New(conf, subs, &db, schemaValidator),
+		Chirp:      hchirp.New(conf, subs, &db, schemaValidator),
+		Reaction:   hreaction.New(subs, &db, schemaValidator),
+		Coin:       hcoin.New(subs, &db, schemaValidator),
+		Federation: hfederation.New(hubParams, subs, &db, schemaValidator),
 	}
 
 	// Create the message handler
-	msgHandler := messageHandler.New(&db, dataHandlers)
+	msgHandler := hmessage.New(&db, dataHandlers)
 
 	// Create the greetserver handler
-	greetserverHandler := greetserver.New(conf, peers)
+	greetserverHandler := hgreetserver.New(conf, peers)
 
 	// Create the rumor handler
-	rumorHandler := rumor.New(queries, sockets, &db, msgHandler)
+	rumorHandler := hrumor.New(queries, sockets, &db, msgHandler)
 
 	// Create the query handler
-	qHandler := queryHandler.New(queryHandler.MethodHandlers{
-		Catchup:         catchup.New(&db),
-		GetMessagesbyid: getmessagesbyid.New(&db),
+	qHandler := hquery.New(hquery.MethodHandlers{
+		Catchup:         hcatchup.New(&db),
+		GetMessagesbyid: hgetmessagesbyid.New(&db),
 		Greetserver:     greetserverHandler,
-		Heartbeat:       heartbeat.New(queries, &db),
-		Publish:         publish.New(hubParams, &db, msgHandler),
-		Subscribe:       subscribe.New(subs),
-		Unsubscribe:     unsubscribe.New(subs),
+		Heartbeat:       hheartbeat.New(queries, &db),
+		Publish:         hpublish.New(hubParams, &db, msgHandler),
+		Subscribe:       hsubscribe.New(subs),
+		Unsubscribe:     hunsubscribe.New(subs),
 		Rumor:           rumorHandler,
 	})
 
 	// Create the answer handler
-	aHandler := answerHandler.New(queries, answerHandler.Handlers{
+	aHandler := hanswer.New(queries, hanswer.Handlers{
 		MessageHandler: msgHandler,
 		RumorSender:    rumorHandler,
 	})
 
 	// Create the json rpc handler
-	jsonRpcHandler := jsonrpc.New(schemaValidator, qHandler, aHandler)
+	jsonRpcHandler := hjsonrpc.New(schemaValidator, qHandler, aHandler)
 
 	// Create the hub
 	hub := &Hub{

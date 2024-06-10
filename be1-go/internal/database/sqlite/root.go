@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	poperrors "popstellar/internal/errors"
-	"popstellar/internal/handler/messagedata/root"
+	"popstellar/internal/handler/hmessagedata/hroot"
 	"popstellar/internal/message/query/method/message"
 	"time"
 )
@@ -56,7 +56,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(insertChannelMessage, root.Root, msg.MessageID, true)
+	_, err = tx.Exec(insertChannelMessage, hroot.Root, msg.MessageID, true)
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("relation lao create message and root channel: %v", err)
 	}
