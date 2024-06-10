@@ -1,7 +1,7 @@
 package mgetmessagesbyid
 
 import (
-	"popstellar/internal/message/mquery"
+	"popstellar/internal/handler/query/mquery"
 )
 
 // GetMessagesById defines a JSON RPC getMessagesById message

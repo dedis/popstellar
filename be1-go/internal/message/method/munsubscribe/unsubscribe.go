@@ -1,6 +1,8 @@
 package munsubscribe
 
-import "popstellar/internal/message/mquery"
+import (
+	"popstellar/internal/handler/query/mquery"
+)
 
 // Unsubscribe defines a JSON RPC unsubscribe message
 type Unsubscribe struct {

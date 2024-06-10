@@ -1,6 +1,8 @@
 package msubscribe
 
-import "popstellar/internal/message/mquery"
+import (
+	"popstellar/internal/handler/query/mquery"
+)
 
 // Subscribe defines a JSON RPC subscribe message
 type Subscribe struct {

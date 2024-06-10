@@ -1,6 +1,8 @@
 package mcatchup
 
-import "popstellar/internal/message/mquery"
+import (
+	"popstellar/internal/handler/query/mquery"
+)
 
 // Catchup define a JSON RPC catchup message
 type Catchup struct {

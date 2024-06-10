@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/message/method/mcatchup"
 	"popstellar/internal/message/method/mgetmessagesbyid"
 	"popstellar/internal/message/method/mgreetserver"
@@ -13,7 +14,6 @@ import (
 	"popstellar/internal/message/method/mrumor"
 	"popstellar/internal/message/method/msubscribe"
 	method2 "popstellar/internal/message/method/munsubscribe"
-	"popstellar/internal/message/mquery"
 	"testing"
 )
 

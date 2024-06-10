@@ -5,8 +5,8 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/message/method/mbroadcast"
-	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 	"sync"
 )

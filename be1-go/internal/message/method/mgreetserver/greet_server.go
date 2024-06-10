@@ -1,6 +1,8 @@
 package mgreetserver
 
-import "popstellar/internal/message/mquery"
+import (
+	"popstellar/internal/handler/query/mquery"
+)
 
 type GreetServerParams struct {
 	PublicKey     string `json:"public_key"`

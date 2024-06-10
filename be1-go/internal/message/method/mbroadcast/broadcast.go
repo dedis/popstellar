@@ -2,7 +2,7 @@ package mbroadcast
 
 import (
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/message/mquery"
+	"popstellar/internal/handler/query/mquery"
 )
 
 // Broadcast defines a JSON RPC broadcast message

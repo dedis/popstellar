@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/message/method/mgetmessagesbyid"
 	method2 "popstellar/internal/message/method/mheartbeat"
-	"popstellar/internal/message/mquery"
 	"popstellar/internal/network/socket"
 )
 

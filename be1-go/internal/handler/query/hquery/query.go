@@ -3,7 +3,7 @@ package hquery
 import (
 	"encoding/json"
 	"popstellar/internal/errors"
-	"popstellar/internal/message/mquery"
+	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
 )
 

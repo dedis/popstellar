@@ -1,7 +1,7 @@
 package mheartbeat
 
 import (
-	"popstellar/internal/message/mquery"
+	"popstellar/internal/handler/query/mquery"
 )
 
 // Heartbeat defines a JSON RPC heartbeat message

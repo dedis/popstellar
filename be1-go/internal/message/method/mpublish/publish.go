@@ -2,7 +2,7 @@ package mpublish
 
 import (
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/message/mquery"
+	"popstellar/internal/handler/query/mquery"
 )
 
 // Publish defines a JSON RPC publish message
