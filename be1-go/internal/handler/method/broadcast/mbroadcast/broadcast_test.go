@@ -1,20 +1,19 @@
-package method
+package mbroadcast
 
 import (
+	"embed"
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Broadcast(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "broadcast", "broadcast.json")
+//go:embed test-data/*.json
+var testData embed.FS
 
-	buf, err := os.ReadFile(file)
+func Test_Broadcast(t *testing.T) {
+	buf, err := testData.ReadFile("test-data/broadcast.json")
 	require.NoError(t, err)
 
 	var msg mjsonrpc.JSONRPCBase
@@ -29,7 +28,7 @@ func Test_Broadcast(t *testing.T) {
 
 	require.Equal(t, mjsonrpc.RPCTypeQuery, rpctype)
 
-	var broadcast mbroadcast.Broadcast
+	var broadcast Broadcast
 
 	err = json.Unmarshal(buf, &broadcast)
 	require.NoError(t, err)

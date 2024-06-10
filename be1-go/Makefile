@@ -40,6 +40,8 @@ protocol:
 test-data:
 	cp -r ../protocol/examples/answer/. ./internal/handler/answer/manswer/test-data
 
+	cp -r ../protocol/examples/query/broadcast/. ./internal/handler/method/broadcast/mbroadcast/test-data
+
 clean:
 	rm -rf ./internal/validation/protocol
 	rm -rf ./internal/handler/answer/manswer/test-data
