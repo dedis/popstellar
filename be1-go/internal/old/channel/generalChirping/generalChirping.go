@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/internal/crypto"
-	jsonrpc "popstellar/internal/message"
-	"popstellar/internal/message/answer"
+	"popstellar/internal/handler/answer/manswer"
+	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
@@ -75,7 +75,7 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 
 	ok := c.sockets.Delete(socketID)
 	if !ok {
-		return answer.NewError(-2, "client is not subscribed to this channel")
+		return manswer.NewError(-2, "client is not subscribed to this channel")
 	}
 
 	return nil
@@ -190,7 +190,7 @@ func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
 	// Check if the message already exists
 	_, ok := c.inbox.GetMessage(msg.MessageID)
 	if ok {
-		return answer.NewError(-3, "message already exists")
+		return manswer.NewError(-3, "message already exists")
 	}
 
 	return nil
@@ -210,12 +210,12 @@ func (c *Channel) verifyNotifyChirp(msg message.Message, chirpMsg messagedata.Ve
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return answer.NewError(-4, "invalid sender public key")
+		return manswer.NewError(-4, "invalid sender public key")
 	}
 
 	ok := c.hub.GetPubKeyServ().Equal(senderPoint)
 	if !ok {
-		return answer.NewError(-4, "only the server can broadcast the chirp messages")
+		return manswer.NewError(-4, "only the server can broadcast the chirp messages")
 	}
 
 	return nil

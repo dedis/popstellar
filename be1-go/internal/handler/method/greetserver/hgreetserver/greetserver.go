@@ -3,7 +3,7 @@ package hgreetserver
 import (
 	"encoding/json"
 	"popstellar/internal/errors"
-	"popstellar/internal/message"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
@@ -70,7 +70,7 @@ func (h *Handler) SendGreetServer(socket socket.Socket) error {
 
 	serverGreet := &method.GreetServer{
 		Base: query.Base{
-			JSONRPCBase: message.JSONRPCBase{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: query.MethodGreetServer,

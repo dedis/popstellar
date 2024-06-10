@@ -8,7 +8,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	jsonrpc "popstellar/internal/message"
+	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"

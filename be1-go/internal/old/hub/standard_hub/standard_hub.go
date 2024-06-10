@@ -5,8 +5,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/internal/crypto"
-	jsonrpc "popstellar/internal/message"
-	"popstellar/internal/message/answer"
+	"popstellar/internal/handler/answer/manswer"
+	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
@@ -306,7 +306,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 
 	err = json.Unmarshal(byteMessage, &queryBase)
 	if err != nil {
-		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
+		err := manswer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
 		socket.SendError(nil, err)
 		return err
 	}
@@ -326,7 +326,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	case query.MethodCatchUp:
 		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
 	default:
-		err = answer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
+		err = manswer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
 		socket.SendError(nil, err)
 		return err
 	}
@@ -370,7 +370,7 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 	if rpctype == jsonrpc.RPCTypeAnswer {
 		err = h.handleAnswer(socket, byteMessage)
 		if err != nil {
-			err = answer.NewErrorf(-4, "failed to handle answer message: %v", err)
+			err = manswer.NewErrorf(-4, "failed to handle answer message: %v", err)
 			socket.SendError(nil, err)
 			return err
 		}
@@ -388,7 +388,7 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 
 	err = json.Unmarshal(byteMessage, &queryBase)
 	if err != nil {
-		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
+		err := manswer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
 		socket.SendError(nil, err)
 		return err
 	}
@@ -413,13 +413,13 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		msgsByChannel, id, handlerErr = h.handleGetMessagesById(socket, byteMessage)
 
 	default:
-		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
+		err = manswer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
 		socket.SendError(nil, err)
 		return err
 	}
 
 	if handlerErr != nil {
-		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
+		err := manswer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
 		socket.SendError(&id, err)
 		return err
 	}
@@ -506,45 +506,45 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 	laoChannelPath := rootPrefix + laoCreate.ID
 
 	if _, ok := h.channelByID.Get(laoChannelPath); ok {
-		return answer.NewDuplicateResourceError("failed to create lao: duplicate lao path: %q", laoChannelPath)
+		return manswer.NewDuplicateResourceError("failed to create lao: duplicate lao path: %q", laoChannelPath)
 	}
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to decode public key of the sender: %v", err)
+		return manswer.NewInvalidMessageFieldError("failed to decode public key of the sender: %v", err)
 	}
 
 	// Check if the sender of the LAO creation message is the organizer
 	senderPubKey := crypto.Suite.Point()
 	err = senderPubKey.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to unmarshal public key of the sender: %v", err)
+		return manswer.NewInvalidMessageFieldError("failed to unmarshal public key of the sender: %v", err)
 	}
 
 	organizerBuf, err := base64.URLEncoding.DecodeString(laoCreate.Organizer)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to decode public key of the organizer: %v", err)
+		return manswer.NewInvalidMessageFieldError("failed to decode public key of the organizer: %v", err)
 	}
 
 	organizerPubKey := crypto.Suite.Point()
 	err = organizerPubKey.UnmarshalBinary(organizerBuf)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to unmarshal public key of the organizer: %v", err)
+		return manswer.NewInvalidMessageFieldError("failed to unmarshal public key of the organizer: %v", err)
 	}
 
 	// Check if the sender and organizer fields of the create lao message are equal
 	if !organizerPubKey.Equal(senderPubKey) {
-		return answer.NewAccessDeniedError("sender's public key does not match the organizer field: %q != %q", senderPubKey, organizerPubKey)
+		return manswer.NewAccessDeniedError("sender's public key does not match the organizer field: %q != %q", senderPubKey, organizerPubKey)
 	}
 
 	// Check if the sender of the LAO creation message is the owner
 	if h.GetPubKeyOwner() != nil && !h.GetPubKeyOwner().Equal(senderPubKey) {
-		return answer.NewAccessDeniedError("sender's public key does not match the owner's: %q != %q", senderPubKey, h.GetPubKeyOwner())
+		return manswer.NewAccessDeniedError("sender's public key does not match the owner's: %q != %q", senderPubKey, h.GetPubKeyOwner())
 	}
 
 	laoCh, err := h.laoFac(laoChannelPath, h, msg, h.log, senderPubKey, socket)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to create the LAO: %v", err)
+		return manswer.NewInvalidMessageFieldError("failed to create the LAO: %v", err)
 	}
 
 	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, msg)

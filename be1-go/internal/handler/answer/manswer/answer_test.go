@@ -1,20 +1,19 @@
-package answer
+package manswer
 
 import (
+	"embed"
 	"encoding/json"
-	"os"
-	"path/filepath"
-	message "popstellar/internal/message"
-	"popstellar/internal/message/answer"
+	message "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Answer_General(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "general_empty.json")
+//go:embed test-data/*.json
+var testFiles embed.FS
 
-	buf, err := os.ReadFile(file)
+func Test_Answer_General(t *testing.T) {
+	buf, err := testFiles.ReadFile("test-data/general_empty.json")
 	require.NoError(t, err)
 
 	var msg message.JSONRPCBase
@@ -30,7 +29,7 @@ func Test_Answer_General(t *testing.T) {
 	// > should be of type "answer"
 	require.Equal(t, message.RPCTypeAnswer, rpctype)
 
-	var answer answer.Answer
+	var answer Answer
 
 	err = json.Unmarshal(buf, &answer)
 	require.NoError(t, err)
@@ -47,27 +46,27 @@ func Test_Error_functions(t *testing.T) {
 
 	formatString := "check invalid error function"
 
-	invalidAction := answer.NewInvalidActionError(formatString)
+	invalidAction := NewInvalidActionError(formatString)
 	require.Equal(t, -1, invalidAction.Code)
 	require.Equal(t, "invalid action: "+formatString, invalidAction.Description)
 
-	invalidResource := answer.NewInvalidResourceError(formatString)
+	invalidResource := NewInvalidResourceError(formatString)
 	require.Equal(t, -2, invalidResource.Code)
 	require.Equal(t, "invalid resource: "+formatString, invalidResource.Description)
 
-	duplicateResource := answer.NewDuplicateResourceError(formatString)
+	duplicateResource := NewDuplicateResourceError(formatString)
 	require.Equal(t, -3, duplicateResource.Code)
 	require.Equal(t, "duplicate resource: "+formatString, duplicateResource.Description)
 
-	invalidField := answer.NewInvalidMessageFieldError(formatString)
+	invalidField := NewInvalidMessageFieldError(formatString)
 	require.Equal(t, -4, invalidField.Code)
 	require.Equal(t, "invalid message field: "+formatString, invalidField.Description)
 
-	accessDenied := answer.NewAccessDeniedError(formatString)
+	accessDenied := NewAccessDeniedError(formatString)
 	require.Equal(t, -5, accessDenied.Code)
 	require.Equal(t, "access denied: "+formatString, accessDenied.Description)
 
-	internalError := answer.NewInternalServerError(formatString)
+	internalError := NewInternalServerError(formatString)
 	require.Equal(t, -6, internalError.Code)
 	require.Equal(t, "internal server error: "+formatString, internalError.Description)
 

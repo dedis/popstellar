@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/internal/crypto"
-	jsonrpc "popstellar/internal/message"
-	"popstellar/internal/message/answer"
+	manswer2 "popstellar/internal/handler/answer/manswer"
+	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
@@ -32,7 +32,7 @@ const (
 func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method.Publish) error {
 	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
 	if err != nil {
-		err := answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
+		err := manswer2.NewInvalidMessageFieldError("failed to decode message data: %v", err)
 
 		return err
 	}
@@ -40,20 +40,20 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 	// validate message data against the json schema
 	err = h.schemaValidator.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
-		err := answer.NewInvalidMessageFieldError("failed to validate message against json schema: %v", err)
+		err := manswer2.NewInvalidMessageFieldError("failed to validate message against json schema: %v", err)
 		return err
 	}
 
 	// get object#action
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
-		err := answer.NewInvalidMessageFieldError("failed to get object#action: %v", err)
+		err := manswer2.NewInvalidMessageFieldError("failed to get object#action: %v", err)
 		return err
 	}
 
 	// must be "lao#create"
 	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
-		err := answer.NewInvalidMessageFieldError("only lao#create is allowed on root, "+
+		err := manswer2.NewInvalidMessageFieldError("only lao#create is allowed on root, "+
 			"but found %s#%s", object, action)
 		return err
 	}
@@ -167,7 +167,7 @@ func (h *Hub) handleRootCatchup(senderSocket socket.Socket,
 
 // handleAnswer handles the answer to a message sent by the server
 func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error {
-	var answerMsg answer.Answer
+	var answerMsg manswer2.Answer
 
 	err := json.Unmarshal(byteMessage, &answerMsg)
 	if err != nil {
@@ -198,7 +198,7 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 	return nil
 }
 
-func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg answer.Answer) error {
+func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg manswer2.Answer) error {
 	var err error
 	messages := answerMsg.Result.GetMessagesByChannel()
 	tempBlacklist := make([]string, 0)
@@ -235,22 +235,22 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	publicKeySender, err := base64.URLEncoding.DecodeString(publish.Params.Message.Sender)
 	if err != nil {
 		h.log.Info().Msg("Sender is : " + publish.Params.Message.Sender)
-		return publish.ID, answer.NewInvalidMessageFieldError("failed to decode public key string: %v", err)
+		return publish.ID, manswer2.NewInvalidMessageFieldError("failed to decode public key string: %v", err)
 	}
 
 	signatureBytes, err := base64.URLEncoding.DecodeString(signature)
 	if err != nil {
-		return publish.ID, answer.NewInvalidMessageFieldError("failed to decode signature string: %v", err)
+		return publish.ID, manswer2.NewInvalidMessageFieldError("failed to decode signature string: %v", err)
 	}
 
 	err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes)
 	if err != nil {
-		return publish.ID, answer.NewInvalidMessageFieldError("failed to verify signature : %v", err)
+		return publish.ID, manswer2.NewInvalidMessageFieldError("failed to verify signature : %v", err)
 	}
 
 	expectedMessageID := message.Hash(data, signature)
 	if expectedMessageID != messageID {
-		return publish.ID, answer.NewInvalidMessageFieldError(wrongMessageIdError,
+		return publish.ID, manswer2.NewInvalidMessageFieldError(wrongMessageIdError,
 			expectedMessageID, messageID)
 	}
 
@@ -270,12 +270,12 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 
 	channel, err := h.getChan(publish.Params.Channel)
 	if err != nil {
-		return publish.ID, answer.NewInvalidMessageFieldError(getChannelErr, err)
+		return publish.ID, manswer2.NewInvalidMessageFieldError(getChannelErr, err)
 	}
 
 	err = channel.Publish(publish, socket)
 	if err != nil {
-		return publish.ID, answer.NewInvalidMessageFieldError(publishError, err)
+		return publish.ID, manswer2.NewInvalidMessageFieldError(publishError, err)
 	}
 
 	h.hubInbox.StoreMessage(publish.Params.Channel, publish.Params.Message)

@@ -3,6 +3,8 @@ package socket
 import (
 	"encoding/json"
 	"errors"
+	manswer2 "popstellar/internal/handler/answer/manswer"
+	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"sync"
 	"time"
 
@@ -11,8 +13,6 @@ import (
 	"github.com/rs/zerolog"
 
 	poperror "popstellar/internal/errors"
-	jsonrpc "popstellar/internal/message"
-	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query/method/message"
 )
 
@@ -167,13 +167,13 @@ func (s *baseSocket) Send(msg []byte) {
 // SendError is a utility method that allows sending an `error` as a
 // `message.Error` message to the socket.
 func (s *baseSocket) SendError(id *int, err error) {
-	msgError := &answer.Error{}
+	msgError := &manswer2.Error{}
 
 	if !errors.As(err, &msgError) {
-		msgError = answer.NewError(-6, err.Error())
+		msgError = manswer2.NewError(-6, err.Error())
 	}
 
-	answer := answer.Answer{
+	answer := manswer2.Answer{
 		JSONRPCBase: jsonrpc.JSONRPCBase{
 			JSONRPC: "2.0",
 		},
@@ -204,12 +204,12 @@ func (s *baseSocket) SendPopError(id *int, err error) {
 		popError = poperror.NewPopError(-6, err.Error())
 	}
 
-	msgError := answer.Error{
+	msgError := manswer2.Error{
 		Code:        popError.Code(),
 		Description: popError.StackTraceString(),
 	}
 
-	answer := answer.Answer{
+	answer := manswer2.Answer{
 		JSONRPCBase: jsonrpc.JSONRPCBase{
 			JSONRPC: "2.0",
 		},

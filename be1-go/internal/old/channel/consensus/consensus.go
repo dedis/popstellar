@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/internal/crypto"
-	jsonrpc "popstellar/internal/message"
-	"popstellar/internal/message/answer"
+	"popstellar/internal/handler/answer/manswer"
+	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
@@ -160,7 +160,7 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 
 	ok := c.sockets.Delete(socketID)
 	if !ok {
-		return answer.NewError(-2, "client is not subscribed to this channel")
+		return manswer.NewError(-2, "client is not subscribed to this channel")
 	}
 
 	return nil
@@ -750,7 +750,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 
 	// Check if the message already exists
 	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
-		return answer.NewError(-3, "message already exists")
+		return manswer.NewError(-3, "message already exists")
 	}
 
 	return nil
@@ -798,7 +798,7 @@ func getSender(msg message.Message) (kyber.Point, error) {
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return nil, answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
+		return nil, manswer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
 	}
 
 	return senderPoint, nil

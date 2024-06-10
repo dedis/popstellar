@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/crypto"
-	jsonrpc "popstellar/internal/message"
+	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"

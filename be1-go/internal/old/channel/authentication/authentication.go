@@ -10,7 +10,7 @@ import (
 	"net/url"
 	"os"
 	"popstellar/internal/crypto"
-	"popstellar/internal/message/answer"
+	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
@@ -331,7 +331,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 	// Check if the message already exists
 	_, ok := c.inbox.GetMessage(msg.MessageID)
 	if ok {
-		return answer.NewError(-3, "message already exists")
+		return manswer.NewError(-3, "message already exists")
 	}
 
 	return nil
@@ -361,7 +361,7 @@ func (c *Channel) verifyAuthMessage(msg message.Message, authMsg messagedata.Aut
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return answer.NewError(-4, "invalid sender public key")
+		return manswer.NewError(-4, "invalid sender public key")
 	}
 
 	return nil

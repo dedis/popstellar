@@ -1,4 +1,4 @@
-package message
+package mjsonrpc
 
 import (
 	"encoding/json"

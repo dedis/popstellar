@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	poperrors "popstellar/internal/errors"
-	jsonrpc "popstellar/internal/message"
+	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"

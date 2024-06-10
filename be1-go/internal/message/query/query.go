@@ -1,6 +1,8 @@
 package query
 
-import message "popstellar/internal/message"
+import (
+	message "popstellar/internal/handler/jsonrpc/mjsonrpc"
+)
 
 const (
 	MethodPublish         = "publish"

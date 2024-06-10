@@ -6,8 +6,8 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"popstellar/internal/crypto"
-	jsonrpc "popstellar/internal/message"
-	"popstellar/internal/message/answer"
+	"popstellar/internal/handler/answer/manswer"
+	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
@@ -199,7 +199,7 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 	ok := c.sockets.Delete(socketID)
 
 	if !ok {
-		return answer.NewError(-2, "client is not subscribed to this channel")
+		return manswer.NewError(-2, "client is not subscribed to this channel")
 	}
 
 	return nil
@@ -300,11 +300,11 @@ func (c *Channel) processElectionOpen(msg message.Message, msgData interface{},
 
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return answer.NewErrorf(-4, "invalid sender public key: %s", senderBuf)
+		return manswer.NewErrorf(-4, "invalid sender public key: %s", senderBuf)
 	}
 
 	if !c.organiserPubKey.Equal(senderPoint) {
-		return answer.NewErrorf(-5, "sender is %s, should be the organizer", msg.Sender)
+		return manswer.NewErrorf(-5, "sender is %s, should be the organizer", msg.Sender)
 	}
 
 	var electionOpen messagedata.ElectionOpen
@@ -349,13 +349,13 @@ func (c *Channel) processCastVote(msg message.Message, msgData interface{},
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return answer.NewError(-4, "invalid sender public key")
+		return manswer.NewError(-4, "invalid sender public key")
 	}
 
 	// verify sender is an attendee or the organizer
 	ok = c.attendees.isPresent(msg.Sender) || c.organiserPubKey.Equal(senderPoint)
 	if !ok {
-		return answer.NewError(-4, "only attendees can cast a vote in an election")
+		return manswer.NewError(-4, "only attendees can cast a vote in an election")
 	}
 
 	var castVote messagedata.VoteCastVote
@@ -406,12 +406,12 @@ func (c *Channel) processElectionEnd(msg message.Message, msgData interface{},
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
 		c.log.Error().Msgf("public key unmarshal problem: %v", err)
-		return answer.NewErrorf(-4, "sender is %s, should be a valid public key: %v", sender, err)
+		return manswer.NewErrorf(-4, "sender is %s, should be a valid public key: %v", sender, err)
 	}
 
 	// check sender of the election end message is the organizer
 	if !c.organiserPubKey.Equal(senderPoint) {
-		return answer.NewErrorf(-5, "sender is %s, should be the organizer", msg.Sender)
+		return manswer.NewErrorf(-5, "sender is %s, should be the organizer", msg.Sender)
 	}
 
 	var electionEnd messagedata.ElectionEnd
@@ -483,7 +483,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 	// Check if the message already exists
 	_, ok := c.inbox.GetMessage(msg.MessageID)
 	if ok {
-		return answer.NewError(-3, "message already exists")
+		return manswer.NewError(-3, "message already exists")
 	}
 
 	return nil
@@ -723,11 +723,11 @@ func (c *Channel) decryptVote(vote string) (int, error) {
 	// vote is encoded in base64
 	votebuf, err := base64.URLEncoding.DecodeString(vote)
 	if err != nil {
-		return -1, answer.NewErrorf(-4, "vote %s is not base64 encoded", vote)
+		return -1, manswer.NewErrorf(-4, "vote %s is not base64 encoded", vote)
 	}
 
 	if len(votebuf) != 64 {
-		return -1, answer.NewErrorf(-4, "vote %s is not 64 bytes long", vote)
+		return -1, manswer.NewErrorf(-4, "vote %s is not 64 bytes long", vote)
 	}
 
 	// K and C are respectively the first and last 32 bytes of the vote
@@ -736,19 +736,19 @@ func (c *Channel) decryptVote(vote string) (int, error) {
 
 	err = K.UnmarshalBinary(votebuf[:32])
 	if err != nil {
-		return -1, answer.NewErrorf(-4, "failed to unmarshal vote %s", vote)
+		return -1, manswer.NewErrorf(-4, "failed to unmarshal vote %s", vote)
 	}
 
 	err = C.UnmarshalBinary(votebuf[32:])
 	if err != nil {
-		return -1, answer.NewErrorf(-4, "failed to unmarshal vote %s", vote)
+		return -1, manswer.NewErrorf(-4, "failed to unmarshal vote %s", vote)
 	}
 
 	// performs the ElGamal decryption
 	S := crypto.Suite.Point().Mul(c.secElectionKey, K)
 	data, err := crypto.Suite.Point().Sub(C, S).Data()
 	if err != nil {
-		return -1, answer.NewErrorf(-4, "vote data is invalid")
+		return -1, manswer.NewErrorf(-4, "vote data is invalid")
 	}
 
 	var index uint16
@@ -757,7 +757,7 @@ func (c *Channel) decryptVote(vote string) (int, error) {
 	buf := bytes.NewReader(data)
 	err = binary.Read(buf, binary.BigEndian, &index)
 	if err != nil {
-		return -1, answer.NewErrorf(-4, "vote data is empty")
+		return -1, manswer.NewErrorf(-4, "vote data is empty")
 	}
 
 	return int(index), nil
@@ -777,10 +777,10 @@ func gatherOptionCounts(count []int, options []string) []messagedata.ElectionRes
 
 func checkMethodProperties(method string, length int) error {
 	if method == "Plurality" && length < 1 {
-		return answer.NewError(-4, "No ballot option was chosen for plurality voting method")
+		return manswer.NewError(-4, "No ballot option was chosen for plurality voting method")
 	}
 	if method == "Approval" && length != 1 {
-		return answer.NewError(-4, "Cannot choose multiple ballot options "+
+		return manswer.NewError(-4, "Cannot choose multiple ballot options "+
 			"on approval voting method")
 	}
 
@@ -795,7 +795,7 @@ func updateVote(msgID string, sender string, castVote messagedata.VoteCastVote,
 
 		qs, ok := questions[vote.Question]
 		if !ok {
-			return answer.NewErrorf(-4, "no Question with question ID %s exists", vote.Question)
+			return manswer.NewErrorf(-4, "no Question with question ID %s exists", vote.Question)
 		}
 
 		// this is to handle the case when the organizer must handle multiple

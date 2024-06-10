@@ -1,7 +1,7 @@
 package hub_state
 
 import (
-	"popstellar/internal/message/answer"
+	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/message/query/method"
 	"sync"
 
@@ -33,7 +33,7 @@ func (p *Peers) AddPeerInfo(socketId string, info method.GreetServerParams) erro
 
 	currentInfo, ok := p.peersInfo[socketId]
 	if ok {
-		return answer.NewInvalidActionError(
+		return manswer.NewInvalidActionError(
 			"cannot add %s because peersInfo[%s] already contains %s",
 			info, socketId, currentInfo)
 	}

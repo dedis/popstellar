@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"popstellar/internal/crypto"
+	"popstellar/internal/handler/answer/manswer"
+	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	popstellar "popstellar/internal/logger"
-	jsonrpc "popstellar/internal/message"
-	"popstellar/internal/message/answer"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
@@ -174,7 +174,7 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 	ok := c.sockets.Delete(socketID)
 
 	if !ok {
-		return answer.NewError(-2, "client is not subscribed to this channel")
+		return manswer.NewError(-2, "client is not subscribed to this channel")
 	}
 
 	return nil
@@ -279,7 +279,7 @@ func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{
 	msg, ok := c.inbox.GetMessage(data.ModificationID)
 
 	if !ok {
-		return answer.NewErrorf(-4, "cannot find lao/update_properties with ID: %s",
+		return manswer.NewErrorf(-4, "cannot find lao/update_properties with ID: %s",
 			data.ModificationID)
 	}
 
@@ -297,7 +297,7 @@ func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{
 	c.witnessMu.Unlock()
 
 	if match != expected {
-		return answer.NewErrorf(-4, "not enough witness signatures provided. Needed %d got %d",
+		return manswer.NewErrorf(-4, "not enough witness signatures provided. Needed %d got %d",
 			expected, match)
 	}
 
@@ -306,7 +306,7 @@ func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{
 		err := schnorr.VerifyWithChecks(crypto.Suite, []byte(pair.Witness),
 			[]byte(data.ModificationID), []byte(pair.Signature))
 		if err != nil {
-			return answer.NewErrorf(-4, "signature verification failed for witness: %s",
+			return manswer.NewErrorf(-4, "signature verification failed for witness: %s",
 				pair.Witness)
 		}
 	}
@@ -315,7 +315,7 @@ func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{
 
 	err := msg.UnmarshalData(&updateMsgData)
 	if err != nil {
-		return &answer.Error{
+		return &manswer.Error{
 			Code:        -4,
 			Description: fmt.Sprintf("failed to unmarshal message from the inbox: %v", err),
 		}
@@ -323,7 +323,7 @@ func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{
 
 	err = updateMsgData.Verify()
 	if err != nil {
-		return &answer.Error{
+		return &manswer.Error{
 			Code:        -4,
 			Description: fmt.Sprintf("invalid lao#update message: %v", err),
 		}
@@ -360,7 +360,7 @@ func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{}
 
 	// Check that the ProposedEnd is greater than the ProposedStart
 	if data.ProposedStart > data.ProposedEnd {
-		return answer.NewErrorf(-4, "The field `proposed_start` is greater than the field "+
+		return manswer.NewErrorf(-4, "The field `proposed_start` is greater than the field "+
 			"`proposed_end`: %d > %d", data.ProposedStart, data.ProposedEnd)
 	}
 
@@ -404,7 +404,7 @@ func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{},
 	}
 
 	if !c.rollCall.checkPrevID([]byte(rollCallOpen.Opens)) {
-		return answer.NewError(-1, "The field `opens` does not correspond to the id of "+
+		return manswer.NewError(-1, "The field `opens` does not correspond to the id of "+
 			"the previous roll call message")
 	}
 
@@ -436,11 +436,11 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 	}
 
 	if c.rollCall.state != Open {
-		return answer.NewError(-1, "The roll call cannot be closed since it's not open")
+		return manswer.NewError(-1, "The roll call cannot be closed since it's not open")
 	}
 
 	if !c.rollCall.checkPrevID([]byte(data.Closes)) {
-		return answer.NewError(-4, "The field `closes` does not correspond to the id of "+
+		return manswer.NewError(-4, "The field `closes` does not correspond to the id of "+
 			"the previous roll call message")
 	}
 
@@ -530,7 +530,7 @@ func (c *Channel) processMessageWitness(msg message.Message, msgData interface{}
 
 	err = schnorr.VerifyWithChecks(crypto.Suite, senderPkDecoded, messageIdDecoded, signatureDecoded)
 	if err != nil {
-		return answer.NewError(-4, "invalid witness signature")
+		return manswer.NewError(-4, "invalid witness signature")
 	}
 
 	c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
@@ -558,7 +558,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 
 	// Check if the message already exists
 	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
-		return answer.NewDuplicateResourceError("message already exists")
+		return manswer.NewDuplicateResourceError("message already exists")
 	}
 
 	return nil
@@ -643,7 +643,7 @@ func (c *Channel) createElection(msg message.Message,
 	// Check if the Lao ID of the message corresponds to the channel ID
 	channelID := c.channelID[6:]
 	if channelID != setupMsg.Lao {
-		return answer.NewInvalidMessageFieldError("Lao ID of the message is %s, should be "+
+		return manswer.NewInvalidMessageFieldError("Lao ID of the message is %s, should be "+
 			"equal to the channel ID %s", setupMsg.Lao, channelID)
 	}
 
@@ -668,12 +668,12 @@ func (c *Channel) createElection(msg message.Message,
 
 func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.LaoState) error {
 	if update.LastModified != state.LastModified {
-		return answer.NewErrorf(-4, "mismatch between last modified: expected %d got %d",
+		return manswer.NewErrorf(-4, "mismatch between last modified: expected %d got %d",
 			update.LastModified, state.LastModified)
 	}
 
 	if update.Name != state.Name {
-		return answer.NewErrorf(-4, "mismatch between name: expected %s got %s",
+		return manswer.NewErrorf(-4, "mismatch between name: expected %s got %s",
 			update.Name, state.Name)
 	}
 
@@ -681,7 +681,7 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	N := len(state.Witnesses)
 
 	if M != N {
-		return answer.NewErrorf(-4, "mismatch between witness count: expected %d got %d", M, N)
+		return manswer.NewErrorf(-4, "mismatch between witness count: expected %d got %d", M, N)
 	}
 
 	match := 0
@@ -696,7 +696,7 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	}
 
 	if match != M {
-		return answer.NewErrorf(-4, "mismatch between witness keys: expected %d keys to "+
+		return manswer.NewErrorf(-4, "mismatch between witness keys: expected %d keys to "+
 			"match but %d matched", M, match)
 	}
 
@@ -783,18 +783,18 @@ func (r *rollCall) checkPrevID(prevID []byte) bool {
 func (c *Channel) checkIsFromOrganizer(msg message.Message) error {
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError(keyDecodeError, err)
+		return manswer.NewInvalidMessageFieldError(keyDecodeError, err)
 	}
 
 	senderPoint := crypto.Suite.Point()
 
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError(keyUnmarshalError, senderBuf)
+		return manswer.NewInvalidMessageFieldError(keyUnmarshalError, senderBuf)
 	}
 
 	if !c.organizerPubKey.Equal(senderPoint) {
-		return answer.NewAccessDeniedError(
+		return manswer.NewAccessDeniedError(
 			"sender key %v does not match organizer key %v",
 			senderPoint, c.organizerPubKey)
 	}

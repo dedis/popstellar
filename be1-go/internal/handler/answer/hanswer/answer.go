@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"math/rand"
 	"popstellar/internal/errors"
+	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/logger"
-	"popstellar/internal/message/answer"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
@@ -49,7 +49,7 @@ func New(queries Queries, handlers Handlers) *Handler {
 }
 
 func (h *Handler) Handle(msg []byte) error {
-	var answerMsg answer.Answer
+	var answerMsg manswer.Answer
 
 	err := json.Unmarshal(msg, &answerMsg)
 	if err != nil {
@@ -88,7 +88,7 @@ func (h *Handler) Handle(msg []byte) error {
 	return nil
 }
 
-func (h *Handler) handleRumorAnswer(msg answer.Answer) error {
+func (h *Handler) handleRumorAnswer(msg manswer.Answer) error {
 	err := h.queries.SetQueryReceived(*msg.ID)
 	if err != nil {
 		return err
@@ -124,7 +124,7 @@ func (h *Handler) handleRumorAnswer(msg answer.Answer) error {
 	return nil
 }
 
-func (h *Handler) handleGetMessagesByIDAnswer(msg answer.Answer) {
+func (h *Handler) handleGetMessagesByIDAnswer(msg manswer.Answer) {
 	result := msg.Result.GetMessagesByChannel()
 	msgsByChan := make(map[string]map[string]message.Message)
 

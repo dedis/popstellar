@@ -1,4 +1,4 @@
-package answer
+package manswer
 
 import "fmt"
 

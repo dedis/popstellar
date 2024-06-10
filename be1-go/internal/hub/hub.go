@@ -8,6 +8,7 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/answer/hanswer"
 	"popstellar/internal/handler/jsonrpc/hjsonrpc"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/hmessage"
 	"popstellar/internal/handler/messagedata/chirp/hchirp"
 	"popstellar/internal/handler/messagedata/coin/hcoin"
@@ -26,7 +27,6 @@ import (
 	"popstellar/internal/handler/method/unsubscribe/hunsubscribe"
 	"popstellar/internal/handler/query/hquery"
 	"popstellar/internal/logger"
-	"popstellar/internal/message"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
@@ -334,7 +334,7 @@ func (h *Hub) runHeartbeat() {
 func (h *Hub) sendHeartbeat() error {
 	heartbeatMessage := method.Heartbeat{
 		Base: query.Base{
-			JSONRPCBase: message.JSONRPCBase{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: "heartbeat",

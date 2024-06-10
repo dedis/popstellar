@@ -1,14 +1,13 @@
-package answer
+package manswer
 
 import (
-	"popstellar/internal/message/answer"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_Error_Constructor(t *testing.T) {
-	err := answer.NewInvalidActionError("@@@")
+	err := NewInvalidActionError("@@@")
 	require.Equal(t, -1, err.Code)
 	require.Equal(t, "invalid action: @@@", err.Description)
 }

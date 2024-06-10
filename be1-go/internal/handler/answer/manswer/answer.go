@@ -1,10 +1,10 @@
-package answer
+package manswer
 
 import (
 	"encoding/json"
 	"fmt"
 	"golang.org/x/xerrors"
-	message "popstellar/internal/message"
+	message "popstellar/internal/handler/jsonrpc/mjsonrpc"
 )
 
 // Answer defines the JSON RPC answer message

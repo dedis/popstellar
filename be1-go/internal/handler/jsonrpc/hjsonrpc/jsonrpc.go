@@ -2,7 +2,7 @@ package hjsonrpc
 
 import (
 	"popstellar/internal/errors"
-	"popstellar/internal/message"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/validation"
 )
@@ -35,16 +35,16 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) error {
 		return err
 	}
 
-	rpcType, err := message.GetType(msg)
+	rpcType, err := mjsonrpc.GetType(msg)
 	if err != nil {
 		return err
 	}
 
 	switch rpcType {
-	case message.RPCTypeQuery:
+	case mjsonrpc.RPCTypeQuery:
 		err = h.queryHandler.Handle(socket, msg)
 
-	case message.RPCTypeAnswer:
+	case mjsonrpc.RPCTypeAnswer:
 		err = h.answerHandler.Handle(msg)
 	default:
 		err = errors.NewInvalidMessageFieldError("jsonRPC is of unknown type")

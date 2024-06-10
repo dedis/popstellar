@@ -3,7 +3,7 @@ package election
 import (
 	"encoding/base64"
 	"fmt"
-	"popstellar/internal/message/answer"
+	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"sort"
@@ -69,7 +69,7 @@ func (c *Channel) verifyMessageElectionOpen(electionOpen messagedata.ElectionOpe
 	}
 
 	if electionOpen.OpenedAt < c.createdAt {
-		return answer.NewInvalidMessageFieldError("election open cannot have a creation time prior to election setup")
+		return manswer.NewInvalidMessageFieldError("election open cannot have a creation time prior to election setup")
 	}
 
 	return nil
@@ -136,7 +136,7 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 	}
 
 	if castVote.CreatedAt < c.createdAt {
-		return answer.NewInvalidMessageFieldError("cast vote cannot have a creation time prior to election setup")
+		return manswer.NewInvalidMessageFieldError("cast vote cannot have a creation time prior to election setup")
 	}
 
 	return nil
@@ -202,7 +202,7 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 
 	// verify if the timestamp is stale
 	if electionEnd.CreatedAt < c.createdAt {
-		return answer.NewInvalidMessageFieldError("election end cannot have a creation time prior to election setup %d %d", electionEnd.CreatedAt, c.createdAt)
+		return manswer.NewInvalidMessageFieldError("election end cannot have a creation time prior to election setup %d %d", electionEnd.CreatedAt, c.createdAt)
 	}
 
 	// verify order of registered votes
@@ -265,23 +265,23 @@ func (c *Channel) verifyVote(vote messagedata.Vote, electionID string) error {
 	case messagedata.OpenBallot:
 		v, ok := vote.Vote.(int)
 		if !ok {
-			return answer.NewErrorf(-4, "votes in open ballot should be int")
+			return manswer.NewErrorf(-4, "votes in open ballot should be int")
 		}
 		vs = fmt.Sprintf("%d", v)
 	case messagedata.SecretBallot:
 		vs, ok = vote.Vote.(string)
 		if !ok {
-			return answer.NewErrorf(-4, "votes in secret ballot should be string")
+			return manswer.NewErrorf(-4, "votes in secret ballot should be string")
 		}
 
 		temp, err := base64.URLEncoding.DecodeString(vs)
 		if err != nil {
-			return answer.NewErrorf(-4, "vote should be base64 encoded")
+			return manswer.NewErrorf(-4, "vote should be base64 encoded")
 		}
 
 		length := len(temp)
 		if length != 64 {
-			return answer.NewErrorf(-4, "vote should be 64 bytes long, but is %d", length)
+			return manswer.NewErrorf(-4, "vote should be 64 bytes long, but is %d", length)
 		}
 	}
 

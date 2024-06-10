@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
-	"popstellar/internal/message"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/query/method"
 	"testing"
 )
@@ -16,17 +16,17 @@ func Test_GreetServer(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var msg message.JSONRPCBase
+	var msg mjsonrpc.JSONRPCBase
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
 
 	require.Equal(t, "2.0", msg.JSONRPC)
 
-	rpctype, err := message.GetType(buf)
+	rpctype, err := mjsonrpc.GetType(buf)
 	require.NoError(t, err)
 
-	require.Equal(t, message.RPCTypeQuery, rpctype)
+	require.Equal(t, mjsonrpc.RPCTypeQuery, rpctype)
 
 	var greetServer method.GreetServer
 

@@ -6,7 +6,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"os"
-	"popstellar/internal/message/answer"
+	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/message/query/method/message"
 	"sync"
 	"testing"
@@ -16,7 +16,7 @@ import (
 func Test_SendResult_Messages_Slice(t *testing.T) {
 	socket.SendResult(1, res1, nil)
 
-	var receivedAnswer answer.Answer
+	var receivedAnswer manswer.Answer
 
 	ans := <-socket.send
 
@@ -45,7 +45,7 @@ func Test_SendResult_Messages_By_Channel_Id(t *testing.T) {
 
 	socket.SendResult(1, nil, msgsByChannelId)
 
-	var receivedAnswer answer.Answer
+	var receivedAnswer manswer.Answer
 
 	ans := <-socket.send
 
@@ -71,7 +71,7 @@ func Test_SendResult_Messages_By_Channel_Id(t *testing.T) {
 // Tests that SendResult works when sending an empty answer
 func Test_SendResult_Empty_Answer(t *testing.T) {
 	socket.SendResult(0, nil, nil)
-	var receivedAnswer answer.Answer
+	var receivedAnswer manswer.Answer
 
 	ans := <-socket.send
 
