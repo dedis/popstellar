@@ -432,7 +432,7 @@ final case class DbActor(
           pagedCatchupList = pagedCatchupList.slice(startingIndex, pagedCatchupList.length)
       }
       readGreetLao(chirpsChannel) match {
-        case Some(msg) => msg :: pagedCatchupList
+        case Some(msg) => pagedCatchupList
         case None      => pagedCatchupList
       }
     } else if (profilePattern.findFirstMatchIn(channel.toString).isDefined) {
@@ -478,7 +478,7 @@ final case class DbActor(
           pagedCatchupList = pagedCatchupList.slice(startingIndex, pagedCatchupList.length)
       }
       readGreetLao(profileChannel) match {
-        case Some(msg) => msg :: pagedCatchupList
+        case Some(msg) => pagedCatchupList
         case None      => pagedCatchupList
       }
     } else {
