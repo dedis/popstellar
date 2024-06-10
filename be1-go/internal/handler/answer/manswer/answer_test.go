@@ -9,11 +9,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-//go:embed test-data/*.json
-var testFiles embed.FS
+//go:embed testdata/*.json
+var testData embed.FS
 
 func Test_Answer_General(t *testing.T) {
-	buf, err := testFiles.ReadFile("test-data/general_empty.json")
+	buf, err := testData.ReadFile("testdata/general_empty.json")
 	require.NoError(t, err)
 
 	var msg message.JSONRPCBase

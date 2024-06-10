@@ -1,20 +1,19 @@
-package method
+package msubscribe
 
 import (
+	"embed"
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/handler/method/subscribe/msubscribe"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Subscribe(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "subscribe", "subscribe.json")
+//go:embed testdata/*.json
+var testData embed.FS
 
-	buf, err := os.ReadFile(file)
+func Test_Subscribe(t *testing.T) {
+	buf, err := testData.ReadFile("testdata/subscribe.json")
 	require.NoError(t, err)
 
 	var msg mjsonrpc.JSONRPCBase
@@ -29,7 +28,7 @@ func Test_Subscribe(t *testing.T) {
 
 	require.Equal(t, rpctype, mjsonrpc.RPCTypeQuery)
 
-	var subscribe msubscribe.Subscribe
+	var subscribe Subscribe
 
 	err = json.Unmarshal(buf, &subscribe)
 	require.NoError(t, err)

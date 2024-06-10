@@ -1,20 +1,19 @@
-package method
+package mgetmessagesbyid
 
 import (
+	"embed"
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/handler/method/getmessagesbyid/mgetmessagesbyid"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func Test_GetMessagesById(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "get_messages_by_id", "get_messages_by_id.json")
+//go:embed testdata/*.json
+var testData embed.FS
 
-	buf, err := os.ReadFile(file)
+func Test_GetMessagesById(t *testing.T) {
+	buf, err := testData.ReadFile("testdata/get_messages_by_id.json")
 	require.NoError(t, err)
 
 	var msg mjsonrpc.JSONRPCBase
@@ -29,7 +28,7 @@ func Test_GetMessagesById(t *testing.T) {
 
 	require.Equal(t, mjsonrpc.RPCTypeQuery, rpctype)
 
-	var getMessagesById mgetmessagesbyid.GetMessagesById
+	var getMessagesById GetMessagesById
 
 	err = json.Unmarshal(buf, &getMessagesById)
 	require.NoError(t, err)

@@ -7,4 +7,12 @@ configServer1.json
 configServer2.json
 configServer3.json
 configServer4.json
-/internal/handler/answer/manswer/test-data/
+/internal/handler/answer/manswer/testdata/
+/internal/handler/method/broadcast/mbroadcast/testdata/
+/internal/handler/method/catchup/mcatchup/testdata/
+/internal/handler/method/getmessagesbyid/mgetmessagesbyid/testdata/
+/internal/handler/method/greetserver/mgreetserver/testdata/
+/internal/handler/method/heartbeat/mheartbeat/testdata/
+/internal/handler/method/publish/mpublish/testdata/
+/internal/handler/method/subscribe/msubscribe/testdata/
+/internal/handler/method/unsubscribe/munsubscribe/testdata/

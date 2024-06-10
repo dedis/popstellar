@@ -38,15 +38,34 @@ protocol:
 	cp -r ../protocol ./internal/validation
 
 test-data:
-	cp -r ../protocol/examples/answer/. ./internal/handler/answer/manswer/test-data
+	# Answer
+	cp -r ../protocol/examples/answer/. ./internal/handler/answer/manswer/testdata
 
-	cp -r ../protocol/examples/query/broadcast/. ./internal/handler/method/broadcast/mbroadcast/test-data
-
-	cp -r ../protocol/examples/query/catchup/. ./internal/handler/method/catchup/mcatchup/test-data
+	# Methods
+	cp -r ../protocol/examples/query/broadcast/. ./internal/handler/method/broadcast/mbroadcast/testdata
+	cp -r ../protocol/examples/query/catchup/. ./internal/handler/method/catchup/mcatchup/testdata
+	cp -r ../protocol/examples/query/get_messages_by_id/. ./internal/handler/method/getmessagesbyid/mgetmessagesbyid/testdata
+	cp -r ../protocol/examples/query/greet_server/. ./internal/handler/method/greetserver/mgreetserver/testdata
+	cp -r ../protocol/examples/query/heartbeat/. ./internal/handler/method/heartbeat/mheartbeat/testdata
+	cp -r ../protocol/examples/query/publish/. ./internal/handler/method/publish/mpublish/testdata
+	cp -r ../protocol/examples/query/subscribe/. ./internal/handler/method/subscribe/msubscribe/testdata
+	cp -r ../protocol/examples/query/unsubscribe/. ./internal/handler/method/unsubscribe/munsubscribe/testdata
 
 clean:
 	rm -rf ./internal/validation/protocol
-	rm -rf ./internal/handler/answer/manswer/test-data
+
+	# Answer
+	rm -rf ./internal/handler/answer/manswer/testdata
+
+	# Methods
+	rm -rf ./internal/handler/method/broadcast/mbroadcast/testdata
+	rm -rf ./internal/handler/method/catchup/mcatchup/testdata
+	rm -rf ./internal/handler/method/getmessagesbyid/mgetmessagesbyid/testdata
+	rm -rf ./internal/handler/method/greetserver/mgreetserver/testdata
+	rm -rf ./internal/handler/method/heartbeat/mheartbeat/testdata
+	rm -rf ./internal/handler/method/publish/mpublish/testdata
+	rm -rf ./internal/handler/method/subscribe/msubscribe/testdata
+	rm -rf ./internal/handler/method/unsubscribe/munsubscribe/testdata
 
 fmt:
 	gofmt -s -w ./

@@ -1,19 +1,18 @@
-package method
+package mgreetserver
 
 import (
+	"embed"
 	"encoding/json"
 	"github.com/stretchr/testify/require"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/handler/method/greetserver/mgreetserver"
 	"testing"
 )
 
-func Test_GreetServer(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "greet_server", "greet_server.json")
+//go:embed testdata/*.json
+var testData embed.FS
 
-	buf, err := os.ReadFile(file)
+func Test_GreetServer(t *testing.T) {
+	buf, err := testData.ReadFile("testdata/greet_server.json")
 	require.NoError(t, err)
 
 	var msg mjsonrpc.JSONRPCBase
@@ -28,7 +27,7 @@ func Test_GreetServer(t *testing.T) {
 
 	require.Equal(t, mjsonrpc.RPCTypeQuery, rpctype)
 
-	var greetServer mgreetserver.GreetServer
+	var greetServer GreetServer
 
 	err = json.Unmarshal(buf, &greetServer)
 	require.NoError(t, err)

@@ -1,20 +1,19 @@
-package method
+package mpublish
 
 import (
+	"embed"
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/handler/method/publish/mpublish"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Publish(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "publish", "publish.json")
+//go:embed testdata/*.json
+var testData embed.FS
 
-	buf, err := os.ReadFile(file)
+func Test_Publish(t *testing.T) {
+	buf, err := testData.ReadFile("testdata/publish.json")
 	require.NoError(t, err)
 
 	var msg mjsonrpc.JSONRPCBase
@@ -29,7 +28,7 @@ func Test_Publish(t *testing.T) {
 
 	require.Equal(t, mjsonrpc.RPCTypeQuery, rpctype)
 
-	var publish mpublish.Publish
+	var publish Publish
 
 	err = json.Unmarshal(buf, &publish)
 	require.NoError(t, err)

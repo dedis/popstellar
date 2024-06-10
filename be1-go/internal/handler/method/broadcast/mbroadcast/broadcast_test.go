@@ -9,11 +9,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-//go:embed test-data/*.json
+//go:embed testdata/*.json
 var testData embed.FS
 
 func Test_Broadcast(t *testing.T) {
-	buf, err := testData.ReadFile("test-data/broadcast.json")
+	buf, err := testData.ReadFile("testdata/broadcast.json")
 	require.NoError(t, err)
 
 	var msg mjsonrpc.JSONRPCBase

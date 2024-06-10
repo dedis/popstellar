@@ -1,20 +1,19 @@
-package method
+package mheartbeat
 
 import (
+	"embed"
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/handler/method/heartbeat/mheartbeat"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Heartbeat(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "heartbeat", "heartbeat.json")
+//go:embed testdata/*.json
+var testData embed.FS
 
-	buf, err := os.ReadFile(file)
+func Test_Heartbeat(t *testing.T) {
+	buf, err := testData.ReadFile("testdata/heartbeat.json")
 	require.NoError(t, err)
 
 	var msg mjsonrpc.JSONRPCBase
@@ -29,7 +28,7 @@ func Test_Heartbeat(t *testing.T) {
 
 	require.Equal(t, mjsonrpc.RPCTypeQuery, rpctype)
 
-	var heartbeat mheartbeat.Heartbeat
+	var heartbeat Heartbeat
 
 	err = json.Unmarshal(buf, &heartbeat)
 	require.NoError(t, err)
