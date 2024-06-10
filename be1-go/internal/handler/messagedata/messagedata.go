@@ -154,5 +154,3 @@ func Hash(strs ...string) string {
 
 	return base64.URLEncoding.EncodeToString(h.Sum(nil))
 }
-
-const ()
