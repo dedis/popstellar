@@ -19,3 +19,4 @@ configServer4.json
 /internal/handler/message/mmessage/testdata/
 /internal/handler/messagedata/authentication/mauthentification/testdata/
 /internal/handler/messagedata/chirp/mchirp/testdata/
+/internal/handler/messagedata/coin/mcoin/testdata/

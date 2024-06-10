@@ -1,20 +1,19 @@
-package messagedata
+package mcoin
 
 import (
+	"embed"
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/coin/mcoin"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Coin_Post_Transaction(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "coin", "post_transaction.json")
+//go:embed testdata/*.json
+var testData embed.FS
 
-	buf, err := os.ReadFile(file)
+func Test_Coin_Post_Transaction(t *testing.T) {
+	buf, err := testData.ReadFile("testdata/post_transaction.json")
 	require.NoError(t, err)
 
 	object, action, err := messagedata.GetObjectAndAction(buf)
@@ -23,7 +22,7 @@ func Test_Coin_Post_Transaction(t *testing.T) {
 	require.Equal(t, "coin", object)
 	require.Equal(t, "post_transaction", action)
 
-	var msg mcoin.PostTransaction
+	var msg PostTransaction
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -44,7 +43,7 @@ func Test_Coin_Post_Transaction(t *testing.T) {
 }
 
 func Test_Coin_Post_Transaction_Interface_Functions(t *testing.T) {
-	var msg mcoin.PostTransaction
+	var msg PostTransaction
 
 	require.Equal(t, messagedata.CoinObject, msg.GetObject())
 	require.Equal(t, messagedata.CoinActionPostTransaction, msg.GetAction())
@@ -52,14 +51,14 @@ func Test_Coin_Post_Transaction_Interface_Functions(t *testing.T) {
 }
 
 func Test_Coin_Post_Transaction_Verify(t *testing.T) {
-	var postTransaction mcoin.PostTransaction
+	var postTransaction PostTransaction
 
 	object, action := "coin", "post_transaction"
 
 	getTestBadExample := func(file string) func(*testing.T) {
 		return func(t *testing.T) {
 			// read the bad example file
-			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "coin", file))
+			buf, err := testData.ReadFile("testdata/" + file)
 			require.NoError(t, err)
 
 			obj, act, err := messagedata.GetObjectAndAction(buf)

@@ -65,6 +65,9 @@ test-data:
 	cp -r ../protocol/examples/messageData/chirp_notify_add/. ./internal/handler/messagedata/chirp/mchirp/testdata
 	cp -r ../protocol/examples/messageData/chirp_notify_delete/. ./internal/handler/messagedata/chirp/mchirp/testdata
 
+	# Coin
+	cp -r ../protocol/examples/messageData/coin/. ./internal/handler/messagedata/coin/mcoin/testdata
+
 clean:
 	rm -rf ./internal/validation/protocol
 
@@ -91,6 +94,9 @@ clean:
 
 	# Chirp
 	rm -rf ./internal/handler/messagedata/chirp/mchirp/testdata
+
+	# Coin
+	rm -rf ./internal/handler/messagedata/coin/mcoin/testdata
 
 
 fmt:
