@@ -10,7 +10,7 @@ import (
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/types"
+	"popstellar/internal/types/tmessagedata/telection"
 	"time"
 )
 
@@ -190,7 +190,7 @@ func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (messagedata.
 	return electionSetup, nil
 }
 
-func (s *SQLite) GetElectionQuestions(electionPath string) (map[string]types.Question, error) {
+func (s *SQLite) GetElectionQuestions(electionPath string) (map[string]telection.Question, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
@@ -219,7 +219,7 @@ func (s *SQLite) GetElectionQuestions(electionPath string) (map[string]types.Que
 	return questions, nil
 }
 
-func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[string]types.Question, error) {
+func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[string]telection.Question, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
@@ -271,9 +271,9 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 	return questions, nil
 }
 
-func getQuestionsFromMessage(electionSetup messagedata.ElectionSetup) (map[string]types.Question, error) {
+func getQuestionsFromMessage(electionSetup messagedata.ElectionSetup) (map[string]telection.Question, error) {
 
-	questions := make(map[string]types.Question)
+	questions := make(map[string]telection.Question)
 	for _, question := range electionSetup.Questions {
 		ballotOptions := make([]string, len(question.BallotOptions))
 		copy(ballotOptions, question.BallotOptions)
@@ -281,17 +281,17 @@ func getQuestionsFromMessage(electionSetup messagedata.ElectionSetup) (map[strin
 		if ok {
 			return nil, poperrors.NewInvalidMessageFieldError("duplicate question ID in election setup message data: %s", question.ID)
 		}
-		questions[question.ID] = types.Question{
+		questions[question.ID] = telection.Question{
 			ID:            []byte(question.ID),
 			BallotOptions: ballotOptions,
-			ValidVotes:    make(map[string]types.ValidVote),
+			ValidVotes:    make(map[string]telection.ValidVote),
 			Method:        question.VotingMethod,
 		}
 	}
 	return questions, nil
 }
 
-func updateVote(msgID, sender string, castVote messagedata.VoteCastVote, questions map[string]types.Question) error {
+func updateVote(msgID, sender string, castVote messagedata.VoteCastVote, questions map[string]telection.Question) error {
 	for idx, vote := range castVote.Votes {
 		question, ok := questions[vote.Question]
 		if !ok {
@@ -299,7 +299,7 @@ func updateVote(msgID, sender string, castVote messagedata.VoteCastVote, questio
 		}
 		earlierVote, ok := question.ValidVotes[sender]
 		if !ok || earlierVote.VoteTime < castVote.CreatedAt {
-			question.ValidVotes[sender] = types.ValidVote{
+			question.ValidVotes[sender] = telection.ValidVote{
 				MsgID:    msgID,
 				ID:       vote.ID,
 				VoteTime: castVote.CreatedAt,

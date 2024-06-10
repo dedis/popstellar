@@ -12,7 +12,7 @@ import (
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/mock/generator"
 	"popstellar/internal/state"
-	"popstellar/internal/types"
+	"popstellar/internal/types/tmessagedata/telection"
 	"popstellar/internal/validation"
 	"testing"
 )
@@ -289,7 +289,7 @@ func Test_handleChannelElection(t *testing.T) {
 	channelPath = "/root/" + laoID + "/" + electionID
 
 	//Test 18 Error when VoteCastVote question is not present in election setup
-	questions := map[string]types.Question{
+	questions := map[string]telection.Question{
 		base64.URLEncoding.EncodeToString([]byte("questionID2")): {ID: []byte(base64.URLEncoding.EncodeToString([]byte("questionID2")))},
 		base64.URLEncoding.EncodeToString([]byte("questionID3")): {ID: []byte(base64.URLEncoding.EncodeToString([]byte("questionID3")))},
 	}
@@ -456,10 +456,10 @@ func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionI
 	}
 
 	if votes != "" {
-		questions := map[string]types.Question{
+		questions := map[string]telection.Question{
 			"questionID1": {
 				ID: []byte("questionID1"),
-				ValidVotes: map[string]types.ValidVote{
+				ValidVotes: map[string]telection.ValidVote{
 					"voteID1": {
 						ID: "voteID1",
 					},
@@ -470,7 +470,7 @@ func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionI
 			},
 			"questionID2": {
 				ID: []byte("questionID2"),
-				ValidVotes: map[string]types.ValidVote{
+				ValidVotes: map[string]telection.ValidVote{
 					"voteID3": {
 						ID: "voteID3",
 					},
@@ -491,7 +491,7 @@ func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionI
 }
 
 func newVoteCastVoteIntMsg(t *testing.T, sender, laoID, electionID, electionPath, state, electionType string,
-	createdAt int64, votes []generator.VoteInt, questions map[string]types.Question, owner kyber.Point,
+	createdAt int64, votes []generator.VoteInt, questions map[string]telection.Question, owner kyber.Point,
 	db *mocks.Repository, isEroor bool) message.Message {
 
 	msg := generator.NewVoteCastVoteIntMsg(t, sender, laoID, electionID, 1, votes, nil)
@@ -529,7 +529,7 @@ func newVoteCastVoteIntMsg(t *testing.T, sender, laoID, electionID, electionPath
 }
 
 func newVoteCastVoteStringMsg(t *testing.T, sender, laoID, electionID, electionPath, electionType string,
-	createdAt int64, votes []generator.VoteString, questions map[string]types.Question, owner kyber.Point,
+	createdAt int64, votes []generator.VoteString, questions map[string]telection.Question, owner kyber.Point,
 	db *mocks.Repository) message.Message {
 
 	msg := generator.NewVoteCastVoteStringMsg(t, sender, laoID, electionID, 1, votes, nil)

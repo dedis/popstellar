@@ -7,7 +7,7 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
 	message2 "popstellar/internal/message/query/method/message"
-	"popstellar/internal/types"
+	"popstellar/internal/types/tmessagedata/tcoin"
 	"strconv"
 )
 
@@ -36,7 +36,7 @@ type Input struct {
 
 // Output defines the destination for the money used in transaction
 type Output struct {
-	Value  types.Uint53 `json:"value"`
+	Value  tcoin.Uint53 `json:"value"`
 	Script LockScript   `json:"script"`
 }
 
@@ -55,11 +55,11 @@ type UnlockScript struct {
 
 // SumOutputs computes the sum of the amounts in all outputs.
 // It may signal an overflow error
-func (transaction Transaction) SumOutputs() (types.Uint53, error) {
-	var acc types.Uint53 = 0
+func (transaction Transaction) SumOutputs() (tcoin.Uint53, error) {
+	var acc tcoin.Uint53 = 0
 	var err error
 	for _, out := range transaction.Outputs {
-		acc, err = types.SafePlus(acc, out.Value)
+		acc, err = tcoin.SafePlus(acc, out.Value)
 		if err != nil {
 			return 0, err
 		}

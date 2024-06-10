@@ -1,4 +1,4 @@
-package types
+package telection
 
 type Question struct {
 	// ID represents the ID of the Question.

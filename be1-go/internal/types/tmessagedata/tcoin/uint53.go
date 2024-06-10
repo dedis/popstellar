@@ -3,7 +3,7 @@
 // These values can be handled without loss of precision in IEEE754 64-bit
 // floating-point numbers, and thus in JSON.
 
-package types
+package tcoin
 
 import (
 	"popstellar/internal/errors"

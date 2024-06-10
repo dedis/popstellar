@@ -11,7 +11,7 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/types"
+	"popstellar/internal/types/tmessagedata/telection"
 	"popstellar/internal/validation"
 	"sort"
 )
@@ -56,10 +56,10 @@ type Repository interface {
 	GetElectionAttendees(electionID string) (map[string]struct{}, error)
 
 	// GetElectionQuestions returns the questions of an election.
-	GetElectionQuestions(electionID string) (map[string]types.Question, error)
+	GetElectionQuestions(electionID string) (map[string]telection.Question, error)
 
 	// GetElectionQuestionsWithValidVotes returns the questions of an election with valid votes.
-	GetElectionQuestionsWithValidVotes(electionID string) (map[string]types.Question, error)
+	GetElectionQuestionsWithValidVotes(electionID string) (map[string]telection.Question, error)
 
 	// StoreElectionEndWithResult stores a message and an election result message inside the database.
 	StoreElectionEndWithResult(channelID string, msg, electionResultMsg message.Message) error
@@ -395,7 +395,7 @@ func (h *Handler) verifyVote(vote messagedata.Vote, channelPath, electionID stri
 }
 
 func (h *Handler) verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
-	questions map[string]types.Question) error {
+	questions map[string]telection.Question) error {
 	var voteIDs []string
 	for _, question := range questions {
 		for _, validVote := range question.ValidVotes {
@@ -417,7 +417,7 @@ func (h *Handler) verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 	return nil
 }
 
-func (h *Handler) createElectionResult(questions map[string]types.Question, channelPath string) (message.Message, error) {
+func (h *Handler) createElectionResult(questions map[string]telection.Question, channelPath string) (message.Message, error) {
 	resultElection, err := h.computeElectionResult(questions, channelPath)
 	if err != nil {
 		return message.Message{}, err
@@ -453,7 +453,7 @@ func (h *Handler) createElectionResult(questions map[string]types.Question, chan
 	return electionResultMsg, nil
 }
 
-func (h *Handler) computeElectionResult(questions map[string]types.Question, channelPath string) (messagedata.ElectionResult, error) {
+func (h *Handler) computeElectionResult(questions map[string]telection.Question, channelPath string) (messagedata.ElectionResult, error) {
 	electionType, err := h.db.GetElectionType(channelPath)
 	if err != nil {
 		return messagedata.ElectionResult{}, err
@@ -499,7 +499,7 @@ func (h *Handler) computeElectionResult(questions map[string]types.Question, cha
 	return resultElection, nil
 }
 
-func (h *Handler) getVoteIndex(vote types.ValidVote, electionType, channelPath string) (int, bool) {
+func (h *Handler) getVoteIndex(vote telection.ValidVote, electionType, channelPath string) (int, bool) {
 	switch electionType {
 	case messagedata.OpenBallot:
 		index, _ := vote.Index.(int)

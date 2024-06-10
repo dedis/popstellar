@@ -12,7 +12,7 @@ import (
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/types"
+	"popstellar/internal/types/tmessagedata/telection"
 	"sort"
 	"testing"
 	"time"
@@ -660,7 +660,7 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 	require.NoError(t, err)
 
 	question1 := expected["questionID1"]
-	question1.ValidVotes = map[string]types.ValidVote{
+	question1.ValidVotes = map[string]telection.ValidVote{
 		"sender1": {MsgID: castVoteMsg.MessageID, ID: "voteID1", VoteTime: 1, Index: "Option1"},
 	}
 	expected["questionID1"] = question1
@@ -679,7 +679,7 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 	require.NoError(t, err)
 
 	question1 = expected["questionID1"]
-	question1.ValidVotes = map[string]types.ValidVote{
+	question1.ValidVotes = map[string]telection.ValidVote{
 		"sender1": {MsgID: castVoteMsg.MessageID, ID: "voteID2", VoteTime: 2, Index: "Option2"},
 	}
 	expected["questionID1"] = question1
