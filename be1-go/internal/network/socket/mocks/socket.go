@@ -1,7 +1,7 @@
 package mocks
 
 import (
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/network/socket"
 )
 
@@ -12,8 +12,8 @@ type FakeSocket struct {
 	socket.Socket
 
 	ResultID    int
-	Res         []message.Message
-	MissingMsgs map[string][]message.Message
+	Res         []mmessage.Message
+	MissingMsgs map[string][]mmessage.Message
 	Msg         []byte
 
 	Err error
@@ -32,7 +32,7 @@ func (f *FakeSocket) Send(msg []byte) {
 }
 
 // SendResult implements socket.Socket
-func (f *FakeSocket) SendResult(id int, res []message.Message, missingMsgs map[string][]message.Message) {
+func (f *FakeSocket) SendResult(id int, res []mmessage.Message, missingMsgs map[string][]mmessage.Message) {
 	f.ResultID = id
 	f.Res = res
 	f.MissingMsgs = missingMsgs

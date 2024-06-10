@@ -9,10 +9,10 @@ import (
 	"path/filepath"
 	"popstellar/internal/crypto"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mchirp"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/generalChirping"
@@ -139,11 +139,11 @@ func Test_Chirp_Channel_Catchup(t *testing.T) {
 	// Create the messages
 	numMessages := 5
 
-	messages := make([]message.Message, numMessages)
+	messages := make([]mmessage.Message, numMessages)
 
 	for i := 0; i < numMessages; i++ {
 		// Create a new message containing only an id
-		msg := message.Message{MessageID: fmt.Sprintf("%d", i)}
+		msg := mmessage.Message{MessageID: fmt.Sprintf("%d", i)}
 		messages[i] = msg
 
 		// Store the message in the inbox
@@ -188,12 +188,12 @@ func Test_Chirp_Channel_Broadcast(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	file = filepath.Join(relativeQueryExamplePath, "broadcast", "broadcast.json")
@@ -250,12 +250,12 @@ func Test_Send_Chirp(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	relativePathCreatePub := filepath.Join(relativeQueryExamplePath, "publish")
@@ -276,10 +276,10 @@ func Test_Send_Chirp(t *testing.T) {
 
 	msg2 := generalCha.Catchup(method.Catchup{ID: 0})
 
-	checkData := messagedata.ChirpNotifyAdd{
+	checkData := mchirp.ChirpNotifyAdd{
 		Object:    "chirp",
 		Action:    "notify_add",
-		ChirpID:   message.Hash(buf64, "h"),
+		ChirpID:   mmessage.Hash(buf64, "h"),
 		Channel:   generalName,
 		Timestamp: 1634760180,
 	}
@@ -321,12 +321,12 @@ func Test_Delete_Chirp(t *testing.T) {
 
 	buf64add := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64add,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64add, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64add, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	addChirpID := m.MessageID
@@ -356,7 +356,7 @@ func Test_Delete_Chirp(t *testing.T) {
 	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
-	var chirpDel messagedata.ChirpDelete
+	var chirpDel mchirp.ChirpDelete
 
 	err = json.Unmarshal(buf, &chirpDel)
 	require.NoError(t, err)
@@ -368,12 +368,12 @@ func Test_Delete_Chirp(t *testing.T) {
 
 	buf64delete := base64.URLEncoding.EncodeToString(buf)
 
-	m = message.Message{
+	m = mmessage.Message{
 		Data:              buf64delete,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64delete, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64delete, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	pub.Params.Message = m
@@ -384,10 +384,10 @@ func Test_Delete_Chirp(t *testing.T) {
 
 	msg := generalCha.Catchup(method.Catchup{ID: 0})
 
-	checkDataAdd := messagedata.ChirpNotifyAdd{
+	checkDataAdd := mchirp.ChirpNotifyAdd{
 		Object:    "chirp",
 		Action:    "notify_add",
-		ChirpID:   message.Hash(buf64add, "h"),
+		ChirpID:   mmessage.Hash(buf64add, "h"),
 		Channel:   generalName,
 		Timestamp: 1634760180,
 	}
@@ -395,10 +395,10 @@ func Test_Delete_Chirp(t *testing.T) {
 	require.Nil(t, err)
 	checkData64Add := base64.URLEncoding.EncodeToString(checkDataBufAdd)
 
-	checkDataDelete := messagedata.ChirpNotifyDelete{
+	checkDataDelete := mchirp.ChirpNotifyDelete{
 		Object:    "chirp",
 		Action:    "notify_delete",
-		ChirpID:   message.Hash(buf64delete, "h"),
+		ChirpID:   mmessage.Hash(buf64delete, "h"),
 		Channel:   generalName,
 		Timestamp: 1634760180,
 	}
@@ -441,12 +441,12 @@ func Test_Out_Of_Order_Delete(t *testing.T) {
 
 	buf64add := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64add,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64add, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64add, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	addChirpID := m.MessageID
@@ -482,7 +482,7 @@ func Test_Out_Of_Order_Delete(t *testing.T) {
 	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
-	var chirpDel messagedata.ChirpDelete
+	var chirpDel mchirp.ChirpDelete
 
 	err = json.Unmarshal(buf, &chirpDel)
 	require.NoError(t, err)
@@ -494,12 +494,12 @@ func Test_Out_Of_Order_Delete(t *testing.T) {
 
 	buf64delete := base64.URLEncoding.EncodeToString(buf)
 
-	m = message.Message{
+	m = mmessage.Message{
 		Data:              buf64delete,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64delete, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64delete, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	pub2.Params.Message = m
@@ -653,7 +653,7 @@ type fakeSocket struct {
 	sockType socket.SocketType
 
 	resultID int
-	res      []message.Message
+	res      []mmessage.Message
 	msg      []byte
 
 	err error
@@ -673,7 +673,7 @@ func (f *fakeSocket) Send(msg []byte) {
 }
 
 // SendResult implements socket.Socket
-func (f *fakeSocket) SendResult(id int, res []message.Message, missingMsgs map[string][]message.Message) {
+func (f *fakeSocket) SendResult(id int, res []mmessage.Message, missingMsgs map[string][]mmessage.Message) {
 	f.resultID = id
 	f.res = res
 }

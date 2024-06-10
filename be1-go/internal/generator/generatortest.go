@@ -7,11 +7,11 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/internal/crypto"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/mmessage"
 	"testing"
 )
 
-func newMessage(t *testing.T, sender string, senderSK kyber.Scalar, data []byte) message.Message {
+func newMessage(t *testing.T, sender string, senderSK kyber.Scalar, data []byte) mmessage.Message {
 	data64 := base64.URLEncoding.EncodeToString(data)
 
 	signature64 := base64.URLEncoding.EncodeToString([]byte(sender))
@@ -23,18 +23,18 @@ func newMessage(t *testing.T, sender string, senderSK kyber.Scalar, data []byte)
 		signature64 = base64.URLEncoding.EncodeToString(signatureBuf)
 	}
 
-	messageID64 := message.Hash(data64, signature64)
+	messageID64 := mmessage.Hash(data64, signature64)
 
-	return message.Message{
+	return mmessage.Message{
 		Data:              data64,
 		Sender:            sender,
 		Signature:         signature64,
 		MessageID:         messageID64,
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 }
 
-func NewNothingMsg(t *testing.T, sender string, senderSK kyber.Scalar) message.Message {
+func NewNothingMsg(t *testing.T, sender string, senderSK kyber.Scalar) mmessage.Message {
 	data := struct {
 		Object string `json:"object"`
 		Action string `json:"action"`

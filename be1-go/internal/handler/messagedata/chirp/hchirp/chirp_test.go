@@ -8,7 +8,7 @@ import (
 	"popstellar/internal/generator"
 	"popstellar/internal/handler/messagedata/chirp/hchirp/mocks"
 	"popstellar/internal/handler/messagedata/root/hroot"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
 	"strings"
@@ -22,7 +22,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	type input struct {
 		name        string
 		channelPath string
-		msg         message.Message
+		msg         mmessage.Message
 		isError     bool
 		contains    string
 	}
@@ -142,7 +142,7 @@ func Test_handleChannelChirp(t *testing.T) {
 }
 
 func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int64,
-	db *mocks.Repository, isError bool, subs *state.Subscribers) message.Message {
+	db *mocks.Repository, isError bool, subs *state.Subscribers) mmessage.Message {
 
 	msg := generator.NewChirpAddMsg(t, sender, nil, timestamp)
 
@@ -158,14 +158,14 @@ func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int
 	err = subs.AddChannel(chirpNotifyChannelID)
 	require.NoError(t, err)
 
-	db.On("StoreChirpMessages", channelID, chirpNotifyChannelID, mock.AnythingOfType("message.Message"),
-		mock.AnythingOfType("message.Message")).Return(nil)
+	db.On("StoreChirpMessages", channelID, chirpNotifyChannelID, mock.AnythingOfType("mmessage.Message"),
+		mock.AnythingOfType("mmessage.Message")).Return(nil)
 
 	return msg
 }
 
 func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID string,
-	timestamp int64, db *mocks.Repository, isError bool, subs *state.Subscribers) message.Message {
+	timestamp int64, db *mocks.Repository, isError bool, subs *state.Subscribers) mmessage.Message {
 
 	msg := generator.NewChirpDeleteMsg(t, sender, nil, chirpID, timestamp)
 
@@ -183,8 +183,8 @@ func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID st
 	err = subs.AddChannel(chirpNotifyChannelID)
 	require.NoError(t, err)
 
-	db.On("StoreChirpMessages", channelID, chirpNotifyChannelID, mock.AnythingOfType("message.Message"),
-		mock.AnythingOfType("message.Message")).Return(nil)
+	db.On("StoreChirpMessages", channelID, chirpNotifyChannelID, mock.AnythingOfType("mmessage.Message"),
+		mock.AnythingOfType("mmessage.Message")).Return(nil)
 
 	return msg
 }

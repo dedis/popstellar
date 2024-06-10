@@ -11,7 +11,9 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/messagedata/election/telection"
 	"popstellar/internal/message/messagedata"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/messagedata/melection"
+	"popstellar/internal/message/messagedata/mlao"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/validation"
 	"sort"
 )
@@ -26,7 +28,7 @@ type Config interface {
 }
 
 type Subscribers interface {
-	BroadcastToAllClients(msg message.Message, channel string) error
+	BroadcastToAllClients(msg mmessage.Message, channel string) error
 }
 
 type Repository interface {
@@ -62,10 +64,10 @@ type Repository interface {
 	GetElectionQuestionsWithValidVotes(electionID string) (map[string]telection.Question, error)
 
 	// StoreElectionEndWithResult stores a message and an election result message inside the database.
-	StoreElectionEndWithResult(channelID string, msg, electionResultMsg message.Message) error
+	StoreElectionEndWithResult(channelID string, msg, electionResultMsg mmessage.Message) error
 
 	// StoreMessageAndData stores a message with an object and an action inside the database.
-	StoreMessageAndData(channelID string, msg message.Message) error
+	StoreMessageAndData(channelID string, msg mmessage.Message) error
 }
 
 type Handler struct {
@@ -85,7 +87,7 @@ func New(conf Config, subs Subscribers,
 	}
 }
 
-func (h *Handler) Handle(channelPath string, msg message.Message) error {
+func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
@@ -129,8 +131,8 @@ func (h *Handler) Handle(channelPath string, msg message.Message) error {
 	return nil
 }
 
-func (h *Handler) handleVoteCastVote(msg message.Message, channelPath string) error {
-	var voteCastVote messagedata.VoteCastVote
+func (h *Handler) handleVoteCastVote(msg mmessage.Message, channelPath string) error {
+	var voteCastVote melection.VoteCastVote
 	err := msg.UnmarshalData(&voteCastVote)
 	if err != nil {
 		return err
@@ -190,8 +192,8 @@ func (h *Handler) handleVoteCastVote(msg message.Message, channelPath string) er
 	return h.subs.BroadcastToAllClients(msg, channelPath)
 }
 
-func (h *Handler) handleElectionOpen(msg message.Message, channelPath string) error {
-	var electionOpen messagedata.ElectionOpen
+func (h *Handler) handleElectionOpen(msg mmessage.Message, channelPath string) error {
+	var electionOpen melection.ElectionOpen
 	err := msg.UnmarshalData(&electionOpen)
 	if err != nil {
 		return err
@@ -228,8 +230,8 @@ func (h *Handler) handleElectionOpen(msg message.Message, channelPath string) er
 	return h.subs.BroadcastToAllClients(msg, channelPath)
 }
 
-func (h *Handler) handleElectionEnd(msg message.Message, channelPath string) error {
-	var electionEnd messagedata.ElectionEnd
+func (h *Handler) handleElectionEnd(msg mmessage.Message, channelPath string) error {
+	var electionEnd melection.ElectionEnd
 	err := msg.UnmarshalData(&electionEnd)
 	if err != nil {
 		return err
@@ -275,7 +277,7 @@ func (h *Handler) handleElectionEnd(msg message.Message, channelPath string) err
 	return h.subs.BroadcastToAllClients(electionResultMsg, channelPath)
 }
 
-func (h *Handler) verifyElectionEnd(electionEnd messagedata.ElectionEnd, channelPath string) error {
+func (h *Handler) verifyElectionEnd(electionEnd melection.ElectionEnd, channelPath string) error {
 	// verify message data
 	err := electionEnd.Verify(channelPath)
 	if err != nil {
@@ -305,7 +307,7 @@ func (h *Handler) verifyElectionEnd(electionEnd messagedata.ElectionEnd, channel
 	return nil
 }
 
-func (h *Handler) verifySenderElection(msg message.Message, channelPath string, onlyOrganizer bool) error {
+func (h *Handler) verifySenderElection(msg mmessage.Message, channelPath string, onlyOrganizer bool) error {
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode sender: %v", err)
@@ -343,7 +345,7 @@ func (h *Handler) verifySenderElection(msg message.Message, channelPath string, 
 	return nil
 }
 
-func (h *Handler) verifyVote(vote messagedata.Vote, channelPath, electionID string) error {
+func (h *Handler) verifyVote(vote melection.Vote, channelPath, electionID string) error {
 	questions, err := h.db.GetElectionQuestions(channelPath)
 	if err != nil {
 		return err
@@ -361,14 +363,14 @@ func (h *Handler) verifyVote(vote messagedata.Vote, channelPath, electionID stri
 
 	var voteString string
 	switch electionType {
-	case messagedata.OpenBallot:
+	case mlao.OpenBallot:
 		voteInt, ok := vote.Vote.(int)
 		if !ok {
 			return errors.NewInvalidMessageFieldError("vote in open ballot should be an integer")
 		}
 		voteString = fmt.Sprintf("%d", voteInt)
 
-	case messagedata.SecretBallot:
+	case mlao.SecretBallot:
 		voteString, ok = vote.Vote.(string)
 		if !ok {
 			return errors.NewInvalidMessageFieldError("vote in secret ballot should be a string")
@@ -386,7 +388,7 @@ func (h *Handler) verifyVote(vote messagedata.Vote, channelPath, electionID stri
 		return errors.NewInvalidMessageFieldError("invalid election type: %s", electionType)
 	}
 
-	hash := message.Hash(voteFlag, electionID, string(question.ID), voteString)
+	hash := mmessage.Hash(voteFlag, electionID, string(question.ID), voteString)
 	if vote.ID != hash {
 		return errors.NewInvalidMessageFieldError("vote ID is not the expected hash")
 	}
@@ -394,7 +396,7 @@ func (h *Handler) verifyVote(vote messagedata.Vote, channelPath, electionID stri
 	return nil
 }
 
-func (h *Handler) verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
+func (h *Handler) verifyRegisteredVotes(electionEnd melection.ElectionEnd,
 	questions map[string]telection.Question) error {
 	var voteIDs []string
 	for _, question := range questions {
@@ -406,7 +408,7 @@ func (h *Handler) verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 	sort.Strings(voteIDs)
 
 	// hash all valid vote ids
-	validVotesHash := message.Hash(voteIDs...)
+	validVotesHash := mmessage.Hash(voteIDs...)
 
 	// compare registered votes with local saved votes
 	if electionEnd.RegisteredVotes != validVotesHash {
@@ -417,52 +419,52 @@ func (h *Handler) verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 	return nil
 }
 
-func (h *Handler) createElectionResult(questions map[string]telection.Question, channelPath string) (message.Message, error) {
+func (h *Handler) createElectionResult(questions map[string]telection.Question, channelPath string) (mmessage.Message, error) {
 	resultElection, err := h.computeElectionResult(questions, channelPath)
 	if err != nil {
-		return message.Message{}, err
+		return mmessage.Message{}, err
 	}
 
 	buf, err := json.Marshal(resultElection)
 	if err != nil {
-		return message.Message{}, errors.NewJsonMarshalError(err.Error())
+		return mmessage.Message{}, errors.NewJsonMarshalError(err.Error())
 	}
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
 	serverPubBuf, err := h.conf.GetServerPublicKey().MarshalBinary()
 	if err != nil {
-		return message.Message{}, errors.NewInternalServerError("failed to marshal server public key: %v", err)
+		return mmessage.Message{}, errors.NewInternalServerError("failed to marshal server public key: %v", err)
 	}
 
 	signatureBuf, err := h.conf.Sign(buf)
 	if err != nil {
-		return message.Message{}, err
+		return mmessage.Message{}, err
 	}
 
 	signature := base64.URLEncoding.EncodeToString(signatureBuf)
 
-	electionResultMsg := message.Message{
+	electionResultMsg := mmessage.Message{
 		Data:              buf64,
 		Sender:            base64.URLEncoding.EncodeToString(serverPubBuf),
 		Signature:         signature,
-		MessageID:         message.Hash(buf64, signature),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, signature),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	return electionResultMsg, nil
 }
 
-func (h *Handler) computeElectionResult(questions map[string]telection.Question, channelPath string) (messagedata.ElectionResult, error) {
+func (h *Handler) computeElectionResult(questions map[string]telection.Question, channelPath string) (melection.ElectionResult, error) {
 	electionType, err := h.db.GetElectionType(channelPath)
 	if err != nil {
-		return messagedata.ElectionResult{}, err
+		return melection.ElectionResult{}, err
 	}
 
-	result := make([]messagedata.ElectionResultQuestion, 0)
+	result := make([]melection.ElectionResultQuestion, 0)
 
 	for id, question := range questions {
-		if question.Method != messagedata.PluralityMethod {
+		if question.Method != mlao.PluralityMethod {
 			continue
 		}
 
@@ -474,15 +476,15 @@ func (h *Handler) computeElectionResult(questions map[string]telection.Question,
 			}
 		}
 
-		var questionResults []messagedata.ElectionResultQuestionResult
+		var questionResults []melection.ElectionResultQuestionResult
 		for i, options := range question.BallotOptions {
-			questionResults = append(questionResults, messagedata.ElectionResultQuestionResult{
+			questionResults = append(questionResults, melection.ElectionResultQuestionResult{
 				BallotOption: options,
 				Count:        votesPerBallotOption[i],
 			})
 		}
 
-		electionResult := messagedata.ElectionResultQuestion{
+		electionResult := melection.ElectionResultQuestion{
 			ID:     id,
 			Result: questionResults,
 		}
@@ -490,7 +492,7 @@ func (h *Handler) computeElectionResult(questions map[string]telection.Question,
 		result = append(result, electionResult)
 	}
 
-	resultElection := messagedata.ElectionResult{
+	resultElection := melection.ElectionResult{
 		Object:    messagedata.ElectionObject,
 		Action:    messagedata.ElectionActionResult,
 		Questions: result,
@@ -501,11 +503,11 @@ func (h *Handler) computeElectionResult(questions map[string]telection.Question,
 
 func (h *Handler) getVoteIndex(vote telection.ValidVote, electionType, channelPath string) (int, bool) {
 	switch electionType {
-	case messagedata.OpenBallot:
+	case mlao.OpenBallot:
 		index, _ := vote.Index.(int)
 		return index, true
 
-	case messagedata.SecretBallot:
+	case mlao.SecretBallot:
 		encryptedVote, _ := vote.Index.(string)
 		index, err := h.decryptVote(encryptedVote, channelPath)
 		if err != nil {

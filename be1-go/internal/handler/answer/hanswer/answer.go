@@ -6,8 +6,8 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/logger"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"sort"
 )
@@ -24,7 +24,7 @@ type Queries interface {
 }
 
 type MessageHandler interface {
-	Handle(channelPath string, msg message.Message, fromRumor bool) error
+	Handle(channelPath string, msg mmessage.Message, fromRumor bool) error
 }
 
 type RumorSender interface {
@@ -126,13 +126,13 @@ func (h *Handler) handleRumorAnswer(msg manswer.Answer) error {
 
 func (h *Handler) handleGetMessagesByIDAnswer(msg manswer.Answer) {
 	result := msg.Result.GetMessagesByChannel()
-	msgsByChan := make(map[string]map[string]message.Message)
+	msgsByChan := make(map[string]map[string]mmessage.Message)
 
 	// Unmarshal each message
 	for channelID, rawMsgs := range result {
-		msgsByChan[channelID] = make(map[string]message.Message)
+		msgsByChan[channelID] = make(map[string]mmessage.Message)
 		for _, rawMsg := range rawMsgs {
-			var msg message.Message
+			var msg mmessage.Message
 			err := json.Unmarshal(rawMsg, &msg)
 			if err == nil {
 				msgsByChan[channelID][msg.MessageID] = msg
@@ -152,7 +152,7 @@ func (h *Handler) handleGetMessagesByIDAnswer(msg manswer.Answer) {
 	h.handleMessagesByChannel(msgsByChan)
 }
 
-func (h *Handler) handleMessagesByChannel(msgsByChannel map[string]map[string]message.Message) {
+func (h *Handler) handleMessagesByChannel(msgsByChannel map[string]map[string]mmessage.Message) {
 	// Handle every messages
 	for i := 0; i < maxRetry; i++ {
 		// Sort by channelID length
@@ -166,7 +166,7 @@ func (h *Handler) handleMessagesByChannel(msgsByChannel map[string]map[string]me
 	}
 }
 
-func (h *Handler) tryToHandleMessages(msgsByChannel map[string]map[string]message.Message, sortedChannelIDs []string) {
+func (h *Handler) tryToHandleMessages(msgsByChannel map[string]map[string]mmessage.Message, sortedChannelIDs []string) {
 	for _, channelID := range sortedChannelIDs {
 		msgs := msgsByChannel[channelID]
 		for msgID, msg := range msgs {
@@ -185,7 +185,7 @@ func (h *Handler) tryToHandleMessages(msgsByChannel map[string]map[string]messag
 	}
 }
 
-func (h *Handler) getSortedChannels(msgsByChannel map[string]map[string]message.Message) []string {
+func (h *Handler) getSortedChannels(msgsByChannel map[string]map[string]mmessage.Message) []string {
 	sortedChannelIDs := make([]string, 0)
 	for channelID := range msgsByChannel {
 		sortedChannelIDs = append(sortedChannelIDs, channelID)

@@ -2,7 +2,7 @@ package hmessage
 
 import (
 	"popstellar/internal/errors"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/mmessage"
 )
 
 const (
@@ -29,7 +29,7 @@ type Repository interface {
 }
 
 type DataHandler interface {
-	Handle(channelPath string, msg message.Message) error
+	Handle(channelPath string, msg mmessage.Message) error
 }
 
 type DataHandlers struct {
@@ -54,7 +54,7 @@ func New(db Repository, handlers DataHandlers) *Handler {
 	}
 }
 
-func (h *Handler) Handle(channelPath string, msg message.Message, fromRumor bool) error {
+func (h *Handler) Handle(channelPath string, msg mmessage.Message, fromRumor bool) error {
 	err := msg.VerifyMessage()
 	if err != nil {
 		return err

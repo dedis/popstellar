@@ -2,13 +2,12 @@ package hpublish
 
 import (
 	"encoding/json"
-	"popstellar/internal/message/query/method/message"
-	"strings"
-
 	"popstellar/internal/errors"
 	"popstellar/internal/logger"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
+	"strings"
 )
 
 const thresholdMessagesByRumor = 1
@@ -23,7 +22,7 @@ type Repository interface {
 }
 
 type MessageHandler interface {
-	Handle(channelPath string, msg message.Message, fromRumor bool) error
+	Handle(channelPath string, msg mmessage.Message, fromRumor bool) error
 }
 
 type Handler struct {

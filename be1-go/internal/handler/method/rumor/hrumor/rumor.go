@@ -2,13 +2,12 @@ package hrumor
 
 import (
 	"encoding/json"
-	"sort"
-
 	"popstellar/internal/errors"
 	"popstellar/internal/logger"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
+	"sort"
 )
 
 const maxRetry = 10
@@ -27,14 +26,14 @@ type Repository interface {
 	CheckRumor(senderID string, rumorID int) (bool, error)
 
 	// StoreRumor stores the new rumor with its processed and unprocessed messages
-	StoreRumor(rumorID int, sender string, unprocessed map[string][]message.Message, processed []string) error
+	StoreRumor(rumorID int, sender string, unprocessed map[string][]mmessage.Message, processed []string) error
 
 	// GetUnprocessedMessagesByChannel returns all the unprocessed messages by channel
-	GetUnprocessedMessagesByChannel() (map[string][]message.Message, error)
+	GetUnprocessedMessagesByChannel() (map[string][]mmessage.Message, error)
 }
 
 type MessageHandler interface {
-	Handle(channelPath string, msg message.Message, fromRumor bool) error
+	Handle(channelPath string, msg mmessage.Message, fromRumor bool) error
 }
 
 type Handler struct {
@@ -94,7 +93,7 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 	return nil, nil
 }
 
-func (h *Handler) tryHandlingMessagesByChannel(unprocessedMsgsByChannel map[string][]message.Message) []string {
+func (h *Handler) tryHandlingMessagesByChannel(unprocessedMsgsByChannel map[string][]mmessage.Message) []string {
 	processedMsgs := make([]string, 0)
 
 	sortedChannels := h.sortChannels(unprocessedMsgsByChannel)
@@ -116,7 +115,7 @@ func (h *Handler) tryHandlingMessagesByChannel(unprocessedMsgsByChannel map[stri
 	return processedMsgs
 }
 
-func (h *Handler) tryHandlingMessages(channelPath string, unprocessedMsgs []message.Message) ([]message.Message, []string) {
+func (h *Handler) tryHandlingMessages(channelPath string, unprocessedMsgs []mmessage.Message) ([]mmessage.Message, []string) {
 	processedMsgs := make([]string, 0)
 
 	for i := 0; i < maxRetry; i++ {
@@ -141,13 +140,13 @@ func (h *Handler) tryHandlingMessages(channelPath string, unprocessedMsgs []mess
 	return unprocessedMsgs, processedMsgs
 }
 
-func (h *Handler) removeMessage(index int, messages []message.Message) []message.Message {
-	result := make([]message.Message, 0)
+func (h *Handler) removeMessage(index int, messages []mmessage.Message) []mmessage.Message {
+	result := make([]mmessage.Message, 0)
 	result = append(result, messages[:index]...)
 	return append(result, messages[index+1:]...)
 }
 
-func (h *Handler) sortChannels(msgsByChannel map[string][]message.Message) []string {
+func (h *Handler) sortChannels(msgsByChannel map[string][]mmessage.Message) []string {
 	sortedChannelIDs := make([]string, 0)
 	for channelID := range msgsByChannel {
 		sortedChannelIDs = append(sortedChannelIDs, channelID)

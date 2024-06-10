@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mlao"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -22,7 +23,7 @@ func Test_Meeting_State(t *testing.T) {
 	require.Equal(t, "meeting", object)
 	require.Equal(t, "state", action)
 
-	var msg messagedata.MeetingState
+	var msg mlao.MeetingState
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -44,7 +45,7 @@ func Test_Meeting_State(t *testing.T) {
 }
 
 func Test_Meeting_State_Interface_Functions(t *testing.T) {
-	var msg messagedata.MeetingState
+	var msg mlao.MeetingState
 
 	require.Equal(t, messagedata.MeetingObject, msg.GetObject())
 	require.Equal(t, messagedata.MeetingActionState, msg.GetAction())

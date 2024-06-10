@@ -5,13 +5,14 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/messagedata/root/hroot"
 	"popstellar/internal/message/messagedata"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/messagedata/mreaction"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/validation"
 	"strings"
 )
 
 type Subscribers interface {
-	BroadcastToAllClients(msg message.Message, channel string) error
+	BroadcastToAllClients(msg mmessage.Message, channel string) error
 }
 
 type Repository interface {
@@ -22,7 +23,7 @@ type Repository interface {
 	GetReactionSender(messageID string) (string, error)
 
 	// StoreMessageAndData stores a message with an object and an action inside the database.
-	StoreMessageAndData(channelID string, msg message.Message) error
+	StoreMessageAndData(channelID string, msg mmessage.Message) error
 }
 
 type Handler struct {
@@ -40,7 +41,7 @@ func New(subs Subscribers, db Repository,
 	}
 }
 
-func (h *Handler) Handle(channelPath string, msg message.Message) error {
+func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
@@ -86,8 +87,8 @@ func (h *Handler) Handle(channelPath string, msg message.Message) error {
 	return h.subs.BroadcastToAllClients(msg, channelPath)
 }
 
-func (h *Handler) handleReactionAdd(msg message.Message) error {
-	var reactMsg messagedata.ReactionAdd
+func (h *Handler) handleReactionAdd(msg mmessage.Message) error {
+	var reactMsg mreaction.ReactionAdd
 	err := msg.UnmarshalData(&reactMsg)
 	if err != nil {
 		return err
@@ -101,8 +102,8 @@ func (h *Handler) handleReactionAdd(msg message.Message) error {
 	return nil
 }
 
-func (h *Handler) handleReactionDelete(msg message.Message) error {
-	var delReactMsg messagedata.ReactionDelete
+func (h *Handler) handleReactionDelete(msg mmessage.Message) error {
+	var delReactMsg mreaction.ReactionDelete
 	err := msg.UnmarshalData(&delReactMsg)
 	if err != nil {
 		return err

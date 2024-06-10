@@ -21,8 +21,9 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/logger"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mauthentification"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/validation"
@@ -77,7 +78,7 @@ func TestJWTToken(t *testing.T) {
 // whether the corresponding Redirect URI can be created without error.
 func TestURIParamsConstruction(t *testing.T) {
 	// creating a fake authorization message
-	authMsg := &messagedata.AuthenticateUser{
+	authMsg := &mauthentification.AuthenticateUser{
 		Object:          messagedata.AuthObject,
 		Action:          messagedata.AuthAction,
 		ClientID:        "cl1ent",
@@ -128,12 +129,12 @@ func Test_Authenticate_User(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            "OuAhDgVgD0M2PIMTs8wyqxkg7N_ScEQu87k35i4zCsg=",
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	relativePathCreatePub := filepath.Join(relativeQueryExamplePath, "publish")

@@ -7,10 +7,10 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mroot"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/hub/standard_hub/hub_state"
@@ -312,7 +312,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	}
 
 	var id int
-	var msgs []message.Message
+	var msgs []mmessage.Message
 	var handlerErr error
 
 	switch queryBase.Method {
@@ -394,7 +394,7 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 	}
 
 	id := -1
-	var msgsByChannel map[string][]message.Message
+	var msgsByChannel map[string][]mmessage.Message
 	var handlerErr error
 
 	switch queryBase.Method {
@@ -500,7 +500,7 @@ func (h *Hub) sendHeartbeatToServers() {
 }
 
 // createLao creates a new LAO using the data in the publish parameter.
-func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
+func (h *Hub) createLao(msg mmessage.Message, laoCreate mroot.LaoCreate,
 	socket socket.Socket,
 ) error {
 	laoChannelPath := rootPrefix + laoCreate.ID

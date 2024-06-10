@@ -9,9 +9,11 @@ import (
 	"popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/melection"
+	"popstellar/internal/message/messagedata/mlao"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/registry"
@@ -120,7 +122,7 @@ type attendees struct {
 }
 
 // NewChannel returns a new initialized election channel
-func NewChannel(channelPath string, msg message.Message, msgData messagedata.ElectionSetup,
+func NewChannel(channelPath string, msg mmessage.Message, msgData mlao.ElectionSetup,
 	attendeesMap map[string]struct{}, hub channel.HubFunctionalities,
 	log zerolog.Logger, organizerPubKey kyber.Point) (channel.Channel, error) {
 
@@ -164,7 +166,7 @@ func NewChannel(channelPath string, msg message.Message, msgData messagedata.Ele
 
 	newChannel.inbox.StoreMessage(msg)
 
-	if newChannel.electionType != messagedata.SecretBallot {
+	if newChannel.electionType != mlao.SecretBallot {
 		return newChannel, nil
 	}
 
@@ -226,7 +228,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 }
 
 // Catchup is used to handle a catchup message.
-func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
+func (c *Channel) Catchup(catchup method.Catchup) []mmessage.Message {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(catchup.ID)).
 		Msg("received a catchup")
@@ -257,7 +259,7 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 // ---
 
 // handleMessage handles a message received in a broadcast or publish method
-func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
+func (c *Channel) handleMessage(msg mmessage.Message, socket socket.Socket) error {
 
 	err := c.registry.Process(msg, socket)
 	if err != nil {
@@ -273,18 +275,18 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 func (c *Channel) newElectionRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
-	registry.Register(messagedata.ElectionOpen{}, c.processElectionOpen)
-	registry.Register(messagedata.VoteCastVote{}, c.processCastVote)
-	registry.Register(messagedata.ElectionEnd{}, c.processElectionEnd)
-	registry.Register(messagedata.ElectionResult{}, c.processElectionResult)
+	registry.Register(melection.ElectionOpen{}, c.processElectionOpen)
+	registry.Register(melection.VoteCastVote{}, c.processCastVote)
+	registry.Register(melection.ElectionEnd{}, c.processElectionEnd)
+	registry.Register(melection.ElectionResult{}, c.processElectionResult)
 
 	return registry
 }
 
-func (c *Channel) processElectionOpen(msg message.Message, msgData interface{},
+func (c *Channel) processElectionOpen(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*messagedata.ElectionOpen)
+	data, ok := msgData.(*melection.ElectionOpen)
 	if !ok {
 		return xerrors.Errorf("message '%T' isn't a election#open message", msgData)
 	}
@@ -307,7 +309,7 @@ func (c *Channel) processElectionOpen(msg message.Message, msgData interface{},
 		return manswer.NewErrorf(-5, "sender is %s, should be the organizer", msg.Sender)
 	}
 
-	var electionOpen messagedata.ElectionOpen
+	var electionOpen melection.ElectionOpen
 
 	err = msg.UnmarshalData(&electionOpen)
 	if err != nil {
@@ -331,10 +333,10 @@ func (c *Channel) processElectionOpen(msg message.Message, msgData interface{},
 }
 
 // processCastVote is the callback that processes election#cast_vote messages
-func (c *Channel) processCastVote(msg message.Message, msgData interface{},
+func (c *Channel) processCastVote(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	_, ok := msgData.(*messagedata.VoteCastVote)
+	_, ok := msgData.(*melection.VoteCastVote)
 	if !ok {
 		return xerrors.Errorf("message '%T' isn't a election#cast_vote message", msgData)
 	}
@@ -358,7 +360,7 @@ func (c *Channel) processCastVote(msg message.Message, msgData interface{},
 		return manswer.NewError(-4, "only attendees can cast a vote in an election")
 	}
 
-	var castVote messagedata.VoteCastVote
+	var castVote melection.VoteCastVote
 
 	err = msg.UnmarshalData(&castVote)
 	if err != nil {
@@ -384,10 +386,10 @@ func (c *Channel) processCastVote(msg message.Message, msgData interface{},
 }
 
 // processElectionEnd is the callback that processes election#end messages
-func (c *Channel) processElectionEnd(msg message.Message, msgData interface{},
+func (c *Channel) processElectionEnd(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	_, ok := msgData.(*messagedata.ElectionEnd)
+	_, ok := msgData.(*melection.ElectionEnd)
 	if !ok {
 		return xerrors.Errorf("message '%T' isn't a election#end message", msgData)
 	}
@@ -414,7 +416,7 @@ func (c *Channel) processElectionEnd(msg message.Message, msgData interface{},
 		return manswer.NewErrorf(-5, "sender is %s, should be the organizer", msg.Sender)
 	}
 
-	var electionEnd messagedata.ElectionEnd
+	var electionEnd melection.ElectionEnd
 
 	err = msg.UnmarshalData(&electionEnd)
 	if err != nil {
@@ -445,10 +447,10 @@ func (c *Channel) processElectionEnd(msg message.Message, msgData interface{},
 }
 
 // processElectionResult is the callback that processes election#result messages
-func (c *Channel) processElectionResult(msg message.Message, msgData interface{},
+func (c *Channel) processElectionResult(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*messagedata.ElectionResult)
+	data, ok := msgData.(*melection.ElectionResult)
 	if !ok {
 		return xerrors.Errorf("message '%T' isn't a election#result message", msgData)
 	}
@@ -468,7 +470,7 @@ func (c *Channel) processElectionResult(msg message.Message, msgData interface{}
 }
 
 // verifyMessage checks if a message in a Publish or Broadcast method is valid
-func (c *Channel) verifyMessage(msg message.Message) error {
+func (c *Channel) verifyMessage(msg mmessage.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return xerrors.Errorf(failedToDecodeData, err)
@@ -491,7 +493,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
-func (c *Channel) broadcastToAllClients(msg message.Message) error {
+func (c *Channel) broadcastToAllClients(msg mmessage.Message) error {
 	c.log.Info().
 		Str(msgID, msg.MessageID).
 		Msg("broadcasting message to all clients")
@@ -504,8 +506,8 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 			Method: query.MethodBroadcast,
 		},
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			c.channelID,
 			msg,
@@ -530,7 +532,7 @@ func (c *Channel) createAndSendElectionKey() error {
 		return xerrors.Errorf("failed to marshal the election key: %v", err)
 	}
 
-	msgData := messagedata.ElectionKey{
+	msgData := melection.ElectionKey{
 		Object:   messagedata.ElectionObject,
 		Action:   messagedata.ElectionActionKey,
 		Election: c.getElectionID(),
@@ -560,12 +562,12 @@ func (c *Channel) createAndSendElectionKey() error {
 
 	signature := base64.URLEncoding.EncodeToString(signatureBuf)
 
-	electionKeyMsg := message.Message{
+	electionKeyMsg := mmessage.Message{
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(skBuf),
 		Signature:         signature,
-		MessageID:         message.Hash(newData64, signature),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(newData64, signature),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	err = c.broadcastToAllClients(electionKeyMsg)
@@ -634,12 +636,12 @@ func (c *Channel) broadcastElectionResult() error {
 
 	signature := base64.URLEncoding.EncodeToString(signatureBuf)
 
-	electionResultMsg := message.Message{
+	electionResultMsg := mmessage.Message{
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(pkBuf),
 		Signature:         signature,
-		MessageID:         message.Hash(newData64, signature),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(newData64, signature),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	c.inbox.StoreMessage(electionResultMsg)
@@ -649,14 +651,14 @@ func (c *Channel) broadcastElectionResult() error {
 }
 
 func (c *Channel) gatherResults(questions map[string]*question,
-	log zerolog.Logger) (messagedata.ElectionResult, error) {
+	log zerolog.Logger) (melection.ElectionResult, error) {
 
 	log.Info().Msgf("gathering results for the election")
 
-	resultElection := messagedata.ElectionResult{
+	resultElection := melection.ElectionResult{
 		Object:    messagedata.ElectionObject,
 		Action:    messagedata.ElectionActionResult,
-		Questions: []messagedata.ElectionResultQuestion{},
+		Questions: []melection.ElectionResultQuestion{},
 	}
 
 	for id := range questions {
@@ -678,7 +680,7 @@ func (c *Channel) gatherResults(questions map[string]*question,
 
 			res := gatherOptionCounts(numberOfVotesPerBallotOption, question.ballotOptions)
 
-			electResult := messagedata.ElectionResultQuestion{
+			electResult := melection.ElectionResultQuestion{
 				ID:     id,
 				Result: res,
 			}
@@ -699,11 +701,11 @@ func (c *Channel) getVoteIndex(vote validVote) (int, bool) {
 	elecType := c.electionType
 	switch elecType {
 	// open ballot votes have the index in plain text
-	case messagedata.OpenBallot:
+	case mlao.OpenBallot:
 		index, _ := vote.index.(int)
 		return index, true
 	// secret ballot votes must be decrypted to get the index
-	case messagedata.SecretBallot:
+	case mlao.SecretBallot:
 		temp, _ := vote.index.(string)
 		index, err := c.decryptVote(temp)
 		if err != nil {
@@ -763,10 +765,10 @@ func (c *Channel) decryptVote(vote string) (int, error) {
 	return int(index), nil
 }
 
-func gatherOptionCounts(count []int, options []string) []messagedata.ElectionResultQuestionResult {
-	questionResults := make([]messagedata.ElectionResultQuestionResult, 0)
+func gatherOptionCounts(count []int, options []string) []melection.ElectionResultQuestionResult {
+	questionResults := make([]melection.ElectionResultQuestionResult, 0)
 	for i, option := range options {
-		questionResults = append(questionResults, messagedata.ElectionResultQuestionResult{
+		questionResults = append(questionResults, melection.ElectionResultQuestionResult{
 			BallotOption: option,
 			Count:        count[i],
 		})
@@ -787,7 +789,7 @@ func checkMethodProperties(method string, length int) error {
 	return nil
 }
 
-func updateVote(msgID string, sender string, castVote messagedata.VoteCastVote,
+func updateVote(msgID string, sender string, castVote melection.VoteCastVote,
 	questions map[string]*question) error {
 
 	// this should update any previously set vote if the message ids are the same
@@ -827,7 +829,7 @@ func updateVote(msgID string, sender string, castVote messagedata.VoteCastVote,
 }
 
 // Creates the questions for the election channel or returns nil if they are not valid
-func getAllQuestionsForElectionChannel(questions []messagedata.ElectionSetupQuestion) (map[string]*question, error) {
+func getAllQuestionsForElectionChannel(questions []mlao.ElectionSetupQuestion) (map[string]*question, error) {
 	qs := make(map[string]*question)
 	for _, q := range questions {
 		ballotOpts := make([]string, len(q.BallotOptions))

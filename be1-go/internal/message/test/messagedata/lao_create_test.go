@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mroot"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -22,7 +23,7 @@ func Test_Lao_Create(t *testing.T) {
 	require.Equal(t, "lao", object)
 	require.Equal(t, "create", action)
 
-	var msg messagedata.LaoCreate
+	var msg mroot.LaoCreate
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -41,7 +42,7 @@ func Test_Lao_Create(t *testing.T) {
 }
 
 func Test_Lao_Create_Interface_Functions(t *testing.T) {
-	var msg messagedata.LaoCreate
+	var msg mroot.LaoCreate
 
 	require.Equal(t, messagedata.LAOObject, msg.GetObject())
 	require.Equal(t, messagedata.LAOActionCreate, msg.GetAction())
@@ -61,7 +62,7 @@ func Test_Lao_Create_Verify(t *testing.T) {
 			require.Equal(t, "lao", object)
 			require.Equal(t, "create", action)
 
-			var msg messagedata.LaoCreate
+			var msg mroot.LaoCreate
 
 			err = json.Unmarshal(buf, &msg)
 			require.NoError(t, err)

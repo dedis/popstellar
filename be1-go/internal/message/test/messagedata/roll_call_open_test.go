@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mlao"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -22,7 +23,7 @@ func Test_Roll_Call_Open(t *testing.T) {
 	require.Equal(t, "roll_call", object)
 	require.Equal(t, "open", action)
 
-	var msg messagedata.RollCallOpen
+	var msg mlao.RollCallOpen
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -35,7 +36,7 @@ func Test_Roll_Call_Open(t *testing.T) {
 }
 
 func Test_Roll_Call_Open_Interface_Functions(t *testing.T) {
-	var msg messagedata.RollCallOpen
+	var msg mlao.RollCallOpen
 
 	require.Equal(t, messagedata.RollCallObject, msg.GetObject())
 	require.Equal(t, messagedata.RollCallActionOpen, msg.GetAction())

@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mreaction"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -22,7 +23,7 @@ func Test_Reaction_Add(t *testing.T) {
 	require.Equal(t, "reaction", object)
 	require.Equal(t, "add", action)
 
-	var msg messagedata.ReactionAdd
+	var msg mreaction.ReactionAdd
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -38,7 +39,7 @@ func Test_Reaction_Add(t *testing.T) {
 }
 
 func Test_Reaction_Add_Interface_Functions(t *testing.T) {
-	var msg messagedata.ReactionAdd
+	var msg mreaction.ReactionAdd
 
 	require.Equal(t, messagedata.ReactionObject, msg.GetObject())
 	require.Equal(t, messagedata.ReactionActionAdd, msg.GetAction())
@@ -46,7 +47,7 @@ func Test_Reaction_Add_Interface_Functions(t *testing.T) {
 }
 
 func Test_Reaction_Add_Verify(t *testing.T) {
-	var reactionAdd messagedata.ReactionAdd
+	var reactionAdd mreaction.ReactionAdd
 
 	object, action := "reaction", "add"
 

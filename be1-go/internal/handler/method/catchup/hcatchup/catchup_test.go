@@ -5,7 +5,7 @@ import (
 	"golang.org/x/xerrors"
 	generator2 "popstellar/internal/generator"
 	"popstellar/internal/handler/method/catchup/hcatchup/mocks"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/mmessage"
 	mocks2 "popstellar/internal/network/socket/mocks"
 	"testing"
 )
@@ -20,7 +20,7 @@ func Test_handleCatchUp(t *testing.T) {
 		socket   mocks2.FakeSocket
 		ID       int
 		message  []byte
-		expected []message.Message
+		expected []mmessage.Message
 		isError  bool
 		contains string
 	}
@@ -32,7 +32,7 @@ func Test_handleCatchUp(t *testing.T) {
 	fakeSocket := mocks2.FakeSocket{Id: "1"}
 	ID := 1
 	channel := "/root/lao1"
-	messagesToCatchUp := []message.Message{
+	messagesToCatchUp := []mmessage.Message{
 		generator2.NewNothingMsg(t, "sender1", nil),
 		generator2.NewNothingMsg(t, "sender2", nil),
 		generator2.NewNothingMsg(t, "sender3", nil),

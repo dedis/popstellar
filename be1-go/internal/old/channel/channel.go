@@ -1,8 +1,8 @@
 package channel
 
 import (
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/validation"
 	"sync"
@@ -14,7 +14,7 @@ import (
 
 // LaoFactory is the function passed to the hub that it must use to
 // create a new lao channel.
-type LaoFactory func(channelID string, hub HubFunctionalities, msg message.Message,
+type LaoFactory func(channelID string, hub HubFunctionalities, msg mmessage.Message,
 	log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket) (Channel, error)
 
 // Channel represents a PoP channel - like a LAO.
@@ -31,7 +31,7 @@ type Channel interface {
 	Publish(msg method.Publish, socket socket.Socket) error
 
 	// Catchup is used to handle a catchup message.
-	Catchup(msg method.Catchup) []message.Message
+	Catchup(msg method.Catchup) []mmessage.Message
 
 	// Broadcast is used to handle a broadcast message.
 	Broadcast(msg method.Broadcast, socket socket.Socket) error

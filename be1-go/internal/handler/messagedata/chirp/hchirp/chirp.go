@@ -4,13 +4,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"go.dedis.ch/kyber/v3"
+	"popstellar/internal/errors"
 	"popstellar/internal/handler/messagedata/root/hroot"
+	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mchirp"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/validation"
 	"strings"
-
-	"popstellar/internal/errors"
-	"popstellar/internal/message/messagedata"
-	"popstellar/internal/message/query/method/message"
 )
 
 type Config interface {
@@ -19,7 +19,7 @@ type Config interface {
 }
 
 type Subscribers interface {
-	BroadcastToAllClients(msg message.Message, channel string) error
+	BroadcastToAllClients(msg mmessage.Message, channel string) error
 }
 
 type Repository interface {
@@ -27,7 +27,7 @@ type Repository interface {
 	HasMessage(messageID string) (bool, error)
 
 	// StoreChirpMessages stores a chirp message and a generalChirp broadcast inside the database.
-	StoreChirpMessages(channel, generalChannel string, msg, generalMsg message.Message) error
+	StoreChirpMessages(channel, generalChannel string, msg, generalMsg mmessage.Message) error
 }
 
 type Handler struct {
@@ -47,7 +47,7 @@ func New(conf Config, subs Subscribers,
 	}
 }
 
-func (h *Handler) Handle(channelPath string, msg message.Message) error {
+func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
@@ -104,8 +104,8 @@ func (h *Handler) Handle(channelPath string, msg message.Message) error {
 	return nil
 }
 
-func (h *Handler) handleChirpAdd(channelID string, msg message.Message) error {
-	var data messagedata.ChirpAdd
+func (h *Handler) handleChirpAdd(channelID string, msg mmessage.Message) error {
+	var data mchirp.ChirpAdd
 	err := msg.UnmarshalData(&data)
 	if err != nil {
 		return err
@@ -123,8 +123,8 @@ func (h *Handler) handleChirpAdd(channelID string, msg message.Message) error {
 	return nil
 }
 
-func (h *Handler) handleChirpDelete(channelID string, msg message.Message) error {
-	var data messagedata.ChirpDelete
+func (h *Handler) handleChirpDelete(channelID string, msg mmessage.Message) error {
+	var data mchirp.ChirpDelete
 	err := msg.UnmarshalData(&data)
 	if err != nil {
 		return err
@@ -150,24 +150,24 @@ func (h *Handler) handleChirpDelete(channelID string, msg message.Message) error
 	return nil
 }
 
-func (h *Handler) createChirpNotify(channelID string, msg message.Message) (message.Message, error) {
+func (h *Handler) createChirpNotify(channelID string, msg mmessage.Message) (mmessage.Message, error) {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		return message.Message{}, errors.NewInvalidMessageFieldError("failed to decode the data: %v", err)
+		return mmessage.Message{}, errors.NewInvalidMessageFieldError("failed to decode the data: %v", err)
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	action = "notify_" + action
 	if err != nil {
-		return message.Message{}, err
+		return mmessage.Message{}, err
 	}
 
 	timestamp, err := messagedata.GetTime(jsonData)
 	if err != nil {
-		return message.Message{}, err
+		return mmessage.Message{}, err
 	}
 
-	newData := messagedata.ChirpBroadcast{
+	newData := mchirp.ChirpBroadcast{
 		Object:    object,
 		Action:    action,
 		ChirpID:   msg.MessageID,
@@ -177,33 +177,33 @@ func (h *Handler) createChirpNotify(channelID string, msg message.Message) (mess
 
 	dataBuf, err := json.Marshal(newData)
 	if err != nil {
-		return message.Message{}, errors.NewJsonMarshalError(err.Error())
+		return mmessage.Message{}, errors.NewJsonMarshalError(err.Error())
 	}
 
 	data64 := base64.URLEncoding.EncodeToString(dataBuf)
 
 	pkBuf, err := h.conf.GetServerPublicKey().MarshalBinary()
 	if err != nil {
-		return message.Message{}, errors.NewJsonMarshalError(err.Error())
+		return mmessage.Message{}, errors.NewJsonMarshalError(err.Error())
 	}
 
 	pk64 := base64.URLEncoding.EncodeToString(pkBuf)
 
 	signatureBuf, err := h.conf.Sign(dataBuf)
 	if err != nil {
-		return message.Message{}, err
+		return mmessage.Message{}, err
 	}
 
 	signature64 := base64.URLEncoding.EncodeToString(signatureBuf)
 
-	messageID64 := message.Hash(data64, signature64)
+	messageID64 := mmessage.Hash(data64, signature64)
 
-	newMsg := message.Message{
+	newMsg := mmessage.Message{
 		Data:              data64,
 		Sender:            pk64,
 		Signature:         signature64,
 		MessageID:         messageID64,
-		WitnessSignatures: make([]message.WitnessSignature, 0),
+		WitnessSignatures: make([]mmessage.WitnessSignature, 0),
 	}
 
 	return newMsg, nil

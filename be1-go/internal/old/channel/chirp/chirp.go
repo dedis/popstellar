@@ -5,11 +5,12 @@ import (
 	"encoding/json"
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/answer/manswer"
-	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mchirp"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/registry"
@@ -112,7 +113,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 }
 
 // Catchup is used to handle a catchup message.
-func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
+func (c *Channel) Catchup(catchup method.Catchup) []mmessage.Message {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(catchup.ID)).
 		Msg("received a catchup")
@@ -143,7 +144,7 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 // ---
 
 // handleMessage handles a message received in a broadcast or publish method
-func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
+func (c *Channel) handleMessage(msg mmessage.Message, socket socket.Socket) error {
 	err := c.registry.Process(msg, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %w", err)
@@ -169,16 +170,16 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 func (c *Channel) NewChirpRegistry() registry.MessageRegistry {
 	newRegistry := registry.NewMessageRegistry()
 
-	newRegistry.Register(messagedata.ChirpAdd{}, c.processAddChirp)
-	newRegistry.Register(messagedata.ChirpDelete{}, c.processDeleteChirp)
+	newRegistry.Register(mchirp.ChirpAdd{}, c.processAddChirp)
+	newRegistry.Register(mchirp.ChirpDelete{}, c.processDeleteChirp)
 
 	return newRegistry
 }
 
-func (c *Channel) processAddChirp(msg message.Message, msgData interface{},
+func (c *Channel) processAddChirp(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*messagedata.ChirpAdd)
+	data, ok := msgData.(*mchirp.ChirpAdd)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#add message", msgData)
 	}
@@ -191,14 +192,14 @@ func (c *Channel) processAddChirp(msg message.Message, msgData interface{},
 	return nil
 }
 
-func (c *Channel) processDeleteChirp(msg message.Message, msgData interface{},
+func (c *Channel) processDeleteChirp(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
 	return c.helperProcessDeleteChirp(msg, msgData, true)
 }
 
-func (c *Channel) helperProcessDeleteChirp(msg message.Message, msgData interface{}, retry bool) error {
-	data, ok := msgData.(*messagedata.ChirpDelete)
+func (c *Channel) helperProcessDeleteChirp(msg mmessage.Message, msgData interface{}, retry bool) error {
+	data, ok := msgData.(*mchirp.ChirpDelete)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#delete message", msgData)
 	}
@@ -224,7 +225,7 @@ func (c *Channel) helperProcessDeleteChirp(msg message.Message, msgData interfac
 }
 
 // verifyMessage checks if a message in a Publish or Broadcast method is valid
-func (c *Channel) verifyMessage(msg message.Message) error {
+func (c *Channel) verifyMessage(msg mmessage.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return xerrors.Errorf(failedToDecodeData, err)
@@ -245,7 +246,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 	return nil
 }
 
-func (c *Channel) verifyChirpMessage(msg message.Message, chirpMsg messagedata.Verifiable) error {
+func (c *Channel) verifyChirpMessage(msg mmessage.Message, chirpMsg messagedata.Verifiable) error {
 	err := chirpMsg.Verify()
 	if err != nil {
 		return xerrors.Errorf("invalid chirp message: %v", err)
@@ -271,17 +272,17 @@ func (c *Channel) verifyChirpMessage(msg message.Message, chirpMsg messagedata.V
 
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
-func (c *Channel) broadcastToAllClients(msg message.Message) error {
+func (c *Channel) broadcastToAllClients(msg mmessage.Message) error {
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: query.MethodBroadcast,
 		},
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			c.channelID,
 			msg,
@@ -298,7 +299,7 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 	return nil
 }
 
-func (c *Channel) broadcastViaGeneral(msg message.Message) error {
+func (c *Channel) broadcastViaGeneral(msg mmessage.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return xerrors.Errorf("failed to decode the data: %v", err)
@@ -315,7 +316,7 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 		return xerrors.Errorf("failed to read the message data: %v", err)
 	}
 
-	newData := messagedata.ChirpBroadcast{
+	newData := mchirp.ChirpBroadcast{
 		Object:    object,
 		Action:    action,
 		ChirpID:   msg.MessageID,
@@ -346,17 +347,17 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: "broadcast",
 		},
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			c.channelID,
-			message.Message{
+			mmessage.Message{
 				Data:              newData64,
 				Sender:            base64.URLEncoding.EncodeToString(pkBuf),
 				Signature:         signature,

@@ -3,14 +3,14 @@ package hcatchup
 import (
 	"encoding/json"
 	"popstellar/internal/errors"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 )
 
 type Repository interface {
 	// GetAllMessagesFromChannel return all the messages received + sent on a channel
-	GetAllMessagesFromChannel(channelID string) ([]message.Message, error)
+	GetAllMessagesFromChannel(channelID string) ([]mmessage.Message, error)
 }
 
 type Handler struct {

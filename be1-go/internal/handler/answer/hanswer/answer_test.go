@@ -12,8 +12,9 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/generator"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mroot"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/state"
 	"testing"
@@ -29,7 +30,7 @@ const (
 
 type nullMessageHandler struct{}
 
-func (n *nullMessageHandler) Handle(channelPath string, msg message.Message, fromRumor bool) error {
+func (n *nullMessageHandler) Handle(channelPath string, msg mmessage.Message, fromRumor bool) error {
 	if msg.MessageID == wrongMessageID {
 		return errors.NewInvalidMessageFieldError("Wrong messageID")
 	} else {
@@ -57,17 +58,17 @@ func Test_handleMessagesByChannel(t *testing.T) {
 
 	type input struct {
 		name     string
-		messages map[string]map[string]message.Message
-		expected map[string]map[string]message.Message
+		messages map[string]map[string]mmessage.Message
+		expected map[string]map[string]mmessage.Message
 	}
 
 	_, publicBuf, private, _ := generator.GenerateKeyPair(t)
 	now := time.Now().Unix()
 	name := "LAO X"
 
-	laoID := message.Hash(base64.URLEncoding.EncodeToString(publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := mmessage.Hash(base64.URLEncoding.EncodeToString(publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := messagedata.LaoCreate{
+	data := mroot.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
@@ -85,38 +86,38 @@ func Test_handleMessagesByChannel(t *testing.T) {
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
 	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
 
-	msgValid := message.Message{
+	msgValid := mmessage.Message{
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         message.Hash(dataBase64, signatureBase64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	msgWithInvalidField := message.Message{
+	msgWithInvalidField := mmessage.Message{
 		Data:              wrongData,
 		Sender:            wrongSender,
 		Signature:         wrongSignature,
 		MessageID:         wrongMessageID,
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	inputs := make([]input, 0)
 
 	// blacklist without invalid field error
 
-	messages := make(map[string]map[string]message.Message)
-	messages["/root"] = make(map[string]message.Message)
+	messages := make(map[string]map[string]mmessage.Message)
+	messages["/root"] = make(map[string]mmessage.Message)
 	messages["/root"][msgValid.MessageID] = msgValid
 	messages["/root"][msgWithInvalidField.MessageID] = msgWithInvalidField
-	messages["/root/lao1"] = make(map[string]message.Message)
+	messages["/root/lao1"] = make(map[string]mmessage.Message)
 	messages["/root/lao1"][msgValid.MessageID] = msgValid
 	messages["/root/lao1"][msgWithInvalidField.MessageID] = msgWithInvalidField
 
-	expected := make(map[string]map[string]message.Message)
-	expected["/root"] = make(map[string]message.Message)
+	expected := make(map[string]map[string]mmessage.Message)
+	expected["/root"] = make(map[string]mmessage.Message)
 	expected["/root"][msgWithInvalidField.MessageID] = msgWithInvalidField
-	expected["/root/lao1"] = make(map[string]message.Message)
+	expected["/root/lao1"] = make(map[string]mmessage.Message)
 	expected["/root/lao1"][msgWithInvalidField.MessageID] = msgWithInvalidField
 
 	fmt.Println(messages)

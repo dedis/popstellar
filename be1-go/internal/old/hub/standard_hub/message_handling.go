@@ -7,9 +7,10 @@ import (
 	manswer2 "popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mroot"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/hub/standard_hub/hub_state"
 	"popstellar/internal/validation"
@@ -58,7 +59,7 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 		return err
 	}
 
-	var laoCreate messagedata.LaoCreate
+	var laoCreate mroot.LaoCreate
 
 	err = publish.Params.Message.UnmarshalData(&laoCreate)
 	if err != nil {
@@ -117,7 +118,7 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 		return err
 	}
 
-	var laoCreate messagedata.LaoCreate
+	var laoCreate mroot.LaoCreate
 
 	err = broadcast.Params.Message.UnmarshalData(&laoCreate)
 	if err != nil {
@@ -147,7 +148,7 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 // handleRootCatchup handles an incoming catchup message on the root channel
 func (h *Hub) handleRootCatchup(senderSocket socket.Socket,
 	byteMessage []byte,
-) ([]message.Message, int, error) {
+) ([]mmessage.Message, int, error) {
 	var catchup method.Catchup
 
 	err := json.Unmarshal(byteMessage, &catchup)
@@ -248,7 +249,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 		return publish.ID, manswer2.NewInvalidMessageFieldError("failed to verify signature : %v", err)
 	}
 
-	expectedMessageID := message.Hash(data, signature)
+	expectedMessageID := mmessage.Hash(data, signature)
 	if expectedMessageID != messageID {
 		return publish.ID, manswer2.NewInvalidMessageFieldError(wrongMessageIdError,
 			expectedMessageID, messageID)
@@ -294,7 +295,7 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 	messageID := broadcast.Params.Message.MessageID
 	data := broadcast.Params.Message.Data
 
-	expectedMessageID := message.Hash(data, signature)
+	expectedMessageID := mmessage.Hash(data, signature)
 	if expectedMessageID != messageID {
 		return xerrors.Errorf(wrongMessageIdError,
 			expectedMessageID, messageID)
@@ -376,7 +377,7 @@ func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, 
 
 func (h *Hub) handleCatchup(socket socket.Socket,
 	byteMessage []byte,
-) ([]message.Message, int, error) {
+) ([]mmessage.Message, int, error) {
 	var catchup method.Catchup
 
 	err := json.Unmarshal(byteMessage, &catchup)
@@ -427,7 +428,7 @@ func (h *Hub) handleHeartbeat(socket socket.Socket,
 
 func (h *Hub) handleGetMessagesById(socket socket.Socket,
 	byteMessage []byte,
-) (map[string][]message.Message, int, error) {
+) (map[string][]mmessage.Message, int, error) {
 	var getMessagesById method.GetMessagesById
 
 	err := json.Unmarshal(byteMessage, &getMessagesById)
@@ -495,8 +496,8 @@ func getMissingIds(receivedIds map[string][]string, storedIds map[string][]strin
 }
 
 // getMissingMessages retrieves the missing messages from the inbox given their Ids
-func (h *Hub) getMissingMessages(missingIds map[string][]string) (map[string][]message.Message, error) {
-	missingMsgs := make(map[string][]message.Message)
+func (h *Hub) getMissingMessages(missingIds map[string][]string) (map[string][]mmessage.Message, error) {
+	missingMsgs := make(map[string][]mmessage.Message)
 	for channelId, messageIds := range missingIds {
 		for _, messageId := range messageIds {
 			msg, exists := h.hubInbox.GetMessage(messageId)
@@ -511,13 +512,13 @@ func (h *Hub) getMissingMessages(missingIds map[string][]string) (map[string][]m
 
 // handleReceivedMessage handle a message obtained by the server receiving a
 // getMessagesById result
-func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Message, targetChannel string) error {
+func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData mmessage.Message, targetChannel string) error {
 	signature := messageData.Signature
 	messageID := messageData.MessageID
 	data := messageData.Data
 	log.Info().Msgf("Received message on %s", targetChannel)
 
-	expectedMessageID := message.Hash(data, signature)
+	expectedMessageID := mmessage.Hash(data, signature)
 	if expectedMessageID != messageID {
 		return xerrors.Errorf(wrongMessageIdError,
 			expectedMessageID, messageID)
@@ -532,8 +533,8 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Me
 		},
 
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: targetChannel,
 			Message: messageData,
@@ -577,7 +578,7 @@ func (h *Hub) loopOverMessages(messages *map[string][]json.RawMessage, senderSoc
 
 		// Try to process each message
 		for _, msg := range messageArray {
-			var messageData message.Message
+			var messageData mmessage.Message
 			err := json.Unmarshal(msg, &messageData)
 			if err != nil {
 				h.log.Error().Msgf("failed to unmarshal message during getMessagesById answer handling: %v", err)

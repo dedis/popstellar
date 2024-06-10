@@ -3,7 +3,8 @@ package lao
 import (
 	"encoding/base64"
 	"popstellar/internal/message/messagedata"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/messagedata/mlao"
+	"popstellar/internal/message/mmessage"
 	"strconv"
 	"strings"
 
@@ -20,7 +21,7 @@ const electionFlag = "Election"
 const questionFlag = "Question"
 
 // verifyMessageLaoState checks the lao#state message data is valid.
-func (c *Channel) verifyMessageLaoState(laoState messagedata.LaoState) error {
+func (c *Channel) verifyMessageLaoState(laoState mlao.LaoState) error {
 	c.log.Info().Msgf("verifying lao#state message of lao %s", laoState.ID)
 
 	// verify id is base64URL encoded
@@ -90,7 +91,7 @@ func (c *Channel) verifyMessageLaoState(laoState messagedata.LaoState) error {
 }
 
 // verifyMessageRollCallCreate checks the roll_call#create message data is valid.
-func (c *Channel) verifyMessageRollCallCreate(rollCallCreate *messagedata.RollCallCreate) error {
+func (c *Channel) verifyMessageRollCallCreate(rollCallCreate *mlao.RollCallCreate) error {
 	c.log.Info().Msgf("verifying roll_call#create message of roll call %s", rollCallCreate.ID)
 
 	// verify id is base64URL encoded
@@ -100,7 +101,7 @@ func (c *Channel) verifyMessageRollCallCreate(rollCallCreate *messagedata.RollCa
 	}
 
 	// verify roll call create message id
-	expectedID := message.Hash(
+	expectedID := mmessage.Hash(
 		rollCallFlag,
 		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
 		strconv.Itoa(int(rollCallCreate.Creation)),
@@ -153,7 +154,7 @@ func (c *Channel) verifyMessageRollCallCreate(rollCallCreate *messagedata.RollCa
 }
 
 // verifyMessageRollCallOpen checks the roll_call#open message data is valid.
-func (c *Channel) verifyMessageRollCallOpen(rollCallOpen messagedata.RollCallOpen) error {
+func (c *Channel) verifyMessageRollCallOpen(rollCallOpen mlao.RollCallOpen) error {
 	c.log.Info().Msgf("verifying roll_call#open message of "+
 		"roll call with update id %s", rollCallOpen.UpdateID)
 
@@ -165,7 +166,7 @@ func (c *Channel) verifyMessageRollCallOpen(rollCallOpen messagedata.RollCallOpe
 	}
 
 	// verify roll call open message update id
-	expectedID := message.Hash(
+	expectedID := mmessage.Hash(
 		rollCallFlag,
 		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
 		rollCallOpen.Opens,
@@ -194,7 +195,7 @@ func (c *Channel) verifyMessageRollCallOpen(rollCallOpen messagedata.RollCallOpe
 
 // TODO modif Noemien ??
 // verifyMessageRollCallClose checks the roll_call#close message data is valid.
-func (c *Channel) verifyMessageRollCallClose(rollCallClose *messagedata.RollCallClose) error {
+func (c *Channel) verifyMessageRollCallClose(rollCallClose *mlao.RollCallClose) error {
 	c.log.Info().Msgf("verifying roll_call#close message of roll call with update id %s",
 		rollCallClose.UpdateID)
 
@@ -206,7 +207,7 @@ func (c *Channel) verifyMessageRollCallClose(rollCallClose *messagedata.RollCall
 	}
 
 	// verify roll call close message update id
-	expectedID := message.Hash(
+	expectedID := mmessage.Hash(
 		rollCallFlag,
 		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
 		rollCallClose.Closes,
@@ -243,7 +244,7 @@ func (c *Channel) verifyMessageRollCallClose(rollCallClose *messagedata.RollCall
 }
 
 // verifyMessageElectionSetup checks the election#setup message data is valid.
-func (c *Channel) verifyMessageElectionSetup(electionSetup messagedata.ElectionSetup) error {
+func (c *Channel) verifyMessageElectionSetup(electionSetup mlao.ElectionSetup) error {
 	c.log.Info().Msgf("verifying election#setup message of election with id %s", electionSetup.ID)
 
 	// verify lao id is base64URL encoded
@@ -264,7 +265,7 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup messagedata.ElectionS
 	}
 
 	// verify election setup message id
-	expectedID := message.Hash(
+	expectedID := mmessage.Hash(
 		electionFlag,
 		laoID,
 		strconv.Itoa(int(electionSetup.CreatedAt)),
@@ -281,8 +282,8 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup messagedata.ElectionS
 
 	// verify ballot type is correct
 	switch electionSetup.Version {
-	case messagedata.OpenBallot:
-	case messagedata.SecretBallot:
+	case mlao.OpenBallot:
+	case mlao.SecretBallot:
 	default:
 		return xerrors.Errorf("Version should not be %s", electionSetup.Version)
 	}
@@ -352,7 +353,7 @@ func verifyElectionSetupTime(createdAt, start, end int64) error {
 }
 
 // verifyElectionSetupQuestion checks the question of an election setup message is valid.
-func verifyElectionSetupQuestion(question messagedata.ElectionSetupQuestion,
+func verifyElectionSetupQuestion(question mlao.ElectionSetupQuestion,
 	electionID string) error {
 
 	// verify question id is base64URL encoded
@@ -362,7 +363,7 @@ func verifyElectionSetupQuestion(question messagedata.ElectionSetupQuestion,
 	}
 
 	// verify question id
-	expectedID := message.Hash(
+	expectedID := mmessage.Hash(
 		questionFlag,
 		electionID,
 		question.Question,

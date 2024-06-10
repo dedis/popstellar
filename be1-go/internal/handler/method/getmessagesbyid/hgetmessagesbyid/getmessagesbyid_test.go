@@ -5,7 +5,7 @@ import (
 	"golang.org/x/xerrors"
 	generator2 "popstellar/internal/generator"
 	"popstellar/internal/handler/method/getmessagesbyid/hgetmessagesbyid/mocks"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/mmessage"
 	mocks2 "popstellar/internal/network/socket/mocks"
 	"testing"
 )
@@ -20,7 +20,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 		socket   mocks2.FakeSocket
 		ID       int
 		message  []byte
-		expected map[string][]message.Message
+		expected map[string][]mmessage.Message
 		isError  bool
 		contains string
 	}
@@ -32,14 +32,14 @@ func Test_handleGetMessagesByID(t *testing.T) {
 	fakeSocket := mocks2.FakeSocket{Id: "1"}
 	ID := 1
 
-	expected1 := make(map[string][]message.Message)
-	expected1["/root"] = []message.Message{
+	expected1 := make(map[string][]mmessage.Message)
+	expected1["/root"] = []mmessage.Message{
 		generator2.NewNothingMsg(t, "sender1", nil),
 		generator2.NewNothingMsg(t, "sender2", nil),
 		generator2.NewNothingMsg(t, "sender3", nil),
 		generator2.NewNothingMsg(t, "sender4", nil),
 	}
-	expected1["/root/lao1"] = []message.Message{
+	expected1["/root/lao1"] = []mmessage.Message{
 		generator2.NewNothingMsg(t, "sender5", nil),
 		generator2.NewNothingMsg(t, "sender6", nil),
 	}

@@ -5,7 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/message/messagedata"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/messagedata/mlao"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/old/channel"
 	"testing"
 
@@ -37,7 +38,7 @@ func TestVerify_LaoState(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var laoState messagedata.LaoState
+	var laoState mlao.LaoState
 
 	err = json.Unmarshal(buf, &laoState)
 	require.NoError(t, err)
@@ -96,7 +97,7 @@ func TestVerify_RollCallCreate(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var rollCallCreate messagedata.RollCallCreate
+	var rollCallCreate mlao.RollCallCreate
 
 	err = json.Unmarshal(buf, &rollCallCreate)
 	require.NoError(t, err)
@@ -126,7 +127,7 @@ func TestVerify_RollCallOpen(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var rollCallOpen messagedata.RollCallOpen
+	var rollCallOpen mlao.RollCallOpen
 
 	err = json.Unmarshal(buf, &rollCallOpen)
 	require.NoError(t, err)
@@ -156,7 +157,7 @@ func TestVerify_RollCallClose(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var rollCallClose messagedata.RollCallClose
+	var rollCallClose mlao.RollCallClose
 
 	err = json.Unmarshal(buf, &rollCallClose)
 	require.NoError(t, err)
@@ -184,7 +185,7 @@ func TestVerify_ElectionSetup(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var electionSetup messagedata.ElectionSetup
+	var electionSetup mlao.ElectionSetup
 
 	err = json.Unmarshal(buf, &electionSetup)
 	require.NoError(t, err)
@@ -242,7 +243,7 @@ func newFakeChannel(t *testing.T) channel.Channel {
 	// Create the channel
 	numMessages := 1
 
-	messages := make([]message.Message, numMessages)
+	messages := make([]mmessage.Message, numMessages)
 
 	channel, err := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, messages[0], nolog, keypair.public, nil)
 	require.NoError(t, err)

@@ -3,10 +3,10 @@ package generator
 import (
 	"encoding/json"
 	"github.com/stretchr/testify/require"
-	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"testing"
 )
 
@@ -19,7 +19,7 @@ func NewGreetServerQuery(t *testing.T, publicKey, clientAddress, serverAddress s
 
 	greetServer := method.GreetServer{
 		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
@@ -37,7 +37,7 @@ func NewGreetServerQuery(t *testing.T, publicKey, clientAddress, serverAddress s
 func NewSubscribeQuery(t *testing.T, queryID int, channel string) []byte {
 	subscribe := method.Subscribe{
 		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
@@ -56,7 +56,7 @@ func NewSubscribeQuery(t *testing.T, queryID int, channel string) []byte {
 func NewUnsubscribeQuery(t *testing.T, queryID int, channel string) []byte {
 	unsubscribe := method.Unsubscribe{
 		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
@@ -72,10 +72,10 @@ func NewUnsubscribeQuery(t *testing.T, queryID int, channel string) []byte {
 	return unsubscribeBuf
 }
 
-func NewPublishQuery(t *testing.T, queryID int, channel string, msg message.Message) []byte {
+func NewPublishQuery(t *testing.T, queryID int, channel string, msg mmessage.Message) []byte {
 	publish := method.Publish{
 		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
@@ -97,7 +97,7 @@ func NewPublishQuery(t *testing.T, queryID int, channel string, msg message.Mess
 func NewCatchupQuery(t *testing.T, queryID int, channel string) []byte {
 	catchup := method.Catchup{
 		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
@@ -116,7 +116,7 @@ func NewCatchupQuery(t *testing.T, queryID int, channel string) []byte {
 func NewHeartbeatQuery(t *testing.T, msgIDsByChannel map[string][]string) []byte {
 	heartbeat := method.Heartbeat{
 		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
@@ -134,7 +134,7 @@ func NewHeartbeatQuery(t *testing.T, msgIDsByChannel map[string][]string) []byte
 func NewGetMessagesByIDQuery(t *testing.T, queryID int, msgIDsByChannel map[string][]string) []byte {
 	getMessagesByID := method.GetMessagesById{
 		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
@@ -150,10 +150,10 @@ func NewGetMessagesByIDQuery(t *testing.T, queryID int, msgIDsByChannel map[stri
 	return getMessagesByIDBuf
 }
 
-func NewRumorQuery(t *testing.T, queryID int, senderID string, rumorID int, messages map[string][]message.Message) []byte {
+func NewRumorQuery(t *testing.T, queryID int, senderID string, rumorID int, messages map[string][]mmessage.Message) []byte {
 	rumor := method.Rumor{
 		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: query.MethodRumor,

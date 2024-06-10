@@ -6,10 +6,10 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mreaction"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/registry"
@@ -112,7 +112,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 }
 
 // Catchup is used to handle a catchup message.
-func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
+func (c *Channel) Catchup(catchup method.Catchup) []mmessage.Message {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(catchup.ID)).
 		Msg("received a catchup")
@@ -143,7 +143,7 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 // ---
 
 // handleMessage handles a message received in a broadcast or publish method
-func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
+func (c *Channel) handleMessage(msg mmessage.Message, socket socket.Socket) error {
 	err := c.registry.Process(msg, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %w", err)
@@ -163,14 +163,14 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 func (c *Channel) NewReactionRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
-	registry.Register(messagedata.ReactionAdd{}, c.processReactionAdd)
-	registry.Register(messagedata.ReactionDelete{}, c.processReactionDelete)
+	registry.Register(mreaction.ReactionAdd{}, c.processReactionAdd)
+	registry.Register(mreaction.ReactionDelete{}, c.processReactionDelete)
 
 	return registry
 }
 
 // processReactionAdd is the callback that processes reaction#add messages
-func (c *Channel) processReactionAdd(msg message.Message, msgData interface{},
+func (c *Channel) processReactionAdd(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
 	err := c.verifyAddReactionMessage(msg)
@@ -182,7 +182,7 @@ func (c *Channel) processReactionAdd(msg message.Message, msgData interface{},
 }
 
 // processReactionDelete is the callback that processes reaction#delete messages
-func (c *Channel) processReactionDelete(msg message.Message, msgData interface{},
+func (c *Channel) processReactionDelete(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
 	err := c.verifyDeleteReactionMessage(msg, true)
@@ -194,7 +194,7 @@ func (c *Channel) processReactionDelete(msg message.Message, msgData interface{}
 }
 
 // verifyMessage checks if a message in a Publish or Broadcast method is valid
-func (c *Channel) verifyMessage(msg message.Message) error {
+func (c *Channel) verifyMessage(msg mmessage.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return xerrors.Errorf(failedToDecodeData, err)
@@ -215,8 +215,8 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 	return nil
 }
 
-func (c *Channel) verifyAddReactionMessage(msg message.Message) error {
-	var reactMsg messagedata.ReactionAdd
+func (c *Channel) verifyAddReactionMessage(msg mmessage.Message) error {
+	var reactMsg mreaction.ReactionAdd
 
 	err := msg.UnmarshalData(&reactMsg)
 	if err != nil {
@@ -246,8 +246,8 @@ func (c *Channel) verifyAddReactionMessage(msg message.Message) error {
 	return nil
 }
 
-func (c *Channel) verifyDeleteReactionMessage(msg message.Message, retry bool) error {
-	var delReactMsg messagedata.ReactionDelete
+func (c *Channel) verifyDeleteReactionMessage(msg mmessage.Message, retry bool) error {
+	var delReactMsg mreaction.ReactionDelete
 
 	err := msg.UnmarshalData(&delReactMsg)
 	if err != nil {
@@ -288,7 +288,7 @@ func (c *Channel) verifyDeleteReactionMessage(msg message.Message, retry bool) e
 
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
-func (c *Channel) broadcastToAllClients(msg message.Message) error {
+func (c *Channel) broadcastToAllClients(msg mmessage.Message) error {
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -297,8 +297,8 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 			Method: query.MethodBroadcast,
 		},
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			c.channelID,
 			msg,

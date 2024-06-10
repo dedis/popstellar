@@ -7,8 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/handler/messagedata/coin/hcoin/mocks"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	mocks2 "popstellar/internal/network/socket/mocks"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
@@ -20,7 +20,7 @@ const coinPath string = "../../../../validation/protocol/examples/messageData/co
 type inputTestHandleChannelCoin struct {
 	name      string
 	channelID string
-	message   message.Message
+	message   mmessage.Message
 	hasError  bool
 	sockets   []*mocks2.FakeSocket
 }
@@ -120,7 +120,7 @@ func Test_handleChannelCoin(t *testing.T) {
 
 func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string, mockRepository *mocks.Repository,
 	subs *state.Subscribers) inputTestHandleChannelCoin {
-	laoID := message.Hash(name)
+	laoID := mmessage.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
 
@@ -130,12 +130,12 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	mockRepository.On("StoreMessageAndData", channelID, m).Return(nil)
@@ -166,7 +166,7 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 
 func newFailTestHandleChannelCoin(t *testing.T, filename string, name string,
 	subs *state.Subscribers) inputTestHandleChannelCoin {
-	laoID := message.Hash(name)
+	laoID := mmessage.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
 
@@ -176,12 +176,12 @@ func newFailTestHandleChannelCoin(t *testing.T, filename string, name string,
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	err = subs.AddChannel(channelID)

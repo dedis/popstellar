@@ -7,7 +7,7 @@ import (
 	"errors"
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/messagedata/root/hroot"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/mmessage"
 	"time"
 )
 
@@ -15,7 +15,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	channels map[string]string,
 	laoPath string,
 	organizerPubBuf []byte,
-	msg, laoGreetMsg message.Message) error {
+	msg, laoGreetMsg mmessage.Message) error {
 
 	dbLock.Lock()
 	defer dbLock.Unlock()

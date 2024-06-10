@@ -1,8 +1,8 @@
 package method
 
 import (
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method/message"
 )
 
 // Broadcast defines a JSON RPC broadcast message
@@ -13,6 +13,6 @@ type Broadcast struct {
 }
 
 type BroadcastParams struct {
-	Channel string          `json:"channel"`
-	Message message.Message `json:"message"`
+	Channel string           `json:"channel"`
+	Message mmessage.Message `json:"message"`
 }

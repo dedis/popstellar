@@ -7,9 +7,10 @@ import (
 	"popstellar/internal/handler/answer/manswer"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mchirp"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/registry"
@@ -90,7 +91,7 @@ func (c *Channel) Publish(msg method.Publish, socket socket.Socket) error {
 }
 
 // Catchup is used to handle a catchup message.
-func (c *Channel) Catchup(msg method.Catchup) []message.Message {
+func (c *Channel) Catchup(msg method.Catchup) []mmessage.Message {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(msg.ID)).
 		Msg("received a catchup")
@@ -131,15 +132,15 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 func (c *Channel) NewGeneralChirpingRegistry() registry.MessageRegistry {
 	newRegistry := registry.NewMessageRegistry()
 
-	newRegistry.Register(messagedata.ChirpNotifyAdd{}, c.processAddChirp)
-	newRegistry.Register(messagedata.ChirpNotifyDelete{}, c.processDeleteChirp)
+	newRegistry.Register(mchirp.ChirpNotifyAdd{}, c.processAddChirp)
+	newRegistry.Register(mchirp.ChirpNotifyDelete{}, c.processDeleteChirp)
 
 	return newRegistry
 }
 
 // processAddChirp checks an add chirp message
-func (c *Channel) processAddChirp(msg message.Message, msgData interface{}, _ socket.Socket) error {
-	data, ok := msgData.(*messagedata.ChirpNotifyAdd)
+func (c *Channel) processAddChirp(msg mmessage.Message, msgData interface{}, _ socket.Socket) error {
+	data, ok := msgData.(*mchirp.ChirpNotifyAdd)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#notifyAdd message", msgData)
 	}
@@ -153,10 +154,10 @@ func (c *Channel) processAddChirp(msg message.Message, msgData interface{}, _ so
 }
 
 // processDeleteChirp checks a delete chirp message
-func (c *Channel) processDeleteChirp(msg message.Message, msgData interface{},
+func (c *Channel) processDeleteChirp(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*messagedata.ChirpNotifyDelete)
+	data, ok := msgData.(*mchirp.ChirpNotifyDelete)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#notifyDelete message", msgData)
 	}
@@ -196,7 +197,7 @@ func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
 	return nil
 }
 
-func (c *Channel) verifyNotifyChirp(msg message.Message, chirpMsg messagedata.Verifiable) error {
+func (c *Channel) verifyNotifyChirp(msg mmessage.Message, chirpMsg messagedata.Verifiable) error {
 	err := chirpMsg.Verify()
 	if err != nil {
 		return xerrors.Errorf("invalid chirp broadcast message: %v", err)
@@ -223,7 +224,7 @@ func (c *Channel) verifyNotifyChirp(msg message.Message, chirpMsg messagedata.Ve
 
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
-func (c *Channel) broadcastToAllClients(msg message.Message) error {
+func (c *Channel) broadcastToAllClients(msg mmessage.Message) error {
 	c.log.Info().
 		Str(msgID, msg.MessageID).
 		Msg("broadcast new chirp to all clients")
@@ -236,8 +237,8 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 			Method: query.MethodBroadcast,
 		},
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			c.channelPath,
 			msg,

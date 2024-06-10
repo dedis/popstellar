@@ -8,8 +8,10 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/hmessage"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mlao"
+	"popstellar/internal/message/messagedata/mroot"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/validation"
 )
 
@@ -47,10 +49,10 @@ type Repository interface {
 		channels map[string]string,
 		laoID string,
 		organizerPubBuf []byte,
-		msg, laoGreetMsg message.Message) error
+		msg, laoGreetMsg mmessage.Message) error
 
 	// StoreMessageAndData stores a message inside the database.
-	StoreMessageAndData(channelID string, msg message.Message) error
+	StoreMessageAndData(channelID string, msg mmessage.Message) error
 
 	// HasChannel returns true if the channel already exists.
 	HasChannel(channel string) (bool, error)
@@ -75,7 +77,7 @@ func New(config Config, db Repository,
 	}
 }
 
-func (h *Handler) Handle(_ string, msg message.Message) error {
+func (h *Handler) Handle(_ string, msg mmessage.Message) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
@@ -102,9 +104,9 @@ func (h *Handler) Handle(_ string, msg message.Message) error {
 	return err
 }
 
-func (h *Handler) handleLaoCreate(msg message.Message) error {
+func (h *Handler) handleLaoCreate(msg mmessage.Message) error {
 
-	var laoCreate messagedata.LaoCreate
+	var laoCreate mroot.LaoCreate
 	err := msg.UnmarshalData(&laoCreate)
 	if err != nil {
 		return err
@@ -125,7 +127,7 @@ func (h *Handler) handleLaoCreate(msg message.Message) error {
 	return h.createLaoAndChannels(msg, laoGreetMsg, organizerPubBuf, laoPath)
 }
 
-func (h *Handler) verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, error) {
+func (h *Handler) verifyLaoCreation(msg mmessage.Message, laoCreate mroot.LaoCreate, laoPath string) ([]byte, error) {
 
 	ok, err := h.db.HasChannel(laoPath)
 	if err != nil {
@@ -177,7 +179,7 @@ func (h *Handler) verifyLaoCreation(msg message.Message, laoCreate messagedata.L
 	return organizerPubBuf, nil
 }
 
-func (h *Handler) createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []byte, laoPath string) error {
+func (h *Handler) createLaoAndChannels(msg, laoGreetMsg mmessage.Message, organizerPubBuf []byte, laoPath string) error {
 	channels := map[string]string{
 		laoPath:                      hmessage.LaoType,
 		laoPath + Social + Chirps:    hmessage.ChirpType,
@@ -203,20 +205,20 @@ func (h *Handler) createLaoAndChannels(msg, laoGreetMsg message.Message, organiz
 	return nil
 }
 
-func (h *Handler) createLaoGreet(organizerBuf []byte, laoID string) (message.Message, error) {
+func (h *Handler) createLaoGreet(organizerBuf []byte, laoID string) (mmessage.Message, error) {
 	peersInfo := h.peers.GetAllPeersInfo()
 
-	knownPeers := make([]messagedata.Peer, 0, len(peersInfo))
+	knownPeers := make([]mlao.Peer, 0, len(peersInfo))
 	for _, info := range peersInfo {
-		knownPeers = append(knownPeers, messagedata.Peer{Address: info.ClientAddress})
+		knownPeers = append(knownPeers, mlao.Peer{Address: info.ClientAddress})
 	}
 
 	_, clientServerAddress, _, err := h.conf.GetServerInfo()
 	if err != nil {
-		return message.Message{}, err
+		return mmessage.Message{}, err
 	}
 
-	msgData := messagedata.LaoGreet{
+	msgData := mlao.LaoGreet{
 		Object:   messagedata.LAOObject,
 		Action:   messagedata.LAOActionGreet,
 		LaoID:    laoID,
@@ -228,7 +230,7 @@ func (h *Handler) createLaoGreet(organizerBuf []byte, laoID string) (message.Mes
 	// Marshall the message data
 	dataBuf, err := json.Marshal(&msgData)
 	if err != nil {
-		return message.Message{}, errors.NewJsonMarshalError(err.Error())
+		return mmessage.Message{}, errors.NewJsonMarshalError(err.Error())
 	}
 
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
@@ -238,23 +240,23 @@ func (h *Handler) createLaoGreet(organizerBuf []byte, laoID string) (message.Mes
 	// Marshall the server public key
 	serverPubBuf, err := serverPublicKey.MarshalBinary()
 	if err != nil {
-		return message.Message{}, errors.NewInternalServerError("failed to marshal server public key: %v", err)
+		return mmessage.Message{}, errors.NewInternalServerError("failed to marshal server public key: %v", err)
 	}
 
 	// sign the data
 	signatureBuf, err := h.conf.Sign(dataBuf)
 	if err != nil {
-		return message.Message{}, err
+		return mmessage.Message{}, err
 	}
 
 	signature := base64.URLEncoding.EncodeToString(signatureBuf)
 
-	laoGreetMsg := message.Message{
+	laoGreetMsg := mmessage.Message{
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(serverPubBuf),
 		Signature:         signature,
-		MessageID:         message.Hash(newData64, signature),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(newData64, signature),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	return laoGreetMsg, nil

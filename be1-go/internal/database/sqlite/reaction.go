@@ -6,6 +6,7 @@ import (
 	"errors"
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mlao"
 )
 
 func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {
@@ -23,7 +24,7 @@ func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {
 		return false, poperrors.NewDatabaseSelectErrorMsg("last roll call close message data: %v", err)
 	}
 
-	var rollCallClose messagedata.RollCallClose
+	var rollCallClose mlao.RollCallClose
 	err = json.Unmarshal(rollCallCloseBytes, &rollCallClose)
 	if err != nil {
 		return false, poperrors.NewInternalServerError("failed to unmarshal last roll call close message: %v", err)

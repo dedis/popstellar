@@ -10,9 +10,10 @@ import (
 	"popstellar/internal/crypto"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mconsensus"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/validation"
@@ -120,7 +121,7 @@ func Test_Consensus_Channel_Catchup(t *testing.T) {
 
 	// Create the messages
 	numMessages := 5
-	messages := make([]message.Message, numMessages)
+	messages := make([]mmessage.Message, numMessages)
 
 	// Create the channel
 	channel := NewChannel("channel0", fakeHub, nolog, keypair.public)
@@ -129,7 +130,7 @@ func Test_Consensus_Channel_Catchup(t *testing.T) {
 
 	for i := 0; i < numMessages; i++ {
 		// Create a new message containing only an id
-		message := message.Message{MessageID: fmt.Sprintf("%d", i)}
+		message := mmessage.Message{MessageID: fmt.Sprintf("%d", i)}
 		messages[i] = message
 
 		// Store the message in the inbox
@@ -177,12 +178,12 @@ func Test_Consensus_Channel_Broadcast(t *testing.T) {
 
 	bufb64 := base64.URLEncoding.EncodeToString(buf)
 
-	message := message.Message{
+	message := mmessage.Message{
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         message.Hash(bufb64, publicKey64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	file = filepath.Join(protocolRelativePath,
@@ -241,12 +242,12 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 
 	bufb64 := base64.URLEncoding.EncodeToString(buf)
 
-	message := message.Message{
+	message := mmessage.Message{
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         message.Hash(bufb64, publicKey64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	filePublish := filepath.Join(protocolRelativePath,
@@ -317,12 +318,12 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 
 	bufbElect64 := base64.URLEncoding.EncodeToString(bufElect)
 
-	electMessage := message.Message{
+	electMessage := mmessage.Message{
 		Data:              bufbElect64,
 		Sender:            publicKey64,
 		Signature:         "h",
 		MessageID:         messageID,
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	consensusChannel.inbox.StoreMessage(electMessage)
@@ -345,12 +346,12 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 
 	bufb64 := base64.URLEncoding.EncodeToString(buf)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         message.Hash(bufb64, publicKey64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	filePublish := filepath.Join(protocolRelativePath,
@@ -394,7 +395,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	// Unmarshal the prepare message data to check its values
 	jsonData, err := base64.RawStdEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var prepare messagedata.ConsensusPrepare
+	var prepare mconsensus.ConsensusPrepare
 	err = json.Unmarshal(jsonData, &prepare)
 	require.NoError(t, err)
 
@@ -441,12 +442,12 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 
 	bufbElect64 := base64.URLEncoding.EncodeToString(bufElect)
 
-	electMessage := message.Message{
+	electMessage := mmessage.Message{
 		Data:              bufbElect64,
 		Sender:            publicKey64,
 		Signature:         "h",
 		MessageID:         messageID,
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	consensusChannel.inbox.StoreMessage(electMessage)
@@ -469,12 +470,12 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 
 	bufb64 := base64.URLEncoding.EncodeToString(buf)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         message.Hash(bufb64, publicKey64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	filePublish := filepath.Join(protocolRelativePath,
@@ -518,7 +519,7 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err := base64.RawStdEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var prepare messagedata.ConsensusFailure
+	var prepare mconsensus.ConsensusFailure
 	err = json.Unmarshal(jsonData, &prepare)
 	require.NoError(t, err)
 
@@ -563,12 +564,12 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 
 	bufbElect64 := base64.URLEncoding.EncodeToString(bufElect)
 
-	electMessage := message.Message{
+	electMessage := mmessage.Message{
 		Data:              bufbElect64,
 		Sender:            publicKey64,
 		Signature:         "h",
 		MessageID:         messageID,
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	consensusChannel.inbox.StoreMessage(electMessage)
@@ -591,12 +592,12 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 
 	bufb64 := base64.URLEncoding.EncodeToString(buf)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         message.Hash(bufb64, publicKey64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	filePublish := filepath.Join(protocolRelativePath,
@@ -640,7 +641,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 	// Unmarshal the promise message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var promise messagedata.ConsensusPromise
+	var promise mconsensus.ConsensusPromise
 	err = json.Unmarshal(jsonData, &promise)
 	require.NoError(t, err)
 
@@ -688,12 +689,12 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 
 	bufbElect64 := base64.URLEncoding.EncodeToString(bufElect)
 
-	electMessage := message.Message{
+	electMessage := mmessage.Message{
 		Data:              bufbElect64,
 		Sender:            publicKey64,
 		Signature:         "h",
 		MessageID:         messageID,
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	consensusChannel.inbox.StoreMessage(electMessage)
@@ -717,12 +718,12 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 
 	bufb64 := base64.URLEncoding.EncodeToString(buf)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         message.Hash(bufb64, publicKey64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	filePublish := filepath.Join(protocolRelativePath,
@@ -766,7 +767,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	// Unmarshal the propose message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var propose messagedata.ConsensusPropose
+	var propose mconsensus.ConsensusPropose
 	err = json.Unmarshal(jsonData, &propose)
 	require.NoError(t, err)
 
@@ -813,12 +814,12 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 
 	bufbElect64 := base64.URLEncoding.EncodeToString(bufElect)
 
-	electMessage := message.Message{
+	electMessage := mmessage.Message{
 		Data:              bufbElect64,
 		Sender:            publicKey64,
 		Signature:         "h",
 		MessageID:         messageID,
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	consensusChannel.inbox.StoreMessage(electMessage)
@@ -841,12 +842,12 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 
 	bufb64 := base64.URLEncoding.EncodeToString(buf)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         message.Hash(bufb64, publicKey64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	filePublish := filepath.Join(protocolRelativePath,
@@ -890,7 +891,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 	// Unmarshal the accept message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var accept messagedata.ConsensusAccept
+	var accept mconsensus.ConsensusAccept
 	err = json.Unmarshal(jsonData, &accept)
 	require.NoError(t, err)
 
@@ -937,12 +938,12 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 
 	bufbElect64 := base64.URLEncoding.EncodeToString(bufElect)
 
-	electMessage := message.Message{
+	electMessage := mmessage.Message{
 		Data:              bufbElect64,
 		Sender:            publicKey64,
 		Signature:         "h",
 		MessageID:         messageID,
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	consensusChannel.inbox.StoreMessage(electMessage)
@@ -968,12 +969,12 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 
 	bufb64 := base64.URLEncoding.EncodeToString(buf)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         message.Hash(bufb64, publicKey64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	filePublish := filepath.Join(protocolRelativePath,
@@ -1020,7 +1021,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	// Unmarshal the learn message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var learn messagedata.ConsensusLearn
+	var learn mconsensus.ConsensusLearn
 	err = json.Unmarshal(jsonData, &learn)
 	require.NoError(t, err)
 
@@ -1062,12 +1063,12 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 
 	bufbElect64 := base64.URLEncoding.EncodeToString(bufElect)
 
-	electMessage := message.Message{
+	electMessage := mmessage.Message{
 		Data:              bufbElect64,
 		Sender:            publicKey64,
 		Signature:         "h",
 		MessageID:         messageID,
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	consensusChannel.inbox.StoreMessage(electMessage)
@@ -1090,12 +1091,12 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 
 	bufb64 := base64.URLEncoding.EncodeToString(buf)
 
-	message := message.Message{
+	message := mmessage.Message{
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         message.Hash(bufb64, publicKey64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	filePublish := filepath.Join(protocolRelativePath,
@@ -1161,12 +1162,12 @@ func Test_Consensus_Publish_Failure(t *testing.T) {
 
 	bufbElect64 := base64.URLEncoding.EncodeToString(bufElect)
 
-	electMessage := message.Message{
+	electMessage := mmessage.Message{
 		Data:              bufbElect64,
 		Sender:            publicKey64,
 		Signature:         "h",
 		MessageID:         messageID,
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	consensusChannel.inbox.StoreMessage(electMessage)
@@ -1189,12 +1190,12 @@ func Test_Consensus_Publish_Failure(t *testing.T) {
 
 	bufb64 := base64.URLEncoding.EncodeToString(buf)
 
-	message := message.Message{
+	message := mmessage.Message{
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         message.Hash(bufb64, publicKey64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	filePublish := filepath.Join(protocolRelativePath,
@@ -1265,12 +1266,12 @@ func Test_Publish_New_Message(t *testing.T) {
 
 	pubKeyServBuf, _ := fakeHub.pubKeyServ.MarshalBinary()
 
-	expectedMessage := message.Message{
+	expectedMessage := mmessage.Message{
 		Data:              data64,
 		Sender:            base64.URLEncoding.EncodeToString(pubKeyServBuf),
 		Signature:         signature,
-		MessageID:         message.Hash(data64, signature),
-		WitnessSignatures: make([]message.WitnessSignature, 0),
+		MessageID:         mmessage.Hash(data64, signature),
+		WitnessSignatures: make([]mmessage.WitnessSignature, 0),
 	}
 
 	// Unmarshal the sent message
@@ -1318,12 +1319,12 @@ func Test_Timeout_Elect(t *testing.T) {
 
 	bufb64 := base64.URLEncoding.EncodeToString(buf)
 
-	message := message.Message{
+	message := mmessage.Message{
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         message.Hash(bufb64, publicKey64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	filePublish := filepath.Join(protocolRelativePath,
@@ -1364,7 +1365,7 @@ func Test_Timeout_Elect(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var learn messagedata.ConsensusFailure
+	var learn mconsensus.ConsensusFailure
 	err = json.Unmarshal(jsonData, &learn)
 	require.NoError(t, err)
 
@@ -1406,12 +1407,12 @@ func Test_Timeout_Prepare(t *testing.T) {
 
 	bufbElect64 := base64.URLEncoding.EncodeToString(bufElect)
 
-	electMessage := message.Message{
+	electMessage := mmessage.Message{
 		Data:              bufbElect64,
 		Sender:            publicKey64,
 		Signature:         "h",
 		MessageID:         messageID,
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	consensusChannel.inbox.StoreMessage(electMessage)
@@ -1434,12 +1435,12 @@ func Test_Timeout_Prepare(t *testing.T) {
 
 	bufb64 := base64.URLEncoding.EncodeToString(buf)
 
-	message := message.Message{
+	message := mmessage.Message{
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         message.Hash(bufb64, publicKey64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	filePublish := filepath.Join(protocolRelativePath,
@@ -1467,7 +1468,7 @@ func Test_Timeout_Prepare(t *testing.T) {
 	// Unmarshal the prepare message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var prepare messagedata.ConsensusPrepare
+	var prepare mconsensus.ConsensusPrepare
 	err = json.Unmarshal(jsonData, &prepare)
 	require.NoError(t, err)
 
@@ -1494,7 +1495,7 @@ func Test_Timeout_Prepare(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err = base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var failure messagedata.ConsensusFailure
+	var failure mconsensus.ConsensusFailure
 	err = json.Unmarshal(jsonData, &failure)
 	require.NoError(t, err)
 
@@ -1536,12 +1537,12 @@ func Test_Timeout_Promise(t *testing.T) {
 
 	bufbElect64 := base64.URLEncoding.EncodeToString(bufElect)
 
-	electMessage := message.Message{
+	electMessage := mmessage.Message{
 		Data:              bufbElect64,
 		Sender:            publicKey64,
 		Signature:         "h",
 		MessageID:         messageID,
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	consensusChannel.inbox.StoreMessage(electMessage)
@@ -1564,12 +1565,12 @@ func Test_Timeout_Promise(t *testing.T) {
 
 	bufb64 := base64.URLEncoding.EncodeToString(buf)
 
-	message := message.Message{
+	message := mmessage.Message{
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         message.Hash(bufb64, publicKey64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	filePublish := filepath.Join(protocolRelativePath,
@@ -1598,7 +1599,7 @@ func Test_Timeout_Promise(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var promise messagedata.ConsensusPromise
+	var promise mconsensus.ConsensusPromise
 	err = json.Unmarshal(jsonData, &promise)
 	require.NoError(t, err)
 
@@ -1625,7 +1626,7 @@ func Test_Timeout_Promise(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err = base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var failure messagedata.ConsensusFailure
+	var failure mconsensus.ConsensusFailure
 	err = json.Unmarshal(jsonData, &failure)
 	require.NoError(t, err)
 
@@ -1667,12 +1668,12 @@ func Test_Timeout_Propose(t *testing.T) {
 
 	bufbElect64 := base64.URLEncoding.EncodeToString(bufElect)
 
-	electMessage := message.Message{
+	electMessage := mmessage.Message{
 		Data:              bufbElect64,
 		Sender:            publicKey64,
 		Signature:         "h",
 		MessageID:         messageID,
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	consensusChannel.inbox.StoreMessage(electMessage)
@@ -1696,12 +1697,12 @@ func Test_Timeout_Propose(t *testing.T) {
 
 	bufb64 := base64.URLEncoding.EncodeToString(buf)
 
-	message := message.Message{
+	message := mmessage.Message{
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         message.Hash(bufb64, publicKey64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	filePublish := filepath.Join(protocolRelativePath,
@@ -1731,7 +1732,7 @@ func Test_Timeout_Propose(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var propose messagedata.ConsensusPropose
+	var propose mconsensus.ConsensusPropose
 	err = json.Unmarshal(jsonData, &propose)
 	require.NoError(t, err)
 
@@ -1758,7 +1759,7 @@ func Test_Timeout_Propose(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err = base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var failure messagedata.ConsensusFailure
+	var failure mconsensus.ConsensusFailure
 	err = json.Unmarshal(jsonData, &failure)
 	require.NoError(t, err)
 
@@ -1800,12 +1801,12 @@ func Test_Timeout_Accept(t *testing.T) {
 
 	bufbElect64 := base64.URLEncoding.EncodeToString(bufElect)
 
-	electMessage := message.Message{
+	electMessage := mmessage.Message{
 		Data:              bufbElect64,
 		Sender:            publicKey64,
 		Signature:         "h",
 		MessageID:         messageID,
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	consensusChannel.inbox.StoreMessage(electMessage)
@@ -1828,12 +1829,12 @@ func Test_Timeout_Accept(t *testing.T) {
 
 	bufb64 := base64.URLEncoding.EncodeToString(buf)
 
-	message := message.Message{
+	message := mmessage.Message{
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         message.Hash(bufb64, publicKey64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(bufb64, publicKey64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	filePublish := filepath.Join(protocolRelativePath,
@@ -1862,7 +1863,7 @@ func Test_Timeout_Accept(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var accept messagedata.ConsensusAccept
+	var accept mconsensus.ConsensusAccept
 	err = json.Unmarshal(jsonData, &accept)
 	require.NoError(t, err)
 
@@ -1889,7 +1890,7 @@ func Test_Timeout_Accept(t *testing.T) {
 	// Unmarshal the failure message data to check its values
 	jsonData, err = base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
-	var failure messagedata.ConsensusFailure
+	var failure mconsensus.ConsensusFailure
 	err = json.Unmarshal(jsonData, &failure)
 	require.NoError(t, err)
 
@@ -2054,7 +2055,7 @@ type fakeSocket struct {
 	sockType socket.SocketType
 
 	resultID int
-	res      []message.Message
+	res      []mmessage.Message
 	msg      []byte
 
 	err error
@@ -2074,7 +2075,7 @@ func (f *fakeSocket) Send(msg []byte) {
 }
 
 // SendResult implements socket.Socket
-func (f *fakeSocket) SendResult(id int, res []message.Message, missingMsgs map[string][]message.Message) {
+func (f *fakeSocket) SendResult(id int, res []mmessage.Message, missingMsgs map[string][]mmessage.Message) {
 	f.resultID = id
 	f.res = res
 }

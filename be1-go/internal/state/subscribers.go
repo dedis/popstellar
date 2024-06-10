@@ -3,10 +3,10 @@ package state
 import (
 	"encoding/json"
 	"popstellar/internal/errors"
-	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"sync"
 )
@@ -123,17 +123,17 @@ func (s *Subscribers) IsSubscribed(channelPath string, socket socket.Socket) (bo
 	return true, nil
 }
 
-func (s *Subscribers) BroadcastToAllClients(msg message.Message, channel string) error {
+func (s *Subscribers) BroadcastToAllClients(msg mmessage.Message, channel string) error {
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: "broadcast",
 		},
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			channel,
 			msg,

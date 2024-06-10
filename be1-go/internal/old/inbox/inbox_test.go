@@ -4,7 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/mmessage"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -80,9 +80,9 @@ func TestInbox_AddWitnessSignatures(t *testing.T) {
 // Utility functions
 
 func newMessage(t *testing.T, sender string, signature string,
-	witnessSignatures []message.WitnessSignature, data string) message.Message {
+	witnessSignatures []mmessage.WitnessSignature, data string) mmessage.Message {
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              data,
 		Sender:            sender,
 		Signature:         signature,

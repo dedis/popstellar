@@ -6,12 +6,13 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mauthentification"
 	"testing"
 )
 
 // TestAuthUserInterfaceFunctions tests the basic interface methods of messagedata
 func TestAuthUserInterfaceFunctions(t *testing.T) {
-	var authMsg messagedata.AuthenticateUser
+	var authMsg mauthentification.AuthenticateUser
 	require.Equal(t, messagedata.AuthObject, authMsg.GetObject())
 	require.Equal(t, messagedata.AuthAction, authMsg.GetAction())
 	require.Empty(t, authMsg.NewEmpty())
@@ -20,7 +21,7 @@ func TestAuthUserInterfaceFunctions(t *testing.T) {
 // TestVerify runs multiple times the verification method on different jsons
 func TestVerify(t *testing.T) {
 
-	var authUser messagedata.AuthenticateUser
+	var authUser mauthentification.AuthenticateUser
 
 	// action and object are constant
 	object, action := "popcha", "authenticate"

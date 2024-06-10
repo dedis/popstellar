@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mreaction"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -22,7 +23,7 @@ func Test_Reaction_Delete(t *testing.T) {
 	require.Equal(t, "reaction", object)
 	require.Equal(t, "delete", action)
 
-	var msg messagedata.ReactionDelete
+	var msg mreaction.ReactionDelete
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -37,7 +38,7 @@ func Test_Reaction_Delete(t *testing.T) {
 }
 
 func Test_Reaction_Delete_Interface_Functions(t *testing.T) {
-	var msg messagedata.ReactionDelete
+	var msg mreaction.ReactionDelete
 
 	require.Equal(t, messagedata.ReactionObject, msg.GetObject())
 	require.Equal(t, messagedata.ReactionActionDelete, msg.GetAction())
@@ -45,7 +46,7 @@ func Test_Reaction_Delete_Interface_Functions(t *testing.T) {
 }
 
 func Test_Reaction_Delete_Verify(t *testing.T) {
-	var reactionDelete messagedata.ReactionDelete
+	var reactionDelete mreaction.ReactionDelete
 
 	object, action := "reaction", "delete"
 

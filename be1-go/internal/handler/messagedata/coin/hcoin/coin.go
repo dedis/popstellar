@@ -4,17 +4,18 @@ import (
 	"encoding/base64"
 	"popstellar/internal/errors"
 	"popstellar/internal/message/messagedata"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/messagedata/mcoin"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/validation"
 )
 
 type Subscribers interface {
-	BroadcastToAllClients(msg message.Message, channel string) error
+	BroadcastToAllClients(msg mmessage.Message, channel string) error
 }
 
 type Repository interface {
 	// StoreMessageAndData stores a message with an object and an action inside the database.
-	StoreMessageAndData(channelID string, msg message.Message) error
+	StoreMessageAndData(channelID string, msg mmessage.Message) error
 }
 
 type Handler struct {
@@ -32,7 +33,7 @@ func New(subs Subscribers, db Repository,
 	}
 }
 
-func (h *Handler) Handle(channelPath string, msg message.Message) error {
+func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
@@ -67,8 +68,8 @@ func (h *Handler) Handle(channelPath string, msg message.Message) error {
 	return h.subs.BroadcastToAllClients(msg, channelPath)
 }
 
-func (h *Handler) handleCoinPostTransaction(msg message.Message) error {
-	var data messagedata.PostTransaction
+func (h *Handler) handleCoinPostTransaction(msg mmessage.Message) error {
+	var data mcoin.PostTransaction
 	err := msg.UnmarshalData(&data)
 	if err != nil {
 		return err

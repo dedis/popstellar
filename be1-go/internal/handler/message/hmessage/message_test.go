@@ -4,16 +4,16 @@ import (
 	"encoding/base64"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
-	generator2 "popstellar/internal/generator"
-	mocks2 "popstellar/internal/handler/message/hmessage/mocks"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/generator"
+	"popstellar/internal/handler/message/hmessage/mocks"
+	"popstellar/internal/message/mmessage"
 	"testing"
 	"time"
 )
 
 func Test_handleChannel(t *testing.T) {
-	db := mocks2.NewRepository(t)
-	dataHandler := mocks2.NewDataHandler(t)
+	db := mocks.NewRepository(t)
+	dataHandler := mocks.NewDataHandler(t)
 
 	subHandlers := DataHandlers{
 		Root:       dataHandler,
@@ -27,13 +27,13 @@ func Test_handleChannel(t *testing.T) {
 
 	channel := New(db, subHandlers)
 
-	_, publicBuf, private, _ := generator2.GenerateKeyPair(t)
+	_, publicBuf, private, _ := generator.GenerateKeyPair(t)
 	sender := base64.URLEncoding.EncodeToString(publicBuf)
 
 	type input struct {
 		name        string
 		channelPath string
-		message     message.Message
+		message     mmessage.Message
 		isError     bool
 		contains    string
 	}
@@ -43,7 +43,7 @@ func Test_handleChannel(t *testing.T) {
 	// Test 1: failed to handled message because unknown channelPath type
 
 	channelPath := "unknown"
-	msg := generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg := generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
 	db.On("GetChannelType", channelPath).Return("", nil)
@@ -59,7 +59,7 @@ func Test_handleChannel(t *testing.T) {
 	// Test 2: failed to handled message because db is disconnected when querying the channelPath type
 
 	channelPath = "disconnectedDB"
-	msg = generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
 	db.On("GetChannelType", channelPath).
@@ -75,7 +75,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 3: failed to handled message because message already exists
 
-	msg = generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(true, nil)
 
@@ -88,7 +88,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 4: failed to handled message because db is disconnected when querying if the message already exists
 
-	msg = generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).
 		Return(false, xerrors.Errorf("DB is disconnected"))
@@ -102,7 +102,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 5: failed to handled message because the format of messageID
 
-	msg = generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 	msg.MessageID = base64.URLEncoding.EncodeToString([]byte("wrong messageID"))
 
 	args = append(args, input{
@@ -114,7 +114,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 6: failed to handled message because wrong sender
 
-	msg = generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 	msg.Sender = base64.URLEncoding.EncodeToString([]byte("wrong sender"))
 
 	args = append(args, input{
@@ -126,7 +126,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 7: failed to handled message because wrong data
 
-	msg = generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 	msg.Data = base64.URLEncoding.EncodeToString([]byte("wrong data"))
 
 	args = append(args, input{
@@ -138,7 +138,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 8: failed to handled message because wrong signature
 
-	msg = generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 	msg.Data = base64.URLEncoding.EncodeToString([]byte("wrong signature"))
 
 	args = append(args, input{
@@ -150,7 +150,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 9: failed to handled message because wrong signature encoding
 
-	msg = generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 	msg.Signature = "wrong signature"
 
 	args = append(args, input{
@@ -162,7 +162,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 10: failed to handled message because wrong signature encoding
 
-	msg = generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 	msg.Sender = "wrong sender"
 
 	args = append(args, input{
@@ -174,7 +174,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 11: failed to handled message because wrong signature encoding
 
-	msg = generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 	msg.Data = "wrong data"
 
 	args = append(args, input{
@@ -187,7 +187,7 @@ func Test_handleChannel(t *testing.T) {
 	// Test 12: success to handled message for channel root
 
 	channelPath = "rootMsg"
-	msg = generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
 	db.On("GetChannelType", channelPath).Return(RootType, nil)
@@ -203,7 +203,7 @@ func Test_handleChannel(t *testing.T) {
 	// Test 13: success to handled message for channel lao
 
 	channelPath = "laoMsg"
-	msg = generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
 	db.On("GetChannelType", channelPath).Return(LaoType, nil)
@@ -219,7 +219,7 @@ func Test_handleChannel(t *testing.T) {
 	// Test 14: success to handled message for channel election
 
 	channelPath = "electionMsg"
-	msg = generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
 	db.On("GetChannelType", channelPath).Return(LaoType, nil)
@@ -235,7 +235,7 @@ func Test_handleChannel(t *testing.T) {
 	// Test 15: success to handled message for channel chirp
 
 	channelPath = "chirpMsg"
-	msg = generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
 	db.On("GetChannelType", channelPath).Return(ChirpType, nil)
@@ -251,7 +251,7 @@ func Test_handleChannel(t *testing.T) {
 	// Test 16: success to handled message for channel reaction
 
 	channelPath = "reaction"
-	msg = generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
 	db.On("GetChannelType", channelPath).Return(ReactionType, nil)
@@ -267,7 +267,7 @@ func Test_handleChannel(t *testing.T) {
 	// Test 17: success to handled message for channel coin
 
 	channelPath = "coinMsg"
-	msg = generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
 	db.On("GetChannelType", channelPath).Return(CoinType, nil)
@@ -283,7 +283,7 @@ func Test_handleChannel(t *testing.T) {
 	// Test 18: success to handled message for channel coin
 
 	channelPath = "coinMsg"
-	msg = generator2.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
 	db.On("GetChannelType", channelPath).Return(FederationType, nil)

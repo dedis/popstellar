@@ -9,9 +9,10 @@ import (
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	popstellar "popstellar/internal/logger"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mlao"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/authentication"
@@ -104,7 +105,7 @@ type rollCall struct {
 
 // NewChannel returns a new initialized LAO channel. It automatically creates
 // its associated consensus channel and register it to the hub.
-func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message,
+func NewChannel(channelID string, hub channel.HubFunctionalities, msg mmessage.Message,
 	log zerolog.Logger, organizerPubKey kyber.Point, socket socket.Socket) (channel.Channel, error) {
 
 	log = log.With().Str("channel", "lao").Logger()
@@ -200,7 +201,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 }
 
 // Catchup is used to handle a catchup message.
-func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
+func (c *Channel) Catchup(catchup method.Catchup) []mmessage.Message {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(catchup.ID)).
 		Msg("received a catchup")
@@ -230,7 +231,7 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 // ---
 
 // handleMessage handles a message received in a broadcast or publish method
-func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
+func (c *Channel) handleMessage(msg mmessage.Message, socket socket.Socket) error {
 	err := c.registry.Process(msg, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %w", err)
@@ -250,25 +251,25 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 func (c *Channel) NewLAORegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
-	registry.Register(messagedata.LaoUpdate{}, c.processEmptyFun)
-	registry.Register(messagedata.LaoState{}, c.processLaoState)
-	registry.Register(messagedata.MeetingCreate{}, c.processEmptyFun)
-	registry.Register(messagedata.MeetingState{}, c.processEmptyFun)
-	registry.Register(messagedata.RollCallCreate{}, c.processRollCallCreate)
-	registry.Register(messagedata.RollCallOpen{}, c.processRollCallOpen)
-	registry.Register(messagedata.RollCallReOpen{}, c.processRollCallOpen)
-	registry.Register(messagedata.RollCallClose{}, c.processRollCallClose)
-	registry.Register(messagedata.ElectionSetup{}, c.processElectionObject)
-	registry.Register(messagedata.MessageWitness{}, c.processMessageWitness)
+	registry.Register(mlao.LaoUpdate{}, c.processEmptyFun)
+	registry.Register(mlao.LaoState{}, c.processLaoState)
+	registry.Register(mlao.MeetingCreate{}, c.processEmptyFun)
+	registry.Register(mlao.MeetingState{}, c.processEmptyFun)
+	registry.Register(mlao.RollCallCreate{}, c.processRollCallCreate)
+	registry.Register(mlao.RollCallOpen{}, c.processRollCallOpen)
+	registry.Register(mlao.RollCallReOpen{}, c.processRollCallOpen)
+	registry.Register(mlao.RollCallClose{}, c.processRollCallClose)
+	registry.Register(mlao.ElectionSetup{}, c.processElectionObject)
+	registry.Register(mlao.MessageWitness{}, c.processMessageWitness)
 
 	return registry
 }
 
 // processLaoState processes a lao state action.
-func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{},
+func (c *Channel) processLaoState(rawMessage mmessage.Message, msgData interface{},
 	sender socket.Socket) error {
 
-	data, ok := msgData.(*messagedata.LaoState)
+	data, ok := msgData.(*mlao.LaoState)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a lao#state message", msgData)
 	}
@@ -311,7 +312,7 @@ func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{
 		}
 	}
 
-	var updateMsgData messagedata.LaoUpdate
+	var updateMsgData mlao.LaoUpdate
 
 	err := msg.UnmarshalData(&updateMsgData)
 	if err != nil {
@@ -338,10 +339,10 @@ func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{
 }
 
 // processRollCallCreate processes a roll call creation object.
-func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{},
+func (c *Channel) processRollCallCreate(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*messagedata.RollCallCreate)
+	data, ok := msgData.(*mlao.RollCallCreate)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a rollcall#create message", msgData)
 	}
@@ -371,12 +372,12 @@ func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{}
 }
 
 // processRollCallOpen processes an open roll call object.
-func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{},
+func (c *Channel) processRollCallOpen(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	_, ok := msgData.(*messagedata.RollCallOpen)
+	_, ok := msgData.(*mlao.RollCallOpen)
 	if !ok {
-		_, ok2 := msgData.(*messagedata.RollCallReOpen)
+		_, ok2 := msgData.(*mlao.RollCallReOpen)
 		if !ok2 {
 			return xerrors.Errorf("message %v isn't a rollcall#open/reopen message", msgData)
 		}
@@ -384,7 +385,7 @@ func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{},
 
 	// Why not messagedata.RollCallReopen ? Maybe we should assume that Reopen
 	// message is useless.
-	var rollCallOpen messagedata.RollCallOpen
+	var rollCallOpen mlao.RollCallOpen
 
 	err := msg.UnmarshalData(&rollCallOpen)
 	if err != nil {
@@ -415,10 +416,10 @@ func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{},
 }
 
 // processRollCallClose processes a close roll call message.
-func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
+func (c *Channel) processRollCallClose(msg mmessage.Message, msgData interface{},
 	senderSocket socket.Socket) error {
 
-	data, ok := msgData.(*messagedata.RollCallClose)
+	data, ok := msgData.(*mlao.RollCallClose)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a rollcall#close message", msgData)
 	}
@@ -462,10 +463,10 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 }
 
 // processElectionObject handles an election object.
-func (c *Channel) processElectionObject(msg message.Message, msgData interface{},
+func (c *Channel) processElectionObject(msg mmessage.Message, msgData interface{},
 	senderSocket socket.Socket) error {
 
-	_, ok := msgData.(*messagedata.ElectionSetup)
+	_, ok := msgData.(*mlao.ElectionSetup)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a election#setup message", msgData)
 	}
@@ -476,7 +477,7 @@ func (c *Channel) processElectionObject(msg message.Message, msgData interface{}
 		return err
 	}
 
-	var electionSetup messagedata.ElectionSetup
+	var electionSetup mlao.ElectionSetup
 
 	err = msg.UnmarshalData(&electionSetup)
 	if err != nil {
@@ -499,14 +500,14 @@ func (c *Channel) processElectionObject(msg message.Message, msgData interface{}
 }
 
 // processMessageWitness handles a message object.
-func (c *Channel) processMessageWitness(msg message.Message, msgData interface{},
+func (c *Channel) processMessageWitness(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
-	_, ok := msgData.(*messagedata.MessageWitness)
+	_, ok := msgData.(*mlao.MessageWitness)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a message#witness message", msgData)
 	}
 
-	var witnessData messagedata.MessageWitness
+	var witnessData mlao.MessageWitness
 
 	err := msg.UnmarshalData(&witnessData)
 	if err != nil {
@@ -539,12 +540,12 @@ func (c *Channel) processMessageWitness(msg message.Message, msgData interface{}
 	return nil
 }
 
-func (c *Channel) processEmptyFun(message.Message, interface{}, socket.Socket) error {
+func (c *Channel) processEmptyFun(mmessage.Message, interface{}, socket.Socket) error {
 	return nil
 }
 
 // verifyMessage checks if a message in a Publish or Broadcast method is valid
-func (c *Channel) verifyMessage(msg message.Message) error {
+func (c *Channel) verifyMessage(msg mmessage.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return xerrors.Errorf(failedToDecodeData, err)
@@ -566,7 +567,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
-func (c *Channel) broadcastToAllClients(msg message.Message) error {
+func (c *Channel) broadcastToAllClients(msg mmessage.Message) error {
 	c.log.Info().
 		Str(msgID, msg.MessageID).
 		Msg("broadcasting message to all clients")
@@ -579,8 +580,8 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 			Method: "broadcast",
 		},
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			c.channelID,
 			msg,
@@ -637,8 +638,8 @@ func (c *Channel) createCoinChannel(socket socket.Socket, log zerolog.Logger) {
 }
 
 // createElection creates an election in the LAO.
-func (c *Channel) createElection(msg message.Message,
-	setupMsg messagedata.ElectionSetup, socket socket.Socket) error {
+func (c *Channel) createElection(msg mmessage.Message,
+	setupMsg mlao.ElectionSetup, socket socket.Socket) error {
 
 	// Check if the Lao ID of the message corresponds to the channel ID
 	channelID := c.channelID[6:]
@@ -666,7 +667,7 @@ func (c *Channel) createElection(msg message.Message,
 	return nil
 }
 
-func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.LaoState) error {
+func compareLaoUpdateAndState(update mlao.LaoUpdate, state mlao.LaoState) error {
 	if update.LastModified != state.LastModified {
 		return manswer.NewErrorf(-4, "mismatch between last modified: expected %d got %d",
 			update.LastModified, state.LastModified)
@@ -712,13 +713,13 @@ func (c *Channel) createAndSendLAOGreet() error {
 
 	peersInfo := c.hub.GetPeersInfo()
 
-	peers := make([]messagedata.Peer, 0, len(peersInfo))
+	peers := make([]mlao.Peer, 0, len(peersInfo))
 
 	for _, info := range peersInfo {
-		peers = append(peers, messagedata.Peer{Address: info.ClientAddress})
+		peers = append(peers, mlao.Peer{Address: info.ClientAddress})
 	}
 
-	msgData := messagedata.LaoGreet{
+	msgData := mlao.LaoGreet{
 		Object:   messagedata.LAOObject,
 		Action:   messagedata.LAOActionGreet,
 		LaoID:    c.extractLaoID(),
@@ -750,12 +751,12 @@ func (c *Channel) createAndSendLAOGreet() error {
 
 	signature := base64.URLEncoding.EncodeToString(signatureBuf)
 
-	laoGreetMsg := message.Message{
+	laoGreetMsg := mmessage.Message{
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(skBuf),
 		Signature:         signature,
-		MessageID:         message.Hash(newData64, signature),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(newData64, signature),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	err = c.broadcastToAllClients(laoGreetMsg)
@@ -780,7 +781,7 @@ func (r *rollCall) checkPrevID(prevID []byte) bool {
 // checkIsFromOrganizer is a helper method which validates that the message's
 // sender is the organizer. Return an error if it failed or if it's false,
 // return nil if it was from the organizer.
-func (c *Channel) checkIsFromOrganizer(msg message.Message) error {
+func (c *Channel) checkIsFromOrganizer(msg mmessage.Message) error {
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
 		return manswer.NewInvalidMessageFieldError(keyDecodeError, err)

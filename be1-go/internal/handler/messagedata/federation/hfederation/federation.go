@@ -14,9 +14,10 @@ import (
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/logger"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mfederation"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/validation"
 	"strings"
@@ -36,7 +37,7 @@ type Hub interface {
 }
 
 type Subscribers interface {
-	BroadcastToAllClients(msg message.Message, channel string) error
+	BroadcastToAllClients(msg mmessage.Message, channel string) error
 	AddChannel(channel string) error
 	Subscribe(channel string, socket socket.Socket) error
 	SendToAll(buf []byte, channel string) error
@@ -47,24 +48,24 @@ type Repository interface {
 	GetOrganizerPubKey(laoID string) (kyber.Point, error)
 
 	// IsChallengeValid returns true if the challenge is valid and not used yet
-	IsChallengeValid(senderPk string, challenge messagedata.FederationChallenge, channelPath string) error
+	IsChallengeValid(senderPk string, challenge mfederation.FederationChallenge, channelPath string) error
 
 	// RemoveChallenge removes the challenge from the database to avoid reuse
-	RemoveChallenge(challenge messagedata.FederationChallenge) error
+	RemoveChallenge(challenge mfederation.FederationChallenge) error
 
 	// GetFederationExpect return a FederationExpect where the organizer is
 	// the given public keys
-	GetFederationExpect(senderPk string, remotePk string, Challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationExpect, error)
+	GetFederationExpect(senderPk string, remotePk string, Challenge mfederation.FederationChallenge, channelPath string) (mfederation.FederationExpect, error)
 
 	// GetFederationInit return a FederationExpect where the organizer is
 	// the given public keys
-	GetFederationInit(senderPk string, remotePk string, Challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationInit, error)
+	GetFederationInit(senderPk string, remotePk string, Challenge mfederation.FederationChallenge, channelPath string) (mfederation.FederationInit, error)
 
 	// GetServerKeys get the keys of the server
 	GetServerKeys() (kyber.Point, kyber.Scalar, error)
 
 	// StoreMessageAndData stores a message with an object and an action inside the database.
-	StoreMessageAndData(channelID string, msg message.Message) error
+	StoreMessageAndData(channelID string, msg mmessage.Message) error
 }
 
 type Handler struct {
@@ -83,7 +84,7 @@ func New(hub Hub, subs Subscribers, db Repository, schema *validation.SchemaVali
 	}
 }
 
-func (h *Handler) Handle(channelPath string, msg message.Message) error {
+func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
@@ -124,8 +125,8 @@ func (h *Handler) Handle(channelPath string, msg message.Message) error {
 // handleRequestChallenge expects the sender to be the organizer of the lao,
 // a challenge message is then stored and broadcast on the same channelPath.
 // The FederationChallengeRequest message is neither stored nor broadcast
-func (h *Handler) handleRequestChallenge(msg message.Message, channelPath string) error {
-	var requestChallenge messagedata.FederationChallengeRequest
+func (h *Handler) handleRequestChallenge(msg mmessage.Message, channelPath string) error {
+	var requestChallenge mfederation.FederationChallengeRequest
 	err := msg.UnmarshalData(&requestChallenge)
 	if err != nil {
 		return err
@@ -144,7 +145,7 @@ func (h *Handler) handleRequestChallenge(msg message.Message, channelPath string
 
 	challengeValue := hex.EncodeToString(randomBytes)
 	expirationTime := time.Now().Add(time.Minute * 5).Unix()
-	federationChallenge := messagedata.FederationChallenge{
+	federationChallenge := mfederation.FederationChallenge{
 		Object:     messagedata.FederationObject,
 		Action:     messagedata.FederationActionChallenge,
 		Value:      challengeValue,
@@ -169,8 +170,8 @@ func (h *Handler) handleRequestChallenge(msg message.Message, channelPath string
 
 // handleExpect checks that the message is from the local organizer and that
 // it contains a valid challenge, then stores the msg
-func (h *Handler) handleExpect(msg message.Message, channelPath string) error {
-	var federationExpect messagedata.FederationExpect
+func (h *Handler) handleExpect(msg mmessage.Message, channelPath string) error {
+	var federationExpect mfederation.FederationExpect
 	err := msg.UnmarshalData(&federationExpect)
 	if err != nil {
 		return err
@@ -188,7 +189,7 @@ func (h *Handler) handleExpect(msg message.Message, channelPath string) error {
 		return err
 	}
 
-	var challenge messagedata.FederationChallenge
+	var challenge mfederation.FederationChallenge
 	err = federationExpect.ChallengeMsg.UnmarshalData(&challenge)
 	if err != nil {
 		return err
@@ -218,8 +219,8 @@ func (h *Handler) handleExpect(msg message.Message, channelPath string) error {
 // handleInit checks that the message is from the local organizer and that
 // it contains a valid challenge, then stores the msg,
 // connect to the server and send the embedded challenge
-func (h *Handler) handleInit(msg message.Message, channelPath string) error {
-	var federationInit messagedata.FederationInit
+func (h *Handler) handleInit(msg mmessage.Message, channelPath string) error {
+	var federationInit mfederation.FederationInit
 	err := msg.UnmarshalData(&federationInit)
 	if err != nil {
 		return err
@@ -237,7 +238,7 @@ func (h *Handler) handleInit(msg message.Message, channelPath string) error {
 		return err
 	}
 
-	var challenge messagedata.FederationChallenge
+	var challenge mfederation.FederationChallenge
 	err = federationInit.ChallengeMsg.UnmarshalData(&challenge)
 	if err != nil {
 		return err
@@ -291,8 +292,8 @@ func (h *Handler) handleInit(msg message.Message, channelPath string) error {
 	return h.publishTo(federationInit.ChallengeMsg, remoteChannel)
 }
 
-func (h *Handler) handleChallenge(msg message.Message, channelPath string) error {
-	var federationChallenge messagedata.FederationChallenge
+func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string) error {
+	var federationChallenge mfederation.FederationChallenge
 	err := msg.UnmarshalData(&federationChallenge)
 	if err != nil {
 		return err
@@ -317,7 +318,7 @@ func (h *Handler) handleChallenge(msg message.Message, channelPath string) error
 		return errors.NewAccessDeniedError("This challenge has expired: %v", federationChallenge)
 	}
 
-	result := messagedata.FederationResult{
+	result := mfederation.FederationResult{
 		Object:       messagedata.FederationObject,
 		Action:       messagedata.FederationActionResult,
 		Status:       "success",
@@ -347,8 +348,8 @@ func (h *Handler) handleChallenge(msg message.Message, channelPath string) error
 	return h.subs.BroadcastToAllClients(resultMsg, channelPath)
 }
 
-func (h *Handler) handleResult(msg message.Message, channelPath string) error {
-	var result messagedata.FederationResult
+func (h *Handler) handleResult(msg mmessage.Message, channelPath string) error {
+	var result mfederation.FederationResult
 	err := msg.UnmarshalData(&result)
 	if err != nil {
 		return err
@@ -375,7 +376,7 @@ func (h *Handler) handleResult(msg message.Message, channelPath string) error {
 		return errors.NewInvalidMessageFieldError("invalid public key contained in FederationResult message")
 	}
 
-	var federationChallenge messagedata.FederationChallenge
+	var federationChallenge mfederation.FederationChallenge
 	err = result.ChallengeMsg.UnmarshalData(&federationChallenge)
 	if err != nil {
 		return err
@@ -431,7 +432,7 @@ func (h *Handler) getServerPk() (string, error) {
 	return base64.URLEncoding.EncodeToString(serverPkBytes), nil
 }
 
-func (h *Handler) verifyLocalOrganizer(msg message.Message, channelPath string) error {
+func (h *Handler) verifyLocalOrganizer(msg mmessage.Message, channelPath string) error {
 	organizePk, err := h.getOrganizerPk(channelPath)
 	if err != nil {
 		return err
@@ -465,43 +466,43 @@ func (h *Handler) connectTo(serverAddress string) (socket.Socket, error) {
 	return client, nil
 }
 
-func (h *Handler) createMessage(data messagedata.MessageData) (message.Message, error) {
+func (h *Handler) createMessage(data messagedata.MessageData) (mmessage.Message, error) {
 
 	dataBytes, err := json.Marshal(data)
 	if err != nil {
-		return message.Message{}, errors.NewJsonMarshalError(err.Error())
+		return mmessage.Message{}, errors.NewJsonMarshalError(err.Error())
 	}
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBytes)
 
 	serverPk, serverSk, err := h.db.GetServerKeys()
 	if err != nil {
-		return message.Message{}, err
+		return mmessage.Message{}, err
 	}
 
 	senderBytes, err := serverPk.MarshalBinary()
 	if err != nil {
-		return message.Message{}, errors.NewInternalServerError("failed to marshal key: %v", err)
+		return mmessage.Message{}, errors.NewInternalServerError("failed to marshal key: %v", err)
 	}
 	sender := base64.URLEncoding.EncodeToString(senderBytes)
 
 	signatureBytes, err := schnorr.Sign(crypto.Suite, serverSk, dataBytes)
 	if err != nil {
-		return message.Message{}, errors.NewInternalServerError("failed to sign message: %v", err)
+		return mmessage.Message{}, errors.NewInternalServerError("failed to sign message: %v", err)
 	}
 	signature := base64.URLEncoding.EncodeToString(signatureBytes)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              dataBase64,
 		Sender:            sender,
 		Signature:         signature,
-		MessageID:         message.Hash(dataBase64, signature),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(dataBase64, signature),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	return msg, nil
 }
 
-func (h *Handler) publishTo(msg message.Message, channelPath string) error {
+func (h *Handler) publishTo(msg mmessage.Message, channelPath string) error {
 	publishMsg := method.Publish{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{

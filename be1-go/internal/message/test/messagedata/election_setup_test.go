@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mlao"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -22,7 +23,7 @@ func Test_Election_Setup(t *testing.T) {
 	require.Equal(t, "election", object)
 	require.Equal(t, "setup", action)
 
-	var msg messagedata.ElectionSetup
+	var msg mlao.ElectionSetup
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -49,7 +50,7 @@ func Test_Election_Setup(t *testing.T) {
 }
 
 func Test_Election_Setup_Interface_Functions(t *testing.T) {
-	var msg messagedata.ElectionSetup
+	var msg mlao.ElectionSetup
 
 	require.Equal(t, messagedata.ElectionObject, msg.GetObject())
 	require.Equal(t, messagedata.ElectionActionSetup, msg.GetAction())

@@ -3,13 +3,13 @@ package hgetmessagesbyid
 import (
 	"encoding/json"
 	"popstellar/internal/errors"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 )
 
 type Repository interface {
-	GetResultForGetMessagesByID(params map[string][]string) (map[string][]message.Message, error)
+	GetResultForGetMessagesByID(params map[string][]string) (map[string][]mmessage.Message, error)
 }
 
 type Handler struct {

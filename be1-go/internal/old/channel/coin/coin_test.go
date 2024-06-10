@@ -8,8 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/crypto"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/validation"
@@ -119,7 +119,7 @@ func Test_Coin_Channel_Catchup(t *testing.T) {
 
 	// Create the messages
 	numMessages := 5
-	messages := make([]message.Message, numMessages)
+	messages := make([]mmessage.Message, numMessages)
 
 	// Create the channel
 	channel := NewChannel("channel0", fakeHub, nolog)
@@ -129,7 +129,7 @@ func Test_Coin_Channel_Catchup(t *testing.T) {
 
 	for i := 0; i < numMessages; i++ {
 		// Create a new message containing only an id
-		message := message.Message{MessageID: fmt.Sprintf("%d", i)}
+		message := mmessage.Message{MessageID: fmt.Sprintf("%d", i)}
 		messages[i] = message
 
 		// Store the message in the inbox
@@ -209,12 +209,12 @@ func Test_SendTransaction(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	relativePathCreatePub := filepath.Join(protocolRelativePath,
@@ -266,12 +266,12 @@ func Test_SendTransactionMaxAmount(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	relativePathCreatePub := filepath.Join(protocolRelativePath,
@@ -323,12 +323,12 @@ func Test_SendTransactionOverflowAmount(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	relativePathCreatePub := filepath.Join(protocolRelativePath,
@@ -380,12 +380,12 @@ func Test_SendTransactionZeroAmount(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	relativePathCreatePub := filepath.Join(protocolRelativePath,
@@ -437,12 +437,12 @@ func Test_SendTransactionNegativeAmount(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	relativePathCreatePub := filepath.Join(protocolRelativePath,
@@ -486,11 +486,11 @@ func Test_SendTransaction_MissingData(t *testing.T) {
 	// load example
 	require.NoError(t, err)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash("helloworld", "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash("helloworld", "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	relativePathCreatePub := filepath.Join(protocolRelativePath,
@@ -543,12 +543,12 @@ func Test_SendTransactionWrongId(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	relativePathCreatePub := filepath.Join(protocolRelativePath,
@@ -602,12 +602,12 @@ func Test_SendTransactionBadSignature(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	relativePathCreatePub := filepath.Join(protocolRelativePath,
@@ -660,12 +660,12 @@ func Test_SendTransactionCoinbase(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	relativePathCreatePub := filepath.Join(protocolRelativePath,
@@ -827,7 +827,7 @@ type fakeSocket struct {
 	socket.Socket
 
 	resultID int
-	res      []message.Message
+	res      []mmessage.Message
 	msg      []byte
 
 	err error
@@ -842,7 +842,7 @@ func (f *fakeSocket) Send(msg []byte) {
 }
 
 // SendResult implements socket.Socket
-func (f *fakeSocket) SendResult(id int, res []message.Message, missingMsgs map[string][]message.Message) {
+func (f *fakeSocket) SendResult(id int, res []mmessage.Message, missingMsgs map[string][]mmessage.Message) {
 	f.resultID = id
 	f.res = res
 }

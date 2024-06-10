@@ -6,7 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/message/messagedata"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/messagedata/melection"
+	"popstellar/internal/message/mmessage"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -29,7 +30,7 @@ func TestVerify_ElectionOpen(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var electionOpen messagedata.ElectionOpen
+	var electionOpen melection.ElectionOpen
 
 	err = json.Unmarshal(buf, &electionOpen)
 	require.NoError(t, err)
@@ -75,7 +76,7 @@ func TestVerify_ElectionOpen_already_open(t *testing.T) {
 		"election_open.json"))
 	require.NoError(t, err)
 
-	var electionOpen messagedata.ElectionOpen
+	var electionOpen melection.ElectionOpen
 
 	err = json.Unmarshal(buf, &electionOpen)
 	require.NoError(t, err)
@@ -94,7 +95,7 @@ func TestVerify_ElectionOpen_already_closed(t *testing.T) {
 		"election_open.json"))
 	require.NoError(t, err)
 
-	var electionOpen messagedata.ElectionOpen
+	var electionOpen melection.ElectionOpen
 
 	err = json.Unmarshal(buf, &electionOpen)
 	require.NoError(t, err)
@@ -113,7 +114,7 @@ func TestVerify_ElectionOpen_Created_Time_Less_Than_Create_Time_Setup(t *testing
 		"election_open.json"))
 	require.NoError(t, err)
 
-	var electionOpen messagedata.ElectionOpen
+	var electionOpen melection.ElectionOpen
 
 	err = json.Unmarshal(buf, &electionOpen)
 	require.NoError(t, err)
@@ -135,7 +136,7 @@ func TestVerify_ElectionEnd_Created_Time_Less_Than_Create_Time_Setup(t *testing.
 		"election_end.json"))
 	require.NoError(t, err)
 
-	var electionEnd messagedata.ElectionEnd
+	var electionEnd melection.ElectionEnd
 
 	err = json.Unmarshal(buf, &electionEnd)
 	require.NoError(t, err)
@@ -158,7 +159,7 @@ func TestVerify_CastVote_Created_Time_Less_Than_Create_Time_Setup(t *testing.T) 
 		"vote_cast_vote.json"))
 	require.NoError(t, err)
 
-	var castVote messagedata.VoteCastVote
+	var castVote melection.VoteCastVote
 
 	err = json.Unmarshal(buf, &castVote)
 	require.NoError(t, err)
@@ -190,7 +191,7 @@ func TestVerify_CastVote_Open_Ballot(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var castVote messagedata.VoteCastVote
+	var castVote melection.VoteCastVote
 
 	err = json.Unmarshal(buf, &castVote)
 	require.NoError(t, err)
@@ -247,7 +248,7 @@ func TestVerify_CastVote_Secret_Ballot(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var castVote messagedata.VoteCastVote
+	var castVote melection.VoteCastVote
 
 	err = json.Unmarshal(buf, &castVote)
 	require.NoError(t, err)
@@ -290,7 +291,7 @@ func TestVerify_CastVote_not_open(t *testing.T) {
 		"vote_cast_vote.json"))
 	require.NoError(t, err)
 
-	var voteCastVote messagedata.VoteCastVote
+	var voteCastVote melection.VoteCastVote
 
 	err = json.Unmarshal(buf, &voteCastVote)
 	require.NoError(t, err)
@@ -309,7 +310,7 @@ func TestVerify_CastVote_already_closed(t *testing.T) {
 		"vote_cast_vote.json"))
 	require.NoError(t, err)
 
-	var voteCastVote messagedata.VoteCastVote
+	var voteCastVote melection.VoteCastVote
 
 	err = json.Unmarshal(buf, &voteCastVote)
 	require.NoError(t, err)
@@ -329,19 +330,19 @@ func TestVerify_ElectionEnd(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var castVote messagedata.VoteCastVote
+	var castVote melection.VoteCastVote
 	err = json.Unmarshal(buf, &castVote)
 	require.NoError(t, err)
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
 	// wrap the cast vote in a message
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            pkOrganizer,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	err = electChannel.processCastVote(m, &castVote, &fakeSocket{})
@@ -361,7 +362,7 @@ func TestVerify_ElectionEnd(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var electionEnd messagedata.ElectionEnd
+	var electionEnd melection.ElectionEnd
 
 	err = json.Unmarshal(buf, &electionEnd)
 	require.NoError(t, err)
@@ -406,7 +407,7 @@ func TestVerify_ElectionEnd_not_open(t *testing.T) {
 		"election_end.json"))
 	require.NoError(t, err)
 
-	var electionEnd messagedata.ElectionEnd
+	var electionEnd melection.ElectionEnd
 
 	err = json.Unmarshal(buf, &electionEnd)
 	require.NoError(t, err)
@@ -445,9 +446,9 @@ func TestVerifyRegisteredVotes_Badly_Sorted(t *testing.T) {
 	}
 
 	// votes must be sorted by by vote id
-	expected := message.Hash("vote1.1", "vote2.1", "vote2.2", "vote1.2")
+	expected := mmessage.Hash("vote1.1", "vote2.1", "vote2.2", "vote1.2")
 
-	end := messagedata.ElectionEnd{
+	end := melection.ElectionEnd{
 		RegisteredVotes: expected,
 	}
 
@@ -484,9 +485,9 @@ func TestVerifyRegisteredVotes_OK(t *testing.T) {
 	}
 
 	// votes must be sorted by by vote id
-	expected := message.Hash("vote1.1", "vote1.2", "vote2.1", "vote2.2")
+	expected := mmessage.Hash("vote1.1", "vote1.2", "vote2.1", "vote2.2")
 
-	end := messagedata.ElectionEnd{
+	end := melection.ElectionEnd{
 		RegisteredVotes: expected,
 	}
 
@@ -503,7 +504,7 @@ func TestVerify_ElectionEnd_already_closed(t *testing.T) {
 		"election_end.json"))
 	require.NoError(t, err)
 
-	var electionEnd messagedata.ElectionEnd
+	var electionEnd melection.ElectionEnd
 
 	err = json.Unmarshal(buf, &electionEnd)
 	require.NoError(t, err)

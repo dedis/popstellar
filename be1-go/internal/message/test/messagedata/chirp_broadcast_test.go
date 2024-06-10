@@ -5,13 +5,14 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mchirp"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_Chirp_Broadcast_Verify(t *testing.T) {
-	var chirpBroadcast messagedata.ChirpBroadcast
+	var chirpBroadcast mchirp.ChirpBroadcast
 
 	object, action := "chirp", "notify_add"
 

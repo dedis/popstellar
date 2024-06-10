@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	message "popstellar/internal/message/query/method/message"
+	message "popstellar/internal/message/mmessage"
 
 	mock "github.com/stretchr/testify/mock"
 )

@@ -7,8 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/crypto"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/validation"
@@ -109,14 +109,14 @@ func Test_Consensus_Channel_Catchup(t *testing.T) {
 
 	// Create the messages
 	numMessages := 5
-	messages := make([]message.Message, numMessages)
+	messages := make([]mmessage.Message, numMessages)
 
 	// Create the channel
 	channel := NewChannel("channel0", fakeHub, nolog)
 
 	for i := 0; i < numMessages; i++ {
 		// Create a new message containing only an id
-		message := message.Message{MessageID: fmt.Sprintf("%d", i)}
+		message := mmessage.Message{MessageID: fmt.Sprintf("%d", i)}
 		messages[i] = message
 
 		// Store the message in the inbox
@@ -303,7 +303,7 @@ type fakeSocket struct {
 	socket.Socket
 
 	resultID int
-	res      []message.Message
+	res      []mmessage.Message
 	msg      []byte
 
 	err error
@@ -318,7 +318,7 @@ func (f *fakeSocket) Send(msg []byte) {
 }
 
 // SendResult implements socket.Socket
-func (f *fakeSocket) SendResult(id int, res []message.Message, missingMsgs map[string][]message.Message) {
+func (f *fakeSocket) SendResult(id int, res []mmessage.Message, missingMsgs map[string][]mmessage.Message) {
 	f.resultID = id
 	f.res = res
 }

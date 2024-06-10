@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mcoin"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -22,7 +23,7 @@ func Test_Coin_Post_Transaction(t *testing.T) {
 	require.Equal(t, "coin", object)
 	require.Equal(t, "post_transaction", action)
 
-	var msg messagedata.PostTransaction
+	var msg mcoin.PostTransaction
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -43,7 +44,7 @@ func Test_Coin_Post_Transaction(t *testing.T) {
 }
 
 func Test_Coin_Post_Transaction_Interface_Functions(t *testing.T) {
-	var msg messagedata.PostTransaction
+	var msg mcoin.PostTransaction
 
 	require.Equal(t, messagedata.CoinObject, msg.GetObject())
 	require.Equal(t, messagedata.CoinActionPostTransaction, msg.GetAction())
@@ -51,7 +52,7 @@ func Test_Coin_Post_Transaction_Interface_Functions(t *testing.T) {
 }
 
 func Test_Coin_Post_Transaction_Verify(t *testing.T) {
-	var postTransaction messagedata.PostTransaction
+	var postTransaction mcoin.PostTransaction
 
 	object, action := "coin", "post_transaction"
 

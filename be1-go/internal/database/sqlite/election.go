@@ -10,7 +10,9 @@ import (
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/messagedata/election/telection"
 	"popstellar/internal/message/messagedata"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/messagedata/melection"
+	"popstellar/internal/message/messagedata/mlao"
+	"popstellar/internal/message/mmessage"
 	"time"
 )
 
@@ -160,7 +162,7 @@ func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{},
 		return nil, poperrors.NewDatabaseSelectErrorMsg("roll call close message data: %v", err)
 	}
 
-	var rollCallClose messagedata.RollCallClose
+	var rollCallClose mlao.RollCallClose
 	err = json.Unmarshal(rollCallCloseBytes, &rollCallClose)
 	if err != nil {
 		return nil, poperrors.NewJsonUnmarshalError("roll call close message data: %v", err)
@@ -173,19 +175,19 @@ func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{},
 	return attendeesMap, nil
 }
 
-func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (messagedata.ElectionSetup, error) {
+func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (mlao.ElectionSetup, error) {
 
 	var electionSetupBytes []byte
 	err := tx.QueryRow(selectElectionSetup, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).
 		Scan(&electionSetupBytes)
 	if err != nil {
-		return messagedata.ElectionSetup{}, poperrors.NewDatabaseSelectErrorMsg("election setup message data: %v", err)
+		return mlao.ElectionSetup{}, poperrors.NewDatabaseSelectErrorMsg("election setup message data: %v", err)
 	}
 
-	var electionSetup messagedata.ElectionSetup
+	var electionSetup mlao.ElectionSetup
 	err = json.Unmarshal(electionSetupBytes, &electionSetup)
 	if err != nil {
-		return messagedata.ElectionSetup{}, poperrors.NewJsonUnmarshalError("election setup message data: %v", err)
+		return mlao.ElectionSetup{}, poperrors.NewJsonUnmarshalError("election setup message data: %v", err)
 	}
 	return electionSetup, nil
 }
@@ -251,7 +253,7 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 		if err = rows.Scan(&voteBytes, &msgID, &sender); err != nil {
 			return nil, poperrors.NewDatabaseScanErrorMsg("cast vote message: %v", err)
 		}
-		var vote messagedata.VoteCastVote
+		var vote melection.VoteCastVote
 		err = json.Unmarshal(voteBytes, &vote)
 		if err != nil {
 			return nil, poperrors.NewJsonUnmarshalError("cast vote message data: %v", err)
@@ -271,7 +273,7 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 	return questions, nil
 }
 
-func getQuestionsFromMessage(electionSetup messagedata.ElectionSetup) (map[string]telection.Question, error) {
+func getQuestionsFromMessage(electionSetup mlao.ElectionSetup) (map[string]telection.Question, error) {
 
 	questions := make(map[string]telection.Question)
 	for _, question := range electionSetup.Questions {
@@ -291,7 +293,7 @@ func getQuestionsFromMessage(electionSetup messagedata.ElectionSetup) (map[strin
 	return questions, nil
 }
 
-func updateVote(msgID, sender string, castVote messagedata.VoteCastVote, questions map[string]telection.Question) error {
+func updateVote(msgID, sender string, castVote melection.VoteCastVote, questions map[string]telection.Question) error {
 	for idx, vote := range castVote.Votes {
 		question, ok := questions[vote.Question]
 		if !ok {
@@ -310,7 +312,7 @@ func updateVote(msgID, sender string, castVote messagedata.VoteCastVote, questio
 	return nil
 }
 
-func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionResultMsg message.Message) error {
+func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionResultMsg mmessage.Message) error {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 

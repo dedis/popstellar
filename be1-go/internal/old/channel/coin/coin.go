@@ -6,11 +6,11 @@ import (
 	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 	"popstellar/internal/handler/answer/manswer"
-	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/messagedata"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/message/messagedata/mcoin"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/registry"
@@ -100,7 +100,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 }
 
 // Catchup is used to handle a catchup message.
-func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
+func (c *Channel) Catchup(catchup method.Catchup) []mmessage.Message {
 	c.log.Info().Str(msgID, strconv.Itoa(catchup.ID)).Msg("received a catchup")
 
 	return c.inbox.GetSortedMessages()
@@ -128,7 +128,7 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 // ---
 
 // handleMessage handles a message received in a broadcast or publish method
-func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
+func (c *Channel) handleMessage(msg mmessage.Message, socket socket.Socket) error {
 	err := c.registry.Process(msg, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %w", err)
@@ -148,25 +148,25 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 func (c *Channel) NewDigitalCashRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
-	registry.Register(messagedata.PostTransaction{}, c.processPostTransaction)
+	registry.Register(mcoin.PostTransaction{}, c.processPostTransaction)
 
 	return registry
 }
 
 // broadcastToAllClients is a helper message to broadcast a message to all clients.
-func (c *Channel) broadcastToAllClients(msg message.Message) error {
+func (c *Channel) broadcastToAllClients(msg mmessage.Message) error {
 	c.log.Info().Str(msgID, msg.MessageID).Msg("broadcasting message to all")
 
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: "broadcast",
 		},
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			c.channelID,
 			msg,
@@ -184,7 +184,7 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 }
 
 // verifyMessage checks if a message in a Publish or Broadcast method is valid
-func (c *Channel) verifyMessage(msg message.Message) error {
+func (c *Channel) verifyMessage(msg mmessage.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return xerrors.Errorf("failed to decode message data: %v", err)
@@ -205,10 +205,10 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 }
 
 // processPostTransaction handles a message object.
-func (c *Channel) processPostTransaction(msg message.Message, msgData interface{},
+func (c *Channel) processPostTransaction(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*messagedata.PostTransaction)
+	data, ok := msgData.(*mcoin.PostTransaction)
 	if !ok {
 		return xerrors.Errorf("message %T isn't a transaction#post message", msgData)
 	}

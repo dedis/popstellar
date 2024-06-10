@@ -11,9 +11,9 @@ import (
 	"os"
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/answer/manswer"
-	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mauthentification"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/old/channel/registry"
@@ -132,7 +132,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 }
 
 // Catchup is used to handle a catchup message.
-func (c *Channel) Catchup(_ method.Catchup) []message.Message {
+func (c *Channel) Catchup(_ method.Catchup) []mmessage.Message {
 	c.log.Error().Msg("Catchup is not allowed on the authentication channel")
 	return nil
 }
@@ -147,7 +147,7 @@ func (c *Channel) Broadcast(_ method.Broadcast, _ socket.Socket) error {
 // ---
 
 // handleMessage handles a message received in a broadcast or publish method
-func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
+func (c *Channel) handleMessage(msg mmessage.Message, socket socket.Socket) error {
 	err := c.registry.Process(msg, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %w", err)
@@ -161,14 +161,14 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 // NewAuthenticationRegistry creates a new registry for an authentication channel
 func (c *Channel) NewAuthenticationRegistry() registry.MessageRegistry {
 	newRegistry := registry.NewMessageRegistry()
-	newRegistry.Register(messagedata.AuthenticateUser{}, c.auhenticateUser)
+	newRegistry.Register(mauthentification.AuthenticateUser{}, c.auhenticateUser)
 	return newRegistry
 }
 
-func (c *Channel) auhenticateUser(msg message.Message, msgData interface{},
+func (c *Channel) auhenticateUser(msg mmessage.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	data, ok := msgData.(*messagedata.AuthenticateUser)
+	data, ok := msgData.(*mauthentification.AuthenticateUser)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a authentication message", msgData)
 	}
@@ -259,7 +259,7 @@ func loadRSAKeys(privateKeyPath string, publicKeyPath string) (*rsa.PrivateKey, 
 }
 
 // constructRedirectURIParams computes the redirect URI given the authentication message
-func constructRedirectURIParams(c *Channel, data *messagedata.AuthenticateUser, nonceDec string) (string, error) {
+func constructRedirectURIParams(c *Channel, data *mauthentification.AuthenticateUser, nonceDec string) (string, error) {
 
 	c.log.Info().Msg("Constructing the URI Parameters")
 
@@ -269,7 +269,7 @@ func constructRedirectURIParams(c *Channel, data *messagedata.AuthenticateUser, 
 	}
 
 	// create ppid for the identifier
-	ppid := base64.URLEncoding.EncodeToString([]byte(message.Hash(data.Identifier)))
+	ppid := base64.URLEncoding.EncodeToString([]byte(mmessage.Hash(data.Identifier)))
 
 	// add the ppid entry for tracking the given identifier
 	c.addPPIDEntry(identifier(data.Identifier), identifier(ppid))
@@ -316,7 +316,7 @@ func createJWTString(webAddr string, ppid string, cID string, nonce string, sk *
 }
 
 // verifyMessage checks if a message in a Publish or Broadcast method is valid
-func (c *Channel) verifyMessage(msg message.Message) error {
+func (c *Channel) verifyMessage(msg mmessage.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return xerrors.Errorf(failedToDecodeData, err)
@@ -338,7 +338,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 }
 
 // verifyAuthMessage checks that the authentication message has valid identifier, signatures and format
-func (c *Channel) verifyAuthMessage(msg message.Message, authMsg messagedata.AuthenticateUser) error {
+func (c *Channel) verifyAuthMessage(msg mmessage.Message, authMsg mauthentification.AuthenticateUser) error {
 
 	// checks that the identifier is not already associated with a (pop token, clientID) pair.
 	err := c.checkIdentifier(clientID(authMsg.ClientID), msg.Sender, identifier(authMsg.Identifier))

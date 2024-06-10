@@ -10,8 +10,10 @@ import (
 	"path/filepath"
 	"popstellar/internal/crypto"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/melection"
+	"popstellar/internal/message/messagedata/mlao"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/validation"
@@ -57,7 +59,7 @@ func Test_Creation_Fails_If_Identical_Questions(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var electionSetup messagedata.ElectionSetup
+	var electionSetup mlao.ElectionSetup
 
 	err = json.Unmarshal(buf, &electionSetup)
 	require.NoError(t, err)
@@ -66,7 +68,7 @@ func Test_Creation_Fails_If_Identical_Questions(t *testing.T) {
 	attendees[base64.URLEncoding.EncodeToString(keypair.publicBuf)] = struct{}{}
 	channelPath := "/root/" + electionSetup.Lao + "/" + electionSetup.ID
 	// Creates channel with two identical questions
-	_, err = NewChannel(channelPath, message.Message{MessageID: "0"}, electionSetup, attendees, fakeHub, nolog, keypair.public)
+	_, err = NewChannel(channelPath, mmessage.Message{MessageID: "0"}, electionSetup, attendees, fakeHub, nolog, keypair.public)
 	//NewChannel returns an error if the questions are not valid
 	require.Error(t, err)
 }
@@ -146,12 +148,12 @@ func Test_Election_Channel_Catchup(t *testing.T) {
 	// Create the messages
 	numMessages := 6
 
-	messages := make([]message.Message, numMessages)
-	messages[0] = message.Message{MessageID: "0"}
+	messages := make([]mmessage.Message, numMessages)
+	messages[0] = mmessage.Message{MessageID: "0"}
 
 	for i := 1; i < numMessages; i++ {
 		// Create a new message containing only an id
-		msg := message.Message{MessageID: fmt.Sprintf("%d", i)}
+		msg := mmessage.Message{MessageID: fmt.Sprintf("%d", i)}
 		messages[i] = msg
 
 		// Wait before storing a new message to be able to have an unique
@@ -216,19 +218,19 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var castVote messagedata.VoteCastVote
+	var castVote melection.VoteCastVote
 	err = json.Unmarshal(buf, &castVote)
 	require.NoError(t, err)
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
 	// wrap the cast vote in a message
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            pkOrganizer,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	// wrap the message in a publish
@@ -268,19 +270,19 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
-	var endElect messagedata.ElectionEnd
+	var endElect melection.ElectionEnd
 	err = json.Unmarshal(buf, &endElect)
 	require.NoError(t, err)
 
 	buf64 = base64.URLEncoding.EncodeToString(buf)
 
 	// wrap the end election in a message
-	m = message.Message{
+	m = mmessage.Message{
 		Data:              buf64,
 		Sender:            pkOrganizer,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	// wrap the message in a publish
@@ -297,7 +299,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 	dataBuf, err := base64.URLEncoding.DecodeString(broad.Params.Message.Data)
 	require.NoError(t, err)
 
-	var result messagedata.ElectionResult
+	var result melection.ElectionResult
 	err = json.Unmarshal(dataBuf, &result)
 	require.NoError(t, err)
 
@@ -325,7 +327,7 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var castVote messagedata.VoteCastVote
+	var castVote melection.VoteCastVote
 	err = json.Unmarshal(buf, &castVote)
 	require.NoError(t, err)
 
@@ -359,7 +361,7 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var electionResult messagedata.ElectionResult
+	var electionResult melection.ElectionResult
 	err = json.Unmarshal(buf, &electionResult)
 	require.NoError(t, err)
 
@@ -391,7 +393,7 @@ func Test_Update_Vote_Works(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var castVote messagedata.VoteCastVote
+	var castVote melection.VoteCastVote
 	err = json.Unmarshal(buf, &castVote)
 	require.NoError(t, err)
 
@@ -432,19 +434,19 @@ func Test_Publish_Election_Open(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var electionOpen messagedata.ElectionOpen
+	var electionOpen melection.ElectionOpen
 	err = json.Unmarshal(buf, &electionOpen)
 	require.NoError(t, err)
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
 	// wrap the election open in a message
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            pkOrganizer,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	// wrap the message in a publish
@@ -477,23 +479,23 @@ func Test_Process_Election_Open(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var electionOpen messagedata.ElectionOpen
+	var electionOpen melection.ElectionOpen
 	err = json.Unmarshal(buf, &electionOpen)
 	require.NoError(t, err)
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
 	// wrap the election open in a message
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            "@@@",
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	// Fail to process non election open
-	require.Error(t, electChannel.processElectionOpen(m, messagedata.ElectionEnd.NewEmpty, socket.ServerSocket{}))
+	require.Error(t, electChannel.processElectionOpen(m, melection.ElectionEnd.NewEmpty, socket.ServerSocket{}))
 
 	// Fail for non base64 sender key
 	require.Error(t, electChannel.processElectionOpen(m, electionOpen, socket.ServerSocket{}))
@@ -507,14 +509,14 @@ func Test_Sending_Election_Key(t *testing.T) {
 	// create secret ballot election channel: election with one question
 	electChannel, _ := newFakeChannel(t, true)
 
-	require.Equal(t, messagedata.SecretBallot, electChannel.electionType)
+	require.Equal(t, mlao.SecretBallot, electChannel.electionType)
 
 	// Compute the catchup method
 	catchupAnswer := electChannel.Catchup(method.Catchup{ID: 0})
 
 	electionKeyMsg := catchupAnswer[1]
 
-	var dataKey messagedata.ElectionKey
+	var dataKey melection.ElectionKey
 
 	err := electionKeyMsg.UnmarshalData(&dataKey)
 	require.NoError(t, err, electionKeyMsg)
@@ -627,7 +629,7 @@ func newFakeChannel(t *testing.T, secret bool) (*Channel, string) {
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
 
-	var electionSetup messagedata.ElectionSetup
+	var electionSetup mlao.ElectionSetup
 
 	err = json.Unmarshal(buf, &electionSetup)
 	require.NoError(t, err)
@@ -635,7 +637,7 @@ func newFakeChannel(t *testing.T, secret bool) (*Channel, string) {
 	attendees := make(map[string]struct{})
 	attendees[base64.URLEncoding.EncodeToString(keypair.publicBuf)] = struct{}{}
 	channelPath := "/root/" + electionSetup.Lao + "/" + electionSetup.ID
-	channel, err := NewChannel(channelPath, message.Message{MessageID: "0"}, electionSetup, attendees, fakeHub, nolog, keypair.public)
+	channel, err := NewChannel(channelPath, mmessage.Message{MessageID: "0"}, electionSetup, attendees, fakeHub, nolog, keypair.public)
 	require.NoError(t, err)
 
 	channelElec, ok := channel.(*Channel)
@@ -784,7 +786,7 @@ type fakeSocket struct {
 	socket.Socket
 
 	resultID int
-	res      []message.Message
+	res      []mmessage.Message
 	msg      []byte
 
 	err error
@@ -799,7 +801,7 @@ func (f *fakeSocket) Send(msg []byte) {
 }
 
 // SendResult implements socket.Socket
-func (f *fakeSocket) SendResult(id int, res []message.Message, missingMsgs map[string][]message.Message) {
+func (f *fakeSocket) SendResult(id int, res []mmessage.Message, missingMsgs map[string][]mmessage.Message) {
 	f.resultID = id
 	f.res = res
 }

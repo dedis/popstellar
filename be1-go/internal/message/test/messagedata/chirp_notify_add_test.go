@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mchirp"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -22,7 +23,7 @@ func Test_Chirp_Notify_Add(t *testing.T) {
 	require.Equal(t, "chirp", object)
 	require.Equal(t, "notify_add", action)
 
-	var msg messagedata.ChirpNotifyAdd
+	var msg mchirp.ChirpNotifyAdd
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -35,7 +36,7 @@ func Test_Chirp_Notify_Add(t *testing.T) {
 }
 
 func Test_Chirp_Notify_Add_Interface_Functions(t *testing.T) {
-	var msg messagedata.ChirpNotifyAdd
+	var msg mchirp.ChirpNotifyAdd
 
 	require.Equal(t, messagedata.ChirpObject, msg.GetObject())
 	require.Equal(t, messagedata.ChirpActionNotifyAdd, msg.GetAction())
@@ -43,7 +44,7 @@ func Test_Chirp_Notify_Add_Interface_Functions(t *testing.T) {
 }
 
 func Test_Chirp_Notify_Add_Verify(t *testing.T) {
-	var chirpNotifyAdd messagedata.ChirpNotifyAdd
+	var chirpNotifyAdd mchirp.ChirpNotifyAdd
 
 	object, action := "chirp", "notify_add"
 

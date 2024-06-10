@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/message/messagedata"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/messagedata/melection"
+	"popstellar/internal/message/messagedata/mlao"
+	"popstellar/internal/message/mmessage"
 	"sort"
 	"strings"
 
@@ -20,7 +22,7 @@ const (
 	elecIDCompare = "election id is %s, should be %s"
 )
 
-func (c *Channel) verifyMessageElectionOpen(electionOpen messagedata.ElectionOpen) error {
+func (c *Channel) verifyMessageElectionOpen(electionOpen melection.ElectionOpen) error {
 	c.log.Info().Msgf("verifying election#open message of election with id %s",
 		electionOpen.Election)
 
@@ -76,7 +78,7 @@ func (c *Channel) verifyMessageElectionOpen(electionOpen messagedata.ElectionOpe
 }
 
 // verifyMessageCastVote checks the election#cast_vote message data is valid.
-func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error {
+func (c *Channel) verifyMessageCastVote(castVote melection.VoteCastVote) error {
 	c.log.Info().Msgf("verifying election#cast_vote message of election with id %s",
 		castVote.Election)
 
@@ -143,7 +145,7 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 }
 
 // verifyMessageElectionEnd checks the election#end message data is valid.
-func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) error {
+func (c *Channel) verifyMessageElectionEnd(electionEnd melection.ElectionEnd) error {
 	c.log.Info().Msgf("verifying election#end message of election with id %s",
 		electionEnd.Election)
 
@@ -219,7 +221,7 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 
 // verifyRegisteredVotes checks the registered votes of an election end message
 // are valid.
-func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
+func verifyRegisteredVotes(electionEnd melection.ElectionEnd,
 	questions *map[string]*question) error {
 
 	// get list of sorted vote IDs
@@ -242,7 +244,7 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 	sort.Strings(voteIDs)
 
 	// hash all valid vote ids
-	validVotesHash := message.Hash(voteIDs...)
+	validVotesHash := mmessage.Hash(voteIDs...)
 
 	// compare registered votes with local saved votes
 	if electionEnd.RegisteredVotes != validVotesHash {
@@ -254,7 +256,7 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 	return nil
 }
 
-func (c *Channel) verifyVote(vote messagedata.Vote, electionID string) error {
+func (c *Channel) verifyVote(vote melection.Vote, electionID string) error {
 	qs, ok := c.questions[vote.Question]
 	if !ok {
 		return xerrors.Errorf("no Question with question ID %s exists", vote.Question)
@@ -262,13 +264,13 @@ func (c *Channel) verifyVote(vote messagedata.Vote, electionID string) error {
 
 	var vs string
 	switch c.electionType {
-	case messagedata.OpenBallot:
+	case mlao.OpenBallot:
 		v, ok := vote.Vote.(int)
 		if !ok {
 			return manswer.NewErrorf(-4, "votes in open ballot should be int")
 		}
 		vs = fmt.Sprintf("%d", v)
-	case messagedata.SecretBallot:
+	case mlao.SecretBallot:
 		vs, ok = vote.Vote.(string)
 		if !ok {
 			return manswer.NewErrorf(-4, "votes in secret ballot should be string")
@@ -285,7 +287,7 @@ func (c *Channel) verifyVote(vote messagedata.Vote, electionID string) error {
 		}
 	}
 
-	hash := message.Hash("Vote", electionID, string(qs.ID), vs)
+	hash := mmessage.Hash("Vote", electionID, string(qs.ID), vs)
 	if vote.ID != hash {
 		return xerrors.Errorf("vote ID is incorrect")
 	}

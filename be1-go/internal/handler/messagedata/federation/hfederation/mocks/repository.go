@@ -3,8 +3,8 @@
 package mocks
 
 import (
-	messagedata "popstellar/internal/message/messagedata"
-	message "popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/messagedata/mfederation"
+	message "popstellar/internal/message/mmessage"
 
 	kyber "go.dedis.ch/kyber/v3"
 
@@ -17,25 +17,25 @@ type Repository struct {
 }
 
 // GetFederationExpect provides a mock function with given fields: senderPk, remotePk, Challenge, channelPath
-func (_m *Repository) GetFederationExpect(senderPk string, remotePk string, Challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationExpect, error) {
+func (_m *Repository) GetFederationExpect(senderPk string, remotePk string, Challenge mfederation.FederationChallenge, channelPath string) (mfederation.FederationExpect, error) {
 	ret := _m.Called(senderPk, remotePk, Challenge, channelPath)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetFederationExpect")
 	}
 
-	var r0 messagedata.FederationExpect
+	var r0 mfederation.FederationExpect
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string, string, messagedata.FederationChallenge, string) (messagedata.FederationExpect, error)); ok {
+	if rf, ok := ret.Get(0).(func(string, string, mfederation.FederationChallenge, string) (mfederation.FederationExpect, error)); ok {
 		return rf(senderPk, remotePk, Challenge, channelPath)
 	}
-	if rf, ok := ret.Get(0).(func(string, string, messagedata.FederationChallenge, string) messagedata.FederationExpect); ok {
+	if rf, ok := ret.Get(0).(func(string, string, mfederation.FederationChallenge, string) mfederation.FederationExpect); ok {
 		r0 = rf(senderPk, remotePk, Challenge, channelPath)
 	} else {
-		r0 = ret.Get(0).(messagedata.FederationExpect)
+		r0 = ret.Get(0).(mfederation.FederationExpect)
 	}
 
-	if rf, ok := ret.Get(1).(func(string, string, messagedata.FederationChallenge, string) error); ok {
+	if rf, ok := ret.Get(1).(func(string, string, mfederation.FederationChallenge, string) error); ok {
 		r1 = rf(senderPk, remotePk, Challenge, channelPath)
 	} else {
 		r1 = ret.Error(1)
@@ -45,25 +45,25 @@ func (_m *Repository) GetFederationExpect(senderPk string, remotePk string, Chal
 }
 
 // GetFederationInit provides a mock function with given fields: senderPk, remotePk, Challenge, channelPath
-func (_m *Repository) GetFederationInit(senderPk string, remotePk string, Challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationInit, error) {
+func (_m *Repository) GetFederationInit(senderPk string, remotePk string, Challenge mfederation.FederationChallenge, channelPath string) (mfederation.FederationInit, error) {
 	ret := _m.Called(senderPk, remotePk, Challenge, channelPath)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetFederationInit")
 	}
 
-	var r0 messagedata.FederationInit
+	var r0 mfederation.FederationInit
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string, string, messagedata.FederationChallenge, string) (messagedata.FederationInit, error)); ok {
+	if rf, ok := ret.Get(0).(func(string, string, mfederation.FederationChallenge, string) (mfederation.FederationInit, error)); ok {
 		return rf(senderPk, remotePk, Challenge, channelPath)
 	}
-	if rf, ok := ret.Get(0).(func(string, string, messagedata.FederationChallenge, string) messagedata.FederationInit); ok {
+	if rf, ok := ret.Get(0).(func(string, string, mfederation.FederationChallenge, string) mfederation.FederationInit); ok {
 		r0 = rf(senderPk, remotePk, Challenge, channelPath)
 	} else {
-		r0 = ret.Get(0).(messagedata.FederationInit)
+		r0 = ret.Get(0).(mfederation.FederationInit)
 	}
 
-	if rf, ok := ret.Get(1).(func(string, string, messagedata.FederationChallenge, string) error); ok {
+	if rf, ok := ret.Get(1).(func(string, string, mfederation.FederationChallenge, string) error); ok {
 		r1 = rf(senderPk, remotePk, Challenge, channelPath)
 	} else {
 		r1 = ret.Error(1)
@@ -142,7 +142,7 @@ func (_m *Repository) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
 }
 
 // IsChallengeValid provides a mock function with given fields: senderPk, challenge, channelPath
-func (_m *Repository) IsChallengeValid(senderPk string, challenge messagedata.FederationChallenge, channelPath string) error {
+func (_m *Repository) IsChallengeValid(senderPk string, challenge mfederation.FederationChallenge, channelPath string) error {
 	ret := _m.Called(senderPk, challenge, channelPath)
 
 	if len(ret) == 0 {
@@ -150,7 +150,7 @@ func (_m *Repository) IsChallengeValid(senderPk string, challenge messagedata.Fe
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, messagedata.FederationChallenge, string) error); ok {
+	if rf, ok := ret.Get(0).(func(string, mfederation.FederationChallenge, string) error); ok {
 		r0 = rf(senderPk, challenge, channelPath)
 	} else {
 		r0 = ret.Error(0)
@@ -160,7 +160,7 @@ func (_m *Repository) IsChallengeValid(senderPk string, challenge messagedata.Fe
 }
 
 // RemoveChallenge provides a mock function with given fields: challenge
-func (_m *Repository) RemoveChallenge(challenge messagedata.FederationChallenge) error {
+func (_m *Repository) RemoveChallenge(challenge mfederation.FederationChallenge) error {
 	ret := _m.Called(challenge)
 
 	if len(ret) == 0 {
@@ -168,7 +168,7 @@ func (_m *Repository) RemoveChallenge(challenge messagedata.FederationChallenge)
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(messagedata.FederationChallenge) error); ok {
+	if rf, ok := ret.Get(0).(func(mfederation.FederationChallenge) error); ok {
 		r0 = rf(challenge)
 	} else {
 		r0 = ret.Error(0)

@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mlao"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -22,7 +23,7 @@ func Test_Lao_Update(t *testing.T) {
 	require.Equal(t, "lao", object)
 	require.Equal(t, "update_properties", action)
 
-	var msg messagedata.LaoUpdate
+	var msg mlao.LaoUpdate
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -41,7 +42,7 @@ func Test_Lao_Update(t *testing.T) {
 }
 
 func Test_Lao_Update_Interface_Functions(t *testing.T) {
-	var msg messagedata.LaoUpdate
+	var msg mlao.LaoUpdate
 
 	require.Equal(t, messagedata.LAOObject, msg.GetObject())
 	require.Equal(t, messagedata.LAOActionUpdate, msg.GetAction())
@@ -49,7 +50,7 @@ func Test_Lao_Update_Interface_Functions(t *testing.T) {
 }
 
 func Test_Lao_Update_Verify(t *testing.T) {
-	var laoUpdate messagedata.LaoUpdate
+	var laoUpdate mlao.LaoUpdate
 
 	object, action := "lao", "update_properties"
 

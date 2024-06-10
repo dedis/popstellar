@@ -1,14 +1,14 @@
 package method
 
 import (
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method/message"
 )
 
 type ParamsRumor struct {
-	SenderID string                       `json:"sender_id"`
-	RumorID  int                          `json:"rumor_id"`
-	Messages map[string][]message.Message `json:"messages"`
+	SenderID string                        `json:"sender_id"`
+	RumorID  int                           `json:"rumor_id"`
+	Messages map[string][]mmessage.Message `json:"messages"`
 }
 
 // Rumor defines a JSON RPC rumor message

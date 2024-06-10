@@ -2,7 +2,7 @@ package consensus
 
 import (
 	"encoding/json"
-	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mconsensus"
 
 	"golang.org/x/xerrors"
 )
@@ -11,7 +11,7 @@ import (
 func (c *Channel) createPrepareMessage(consensusInstance *ConsensusInstance,
 	messageID string) ([]byte, error) {
 
-	newData := messagedata.ConsensusPrepare{
+	newData := mconsensus.ConsensusPrepare{
 		Object:     "consensus",
 		Action:     "prepare",
 		InstanceID: consensusInstance.id,
@@ -19,7 +19,7 @@ func (c *Channel) createPrepareMessage(consensusInstance *ConsensusInstance,
 
 		CreatedAt: c.clock.Now().Unix(),
 
-		Value: messagedata.ValuePrepare{
+		Value: mconsensus.ValuePrepare{
 			ProposedTry: consensusInstance.proposedTry,
 		},
 	}
@@ -36,7 +36,7 @@ func (c *Channel) createPrepareMessage(consensusInstance *ConsensusInstance,
 func (c *Channel) createPromiseMessage(consensusInstance *ConsensusInstance,
 	messageID string) ([]byte, error) {
 
-	newData := messagedata.ConsensusPromise{
+	newData := mconsensus.ConsensusPromise{
 		Object:     "consensus",
 		Action:     "promise",
 		InstanceID: consensusInstance.id,
@@ -44,7 +44,7 @@ func (c *Channel) createPromiseMessage(consensusInstance *ConsensusInstance,
 
 		CreatedAt: c.clock.Now().Unix(),
 
-		Value: messagedata.ValuePromise{
+		Value: mconsensus.ValuePromise{
 			AcceptedTry:   consensusInstance.acceptedTry,
 			AcceptedValue: consensusInstance.acceptedValue,
 			PromisedTry:   consensusInstance.promisedTry,
@@ -63,7 +63,7 @@ func (c *Channel) createPromiseMessage(consensusInstance *ConsensusInstance,
 func (c *Channel) createProposeMessage(consensusInstance *ConsensusInstance, messageID string,
 	highestAccepted int64, highestValue bool) ([]byte, error) {
 
-	newData := messagedata.ConsensusPropose{
+	newData := mconsensus.ConsensusPropose{
 		Object:     "consensus",
 		Action:     "propose",
 		InstanceID: consensusInstance.id,
@@ -71,7 +71,7 @@ func (c *Channel) createProposeMessage(consensusInstance *ConsensusInstance, mes
 
 		CreatedAt: c.clock.Now().Unix(),
 
-		Value: messagedata.ValuePropose{
+		Value: mconsensus.ValuePropose{
 			ProposedValue: highestValue,
 		},
 
@@ -100,7 +100,7 @@ func (c *Channel) createProposeMessage(consensusInstance *ConsensusInstance, mes
 func (c *Channel) createAcceptMessage(consensusInstance *ConsensusInstance,
 	messageID string) ([]byte, error) {
 
-	newData := messagedata.ConsensusAccept{
+	newData := mconsensus.ConsensusAccept{
 		Object:     "consensus",
 		Action:     "accept",
 		InstanceID: consensusInstance.id,
@@ -108,7 +108,7 @@ func (c *Channel) createAcceptMessage(consensusInstance *ConsensusInstance,
 
 		CreatedAt: c.clock.Now().Unix(),
 
-		Value: messagedata.ValueAccept{
+		Value: mconsensus.ValueAccept{
 			AcceptedTry:   consensusInstance.acceptedTry,
 			AcceptedValue: consensusInstance.acceptedValue,
 		},
@@ -126,7 +126,7 @@ func (c *Channel) createAcceptMessage(consensusInstance *ConsensusInstance,
 func (c *Channel) createLearnMessage(consensusInstance *ConsensusInstance,
 	messageID string) ([]byte, error) {
 
-	newData := messagedata.ConsensusLearn{
+	newData := mconsensus.ConsensusLearn{
 		Object:     "consensus",
 		Action:     "learn",
 		InstanceID: consensusInstance.id,
@@ -134,7 +134,7 @@ func (c *Channel) createLearnMessage(consensusInstance *ConsensusInstance,
 
 		CreatedAt: c.clock.Now().Unix(),
 
-		Value: messagedata.ValueLearn{
+		Value: mconsensus.ValueLearn{
 			Decision: consensusInstance.decision,
 		},
 
@@ -170,7 +170,7 @@ func (c *Channel) createFailureMessage(consensusInstance *ConsensusInstance,
 
 	c.log.Warn().Msgf("failure of the consensus")
 
-	newData := messagedata.ConsensusFailure{
+	newData := mconsensus.ConsensusFailure{
 		Object:     "consensus",
 		Action:     "failure",
 		InstanceID: consensusInstance.id,

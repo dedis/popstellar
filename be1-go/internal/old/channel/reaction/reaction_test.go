@@ -9,10 +9,10 @@ import (
 	"path/filepath"
 	"popstellar/internal/crypto"
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mreaction"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/channel"
 	"popstellar/internal/validation"
@@ -154,12 +154,12 @@ func TestReactionChannel_Broadcast(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	relativePath = filepath.Join(protocolRelativePath,
@@ -211,11 +211,11 @@ func Test_Catchup(t *testing.T) {
 	// Create the messages
 	numMessages := 5
 
-	messages := make([]message.Message, numMessages)
+	messages := make([]mmessage.Message, numMessages)
 
 	for i := 0; i < numMessages; i++ {
 		// Create a new message containing only an id
-		message := message.Message{MessageID: fmt.Sprintf("%d", i)}
+		message := mmessage.Message{MessageID: fmt.Sprintf("%d", i)}
 		messages[i] = message
 
 		// Store the message in the inbox
@@ -264,12 +264,12 @@ func Test_SendReaction(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	relativePathCreatePub := filepath.Join(protocolRelativePath,
@@ -317,12 +317,12 @@ func Test_DeleteAbsentReaction_MustFail(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	relativePathCreatePub := filepath.Join(protocolRelativePath,
@@ -371,12 +371,12 @@ func Test_DeleteReaction(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	addReactionID := m.MessageID
@@ -404,7 +404,7 @@ func Test_DeleteReaction(t *testing.T) {
 	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
-	var del messagedata.ReactionDelete
+	var del mreaction.ReactionDelete
 
 	err = json.Unmarshal(buf, &del)
 	require.NoError(t, err)
@@ -417,12 +417,12 @@ func Test_DeleteReaction(t *testing.T) {
 
 	buf64 = base64.URLEncoding.EncodeToString(buf)
 
-	m = message.Message{
+	m = mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	deleteReactionID := m.MessageID
@@ -473,12 +473,12 @@ func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	m := message.Message{
+	m := mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	addReactionID := m.MessageID
@@ -513,7 +513,7 @@ func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
-	var del messagedata.ReactionDelete
+	var del mreaction.ReactionDelete
 
 	err = json.Unmarshal(buf, &del)
 	require.NoError(t, err)
@@ -526,12 +526,12 @@ func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 
 	buf64 = base64.URLEncoding.EncodeToString(buf)
 
-	m = message.Message{
+	m = mmessage.Message{
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         message.Hash(buf64, "h"),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(buf64, "h"),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	deleteReactionID := m.MessageID
@@ -695,7 +695,7 @@ type fakeSocket struct {
 	socket.Socket
 
 	resultID int
-	res      []message.Message
+	res      []mmessage.Message
 	msg      []byte
 
 	err error
@@ -710,7 +710,7 @@ func (f *fakeSocket) Send(msg []byte) {
 }
 
 // SendResult implements socket.Socket
-func (f *fakeSocket) SendResult(id int, res []message.Message, missingMsgs map[string][]message.Message) {
+func (f *fakeSocket) SendResult(id int, res []mmessage.Message, missingMsgs map[string][]mmessage.Message) {
 	f.resultID = id
 	f.res = res
 }

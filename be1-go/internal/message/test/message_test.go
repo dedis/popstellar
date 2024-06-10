@@ -4,8 +4,9 @@ import (
 	"encoding/base64"
 	"os"
 	"path/filepath"
-	"popstellar/internal/message/messagedata"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/messagedata/mlao"
+	"popstellar/internal/message/messagedata/mroot"
+	"popstellar/internal/message/mmessage"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -18,10 +19,10 @@ func Test_UnmarshalData(t *testing.T) {
 	messageDataBuf, err := os.ReadFile(messageDataPath)
 	require.NoError(t, err)
 
-	laoCreate := messagedata.LaoCreate{}
-	electionSetup := messagedata.ElectionSetup{}
+	laoCreate := mroot.LaoCreate{}
+	electionSetup := mlao.ElectionSetup{}
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data: string(messageDataBuf),
 	}
 
@@ -33,7 +34,7 @@ func Test_UnmarshalData(t *testing.T) {
 
 	messageData := base64.URLEncoding.EncodeToString(messageDataBuf)
 
-	msg = message.Message{
+	msg = mmessage.Message{
 		Data: messageData,
 	}
 

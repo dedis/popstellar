@@ -13,9 +13,10 @@ import (
 	generator2 "popstellar/internal/generator"
 	"popstellar/internal/handler/messagedata/federation/hfederation/mocks"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mfederation"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
 	mock2 "popstellar/internal/network/socket/mocks"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
@@ -27,7 +28,7 @@ func Test_handleChannelFederation(t *testing.T) {
 	type input struct {
 		name        string
 		channelPath string
-		msg         message.Message
+		msg         mmessage.Message
 		isError     bool
 		contains    string
 	}
@@ -247,7 +248,7 @@ func Test_handleChannelFederation(t *testing.T) {
 		contains: "sender is not the organizer of the channelPath",
 	})
 
-	federationChallenge1 := messagedata.FederationChallenge{
+	federationChallenge1 := mfederation.FederationChallenge{
 		Object:     messagedata.FederationObject,
 		Action:     messagedata.FederationActionChallenge,
 		Value:      value,
@@ -255,8 +256,7 @@ func Test_handleChannelFederation(t *testing.T) {
 	}
 
 	db.On("GetFederationExpect", organizer,
-		notOrganizer, federationChallenge1, channelPath).Return(messagedata.
-		FederationExpect{}, sql.ErrNoRows)
+		notOrganizer, federationChallenge1, channelPath).Return(mfederation.FederationExpect{}, sql.ErrNoRows)
 
 	// Test 15 Error when FederationChallenge is received without any
 	// matching FederationExpect
@@ -292,8 +292,7 @@ func Test_handleChannelFederation(t *testing.T) {
 	})
 
 	db.On("GetFederationInit", organizer,
-		organizer2, federationChallenge1, channelPath).Return(messagedata.
-		FederationInit{}, sql.ErrNoRows)
+		organizer2, federationChallenge1, channelPath).Return(mfederation.FederationInit{}, sql.ErrNoRows)
 
 	// Test 18 Error when FederationResult is received without any
 	// matching FederationInit
@@ -349,7 +348,7 @@ func Test_handleRequestChallenge(t *testing.T) {
 	db.On("GetOrganizerPubKey", laoPath).Return(organizerPk, nil)
 	db.On("GetServerKeys").Return(serverPk, serverSk, nil)
 	db.On("StoreMessageAndData", channelPath,
-		mock.AnythingOfType("message.Message")).Return(nil)
+		mock.AnythingOfType("mmessage.Message")).Return(nil)
 
 	err = federationHandler.handleRequestChallenge(generator2.NewFederationChallengeRequest(t, organizer, time.Now().Unix(), organizerSk), channelPath)
 	require.NoError(t, err)
@@ -362,7 +361,7 @@ func Test_handleRequestChallenge(t *testing.T) {
 	require.Equal(t, "broadcast", broadcastMsg.Method)
 	require.Equal(t, channelPath, broadcastMsg.Params.Channel)
 
-	var challenge messagedata.FederationChallenge
+	var challenge mfederation.FederationChallenge
 	err = broadcastMsg.Params.Message.UnmarshalData(&challenge)
 	require.NoError(t, err)
 
@@ -403,7 +402,7 @@ func Test_handleFederationExpect(t *testing.T) {
 	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
 
-	federationChallenge := messagedata.FederationChallenge{
+	federationChallenge := mfederation.FederationChallenge{
 		Object:     messagedata.FederationObject,
 		Action:     messagedata.FederationActionChallenge,
 		Value:      value,
@@ -413,7 +412,7 @@ func Test_handleFederationExpect(t *testing.T) {
 	db.On("GetOrganizerPubKey", laoPath).Return(organizerPk, nil)
 	db.On("GetServerKeys").Return(serverPk, serverSk, nil)
 	db.On("StoreMessageAndData", channelPath,
-		mock.AnythingOfType("message.Message")).Return(nil)
+		mock.AnythingOfType("mmessage.Message")).Return(nil)
 
 	db.On("IsChallengeValid", server, federationChallenge,
 		channelPath).Return(nil)
@@ -547,7 +546,7 @@ func Test_handleFederationChallenge(t *testing.T) {
 	serverAddressA := "ws://localhost:9801/client"
 	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
-	challenge := messagedata.FederationChallenge{
+	challenge := mfederation.FederationChallenge{
 		Object:     messagedata.FederationObject,
 		Action:     messagedata.FederationActionChallenge,
 		Value:      value,
@@ -560,7 +559,7 @@ func Test_handleFederationChallenge(t *testing.T) {
 	challengeMsg2 := generator2.NewFederationChallenge(t, organizer2,
 		value, validUntil, organizer2Sk)
 
-	federationExpect := messagedata.FederationExpect{
+	federationExpect := mfederation.FederationExpect{
 		Object:        messagedata.FederationObject,
 		Action:        messagedata.FederationActionExpect,
 		LaoId:         laoID2,
@@ -571,7 +570,7 @@ func Test_handleFederationChallenge(t *testing.T) {
 
 	db.On("GetOrganizerPubKey", laoPath).Return(organizerPk, nil)
 	db.On("StoreMessageAndData", channelPath,
-		mock.AnythingOfType("message.Message")).Return(nil)
+		mock.AnythingOfType("mmessage.Message")).Return(nil)
 	db.On("GetFederationExpect", organizer, organizer2,
 		challenge, channelPath).Return(federationExpect, nil)
 	db.On("RemoveChallenge", challenge).Return(nil)
@@ -596,7 +595,7 @@ func Test_handleFederationChallenge(t *testing.T) {
 	require.Equal(t, query.MethodPublish, publishMsg.Method)
 	require.Equal(t, broadcastMsg.Params.Message, publishMsg.Params.Message)
 
-	var resultMsg messagedata.FederationResult
+	var resultMsg mfederation.FederationResult
 	err = broadcastMsg.Params.Message.UnmarshalData(&resultMsg)
 	require.NoError(t, err)
 
@@ -641,7 +640,7 @@ func Test_handleFederationResult(t *testing.T) {
 	serverAddressA := "ws://localhost:9801/client"
 	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
-	challenge := messagedata.FederationChallenge{
+	challenge := mfederation.FederationChallenge{
 		Object:     messagedata.FederationObject,
 		Action:     messagedata.FederationActionChallenge,
 		Value:      value,
@@ -654,7 +653,7 @@ func Test_handleFederationResult(t *testing.T) {
 	challengeMsg2 := generator2.NewFederationChallenge(t, organizer2, value,
 		validUntil, organizer2Sk)
 
-	federationInit := messagedata.FederationInit{
+	federationInit := mfederation.FederationInit{
 		Object:        messagedata.FederationObject,
 		Action:        messagedata.FederationActionInit,
 		LaoId:         laoID,

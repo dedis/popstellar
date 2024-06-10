@@ -1,8 +1,8 @@
 package method
 
 import (
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method/message"
 )
 
 // Publish defines a JSON RPC publish message
@@ -15,6 +15,6 @@ type Publish struct {
 }
 
 type PublishParams struct {
-	Channel string          `json:"channel"`
-	Message message.Message `json:"message"`
+	Channel string           `json:"channel"`
+	Message mmessage.Message `json:"message"`
 }

@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/messagedata/mconsensus"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -22,7 +23,7 @@ func Test_Consensus_Accept(t *testing.T) {
 	require.Equal(t, "consensus", object)
 	require.Equal(t, "accept", action)
 
-	var msg messagedata.ConsensusAccept
+	var msg mconsensus.ConsensusAccept
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -40,7 +41,7 @@ func Test_Consensus_Accept(t *testing.T) {
 }
 
 func Test_Consensus_Accept_Interface_Functions(t *testing.T) {
-	var msg messagedata.ConsensusAccept
+	var msg mconsensus.ConsensusAccept
 
 	require.Equal(t, messagedata.ConsensusObject, msg.GetObject())
 	require.Equal(t, messagedata.ConsensusActionAccept, msg.GetAction())
@@ -48,7 +49,7 @@ func Test_Consensus_Accept_Interface_Functions(t *testing.T) {
 }
 
 func Test_Consensus_Accept_Verify(t *testing.T) {
-	var consensusAccept messagedata.ConsensusAccept
+	var consensusAccept mconsensus.ConsensusAccept
 
 	object, action := "consensus", "accept"
 

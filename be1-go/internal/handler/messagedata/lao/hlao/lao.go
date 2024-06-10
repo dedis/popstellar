@@ -8,7 +8,9 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/messagedata/root/hroot"
 	"popstellar/internal/message/messagedata"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/messagedata/melection"
+	"popstellar/internal/message/messagedata/mlao"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/validation"
 	"strings"
 )
@@ -20,7 +22,7 @@ type Config interface {
 
 type Subscribers interface {
 	HasChannel(channel string) bool
-	BroadcastToAllClients(msg message.Message, channel string) error
+	BroadcastToAllClients(msg mmessage.Message, channel string) error
 	AddChannel(channel string) error
 }
 
@@ -41,24 +43,24 @@ type Repository interface {
 	CheckPrevCreateOrCloseID(channel, nextID string) (bool, error)
 
 	// StoreRollCallClose stores a list of chirp channels and a rollCallClose message inside the database.
-	StoreRollCallClose(channels []string, laoID string, msg message.Message) error
+	StoreRollCallClose(channels []string, laoID string, msg mmessage.Message) error
 
 	// StoreElectionWithElectionKey stores an electionSetup message and an election key message inside the database.
 	StoreElectionWithElectionKey(
 		laoPath, electionPath string,
 		electionPubKey kyber.Point,
 		electionSecretKey kyber.Scalar,
-		msg, electionKeyMsg message.Message) error
+		msg, electionKeyMsg mmessage.Message) error
 
 	//StoreElection stores an electionSetup message inside the database.
 	StoreElection(
 		laoPath, electionPath string,
 		electionPubKey kyber.Point,
 		electionSecretKey kyber.Scalar,
-		msg message.Message) error
+		msg mmessage.Message) error
 
 	// StoreMessageAndData stores a message with an object and an action inside the database.
-	StoreMessageAndData(channelID string, msg message.Message) error
+	StoreMessageAndData(channelID string, msg mmessage.Message) error
 
 	// HasMessage returns true if the message already exists.
 	HasMessage(messageID string) (bool, error)
@@ -81,7 +83,7 @@ func New(conf Config, subs Subscribers,
 	}
 }
 
-func (h *Handler) Handle(channelPath string, msg message.Message) error {
+func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
@@ -129,8 +131,8 @@ func (h *Handler) Handle(channelPath string, msg message.Message) error {
 	return h.subs.BroadcastToAllClients(msg, channelPath)
 }
 
-func (h *Handler) handleRollCallCreate(msg message.Message, channelPath string) error {
-	var rollCallCreate messagedata.RollCallCreate
+func (h *Handler) handleRollCallCreate(msg mmessage.Message, channelPath string) error {
+	var rollCallCreate mlao.RollCallCreate
 	err := msg.UnmarshalData(&rollCallCreate)
 	if err != nil {
 		return err
@@ -139,8 +141,8 @@ func (h *Handler) handleRollCallCreate(msg message.Message, channelPath string) 
 	return rollCallCreate.Verify(channelPath)
 }
 
-func (h *Handler) handleRollCallOpen(msg message.Message, channelPath string) error {
-	var rollCallOpen messagedata.RollCallOpen
+func (h *Handler) handleRollCallOpen(msg mmessage.Message, channelPath string) error {
+	var rollCallOpen mlao.RollCallOpen
 	err := msg.UnmarshalData(&rollCallOpen)
 	if err != nil {
 		return err
@@ -161,8 +163,8 @@ func (h *Handler) handleRollCallOpen(msg message.Message, channelPath string) er
 	return nil
 }
 
-func (h *Handler) handleRollCallReOpen(msg message.Message, channelPath string) error {
-	var rollCallReOpen messagedata.RollCallReOpen
+func (h *Handler) handleRollCallReOpen(msg mmessage.Message, channelPath string) error {
+	var rollCallReOpen mlao.RollCallReOpen
 	err := msg.UnmarshalData(&rollCallReOpen)
 	if err != nil {
 		return err
@@ -171,8 +173,8 @@ func (h *Handler) handleRollCallReOpen(msg message.Message, channelPath string) 
 	return h.handleRollCallOpen(msg, channelPath)
 }
 
-func (h *Handler) handleRollCallClose(msg message.Message, channelPath string) error {
-	var rollCallClose messagedata.RollCallClose
+func (h *Handler) handleRollCallClose(msg mmessage.Message, channelPath string) error {
+	var rollCallClose mlao.RollCallClose
 	err := msg.UnmarshalData(&rollCallClose)
 	if err != nil {
 		return err
@@ -198,7 +200,7 @@ func (h *Handler) handleRollCallClose(msg message.Message, channelPath string) e
 	return h.db.StoreRollCallClose(newChannels, channelPath, msg)
 }
 
-func (h *Handler) createNewAttendeeChannels(channelPath string, rollCallClose messagedata.RollCallClose) ([]string, error) {
+func (h *Handler) createNewAttendeeChannels(channelPath string, rollCallClose mlao.RollCallClose) ([]string, error) {
 	channels := make([]string, 0, len(rollCallClose.Attendees))
 
 	for _, popToken := range rollCallClose.Attendees {
@@ -229,8 +231,8 @@ func (h *Handler) createNewAttendeeChannels(channelPath string, rollCallClose me
 	return newChannels, nil
 }
 
-func (h *Handler) handleElectionSetup(msg message.Message, channelPath string) error {
-	var electionSetup messagedata.ElectionSetup
+func (h *Handler) handleElectionSetup(msg mmessage.Message, channelPath string) error {
+	var electionSetup mlao.ElectionSetup
 	err := msg.UnmarshalData(&electionSetup)
 	if err != nil {
 		return err
@@ -258,7 +260,7 @@ func (h *Handler) handleElectionSetup(msg message.Message, channelPath string) e
 	return h.storeElection(msg, electionSetup, channelPath)
 }
 
-func (h *Handler) verifySenderLao(channelPath string, msg message.Message) error {
+func (h *Handler) verifySenderLao(channelPath string, msg mmessage.Message) error {
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode sender public key: %v", err)
@@ -282,11 +284,11 @@ func (h *Handler) verifySenderLao(channelPath string, msg message.Message) error
 	return nil
 }
 
-func (h *Handler) storeElection(msg message.Message, electionSetup messagedata.ElectionSetup, channelPath string) error {
+func (h *Handler) storeElection(msg mmessage.Message, electionSetup mlao.ElectionSetup, channelPath string) error {
 	electionPubKey, electionSecretKey := h.generateKeys()
 	electionPath := channelPath + "/" + electionSetup.ID
 
-	if electionSetup.Version == messagedata.SecretBallot {
+	if electionSetup.Version == mlao.SecretBallot {
 		electionKeyMsg, err := h.createElectionKey(electionSetup.ID, electionPubKey)
 		if err != nil {
 			return err
@@ -306,13 +308,13 @@ func (h *Handler) storeElection(msg message.Message, electionSetup messagedata.E
 	return h.subs.AddChannel(electionPath)
 }
 
-func (h *Handler) createElectionKey(electionID string, electionPubKey kyber.Point) (message.Message, error) {
+func (h *Handler) createElectionKey(electionID string, electionPubKey kyber.Point) (mmessage.Message, error) {
 	electionPubBuf, err := electionPubKey.MarshalBinary()
 	if err != nil {
-		return message.Message{}, errors.NewInternalServerError("failed to marshal election public key: %v", err)
+		return mmessage.Message{}, errors.NewInternalServerError("failed to marshal election public key: %v", err)
 	}
 
-	msgData := messagedata.ElectionKey{
+	msgData := melection.ElectionKey{
 		Object:   messagedata.ElectionObject,
 		Action:   messagedata.ElectionActionKey,
 		Election: electionID,
@@ -321,28 +323,28 @@ func (h *Handler) createElectionKey(electionID string, electionPubKey kyber.Poin
 
 	dataBuf, err := json.Marshal(&msgData)
 	if err != nil {
-		return message.Message{}, errors.NewJsonMarshalError(err.Error())
+		return mmessage.Message{}, errors.NewJsonMarshalError(err.Error())
 	}
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
 
 	serverPubBuf, err := h.conf.GetServerPublicKey().MarshalBinary()
 	if err != nil {
-		return message.Message{}, errors.NewInternalServerError("failed to unmarshall server secret key", err)
+		return mmessage.Message{}, errors.NewInternalServerError("failed to unmarshall server secret key", err)
 	}
 
 	signatureBuf, err := h.conf.Sign(dataBuf)
 	if err != nil {
-		return message.Message{}, err
+		return mmessage.Message{}, err
 	}
 
 	signature := base64.URLEncoding.EncodeToString(signatureBuf)
 
-	electionKeyMsg := message.Message{
+	electionKeyMsg := mmessage.Message{
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(serverPubBuf),
 		Signature:         signature,
-		MessageID:         message.Hash(newData64, signature),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         mmessage.Hash(newData64, signature),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	return electionKeyMsg, nil

@@ -9,7 +9,7 @@ import (
 	generator2 "popstellar/internal/generator"
 	messageHandler "popstellar/internal/handler/message/hmessage"
 	"popstellar/internal/handler/messagedata/root/hroot/mocks"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/message/mmessage"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
 	"testing"
@@ -26,7 +26,7 @@ const (
 func Test_handleChannelRoot(t *testing.T) {
 	type input struct {
 		name     string
-		msg      message.Message
+		msg      mmessage.Message
 		isError  bool
 		contains string
 	}
@@ -111,9 +111,9 @@ func Test_handleChannelRoot(t *testing.T) {
 	}
 }
 
-func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepository *mocks.Repository, isError bool) message.Message {
+func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepository *mocks.Repository, isError bool) mmessage.Message {
 	creation := time.Now().Unix()
-	laoID := message.Hash(
+	laoID := mmessage.Hash(
 		organizer,
 		fmt.Sprintf("%d", creation),
 		goodLaoName,
@@ -139,7 +139,7 @@ func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockReposi
 			channels,
 			laoPath,
 			organizerBuf,
-			msg, mock.AnythingOfType("message.Message")).Return(nil)
+			msg, mock.AnythingOfType("mmessage.Message")).Return(nil)
 	}
 	return msg
 }
