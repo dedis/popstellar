@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"net"
 	"net/http"
+	"popstellar/internal/handler/messagedata/federation/mocks"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query"
 	"popstellar/internal/message/query/method"
@@ -33,7 +34,7 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	var args []input
 
-	db := mock2.NewRepository(t)
+	db := mocks.NewRepository(t)
 	subs := state.NewSubscribers()
 	hub := state.NewHubParams()
 	schema, err := validation.NewSchemaValidator()
@@ -319,7 +320,7 @@ func Test_handleChannelFederation(t *testing.T) {
 }
 
 func Test_handleRequestChallenge(t *testing.T) {
-	db := mock2.NewRepository(t)
+	db := mocks.NewRepository(t)
 	subs := state.NewSubscribers()
 	hub := state.NewHubParams()
 	schema, err := validation.NewSchemaValidator()
@@ -370,7 +371,7 @@ func Test_handleRequestChallenge(t *testing.T) {
 }
 
 func Test_handleFederationExpect(t *testing.T) {
-	db := mock2.NewRepository(t)
+	db := mocks.NewRepository(t)
 	subs := state.NewSubscribers()
 	hub := state.NewHubParams()
 	schema, err := validation.NewSchemaValidator()
@@ -426,7 +427,7 @@ func Test_handleFederationExpect(t *testing.T) {
 }
 
 func Test_handleFederationInit(t *testing.T) {
-	db := mock2.NewRepository(t)
+	db := mocks.NewRepository(t)
 	subs := state.NewSubscribers()
 	hub := state.NewHubParams()
 	schema, err := validation.NewSchemaValidator()
@@ -504,7 +505,7 @@ func Test_handleFederationInit(t *testing.T) {
 }
 
 func Test_handleFederationChallenge(t *testing.T) {
-	db := mock2.NewRepository(t)
+	db := mocks.NewRepository(t)
 	subs := state.NewSubscribers()
 	hub := state.NewHubParams()
 	schema, err := validation.NewSchemaValidator()
@@ -607,7 +608,7 @@ func Test_handleFederationChallenge(t *testing.T) {
 }
 
 func Test_handleFederationResult(t *testing.T) {
-	db := mock2.NewRepository(t)
+	db := mocks.NewRepository(t)
 	subs := state.NewSubscribers()
 	hub := state.NewHubParams()
 	schema, err := validation.NewSchemaValidator()
