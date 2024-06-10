@@ -7,9 +7,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/crypto"
+	"popstellar/internal/handler/messagedata/election/mocks"
 	"popstellar/internal/message/messagedata"
 	"popstellar/internal/message/query/method/message"
-	mock2 "popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
 	"popstellar/internal/state"
 	"popstellar/internal/types"
@@ -35,7 +35,7 @@ func Test_handleChannelElection(t *testing.T) {
 
 	subs := state.NewSubscribers()
 
-	db := mock2.NewRepository(t)
+	db := mocks.NewRepository(t)
 
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
@@ -417,7 +417,7 @@ func Test_handleChannelElection(t *testing.T) {
 }
 
 func newElectionOpenMsg(t *testing.T, owner kyber.Point, sender, laoID, electionID, channelPath, state string,
-	createdAt int64, isError bool, db *mock2.Repository) message.Message {
+	createdAt int64, isError bool, db *mocks.Repository) message.Message {
 
 	msg := generator.NewElectionOpenMsg(t, sender, laoID, electionID, 1, nil)
 
@@ -440,7 +440,7 @@ func newElectionOpenMsg(t *testing.T, owner kyber.Point, sender, laoID, election
 }
 
 func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionID, channelPath, state, votes string,
-	createdAt int64, isError bool, db *mock2.Repository) message.Message {
+	createdAt int64, isError bool, db *mocks.Repository) message.Message {
 
 	msg := generator.NewElectionCloseMsg(t, sender, laoID, electionID, votes, 1, nil)
 
@@ -492,7 +492,7 @@ func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionI
 
 func newVoteCastVoteIntMsg(t *testing.T, sender, laoID, electionID, electionPath, state, electionType string,
 	createdAt int64, votes []generator.VoteInt, questions map[string]types.Question, owner kyber.Point,
-	db *mock2.Repository, isEroor bool) message.Message {
+	db *mocks.Repository, isEroor bool) message.Message {
 
 	msg := generator.NewVoteCastVoteIntMsg(t, sender, laoID, electionID, 1, votes, nil)
 	db.On("GetLAOOrganizerPubKey", electionPath).Return(owner, nil)
@@ -530,7 +530,7 @@ func newVoteCastVoteIntMsg(t *testing.T, sender, laoID, electionID, electionPath
 
 func newVoteCastVoteStringMsg(t *testing.T, sender, laoID, electionID, electionPath, electionType string,
 	createdAt int64, votes []generator.VoteString, questions map[string]types.Question, owner kyber.Point,
-	db *mock2.Repository) message.Message {
+	db *mocks.Repository) message.Message {
 
 	msg := generator.NewVoteCastVoteStringMsg(t, sender, laoID, electionID, 1, votes, nil)
 	db.On("GetLAOOrganizerPubKey", electionPath).Return(owner, nil)
