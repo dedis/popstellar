@@ -9,7 +9,7 @@ type Repository struct {
 	mock.Mock
 }
 
-// GetChannelType provides a mock function with given fields: oldchannel
+// GetChannelType provides a mock function with given fields: channel
 func (_m *Repository) GetChannelType(channel string) (string, error) {
 	ret := _m.Called(channel)
 

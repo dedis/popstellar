@@ -25,14 +25,14 @@ func (s *SQLite) GetRollCallState(channelPath string) (string, error) {
 	return state, nil
 }
 
-func (s *SQLite) CheckPrevOpenOrReopenID(channel, nextID string) (bool, error) {
+func (s *SQLite) CheckPrevOpenOrReopenID(channelPath, nextID string) (bool, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
 	var lastMsg []byte
 	var lastAction string
 
-	err := s.database.QueryRow(selectLastRollCallMessageInList, channel, messagedata.RollCallObject,
+	err := s.database.QueryRow(selectLastRollCallMessageInList, channelPath, messagedata.RollCallObject,
 		messagedata.RollCallActionOpen, messagedata.RollCallActionReOpen).Scan(&lastMsg, &lastAction)
 
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
@@ -61,14 +61,14 @@ func (s *SQLite) CheckPrevOpenOrReopenID(channel, nextID string) (bool, error) {
 	return false, nil
 }
 
-func (s *SQLite) CheckPrevCreateOrCloseID(channel, nextID string) (bool, error) {
+func (s *SQLite) CheckPrevCreateOrCloseID(channelPath, nextID string) (bool, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
 	var lastMsg []byte
 	var lastAction string
 
-	err := s.database.QueryRow(selectLastRollCallMessageInList, channel, messagedata.RollCallObject,
+	err := s.database.QueryRow(selectLastRollCallMessageInList, channelPath, messagedata.RollCallObject,
 		messagedata.RollCallActionCreate, messagedata.RollCallActionClose).Scan(&lastMsg, &lastAction)
 
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
@@ -141,7 +141,7 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg mmess
 	}
 	_, err = tx.Exec(insertChannelMessage, laoPath, msg.MessageID, true)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("relation roll call close message and lao oldchannel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation roll call close message and lao channel: %v", err)
 	}
 
 	if len(channels) == 0 {
@@ -155,7 +155,7 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg mmess
 	for _, channelPath := range channels {
 		_, err = tx.Exec(insertChannel, channelPath, channelTypeToID[messagedata.ChirpObject], laoPath)
 		if err != nil {
-			return poperrors.NewDatabaseInsertErrorMsg("oldchannel %s: %v", channelPath, err)
+			return poperrors.NewDatabaseInsertErrorMsg("channel %s: %v", channelPath, err)
 		}
 	}
 	err = tx.Commit()
@@ -198,15 +198,15 @@ func (s *SQLite) storeElectionHelper(
 	}
 	_, err = tx.Exec(insertChannelMessage, laoPath, msg.MessageID, true)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("relation election create message and lao oldchannel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation election create message and lao channel: %v", err)
 	}
 	_, err = tx.Exec(insertChannel, electionPath, channelTypeToID[messagedata.ElectionObject], laoPath)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("election oldchannel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("election channel: %v", err)
 	}
 	_, err = tx.Exec(insertChannelMessage, electionPath, msg.MessageID, false)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("relation election create message and election oldchannel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation election create message and election channel: %v", err)
 	}
 	_, err = tx.Exec(insertKeys, electionPath, electionPubBuf, electionSecretBuf)
 	if err != nil {
@@ -282,7 +282,7 @@ func (s *SQLite) StoreElectionWithElectionKey(
 	}
 	_, err = tx.Exec(insertChannelMessage, electionPath, electionKeyMsg.MessageID, false)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("relation election key message and election oldchannel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation election key message and election channel: %v", err)
 	}
 
 	err = tx.Commit()

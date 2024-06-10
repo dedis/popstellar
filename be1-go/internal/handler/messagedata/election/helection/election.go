@@ -325,7 +325,7 @@ func (h *Handler) verifySenderElection(msg mmessage.Message, channelPath string,
 	}
 
 	if onlyOrganizer && !senderPubKey.Equal(organizerPubKey) {
-		return errors.NewAccessDeniedError("sender is not the organizer of the oldchannel")
+		return errors.NewAccessDeniedError("sender is not the organizer of the channel")
 	}
 
 	if onlyOrganizer {

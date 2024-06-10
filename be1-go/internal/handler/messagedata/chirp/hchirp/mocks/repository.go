@@ -41,7 +41,7 @@ func (_m *Repository) HasMessage(messageID string) (bool, error) {
 	return r0, r1
 }
 
-// StoreChirpMessages provides a mock function with given fields: oldchannel, generalChannel, msg, generalMsg
+// StoreChirpMessages provides a mock function with given fields: channel, generalChannel, msg, generalMsg
 func (_m *Repository) StoreChirpMessages(channel string, generalChannel string, msg message.Message, generalMsg message.Message) error {
 	ret := _m.Called(channel, generalChannel, msg, generalMsg)
 

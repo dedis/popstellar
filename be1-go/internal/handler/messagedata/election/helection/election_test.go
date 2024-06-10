@@ -66,31 +66,31 @@ func Test_handleChannelElection(t *testing.T) {
 			-1, true, db),
 		channelPath: channelPath,
 		isError:     true,
-		contains:    "sender is not the organizer of the oldchannel",
+		contains:    "sender is not the organizer of the channel",
 	})
 
 	wrongChannelPath := "/root/" + base64.URLEncoding.EncodeToString([]byte("wrongLaoID")) + "/" + electionID
 
-	// Test 2 Error when ElectionOpen lao id is not the same as the oldchannel
+	// Test 2 Error when ElectionOpen lao id is not the same as the channel
 	args = append(args, input{
 		name: "Test 2",
 		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, wrongChannelPath, "",
 			-1, true, db),
 		channelPath: wrongChannelPath,
 		isError:     true,
-		contains:    "lao id is not the same as the oldchannel",
+		contains:    "lao id is not the same as the channel",
 	})
 
 	wrongChannelPath = "/root/" + laoID + "/" + base64.URLEncoding.EncodeToString([]byte("wrongElectionID"))
 
-	// Test 3 Error when ElectionOpen election id is not the same as the oldchannel
+	// Test 3 Error when ElectionOpen election id is not the same as the channel
 	args = append(args, input{
 		name: "Test 3",
 		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, wrongChannelPath, "",
 			-1, true, db),
 		channelPath: wrongChannelPath,
 		isError:     true,
-		contains:    "election id is not the same as the oldchannel",
+		contains:    "election id is not the same as the channel",
 	})
 
 	// Test 4 Error when Election is already started or ended
@@ -143,31 +143,31 @@ func Test_handleChannelElection(t *testing.T) {
 			-1, true, db),
 		channelPath: channelPath,
 		isError:     true,
-		contains:    "sender is not the organizer of the oldchannel",
+		contains:    "sender is not the organizer of the channel",
 	})
 
 	wrongChannelPath = "/root/" + base64.URLEncoding.EncodeToString([]byte("wrongLaoID2")) + "/" + electionID
 
-	// Test 8 Error when ElectionEnd lao id is not the same as the oldchannel
+	// Test 8 Error when ElectionEnd lao id is not the same as the channel
 	args = append(args, input{
 		name: "Test 8",
 		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, wrongChannelPath, "", "",
 			-1, true, db),
 		channelPath: wrongChannelPath,
 		isError:     true,
-		contains:    "lao id is not the same as the oldchannel",
+		contains:    "lao id is not the same as the channel",
 	})
 
 	wrongChannelPath = "/root/" + laoID + "/" + base64.URLEncoding.EncodeToString([]byte("wrongElectionID2"))
 
-	// Test 9 Error when ElectionEnd election id is not the same as the oldchannel
+	// Test 9 Error when ElectionEnd election id is not the same as the channel
 	args = append(args, input{
 		name: "Test 9",
 		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, wrongChannelPath, "", "",
 			-1, true, db),
 		channelPath: wrongChannelPath,
 		isError:     true,
-		contains:    "election id is not the same as the oldchannel",
+		contains:    "election id is not the same as the channel",
 	})
 
 	// Test 10 Error when ElectionEnd is not started
@@ -247,7 +247,7 @@ func Test_handleChannelElection(t *testing.T) {
 		contains:    "sender is not an attendee or the organizer of the election",
 	})
 
-	// Test 15 Error when VoteCastVote lao id is not the same as the oldchannel
+	// Test 15 Error when VoteCastVote lao id is not the same as the channel
 	wrongChannelPath = "/root/" + base64.URLEncoding.EncodeToString([]byte("wrongLaoID3")) + "/" + electionID
 
 	args = append(args, input{
@@ -256,10 +256,10 @@ func Test_handleChannelElection(t *testing.T) {
 			-1, votes, nil, ownerPublicKey, db, true),
 		channelPath: wrongChannelPath,
 		isError:     true,
-		contains:    "lao id is not the same as the oldchannel",
+		contains:    "lao id is not the same as the channel",
 	})
 
-	// Test 16 Error when VoteCastVote election id is not the same as the oldchannel
+	// Test 16 Error when VoteCastVote election id is not the same as the channel
 	wrongChannelPath = "/root/" + laoID + "/" + base64.URLEncoding.EncodeToString([]byte("wrongElectionID3"))
 
 	args = append(args, input{
@@ -268,7 +268,7 @@ func Test_handleChannelElection(t *testing.T) {
 			-1, votes, nil, ownerPublicKey, db, true),
 		channelPath: wrongChannelPath,
 		isError:     true,
-		contains:    "election id is not the same as the oldchannel",
+		contains:    "election id is not the same as the channel",
 	})
 
 	//to avoid conflicts with the previous test

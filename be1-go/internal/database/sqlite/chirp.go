@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, generalMsg mmessage.Message) error {
+func (s *SQLite) StoreChirpMessages(channelPath, generalChannel string, msg, generalMsg mmessage.Message) error {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
@@ -40,7 +40,7 @@ func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, general
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(insertChannelMessage, channel, msg.MessageID, true)
+	_, err = tx.Exec(insertChannelMessage, channelPath, msg.MessageID, true)
 	if err != nil {
 		return errors.NewDatabaseInsertErrorMsg("relation chirp message and chirp channel: %v", err)
 	}

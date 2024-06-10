@@ -45,10 +45,10 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 
 	storedTime := time.Now().UnixNano()
 
-	for channel, channelType := range channels {
-		_, err = tx.Exec(insertChannel, channel, channelTypeToID[channelType], laoPath)
+	for channelPath, channelType := range channels {
+		_, err = tx.Exec(insertChannel, channelPath, channelTypeToID[channelType], laoPath)
 		if err != nil {
-			return poperrors.NewDatabaseInsertErrorMsg("oldchannel %s: %v", channel, err)
+			return poperrors.NewDatabaseInsertErrorMsg("channel %s: %v", channelPath, err)
 		}
 	}
 
@@ -58,12 +58,12 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	}
 	_, err = tx.Exec(insertChannelMessage, messagedata.Root, msg.MessageID, true)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("relation lao create message and root oldchannel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation lao create message and root channel: %v", err)
 	}
 
 	_, err = tx.Exec(insertChannelMessage, laoPath, msg.MessageID, false)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("relation lao create message and lao oldchannel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation lao create message and lao channel: %v", err)
 	}
 
 	_, err = tx.Exec(insertPublicKey, laoPath, organizerPubBuf)
@@ -76,7 +76,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	}
 	_, err = tx.Exec(insertChannelMessage, laoPath, laoGreetMsg.MessageID, false)
 	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("relation lao greet message lao oldchannel: %v", err)
+		return poperrors.NewDatabaseInsertErrorMsg("relation lao greet message lao channel: %v", err)
 	}
 
 	err = tx.Commit()
@@ -87,16 +87,16 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	return nil
 }
 
-func (s *SQLite) HasChannel(channelPath string) (bool, error) {
+func (s *SQLite) HasChannel(channel string) (bool, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
-	var channel string
-	err := s.database.QueryRow(selectChannelPath, channelPath).Scan(&channel)
+	var channelPath string
+	err := s.database.QueryRow(selectChannelPath, channel).Scan(&channelPath)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	} else if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return false, poperrors.NewDatabaseSelectErrorMsg("oldchannel: %v", err)
+		return false, poperrors.NewDatabaseSelectErrorMsg("channel: %v", err)
 	} else {
 		return true, nil
 	}

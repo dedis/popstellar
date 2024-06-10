@@ -50,19 +50,19 @@ func (message ElectionEnd) Verify(electionPath string) error {
 	noRoot := strings.ReplaceAll(electionPath, messagedata.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
-		return errors.NewInvalidMessageFieldError("failed to split oldchannel: %v", message)
+		return errors.NewInvalidMessageFieldError("failed to split channel: %v", message)
 	}
 	laoID := IDs[0]
 	electionID := IDs[1]
 
-	// verify if lao id is the same as the oldchannel
+	// verify if lao id is the same as the channel
 	if message.Lao != laoID {
-		return errors.NewInvalidMessageFieldError("lao id is not the same as the oldchannel")
+		return errors.NewInvalidMessageFieldError("lao id is not the same as the channel")
 	}
 
-	// verify if election id is the same as the oldchannel
+	// verify if election id is the same as the channel
 	if message.Election != electionID {
-		return errors.NewInvalidMessageFieldError("election id is not the same as the oldchannel")
+		return errors.NewInvalidMessageFieldError("election id is not the same as the channel")
 	}
 
 	// verify message created at is positive

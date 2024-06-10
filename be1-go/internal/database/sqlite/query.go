@@ -131,10 +131,10 @@ func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[str
 	}
 
 	missingIDs := make(map[string][]string)
-	for channel, messageIDs := range params {
+	for channelPath, messageIDs := range params {
 		for _, messageID := range messageIDs {
 			if _, ok := result[messageID]; !ok {
-				missingIDs[channel] = append(missingIDs[channel], messageID)
+				missingIDs[channelPath] = append(missingIDs[channelPath], messageID)
 			}
 		}
 	}

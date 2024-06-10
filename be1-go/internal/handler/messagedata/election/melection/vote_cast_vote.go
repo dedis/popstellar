@@ -76,24 +76,24 @@ func (message VoteCastVote) Verify(electionPath string) error {
 		return errors.NewInvalidMessageFieldError("failed to decode election: %v", err)
 	}
 
-	// split oldchannel to [lao id, election id]
+	// split channel to [lao id, election id]
 	noRoot := strings.ReplaceAll(electionPath, messagedata.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
-		return errors.NewInvalidMessageFieldError("failed to split oldchannel: %v", electionPath)
+		return errors.NewInvalidMessageFieldError("failed to split channel: %v", electionPath)
 	}
 
 	laoID := IDs[0]
 	electionID := IDs[1]
 
-	// verify if lao id is the same as the oldchannel
+	// verify if lao id is the same as the channel
 	if message.Lao != laoID {
-		return errors.NewInvalidMessageFieldError("lao id is not the same as the oldchannel")
+		return errors.NewInvalidMessageFieldError("lao id is not the same as the channel")
 	}
 
-	// verify if election id is the same as the oldchannel
+	// verify if election id is the same as the channel
 	if message.Election != electionID {
-		return errors.NewInvalidMessageFieldError("election id is not the same as the oldchannel")
+		return errors.NewInvalidMessageFieldError("election id is not the same as the channel")
 	}
 
 	return nil

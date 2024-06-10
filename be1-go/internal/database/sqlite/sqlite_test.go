@@ -319,11 +319,11 @@ func Test_SQLite_StoreLaoWithLaoGreet(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, expected, messages)
 
-	for channel, expectedType := range channels {
-		ok, err := lite.HasChannel(channel)
+	for channelPath, expectedType := range channels {
+		ok, err := lite.HasChannel(channelPath)
 		require.NoError(t, err)
 		require.True(t, ok)
-		channelType, err := lite.GetChannelType(channel)
+		channelType, err := lite.GetChannelType(channelPath)
 		require.NoError(t, err)
 		require.Equal(t, expectedType, channelType)
 	}
@@ -333,7 +333,7 @@ func Test_SQLite_StoreLaoWithLaoGreet(t *testing.T) {
 	organizerPubKey.Equal(returnedKey)
 	require.True(t, organizerPubKey.Equal(returnedKey))
 
-	// Test that we can retrieve the organizer public key from the election oldchannel
+	// Test that we can retrieve the organizer public key from the election channel
 	electionPath := "electionID"
 	err = lite.StoreChannel(electionPath, "election", laoID)
 	require.NoError(t, err)
@@ -431,8 +431,8 @@ func Test_SQLite_StoreRollCallClose(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, expected, messages)
 
-	for _, channel := range channels {
-		ok, err := lite.HasChannel(channel)
+	for _, channelPath := range channels {
+		ok, err := lite.HasChannel(channelPath)
 		require.NoError(t, err)
 		require.True(t, ok)
 	}

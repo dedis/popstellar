@@ -13,7 +13,7 @@ type Repository struct {
 	mock.Mock
 }
 
-// HasChannel provides a mock function with given fields: oldchannel
+// HasChannel provides a mock function with given fields: channel
 func (_m *Repository) HasChannel(channel string) (bool, error) {
 	ret := _m.Called(channel)
 
