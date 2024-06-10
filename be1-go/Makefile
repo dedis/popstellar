@@ -42,6 +42,8 @@ test-data:
 
 	cp -r ../protocol/examples/query/broadcast/. ./internal/handler/method/broadcast/mbroadcast/test-data
 
+	cp -r ../protocol/examples/query/catchup/. ./internal/handler/method/catchup/mcatchup/test-data
+
 clean:
 	rm -rf ./internal/validation/protocol
 	rm -rf ./internal/handler/answer/manswer/test-data

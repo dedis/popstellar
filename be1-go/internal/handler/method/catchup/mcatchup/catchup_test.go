@@ -1,20 +1,19 @@
-package method
+package mcatchup
 
 import (
+	"embed"
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"popstellar/internal/handler/method/catchup/mcatchup"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Catchup(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "catchup", "catchup.json")
+//go:embed test-data/*.json
+var testData embed.FS
 
-	buf, err := os.ReadFile(file)
+func Test_Catchup(t *testing.T) {
+	buf, err := testData.ReadFile("test-data/catchup.json")
 	require.NoError(t, err)
 
 	var msg mjsonrpc.JSONRPCBase
@@ -29,7 +28,7 @@ func Test_Catchup(t *testing.T) {
 
 	require.Equal(t, mjsonrpc.RPCTypeQuery, rpctype)
 
-	var catchup mcatchup.Catchup
+	var catchup Catchup
 
 	err = json.Unmarshal(buf, &catchup)
 	require.NoError(t, err)
