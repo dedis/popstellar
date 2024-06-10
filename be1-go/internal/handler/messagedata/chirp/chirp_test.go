@@ -5,9 +5,9 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/crypto"
+	"popstellar/internal/handler/messagedata/chirp/mocks"
 	"popstellar/internal/handler/messagedata/root"
 	"popstellar/internal/message/query/method/message"
-	mock2 "popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
@@ -29,7 +29,7 @@ func Test_handleChannelChirp(t *testing.T) {
 
 	subs := state.NewSubscribers()
 
-	db := mock2.NewRepository(t)
+	db := mocks.NewRepository(t)
 
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
@@ -142,7 +142,7 @@ func Test_handleChannelChirp(t *testing.T) {
 }
 
 func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int64,
-	db *mock2.Repository, isError bool, subs *state.Subscribers) message.Message {
+	db *mocks.Repository, isError bool, subs *state.Subscribers) message.Message {
 
 	msg := generator.NewChirpAddMsg(t, sender, nil, timestamp)
 
@@ -165,7 +165,7 @@ func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int
 }
 
 func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID string,
-	timestamp int64, db *mock2.Repository, isError bool, subs *state.Subscribers) message.Message {
+	timestamp int64, db *mocks.Repository, isError bool, subs *state.Subscribers) message.Message {
 
 	msg := generator.NewChirpDeleteMsg(t, sender, nil, chirpID, timestamp)
 
