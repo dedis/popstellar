@@ -86,6 +86,19 @@ test-data:
 	cp -r ../protocol/examples/messageData/election_result.json ./internal/handler/messagedata/election/melection/testdata
 	cp -r ../protocol/examples/messageData/vote_cast_vote/. ./internal/handler/messagedata/election/melection/testdata
 
+	# Lao
+	cp -r ../protocol/examples/messageData/lao_create/. ./internal/handler/messagedata/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/lao_greet/. ./internal/handler/messagedata/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/lao_state/. ./internal/handler/messagedata/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/lao_update/. ./internal/handler/messagedata/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/meeting_create.json ./internal/handler/messagedata/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/meeting_state.json ./internal/handler/messagedata/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/message_witness.json ./internal/handler/messagedata/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/roll_call_close.json ./internal/handler/messagedata/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/roll_call_create.json ./internal/handler/messagedata/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/roll_call_open.json ./internal/handler/messagedata/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/roll_call_reopen.json ./internal/handler/messagedata/lao/mlao/testdata
+
 
 clean:
 	rm -rf ./internal/validation/protocol
@@ -122,6 +135,9 @@ clean:
 
 	# Election
 	rm -rf ./internal/handler/messagedata/election/melection/testdata
+
+	# Lao
+	rm -rf ./internal/handler/messagedata/lao/mlao/testdata
 
 fmt:
 	gofmt -s -w ./

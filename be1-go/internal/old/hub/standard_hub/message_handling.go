@@ -8,7 +8,7 @@ import (
 	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/root/mroot"
+	"popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/catchup/mcatchup"
 	"popstellar/internal/handler/method/getmessagesbyid/mgetmessagesbyid"
@@ -66,7 +66,7 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish mpubli
 		return err
 	}
 
-	var laoCreate mroot.LaoCreate
+	var laoCreate mlao.LaoCreate
 
 	err = publish.Params.Message.UnmarshalData(&laoCreate)
 	if err != nil {
@@ -125,7 +125,7 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 		return err
 	}
 
-	var laoCreate mroot.LaoCreate
+	var laoCreate mlao.LaoCreate
 
 	err = broadcast.Params.Message.UnmarshalData(&laoCreate)
 	if err != nil {

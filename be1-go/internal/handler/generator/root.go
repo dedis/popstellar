@@ -6,13 +6,13 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/root/mroot"
+	"popstellar/internal/handler/messagedata/lao/mlao"
 	"testing"
 )
 
 func NewLaoCreateMsg(t *testing.T, sender string, ID string, laoName string, creation int64, organizer string,
 	senderSK kyber.Scalar) mmessage.Message {
-	laoCreate := mroot.LaoCreate{
+	laoCreate := mlao.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        ID,

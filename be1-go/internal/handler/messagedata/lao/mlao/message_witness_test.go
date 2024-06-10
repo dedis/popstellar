@@ -1,20 +1,15 @@
-package messagedata
+package mlao
 
 import (
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/lao/mlao"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_Message_Witness(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "message_witness.json")
-
-	buf, err := os.ReadFile(file)
+	buf, err := testData.ReadFile("testdata/message_witness.json")
 	require.NoError(t, err)
 
 	object, action, err := messagedata.GetObjectAndAction(buf)
@@ -23,7 +18,7 @@ func Test_Message_Witness(t *testing.T) {
 	require.Equal(t, "message", object)
 	require.Equal(t, "witness", action)
 
-	var msg mlao.MessageWitness
+	var msg MessageWitness
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -35,7 +30,7 @@ func Test_Message_Witness(t *testing.T) {
 }
 
 func Test_Message_Witness_Interface_Functions(t *testing.T) {
-	var msg mlao.MessageWitness
+	var msg MessageWitness
 
 	require.Equal(t, messagedata.MessageObject, msg.GetObject())
 	require.Equal(t, messagedata.MessageActionWitness, msg.GetAction())

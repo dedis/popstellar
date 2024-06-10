@@ -1,20 +1,19 @@
-package messagedata
+package mlao
 
 import (
+	"embed"
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/root/mroot"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Lao_Create(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "lao_create", "lao_create.json")
+//go:embed testdata/*.json
+var testData embed.FS
 
-	buf, err := os.ReadFile(file)
+func Test_Lao_Create(t *testing.T) {
+	buf, err := testData.ReadFile("testdata/lao_create.json")
 	require.NoError(t, err)
 
 	object, action, err := messagedata.GetObjectAndAction(buf)
@@ -23,7 +22,7 @@ func Test_Lao_Create(t *testing.T) {
 	require.Equal(t, "lao", object)
 	require.Equal(t, "create", action)
 
-	var msg mroot.LaoCreate
+	var msg LaoCreate
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -42,7 +41,7 @@ func Test_Lao_Create(t *testing.T) {
 }
 
 func Test_Lao_Create_Interface_Functions(t *testing.T) {
-	var msg mroot.LaoCreate
+	var msg LaoCreate
 
 	require.Equal(t, messagedata.LAOObject, msg.GetObject())
 	require.Equal(t, messagedata.LAOActionCreate, msg.GetAction())
@@ -53,7 +52,7 @@ func Test_Lao_Create_Verify(t *testing.T) {
 	getTestBadExample := func(file string) func(*testing.T) {
 		return func(t *testing.T) {
 			// read the bad example file
-			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "lao_create", file))
+			buf, err := testData.ReadFile("testdata/" + file)
 			require.NoError(t, err)
 
 			object, action, err := messagedata.GetObjectAndAction(buf)
@@ -62,7 +61,7 @@ func Test_Lao_Create_Verify(t *testing.T) {
 			require.Equal(t, "lao", object)
 			require.Equal(t, "create", action)
 
-			var msg mroot.LaoCreate
+			var msg LaoCreate
 
 			err = json.Unmarshal(buf, &msg)
 			require.NoError(t, err)

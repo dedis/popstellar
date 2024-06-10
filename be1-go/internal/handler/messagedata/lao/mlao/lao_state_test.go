@@ -1,20 +1,15 @@
-package messagedata
+package mlao
 
 import (
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/lao/mlao"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_Lao_State(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "lao_state", "lao_state.json")
-
-	buf, err := os.ReadFile(file)
+	buf, err := testData.ReadFile("testdata/lao_state.json")
 	require.NoError(t, err)
 
 	object, action, err := messagedata.GetObjectAndAction(buf)
@@ -23,7 +18,7 @@ func Test_Lao_State(t *testing.T) {
 	require.Equal(t, "lao", object)
 	require.Equal(t, "state", action)
 
-	var msg mlao.LaoState
+	var msg LaoState
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -47,7 +42,7 @@ func Test_Lao_State(t *testing.T) {
 }
 
 func Test_Lao_State_Interface_Functions(t *testing.T) {
-	var msg mlao.LaoState
+	var msg LaoState
 
 	require.Equal(t, messagedata.LAOObject, msg.GetObject())
 	require.Equal(t, messagedata.LAOActionState, msg.GetAction())

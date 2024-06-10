@@ -1,20 +1,15 @@
-package messagedata
+package mlao
 
 import (
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/lao/mlao"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_Lao_Update(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "lao_update", "lao_update.json")
-
-	buf, err := os.ReadFile(file)
+	buf, err := testData.ReadFile("testdata/lao_update.json")
 	require.NoError(t, err)
 
 	object, action, err := messagedata.GetObjectAndAction(buf)
@@ -23,7 +18,7 @@ func Test_Lao_Update(t *testing.T) {
 	require.Equal(t, "lao", object)
 	require.Equal(t, "update_properties", action)
 
-	var msg mlao.LaoUpdate
+	var msg LaoUpdate
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -42,7 +37,7 @@ func Test_Lao_Update(t *testing.T) {
 }
 
 func Test_Lao_Update_Interface_Functions(t *testing.T) {
-	var msg mlao.LaoUpdate
+	var msg LaoUpdate
 
 	require.Equal(t, messagedata.LAOObject, msg.GetObject())
 	require.Equal(t, messagedata.LAOActionUpdate, msg.GetAction())
@@ -50,14 +45,14 @@ func Test_Lao_Update_Interface_Functions(t *testing.T) {
 }
 
 func Test_Lao_Update_Verify(t *testing.T) {
-	var laoUpdate mlao.LaoUpdate
+	var laoUpdate LaoUpdate
 
 	object, action := "lao", "update_properties"
 
 	getTestBadExample := func(file string) func(*testing.T) {
 		return func(t *testing.T) {
 			// read the bad example file
-			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "lao_update", file))
+			buf, err := testData.ReadFile("testdata/" + file)
 			require.NoError(t, err)
 
 			obj, act, err := messagedata.GetObjectAndAction(buf)

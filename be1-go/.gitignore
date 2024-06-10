@@ -22,3 +22,4 @@ configServer4.json
 /internal/handler/messagedata/coin/mcoin/testdata/
 /internal/handler/messagedata/consensus/mconsensus/testdata/
 /internal/handler/messagedata/election/melection/testdata/
+/internal/handler/messagedata/lao/mlao/testdata/

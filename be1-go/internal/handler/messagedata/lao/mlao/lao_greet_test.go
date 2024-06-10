@@ -1,20 +1,15 @@
-package messagedata
+package mlao
 
 import (
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/lao/mlao"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_Lao_Greet(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "lao_greet", "greeting.json")
-
-	buf, err := os.ReadFile(file)
+	buf, err := testData.ReadFile("testdata/greeting.json")
 	require.NoError(t, err)
 
 	object, action, err := messagedata.GetObjectAndAction(buf)
@@ -23,7 +18,7 @@ func Test_Lao_Greet(t *testing.T) {
 	require.Equal(t, "lao", object)
 	require.Equal(t, "greet", action)
 
-	var msg mlao.LaoGreet
+	var msg LaoGreet
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -39,7 +34,7 @@ func Test_Lao_Greet(t *testing.T) {
 }
 
 func Test_Lao_Greet_Interface_Functions(t *testing.T) {
-	var msg mlao.LaoGreet
+	var msg LaoGreet
 
 	require.Equal(t, messagedata.LAOObject, msg.GetObject())
 	require.Equal(t, messagedata.LAOActionGreet, msg.GetAction())
@@ -47,7 +42,7 @@ func Test_Lao_Greet_Interface_Functions(t *testing.T) {
 }
 
 func Test_Greet_Getters(t *testing.T) {
-	var msg mlao.LaoGreet
+	var msg LaoGreet
 
 	require.Equal(t, "lao", msg.GetObject())
 	require.Equal(t, "greet", msg.GetAction())

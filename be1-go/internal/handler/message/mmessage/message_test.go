@@ -4,7 +4,7 @@ import (
 	"embed"
 	"encoding/base64"
 	"popstellar/internal/handler/messagedata/election/melection"
-	"popstellar/internal/handler/messagedata/root/mroot"
+	"popstellar/internal/handler/messagedata/lao/mlao"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -17,7 +17,7 @@ func Test_UnmarshalData(t *testing.T) {
 	messageDataBuf, err := testData.ReadFile("testdata/lao_create.json")
 	require.NoError(t, err)
 
-	laoCreate := mroot.LaoCreate{}
+	laoCreate := mlao.LaoCreate{}
 	electionSetup := melection.ElectionSetup{}
 
 	msg := Message{

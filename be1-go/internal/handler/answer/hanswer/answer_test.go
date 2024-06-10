@@ -13,7 +13,7 @@ import (
 	"popstellar/internal/handler/generator"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/root/mroot"
+	"popstellar/internal/handler/messagedata/lao/mlao"
 	"popstellar/internal/handler/method/rumor/mrumor"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/state"
@@ -68,7 +68,7 @@ func Test_handleMessagesByChannel(t *testing.T) {
 
 	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := mroot.LaoCreate{
+	data := mlao.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
