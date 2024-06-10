@@ -32,39 +32,48 @@ for their use.
 
 #### Project Structure
 
-The project is organized into different modules as follows
+The project is organized into different modules as follows:
 
 ```
 ├── cli                         # command line interface
 ├── docs
 └── internal
     ├── crypto                  # defines the cryptographic suite
-    ├── docsutils               # utils use for the documentation
-    ├── handler                 # handle the incoming messages
-    │   ├── answer              # handler for the answers
-    │   ├── channel             # handler for the channel
-    │   └── query               # handler for the queries
-    ├── hub                     # entry point of the messages received by the sockets
-    ├── logger                  # logger use inside the implementation
-    ├── message                 # message types and marshaling/unmarshaling logic
-    ├── mocks                   # mocks and utils use inside tests
-    │   └── generator           # query and message generators only use for the tests
-    ├── network                 # module to set up Websocket connections
-    │   └── socket              # module to send/receive data over the wire
-    ├── old                     # old implementation NEED TO BE DELETE
+    ├── database                # the database implementations
+    ├── docsutils               # utils for the documentation
+    ├── errors                  # error type used inside all the project
+    ├── handler                 # all the logic (handlers, message structures, types)
+    ├── hub                     # builder of the logic flow + entry point of the messages received by the sockets
+    ├── logger                  # global logger used inside all the project
+    ├── network                 # Websocket connection + socket to receive/send over the Websocket
+    ├── old                     # old backend implementation NEED TO BE DELETED AFTER TOTAL REFACTORING
     ├── popcha                  # HTTP server and back-end logic for PoPCHA NEED TO BE REFACTOR
-    ├── repository              # repository for the database
-    ├── singleton               # NEED TO BE REMOVE AND REPLACE BY REF INJECTION
-    │   ├── config              # server config informations and server keys
-    │   ├── database            # database
-    │   ├── state               # temporary states of the server (peers, queries, and subscriptions)
-    │   └── utils               # singleton with the log instance and the schema validator
-    ├── sqlite                  # sqlite implementation of the repository
-    ├── types                   # types use inside the implementation
-    └── validation              # module to validate incoming/outgoing messages
+    ├── state                   # running state implementations
+    ├── test                    # test utils + future integration tests
+    └── validation              # validate incoming/outgoing messages
 ```
 
-The entry point is the `cli` with bulk of the implementation logic in the `popserver` package.
+The entry point is the `cli` with bulk of the implementation logic in the `handler` directory as follows:
+
+```
+handler
+├── answer                      # logic for the jsonrpc answers
+├── jsonrpc                     # logic to divide jsonrpc queries and answers
+├── message                     # logic for the message inside a publish, broadcast, get_messages_by_id answer
+├── messagedata                 # logic for the data inside a message
+├── method                      # logic for method inside a jsonrpc query
+└── query                       # logic to divide the jsonrpc query methods
+```
+Each `method` type, `messagedata` type, etc... directories can be divided up to 3 packages. For example, the implementation of the `election` `messagedata` type is divided as follow:
+
+```
+└── messagedata
+    └── election                # logic for all the messages sent on the channel */election
+        ├── helection           # (h for handler) the handler logic for each message sent on this channel
+        ├── melection           # (m for message) the messages structures for the object of type election
+        │                         (also include the message election_setup sent on lao channel)
+        └── telection           # (t for type) the types used to simplify the logic between the handler and the database
+```
 
 The following diagram represents the relations between the packages in the
 application.
