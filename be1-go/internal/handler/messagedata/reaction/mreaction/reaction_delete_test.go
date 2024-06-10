@@ -1,20 +1,15 @@
-package messagedata
+package mreaction
 
 import (
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/reaction/mreaction"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_Reaction_Delete(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "reaction_delete", "reaction_delete.json")
-
-	buf, err := os.ReadFile(file)
+	buf, err := testData.ReadFile("testdata/reaction_delete.json")
 	require.NoError(t, err)
 
 	object, action, err := messagedata.GetObjectAndAction(buf)
@@ -23,7 +18,7 @@ func Test_Reaction_Delete(t *testing.T) {
 	require.Equal(t, "reaction", object)
 	require.Equal(t, "delete", action)
 
-	var msg mreaction.ReactionDelete
+	var msg ReactionDelete
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -38,7 +33,7 @@ func Test_Reaction_Delete(t *testing.T) {
 }
 
 func Test_Reaction_Delete_Interface_Functions(t *testing.T) {
-	var msg mreaction.ReactionDelete
+	var msg ReactionDelete
 
 	require.Equal(t, messagedata.ReactionObject, msg.GetObject())
 	require.Equal(t, messagedata.ReactionActionDelete, msg.GetAction())
@@ -46,14 +41,14 @@ func Test_Reaction_Delete_Interface_Functions(t *testing.T) {
 }
 
 func Test_Reaction_Delete_Verify(t *testing.T) {
-	var reactionDelete mreaction.ReactionDelete
+	var reactionDelete ReactionDelete
 
 	object, action := "reaction", "delete"
 
 	getTestBadExample := func(file string) func(*testing.T) {
 		return func(t *testing.T) {
 			// read the bad example file
-			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "reaction_delete", file))
+			buf, err := testData.ReadFile("testdata/" + file)
 			require.NoError(t, err)
 
 			obj, act, err := messagedata.GetObjectAndAction(buf)

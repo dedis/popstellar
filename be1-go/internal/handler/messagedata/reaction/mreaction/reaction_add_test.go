@@ -1,20 +1,19 @@
-package messagedata
+package mreaction
 
 import (
+	"embed"
 	"encoding/json"
-	"os"
-	"path/filepath"
 	"popstellar/internal/handler/messagedata"
-	"popstellar/internal/handler/messagedata/reaction/mreaction"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Reaction_Add(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "reaction_add", "reaction_add.json")
+//go:embed testdata/*.json
+var testData embed.FS
 
-	buf, err := os.ReadFile(file)
+func Test_Reaction_Add(t *testing.T) {
+	buf, err := testData.ReadFile("testdata/reaction_add.json")
 	require.NoError(t, err)
 
 	object, action, err := messagedata.GetObjectAndAction(buf)
@@ -23,7 +22,7 @@ func Test_Reaction_Add(t *testing.T) {
 	require.Equal(t, "reaction", object)
 	require.Equal(t, "add", action)
 
-	var msg mreaction.ReactionAdd
+	var msg ReactionAdd
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
@@ -39,7 +38,7 @@ func Test_Reaction_Add(t *testing.T) {
 }
 
 func Test_Reaction_Add_Interface_Functions(t *testing.T) {
-	var msg mreaction.ReactionAdd
+	var msg ReactionAdd
 
 	require.Equal(t, messagedata.ReactionObject, msg.GetObject())
 	require.Equal(t, messagedata.ReactionActionAdd, msg.GetAction())
@@ -47,14 +46,14 @@ func Test_Reaction_Add_Interface_Functions(t *testing.T) {
 }
 
 func Test_Reaction_Add_Verify(t *testing.T) {
-	var reactionAdd mreaction.ReactionAdd
+	var reactionAdd ReactionAdd
 
 	object, action := "reaction", "add"
 
 	getTestBadExample := func(file string) func(*testing.T) {
 		return func(t *testing.T) {
 			// read the bad example file
-			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "reaction_add", file))
+			buf, err := testData.ReadFile("testdata/" + file)
 			require.NoError(t, err)
 
 			obj, act, err := messagedata.GetObjectAndAction(buf)

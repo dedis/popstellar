@@ -99,6 +99,10 @@ test-data:
 	cp -r ../protocol/examples/messageData/roll_call_open.json ./internal/handler/messagedata/lao/mlao/testdata
 	cp -r ../protocol/examples/messageData/roll_call_reopen.json ./internal/handler/messagedata/lao/mlao/testdata
 
+	# Reaction
+	cp -r ../protocol/examples/messageData/reaction_add/. ./internal/handler/messagedata/reaction/mreaction/testdata
+	cp -r ../protocol/examples/messageData/reaction_delete/. ./internal/handler/messagedata/reaction/mreaction/testdata
+
 
 clean:
 	rm -rf ./internal/validation/protocol
@@ -138,6 +142,9 @@ clean:
 
 	# Lao
 	rm -rf ./internal/handler/messagedata/lao/mlao/testdata
+
+	# Reaction
+	rm -rf ./internal/handler/messagedata/reaction/mreaction/testdata
 
 fmt:
 	gofmt -s -w ./
