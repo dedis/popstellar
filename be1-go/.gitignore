@@ -17,7 +17,7 @@ configServer4.json
 /internal/handler/method/subscribe/msubscribe/testdata/
 /internal/handler/method/unsubscribe/munsubscribe/testdata/
 /internal/handler/message/mmessage/testdata/
-/internal/handler/messagedata/authentication/mauthentification/testdata/
+/internal/handler/messagedata/authentication/mauthentication/testdata/
 /internal/handler/messagedata/chirp/mchirp/testdata/
 /internal/handler/messagedata/coin/mcoin/testdata/
 /internal/handler/messagedata/consensus/mconsensus/testdata/
