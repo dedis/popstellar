@@ -183,7 +183,7 @@ As the PoP protocol has different level, the modules can have different type. At
    }
    ```
 
-3. The __message-level__ with the module `message` (*need to be merge with channel level*)
+3. The __message-level__ with the module `message` (*need to be merge with channel-level by removing the last argument*)
 
    ```
    type Module interface {
