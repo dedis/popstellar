@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/channel"
-	mreaction2 "popstellar/internal/handler/channel/reaction/mreaction"
+	"popstellar/internal/handler/channel/reaction/mreaction"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/validation"
 	"strings"
@@ -56,7 +56,7 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 		return err
 	}
 
-	laoPath, _ := strings.CutSuffix(channelPath, messagedata.Social+messagedata.Reactions)
+	laoPath, _ := strings.CutSuffix(channelPath, messagedata.Reactions)
 	isAttendee, err := h.db.IsAttendee(laoPath, msg.Sender)
 	if err != nil {
 		return err
@@ -87,7 +87,7 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 }
 
 func (h *Handler) handleReactionAdd(msg mmessage.Message) error {
-	var reactMsg mreaction2.ReactionAdd
+	var reactMsg mreaction.ReactionAdd
 	err := msg.UnmarshalData(&reactMsg)
 	if err != nil {
 		return err
@@ -102,7 +102,7 @@ func (h *Handler) handleReactionAdd(msg mmessage.Message) error {
 }
 
 func (h *Handler) handleReactionDelete(msg mmessage.Message) error {
-	var delReactMsg mreaction2.ReactionDelete
+	var delReactMsg mreaction.ReactionDelete
 	err := msg.UnmarshalData(&delReactMsg)
 	if err != nil {
 		return err
