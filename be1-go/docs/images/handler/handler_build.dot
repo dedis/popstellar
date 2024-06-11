@@ -1,0 +1,77 @@
+strict digraph {
+//labelloc="t";
+//label = <Modules dependencies of popstellar <font point-size='10'><br/>(generated 6 Jun 24 - 15:21:17)</font>>;
+//graph [fontname = "helvetica"];
+//graph [fontname = "helvetica"];
+//node [fontname = "helvetica"];
+//edge [fontname = "helvetica"];
+node [shape=box,style=rounded];
+start=0;
+ratio = fill;
+rankdir="LR";
+
+subgraph cluster_jsonrpc{
+node [shape=box,style=rounded];
+label = "jsonRPC-level";
+"jsonrpc";
+"query";
+"answer";
+}
+
+subgraph cluster_method{
+node [shape=box,style=rounded];
+label = "method-level";
+"unsubscribe";
+"subscribe";
+"rumor";
+"publish";
+"heartbeat";
+"greetserver";
+"getmessagesbyid";
+"catchup";
+}
+
+subgraph cluster_message{
+node [shape=box,style=rounded];
+label = "message-level";
+"message";
+}
+
+subgraph cluster_channel{
+node [shape=box,style=rounded];
+label = "channel-level";
+"root";
+"reaction";
+"lao";
+"federation";
+"election";
+"coin";
+"chirp";
+}
+
+"jsonrpc" -> "query";
+"jsonrpc" -> "answer";
+
+"query" -> "catchup";
+"query" -> "getmessagesbyid";
+"query" -> "greetserver";
+"query" -> "heartbeat";
+"query" -> "publish";
+"query" -> "rumor";
+"query" -> "subscribe";
+"query" -> "unsubscribe";
+
+"publish" -> "message";
+"rumor" -> "message";
+"answer" -> "message";
+
+"message" -> "chirp";
+"message" -> "coin";
+"message" -> "election";
+"message" -> "federation";
+"message" -> "lao";
+"message" -> "reaction";
+"message" -> "root";
+
+
+}
