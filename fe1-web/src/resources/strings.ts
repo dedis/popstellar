@@ -483,7 +483,7 @@ namespace STRINGS {
     'You as the organizer can create money out of thin air 🧙‍♂️';
 
   export const digital_cash_wallet_transaction_description =
-    'You can send cash by entering the public key of the beneficiary below and ' +
+    'You can send cash by entering the username of the beneficiary below and ' +
     'choosing the amount of cash you would like to transfer. To receive money you can' +
     'show your PoP token to the sender. To access the QR code of your PoP token, tab the QR' +
     'code icon in the top right of this screen.';
@@ -497,8 +497,7 @@ namespace STRINGS {
   export const digital_cash_wallet_send_transaction = 'Send Transaction';
 
   export const digital_cash_wallet_beneficiary = 'Beneficiary (-ies)';
-  export const digital_cash_wallet_beneficiary_placeholder =
-    'QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU=';
+  export const digital_cash_wallet_beneficiary_placeholder = 'defuser1234';
 
   export const digital_cash_wallet_amount = 'Amount';
   export const digital_cash_wallet_amount_placeholder = '42';
@@ -573,6 +572,8 @@ namespace STRINGS {
     'porta orci auctor, a vulputate felis suscipit. Aenean vulputate ligula ac commodo ornare.';
 
   export const unused = 'unused';
+
+  export const popToken = 'PoP token:';
 }
 
 export default STRINGS;

@@ -10,6 +10,8 @@ import { Color, Icon, List, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
+import { generateUsernameFromBase64 } from '../../../core/functions/Mnemonic';
+
 const styles = StyleSheet.create({
   tokenHighlight: {
     backgroundColor: Color.lightPopBlue,
@@ -72,8 +74,11 @@ const AttendeeList = ({ popTokens, personalToken }: IPropTypes) => {
                   numberOfLines={1}
                   testID={`attendee_${idx}`}
                   selectable>
-                  {token.valueOf()}
+                  {generateUsernameFromBase64(token.valueOf())}
                 </ListItem.Title>
+                <ListItem.Subtitle style={[Typography.small, Typography.code]} numberOfLines={1}>
+                  {STRINGS.popToken} {token.valueOf()}
+                </ListItem.Subtitle>
               </ListItem.Content>
             </ListItem>
           );

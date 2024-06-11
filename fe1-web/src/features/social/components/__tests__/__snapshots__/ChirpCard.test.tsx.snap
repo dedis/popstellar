@@ -374,6 +374,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                                   },
                                   {
                                     "alignSelf": "flex-start",
+                                    "width": "165px",
                                   },
                                 ]
                               }
@@ -398,9 +399,6 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                                       "color": "#8E8E8E",
                                     },
                                     {
-                                      "textAlign": "center",
-                                    },
-                                    {
                                       "fontFamily": "Courier New",
                                     },
                                     {
@@ -409,7 +407,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                                   ]
                                 }
                               >
-                                Joke
+                                pilotmusic0000
                               </Text>
                             </View>
                           </View>
@@ -971,6 +969,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                   },
                                   {
                                     "alignSelf": "flex-start",
+                                    "width": "165px",
                                   },
                                 ]
                               }
@@ -995,9 +994,6 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                       "color": "#8E8E8E",
                                     },
                                     {
-                                      "textAlign": "center",
-                                    },
-                                    {
                                       "fontFamily": "Courier New",
                                     },
                                     {
@@ -1006,7 +1002,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                   ]
                                 }
                               >
-                                Doug
+                                clickbetter0000
                               </Text>
                             </View>
                           </View>
@@ -1779,6 +1775,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                   },
                                   {
                                     "alignSelf": "flex-start",
+                                    "width": "165px",
                                   },
                                 ]
                               }
@@ -1803,9 +1800,6 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                       "color": "#8E8E8E",
                                     },
                                     {
-                                      "textAlign": "center",
-                                    },
-                                    {
                                       "fontFamily": "Courier New",
                                     },
                                     {
@@ -1814,7 +1808,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                   ]
                                 }
                               >
-                                Doug
+                                clickbetter0000
                               </Text>
                             </View>
                           </View>
@@ -2643,6 +2637,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                   },
                                   {
                                     "alignSelf": "flex-start",
+                                    "width": "165px",
                                   },
                                 ]
                               }
@@ -2667,9 +2662,6 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                       "color": "#8E8E8E",
                                     },
                                     {
-                                      "textAlign": "center",
-                                    },
-                                    {
                                       "fontFamily": "Courier New",
                                     },
                                     {
@@ -2678,7 +2670,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                   ]
                                 }
                               >
-                                Doug
+                                clickbetter0000
                               </Text>
                             </View>
                           </View>
@@ -3451,6 +3443,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                   },
                                   {
                                     "alignSelf": "flex-start",
+                                    "width": "165px",
                                   },
                                 ]
                               }
@@ -3475,9 +3468,6 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                       "color": "#8E8E8E",
                                     },
                                     {
-                                      "textAlign": "center",
-                                    },
-                                    {
                                       "fontFamily": "Courier New",
                                     },
                                     {
@@ -3486,7 +3476,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                   ]
                                 }
                               >
-                                Doug
+                                clickbetter0000
                               </Text>
                             </View>
                           </View>

@@ -7,6 +7,7 @@ import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
 import { ProfileIcon } from 'core/components';
+import { generateUsernameFromBase64 } from 'core/functions/Mnemonic';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { SocialParamList } from 'core/navigation/typing/social/SocialParamList';
@@ -68,7 +69,7 @@ const UserListItem = ({ publicKey, isFirstItem, isLastItem }: IPropTypes) => {
       </View>
       <ListItem.Content>
         <ListItem.Title style={[Typography.base, Typography.code]} numberOfLines={1}>
-          {publicKey.valueOf()}
+          {generateUsernameFromBase64(publicKey.valueOf())}
         </ListItem.Title>
       </ListItem.Content>
       <ListItem.Chevron />

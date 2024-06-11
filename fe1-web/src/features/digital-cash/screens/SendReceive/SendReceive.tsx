@@ -21,6 +21,7 @@ import {
 } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { generateUsernameFromBase64 } from 'core/functions/Mnemonic';
 import { KeyPairStore } from 'core/keypair';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { DigitalCashParamList } from 'core/navigation/typing/DigitalCashParamList';
@@ -95,7 +96,7 @@ const SendReceive = () => {
     }
 
     return (rollCall?.attendees || [])
-      .map((key) => key.toString())
+      .map((key) => generateUsernameFromBase64(key.valueOf()))
       .filter((key) => key.startsWith(beneficiary));
   }, [beneficiary, beneficiaryFocused, rollCall]);
 
