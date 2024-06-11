@@ -21,7 +21,7 @@ func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {
 		Scan(&rollCallCloseBytes)
 
 	if err != nil {
-		return false, poperrors.NewDatabaseSelectErrorMsg("last roll call close message data: %v", err)
+		return false, poperrors.NewDatabaseSelectErrorMsg("last roll call close message data (%s, %s): %v", laoPath, poptoken, err)
 	}
 
 	var rollCallClose mlao.RollCallClose
