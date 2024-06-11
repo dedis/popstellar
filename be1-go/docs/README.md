@@ -198,6 +198,13 @@ As the PoP protocol has different level, the modules can have different type. At
 	     Handle(channelPath, message in structure) error
    }
    ```
+##### Building the Message-Handling flow
+
+The __Message-Handling flow__ is created at the `Hub` creation. It builds it once with a __Top-Down__ construction by injecting the dependencies(`States`,`Database access`) in each __Module__ before assembling them together.
+
+<div align="center">
+  <img src="images/handler/handler_build.png" alt="Message-Handling Flow"/>
+</div>
 
 ##### Processing messages in the application layer
 
