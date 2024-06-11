@@ -30,6 +30,36 @@ other text editors since it works out of the box and EPFL/ETHZ students may
 avail a [free education license](https://www.jetbrains.com/community/education/#students)
 for their use.
 
+#### Architecture
+
+The PoP Go backend expects actors (depending on the context these may be
+clients or server) to establish long lived websocket connections with it
+and send messages back and forth over websockets using a publish/subscribe
+pattern.
+
+<div align="center">
+  <img alt="Communication Stack" src="images/comm_stack.jpeg" width="600" />
+</div>
+
+On a higher level of abstraction, a client may publish messages or subscribe for
+messages on a *channel*. You may think of a channel as a topic which stores
+events that occur over time. For instance, every LAO is denoted by a unique
+channel (also called the LAO channel) and contains messages about all events
+that occur within it, for example, the creation of an election, a roll call. A
+channel may have sub channels associated with it. For instance, a LAO may have a
+sub-channel for the elections where all messages associated with that election
+are published. Please refer to [Data pipeline
+architecture](https://docs.google.com/document/d/19r3rP6o8TO-xeZBM0GQzkHYQFSJtWy7UhjLhzzZVry4/edit#heading=h.1h71fzpdznrh)
+for more information.
+
+All the messages are encoded using JSON and are validated using JSON-RPC
+[schemas](https://github.com/dedis/popstellar/tree/master/protocol).
+[Protocol Specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM)
+also gives an introduction to the different message formats. However, note that
+the [schemas](https://github.com/dedis/popstellar/tree/master/protocol) in
+this repository are **always** the source of truth and are more up to date than
+the Google Doc.
+
 #### Project Structure
 
 The project is organized into different packages/directories as follow:
@@ -53,11 +83,37 @@ The project is organized into different packages/directories as follow:
     └── validation              # validate incoming/outgoing messages
 ```
 
+##### Getting messages over the wire (*Need to be updated*)
+
+The `Socket` interface (refer `network/socket/mod.go`) describes the methods
+used for reading or sending data/error messages from/to the end user.
+
+Depending on the type of end user, a `Socket` has two concrete
+implementations:
+
+* `ClientSocket`: Used to denote a connection to a user participating in a PoP
+  Party
+* `ServerSocket`: Used to represent a connection to a witness or organizer
+  server.
+
+The `ReadPump` and `WritePump` are low-level methods which allow reading/writing
+data over the wire. Most users would instead use the `Send(msg []byte)`,
+`SendError(id *int, err error)` and `SendResult(id int, res []message.Message, missingMessagesByChannel map[string][]message.Message)`
+APIs.
+
+Each incoming message read by `ReadPump` is passed to the Hub for processing.
+Refer to the channel returned by `Receiver()` in the `Hub` interface.
+
+We use [github.com/gorilla/websocket](github.com/gorilla/websocket) to manage
+websocket connections.
+
+##### Handler Structure
+
 The directory `handler` contains all the modules of the backend logic for PoP as follow:
 
 ```
 handler
-├── answer                      # logic for the jsonrpc answer
+├── answer                      # logic for the jsonrpc answer (getmessagesbyid and rumor answers)
 │
 ├── channel                     # directory with all the channel modules
 │   ├── authentication             # for popcha#authenticate
@@ -94,69 +150,54 @@ handler
                                         to respond an error to the sender in case of error deeper in the flow 
 ```
 
-Each module can have up to 3 packages (handler, message, and type). For example, the implementation of the `election` channel is divided as follow:
+##### Module Structure
+
+Each module can have up to 3 packages using the following convention:
+1. A package starting with the letter __h for Handler__ with all the logic to handle the messages of the module
+2. A package starting with the letter __m for Message__ with the definition of the structure of all the messages of the module
+3. A package starting with the letter __t for Type__ with all the types used inside the module that could be also use outside (e.g with the database)
+
+For example, the implementation of the `election` channel is divided as follow:
 
 ```
-messagedata
-└── election                    # everything needed to use the channel election
-    ├── helection               # (h for handler) all the logic for the messages going on the channel election
-    ├── melection               # (m for message) all the messages structures going on the channel election
-    └── telection               # (t for type) all the types that could be used outside of the module
+election                    
+├── helection                   # all the logic for the messages: election#key|open|cast_vote|end|result
+├── melection                   # all the structures for the messages: election#key|open|cast_vote|end|result
+└── telection                   # the type Question used to simplify the interactions with the database
 ```
 
-#### Architecture
+##### Type of Modules
 
-The PoP Go backend expects actors (depending on the context these may be
-clients or server) to establish long lived websocket connections with it
-and send messages back and forth over websockets using a publish/subscribe
-pattern.
+As the PoP protocol has different level, the modules can have different type. At the moment, we have 3 different kind of module:
 
-<div align="center">
-  <img alt="Communication Stack" src="images/comm_stack.jpeg" width="600" />
-</div>
+1. The __jsonRPC-level__ with the modules `jsonrpc`,`query`, and `answer`
+   ```
+   type Module interface {
+	     Handle(Socket, message in byte) error
+   }
+   ```
+2. The __method-level__ with all the module inside the directory __method__
+   ```
+   type Module interface {
+	     Handle(Socket, message in byte) (jsonRPC ID, error)
+   }
+   ```
 
-On a higher level of abstraction, a client may publish messages or subscribe for
-messages on a *channel*. You may think of a channel as a topic which stores
-events that occur over time. For instance, every LAO is denoted by a unique
-channel (also called the LAO channel) and contains messages about all events
-that occur within it, for example, the creation of an election, a roll call. A
-channel may have sub channels associated with it. For instance, a LAO may have a
-sub-channel for the elections where all messages associated with that election
-are published. Please refer to [Data pipeline
-architecture](https://docs.google.com/document/d/19r3rP6o8TO-xeZBM0GQzkHYQFSJtWy7UhjLhzzZVry4/edit#heading=h.1h71fzpdznrh)
-for more information.
+3. The __message-level__ with the module `message` (*need to be merge with channel level*)
 
-All the messages are encoded using JSON and are validated using JSON-RPC
-[schemas](https://github.com/dedis/popstellar/tree/master/protocol).
-[Protocol Specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM)
-also gives an introduction to the different message formats. However, note that
-the [schemas](https://github.com/dedis/popstellar/tree/master/protocol) in
-this repository are **always** the source of truth and are more up to date than
-the Google Doc.
+   ```
+   type Module interface {
+	     Handle(channelPath, message in structure, is rumor?) error
+   }
+   ```
 
-##### Getting messages over the wire
+4. The __channel-level__ with all the modules inside the directory __channel__
 
-The `Socket` interface (refer `network/socket/mod.go`) describes the methods
-used for reading or sending data/error messages from/to the end user.
-
-Depending on the type of end user, a `Socket` has two concrete
-implementations:
-
-* `ClientSocket`: Used to denote a connection to a user participating in a PoP
-  Party
-* `ServerSocket`: Used to represent a connection to a witness or organizer
-  server.
-
-The `ReadPump` and `WritePump` are low-level methods which allow reading/writing
-data over the wire. Most users would instead use the `Send(msg []byte)`,
-`SendError(id *int, err error)` and `SendResult(id int, res []message.Message, missingMessagesByChannel map[string][]message.Message)`
-APIs.
-
-Each incoming message read by `ReadPump` is passed to the Hub for processing.
-Refer to the channel returned by `Receiver()` in the `Hub` interface.
-
-We use [github.com/gorilla/websocket](github.com/gorilla/websocket) to manage
-websocket connections.
+   ```
+   type Module interface {
+	     Handle(channelPath, message in structure) error
+   }
+   ```
 
 ##### Processing messages in the application layer
 
@@ -181,7 +222,8 @@ We use `Socket.SendResult` to send a `Result` back to the client when there is n
 
 We check the Mid-level communication inside `channel.go`.
 
-##### Database
+##### Database (*Need to be updated*)
+
 <div align="center">
   <img src="images/database.png" alt="Flowchart"/>
 </div>
@@ -194,13 +236,6 @@ The database is used to store the state of the server. It is implemented in the 
 We use the Repository pattern to interact with the database. 
 The current implementation uses a SQLite database.
 For testing we use [github.com/vektra/mockery](https://github.com/vektra/mockery)  to mock the database.
-
-
-##### Message definitions
-
-All messages are defined in the `message` package. Please note that the JSON-RPC
-definitions in the root of the repository are to be considered a source of truth
-since the validation library checks the messages against it.
 
 ##### Validation
 
