@@ -214,8 +214,8 @@ final case class DbActor(
 
     val chirpScores = collection.mutable.Map[Hash, Int]()
 
-    for reaction <- reactionsList do
-      val reactionObj = AddReaction.buildFromJson(reaction.toJsonString)
+    for reaction:Message <- reactionsList do
+      val reactionObj = AddReaction.buildFromJson(reaction.data.decodeToString())
       if reactionObj.action.toString == "add" then
         if reactionObj.reaction_codepoint == "👍" then
           chirpScores(reactionObj.chirp_id) += 1
