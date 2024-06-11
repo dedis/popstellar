@@ -1,6 +1,6 @@
 strict digraph {
 //labelloc="t";
-//label = <Modules dependencies of popstellar <font point-size='10'><br/>(generated 6 Jun 24 - 15:21:17)</font>>;
+label = <Implemented Message-Handling Flow <font point-size='10'><br/>11.06.2024</font>>;
 //graph [fontname = "helvetica"];
 //graph [fontname = "helvetica"];
 //node [fontname = "helvetica"];
@@ -9,6 +9,15 @@ node [shape=box,style=rounded];
 start=0;
 ratio = fill;
 rankdir="LR";
+
+"Missing some messages"[ fillcolor=orange, style=filled];
+"Need to be refactored"[ fillcolor=tomato, style=filled];
+
+"Incoming Message"[ shape=plaintext];
+
+"Incoming Message"  -> "Hub";
+
+"Hub" -> "jsonrpc";
 
 subgraph cluster_jsonrpc{
 node [shape=box,style=rounded];
@@ -42,9 +51,11 @@ node [shape=box,style=rounded];
 label = "channel-level";
 "root";
 "reaction";
-"lao";
+"popcha"[ fillcolor=tomato, style=filled];
+"lao"[ fillcolor=orange, style=filled];
 "federation";
 "election";
+"consensus"[ fillcolor="tomato" style=filled];
 "coin";
 "chirp";
 }
