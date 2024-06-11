@@ -218,11 +218,26 @@ final case class DbActor(
       val reactionObj = AddReaction.buildFromJson(reaction.data.decodeToString())
       if reactionObj.action.toString == "add" then
         if reactionObj.reaction_codepoint == "👍" then
-          chirpScores(reactionObj.chirp_id) += 1
+          if(chirpScores.contains(reactionObj.chirp_id)) {
+            chirpScores(reactionObj.chirp_id) += 1
+          }
+          else {
+            chirpScores(reactionObj.chirp_id) = 0
+          }
         else if reactionObj.reaction_codepoint == "👎" then
-          chirpScores(reactionObj.chirp_id) -= 1
+          if (chirpScores.contains(reactionObj.chirp_id)) {
+            chirpScores(reactionObj.chirp_id) -= 1
+          }
+          else {
+            chirpScores(reactionObj.chirp_id) = 0
+          }
         else if reactionObj.reaction_codepoint == "❤️" then
-          chirpScores(reactionObj.chirp_id) += 1
+          if (chirpScores.contains(reactionObj.chirp_id)) {
+            chirpScores(reactionObj.chirp_id) += 1
+          }
+          else {
+            chirpScores(reactionObj.chirp_id) = 0
+          }
 
     var first = new Hash(Base64Data(""))
     var second = new Hash(Base64Data(""))
