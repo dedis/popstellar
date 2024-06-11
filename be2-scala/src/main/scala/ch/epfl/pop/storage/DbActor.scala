@@ -269,7 +269,7 @@ final case class DbActor(
     }
 
     readGreetLao(channel) match {
-      case Some(msg) => msg :: catchupList
+      case Some(msg) => catchupList
       case None      => catchupList
     }
   }
