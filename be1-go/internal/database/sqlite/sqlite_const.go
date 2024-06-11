@@ -9,27 +9,27 @@ const (
 )
 
 var channelTypeToID = map[string]string{
-	messagedata.RootObject:       "1",
-	messagedata.LAOObject:        "2",
-	messagedata.ElectionObject:   "3",
-	messagedata.ChirpObject:      "4",
-	messagedata.ReactionObject:   "5",
-	messagedata.ConsensusObject:  "6",
-	messagedata.CoinObject:       "7",
-	messagedata.AuthObject:       "8",
-	messagedata.FederationObject: "9",
+	channel.RootObject:       "1",
+	channel.LAOObject:        "2",
+	channel.ElectionObject:   "3",
+	channel.ChirpObject:      "4",
+	channel.ReactionObject:   "5",
+	channel.ConsensusObject:  "6",
+	channel.CoinObject:       "7",
+	channel.AuthObject:       "8",
+	channel.FederationObject: "9",
 }
 
 var channelTypes = []string{
-	messagedata.RootObject,
-	messagedata.LAOObject,
-	messagedata.ElectionObject,
-	messagedata.ChirpObject,
-	messagedata.ReactionObject,
-	messagedata.ConsensusObject,
-	messagedata.CoinObject,
-	messagedata.AuthObject,
-	messagedata.FederationObject,
+	channel.RootObject,
+	channel.LAOObject,
+	channel.ElectionObject,
+	channel.ChirpObject,
+	channel.ReactionObject,
+	channel.ConsensusObject,
+	channel.CoinObject,
+	channel.AuthObject,
+	channel.FederationObject,
 }
 
 const foreignKeyOff = `PRAGMA foreign_keys = OFF;`

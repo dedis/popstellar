@@ -1,4 +1,4 @@
-package messagedata
+package channel
 
 import (
 	"embed"

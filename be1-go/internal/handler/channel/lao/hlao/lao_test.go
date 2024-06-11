@@ -295,9 +295,9 @@ func newLaoStateMsg(t *testing.T, organizer, laoID string) mmessage.Message {
 func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation, start, end int64, isError bool,
 	mockRepository *mocks.Repository) mmessage.Message {
 
-	createID := messagedata.Hash(
+	createID := channel.Hash(
 		mlao2.RollCallFlag,
-		strings.ReplaceAll(laoID, messagedata.RootPrefix, ""),
+		strings.ReplaceAll(laoID, channel.RootPrefix, ""),
 		strconv.Itoa(int(creation)),
 		goodLaoName,
 	)
@@ -314,9 +314,9 @@ func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation,
 func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, openedAt int64, isError bool,
 	mockRepository *mocks.Repository) mmessage.Message {
 
-	openID := messagedata.Hash(
+	openID := channel.Hash(
 		mlao2.RollCallFlag,
-		strings.ReplaceAll(laoID, messagedata.RootPrefix, ""),
+		strings.ReplaceAll(laoID, channel.RootPrefix, ""),
 		base64.URLEncoding.EncodeToString([]byte("opens")),
 		strconv.Itoa(int(openedAt)),
 	)
@@ -336,9 +336,9 @@ func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, opene
 func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, closedAt int64, isError bool,
 	mockRepository *mocks.Repository) mmessage.Message {
 
-	closeID := messagedata.Hash(
+	closeID := channel.Hash(
 		mlao2.RollCallFlag,
-		strings.ReplaceAll(laoID, messagedata.RootPrefix, ""),
+		strings.ReplaceAll(laoID, channel.RootPrefix, ""),
 		base64.URLEncoding.EncodeToString([]byte("closes")),
 		strconv.Itoa(int(closedAt)),
 	)
@@ -350,7 +350,7 @@ func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, clo
 	if !isError {
 		var channels []string
 		for _, attendee := range attendees {
-			channels = append(channels, laoID+messagedata.Social+"/"+attendee)
+			channels = append(channels, laoID+channel.Social+"/"+attendee)
 		}
 		mockRepository.On("StoreRollCallClose", channels, laoID, msg).Return(nil)
 	}
@@ -366,7 +366,7 @@ func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 	createdAt, start, end int64,
 	isError bool, mockRepository *mocks.Repository) mmessage.Message {
 
-	electionSetupID := messagedata.Hash(
+	electionSetupID := channel.Hash(
 		mlao2.ElectionFlag,
 		setupLao,
 		strconv.Itoa(int(createdAt)),
@@ -382,7 +382,7 @@ func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 		questionField = ""
 	}
 
-	questionID := messagedata.Hash("Question", electionSetupID, questionField)
+	questionID := channel.Hash("Question", electionSetupID, questionField)
 	questions = append(questions, mlao2.ElectionSetupQuestion{
 		ID:            questionID,
 		Question:      question,

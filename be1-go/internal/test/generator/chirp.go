@@ -13,8 +13,8 @@ import (
 func NewChirpAddMsg(t *testing.T, sender string, senderSK kyber.Scalar, timestamp int64) mmessage.Message {
 
 	chirpAdd := mchirp2.ChirpAdd{
-		Object:    messagedata.ChirpObject,
-		Action:    messagedata.ChirpActionAdd,
+		Object:    channel.ChirpObject,
+		Action:    channel.ChirpActionAdd,
 		Text:      "just a chirp",
 		Timestamp: timestamp,
 	}
@@ -31,8 +31,8 @@ func NewChirpDeleteMsg(t *testing.T, sender string, senderSK kyber.Scalar, chirp
 	timestamp int64) mmessage.Message {
 
 	chirpAdd := mchirp2.ChirpDelete{
-		Object:    messagedata.ChirpObject,
-		Action:    messagedata.ChirpActionDelete,
+		Object:    channel.ChirpObject,
+		Action:    channel.ChirpActionDelete,
 		ChirpID:   chirpID,
 		Timestamp: timestamp,
 	}

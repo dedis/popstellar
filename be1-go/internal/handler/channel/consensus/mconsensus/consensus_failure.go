@@ -43,15 +43,15 @@ func (message ConsensusFailure) Verify() error {
 
 // GetObject implements MessageData
 func (ConsensusFailure) GetObject() string {
-	return messagedata.ConsensusObject
+	return channel.ConsensusObject
 }
 
 // GetAction implements MessageData
 func (ConsensusFailure) GetAction() string {
-	return messagedata.ConsensusActionFailure
+	return channel.ConsensusActionFailure
 }
 
 // NewEmpty implements MessageData
-func (ConsensusFailure) NewEmpty() messagedata.MessageData {
+func (ConsensusFailure) NewEmpty() channel.MessageData {
 	return &ConsensusFailure{}
 }

@@ -56,7 +56,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(insertChannelMessage, messagedata.Root, msg.MessageID, true)
+	_, err = tx.Exec(insertChannelMessage, channel.Root, msg.MessageID, true)
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("relation lao create message and root channel: %v", err)
 	}

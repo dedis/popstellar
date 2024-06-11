@@ -153,7 +153,7 @@ func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int
 		return msg
 	}
 
-	chirpNotifyChannelID, _ := strings.CutSuffix(channelID, messagedata.Social+"/"+msg.Sender)
+	chirpNotifyChannelID, _ := strings.CutSuffix(channelID, channel.Social+"/"+msg.Sender)
 
 	err = subs.AddChannel(chirpNotifyChannelID)
 	require.NoError(t, err)
@@ -178,7 +178,7 @@ func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID st
 
 	db.On("HasMessage", chirpID).Return(true, nil)
 
-	chirpNotifyChannelID, _ := strings.CutSuffix(channelID, messagedata.Social+"/"+msg.Sender)
+	chirpNotifyChannelID, _ := strings.CutSuffix(channelID, channel.Social+"/"+msg.Sender)
 
 	err = subs.AddChannel(chirpNotifyChannelID)
 	require.NoError(t, err)

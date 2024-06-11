@@ -71,8 +71,8 @@ func (s *SQLite) getElectionState(electionPath string) (string, error) {
 	var state string
 	err := s.database.QueryRow(selectLastElectionMessage,
 		electionPath,
-		messagedata.ElectionObject,
-		messagedata.VoteActionCastVote).
+		channel.ElectionObject,
+		channel.VoteActionCastVote).
 		Scan(&state)
 
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
@@ -90,7 +90,7 @@ func (s *SQLite) IsElectionStartedOrEnded(electionPath string) (bool, error) {
 		return false, err
 	}
 
-	return state == messagedata.ElectionActionOpen || state == messagedata.ElectionActionEnd, nil
+	return state == channel.ElectionActionOpen || state == channel.ElectionActionEnd, nil
 }
 
 func (s *SQLite) IsElectionStarted(electionPath string) (bool, error) {
@@ -101,7 +101,7 @@ func (s *SQLite) IsElectionStarted(electionPath string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return state == messagedata.ElectionActionOpen, nil
+	return state == channel.ElectionActionOpen, nil
 }
 
 func (s *SQLite) IsElectionEnded(electionPath string) (bool, error) {
@@ -112,7 +112,7 @@ func (s *SQLite) IsElectionEnded(electionPath string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return state == messagedata.ElectionActionEnd, nil
+	return state == channel.ElectionActionEnd, nil
 }
 
 func (s *SQLite) GetElectionCreationTime(electionPath string) (int64, error) {
@@ -120,7 +120,7 @@ func (s *SQLite) GetElectionCreationTime(electionPath string) (int64, error) {
 	defer dbLock.Unlock()
 
 	var creationTime int64
-	err := s.database.QueryRow(selectElectionCreationTime, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).
+	err := s.database.QueryRow(selectElectionCreationTime, electionPath, channel.ElectionObject, channel.ElectionActionSetup).
 		Scan(&creationTime)
 	if err != nil {
 		return 0, poperrors.NewDatabaseSelectErrorMsg("election creation time: %v", err)
@@ -135,8 +135,8 @@ func (s *SQLite) GetElectionType(electionPath string) (string, error) {
 	var electionType string
 	err := s.database.QueryRow(selectElectionType,
 		electionPath,
-		messagedata.ElectionObject,
-		messagedata.ElectionActionSetup).
+		channel.ElectionObject,
+		channel.ElectionActionSetup).
 		Scan(&electionType)
 
 	if err != nil {
@@ -152,10 +152,10 @@ func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{},
 	var rollCallCloseBytes []byte
 	err := s.database.QueryRow(selectElectionAttendees,
 		electionPath,
-		messagedata.RollCallObject,
-		messagedata.RollCallActionClose,
-		messagedata.RollCallObject,
-		messagedata.RollCallActionClose,
+		channel.RollCallObject,
+		channel.RollCallActionClose,
+		channel.RollCallObject,
+		channel.RollCallActionClose,
 	).Scan(&rollCallCloseBytes)
 
 	if err != nil {
@@ -178,7 +178,7 @@ func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{},
 func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (mlao2.ElectionSetup, error) {
 
 	var electionSetupBytes []byte
-	err := tx.QueryRow(selectElectionSetup, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).
+	err := tx.QueryRow(selectElectionSetup, electionPath, channel.ElectionObject, channel.ElectionActionSetup).
 		Scan(&electionSetupBytes)
 	if err != nil {
 		return mlao2.ElectionSetup{}, poperrors.NewDatabaseSelectErrorMsg("election setup message data: %v", err)
@@ -240,7 +240,7 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 		return nil, err
 	}
 
-	rows, err := tx.Query(selectCastVotes, electionPath, messagedata.ElectionObject, messagedata.VoteActionCastVote)
+	rows, err := tx.Query(selectCastVotes, electionPath, channel.ElectionObject, channel.VoteActionCastVote)
 	if err != nil {
 		return nil, poperrors.NewDatabaseSelectErrorMsg("cast vote messages: %v", err)
 	}

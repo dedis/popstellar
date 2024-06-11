@@ -113,7 +113,7 @@ func Test_handleChannelRoot(t *testing.T) {
 
 func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepository *mocks.Repository, isError bool) mmessage.Message {
 	creation := time.Now().Unix()
-	laoID := messagedata.Hash(
+	laoID := channel.Hash(
 		organizer,
 		fmt.Sprintf("%d", creation),
 		goodLaoName,
@@ -121,19 +121,19 @@ func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockReposi
 
 	msg := generator2.NewLaoCreateMsg(t, sender, laoID, laoName, creation, organizer, nil)
 
-	mockRepository.On("HasChannel", messagedata.RootPrefix+laoID).Return(false, nil)
+	mockRepository.On("HasChannel", channel.RootPrefix+laoID).Return(false, nil)
 	if !isError {
-		laoPath := messagedata.RootPrefix + laoID
+		laoPath := channel.RootPrefix + laoID
 		organizerBuf, err := base64.URLEncoding.DecodeString(organizer)
 		require.NoError(t, err)
 		channels := map[string]string{
-			laoPath:                          messagedata.LAOObject,
-			laoPath + messagedata.Chirps:     messagedata.ChirpObject,
-			laoPath + messagedata.Reactions:  messagedata.ReactionObject,
-			laoPath + messagedata.Consensus:  messagedata.ConsensusObject,
-			laoPath + messagedata.Coin:       messagedata.CoinObject,
-			laoPath + messagedata.Auth:       messagedata.AuthObject,
-			laoPath + messagedata.Federation: messagedata.FederationObject,
+			laoPath:                      channel.LAOObject,
+			laoPath + channel.Chirps:     channel.ChirpObject,
+			laoPath + channel.Reactions:  channel.ReactionObject,
+			laoPath + channel.Consensus:  channel.ConsensusObject,
+			laoPath + channel.Coin:       channel.CoinObject,
+			laoPath + channel.Auth:       channel.AuthObject,
+			laoPath + channel.Federation: channel.FederationObject,
 		}
 		mockRepository.On("StoreLaoWithLaoGreet",
 			channels,

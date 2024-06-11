@@ -60,15 +60,15 @@ func (message ConsensusLearn) Verify() error {
 
 // GetObject implements MessageData
 func (ConsensusLearn) GetObject() string {
-	return messagedata.ConsensusObject
+	return channel.ConsensusObject
 }
 
 // GetAction implements MessageData
 func (ConsensusLearn) GetAction() string {
-	return messagedata.ConsensusActionLearn
+	return channel.ConsensusActionLearn
 }
 
 // NewEmpty implements MessageData
-func (ConsensusLearn) NewEmpty() messagedata.MessageData {
+func (ConsensusLearn) NewEmpty() channel.MessageData {
 	return &ConsensusLearn{}
 }

@@ -21,15 +21,15 @@ type Peer struct {
 
 // GetObject implements MessageData
 func (LaoGreet) GetObject() string {
-	return messagedata.LAOObject
+	return channel.LAOObject
 }
 
 // GetAction implements MessageData
 func (LaoGreet) GetAction() string {
-	return messagedata.LAOActionGreet
+	return channel.LAOActionGreet
 }
 
 // NewEmpty implements MessageData
-func (LaoGreet) NewEmpty() messagedata.MessageData {
+func (LaoGreet) NewEmpty() channel.MessageData {
 	return &LaoGreet{}
 }

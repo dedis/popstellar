@@ -26,7 +26,7 @@ func Test_handleChannel(t *testing.T) {
 		Federation: dataHandler,
 	}
 
-	channel := New(db, subHandlers)
+	msgHandler := New(db, subHandlers)
 
 	_, publicBuf, private, _ := generator.GenerateKeyPair(t)
 	sender := base64.URLEncoding.EncodeToString(publicBuf)
@@ -191,7 +191,7 @@ func Test_handleChannel(t *testing.T) {
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(messagedata.RootObject, nil)
+	db.On("GetChannelType", channelPath).Return(channel.RootObject, nil)
 	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
@@ -207,7 +207,7 @@ func Test_handleChannel(t *testing.T) {
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(messagedata.LAOObject, nil)
+	db.On("GetChannelType", channelPath).Return(channel.LAOObject, nil)
 	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
@@ -223,7 +223,7 @@ func Test_handleChannel(t *testing.T) {
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(messagedata.ElectionObject, nil)
+	db.On("GetChannelType", channelPath).Return(channel.ElectionObject, nil)
 	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
@@ -239,7 +239,7 @@ func Test_handleChannel(t *testing.T) {
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(messagedata.ChirpObject, nil)
+	db.On("GetChannelType", channelPath).Return(channel.ChirpObject, nil)
 	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
@@ -255,7 +255,7 @@ func Test_handleChannel(t *testing.T) {
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(messagedata.ReactionObject, nil)
+	db.On("GetChannelType", channelPath).Return(channel.ReactionObject, nil)
 	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
@@ -271,7 +271,7 @@ func Test_handleChannel(t *testing.T) {
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(messagedata.CoinObject, nil)
+	db.On("GetChannelType", channelPath).Return(channel.CoinObject, nil)
 	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
@@ -287,7 +287,7 @@ func Test_handleChannel(t *testing.T) {
 	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(messagedata.FederationObject, nil)
+	db.On("GetChannelType", channelPath).Return(channel.FederationObject, nil)
 	dataHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
@@ -299,7 +299,7 @@ func Test_handleChannel(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			err := channel.Handle(arg.channelPath, arg.message, false)
+			err := msgHandler.Handle(arg.channelPath, arg.message, false)
 			if arg.isError {
 				require.Error(t, err, arg.contains)
 			} else {

@@ -81,8 +81,8 @@ func TestJWTToken(t *testing.T) {
 func TestURIParamsConstruction(t *testing.T) {
 	// creating a fake authorization message
 	authMsg := &mauthentification.AuthenticateUser{
-		Object:          messagedata.AuthObject,
-		Action:          messagedata.AuthAction,
+		Object:          channel.AuthObject,
+		Action:          channel.AuthAction,
 		ClientID:        "cl1ent",
 		Nonce:           "n0nce",
 		Identifier:      xid.New().String(),
@@ -135,7 +135,7 @@ func Test_Authenticate_User(t *testing.T) {
 		Data:              buf64,
 		Sender:            "OuAhDgVgD0M2PIMTs8wyqxkg7N_ScEQu87k35i4zCsg=",
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         channel.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 

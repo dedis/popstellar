@@ -17,15 +17,15 @@ type RollCallReOpen struct {
 
 // GetObject implements MessageData
 func (RollCallReOpen) GetObject() string {
-	return messagedata.RollCallObject
+	return channel.RollCallObject
 }
 
 // GetAction implements MessageData
 func (RollCallReOpen) GetAction() string {
-	return messagedata.RollCallActionReOpen
+	return channel.RollCallActionReOpen
 }
 
 // NewEmpty implements MessageData
-func (RollCallReOpen) NewEmpty() messagedata.MessageData {
+func (RollCallReOpen) NewEmpty() channel.MessageData {
 	return &RollCallReOpen{}
 }

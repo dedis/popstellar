@@ -26,15 +26,15 @@ type WriteInVote struct {
 
 // GetObject implements MessageData
 func (VoteCastWriteIn) GetObject() string {
-	return messagedata.ElectionObject
+	return channel.ElectionObject
 }
 
 // GetAction implements MessageData
 func (VoteCastWriteIn) GetAction() string {
-	return messagedata.VoteActionWriteIn
+	return channel.VoteActionWriteIn
 }
 
 // NewEmpty implements MessageData
-func (VoteCastWriteIn) NewEmpty() messagedata.MessageData {
+func (VoteCastWriteIn) NewEmpty() channel.MessageData {
 	return &VoteCastVote{}
 }

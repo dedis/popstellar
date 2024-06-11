@@ -21,16 +21,16 @@ type ElectionOpen struct {
 
 // GetObject implements MessageData
 func (ElectionOpen) GetObject() string {
-	return messagedata.ElectionObject
+	return channel.ElectionObject
 }
 
 // GetAction implements MessageData
 func (ElectionOpen) GetAction() string {
-	return messagedata.ElectionActionOpen
+	return channel.ElectionActionOpen
 }
 
 // NewEmpty implements MessageData
-func (ElectionOpen) NewEmpty() messagedata.MessageData {
+func (ElectionOpen) NewEmpty() channel.MessageData {
 	return &ElectionOpen{}
 }
 
@@ -44,7 +44,7 @@ func (message ElectionOpen) Verify(electionPath string) error {
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode election: %v", err)
 	}
-	noRoot := strings.ReplaceAll(electionPath, messagedata.RootPrefix, "")
+	noRoot := strings.ReplaceAll(electionPath, channel.RootPrefix, "")
 
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {

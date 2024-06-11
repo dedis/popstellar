@@ -201,7 +201,7 @@ func (c *Channel) VerifyBroadcastMessage(broadcast mbroadcast.Broadcast) error {
 	return nil
 }
 
-func (c *Channel) verifyNotifyChirp(msg mmessage.Message, chirpMsg messagedata.Verifiable) error {
+func (c *Channel) verifyNotifyChirp(msg mmessage.Message, chirpMsg channel.Verifiable) error {
 	err := chirpMsg.Verify()
 	if err != nil {
 		return xerrors.Errorf("invalid chirp broadcast message: %v", err)

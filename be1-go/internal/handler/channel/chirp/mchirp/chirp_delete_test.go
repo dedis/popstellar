@@ -12,7 +12,7 @@ func Test_Chirp_Delete(t *testing.T) {
 	buf, err := testData.ReadFile("testdata/chirp_delete_publish.json")
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := channel.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "chirp", object)
@@ -35,8 +35,8 @@ func Test_Chirp_Delete(t *testing.T) {
 func Test_Chirp_Delete_Interface_Functions(t *testing.T) {
 	var msg ChirpDelete
 
-	require.Equal(t, messagedata.ChirpObject, msg.GetObject())
-	require.Equal(t, messagedata.ChirpActionDelete, msg.GetAction())
+	require.Equal(t, channel.ChirpObject, msg.GetObject())
+	require.Equal(t, channel.ChirpActionDelete, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }
 
@@ -51,7 +51,7 @@ func Test_Chirp_Delete_Verify(t *testing.T) {
 			buf, err := testData.ReadFile("testdata/" + file)
 			require.NoError(t, err)
 
-			obj, act, err := messagedata.GetObjectAndAction(buf)
+			obj, act, err := channel.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)

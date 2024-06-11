@@ -96,25 +96,25 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 		return err
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := channel.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
 
-	if object != messagedata.FederationObject {
+	if object != channel.FederationObject {
 		return errors.NewInvalidMessageFieldError("invalid object %v", object)
 	}
 
 	switch action {
-	case messagedata.FederationActionChallengeRequest:
+	case channel.FederationActionChallengeRequest:
 		err = h.handleRequestChallenge(msg, channelPath)
-	case messagedata.FederationActionInit:
+	case channel.FederationActionInit:
 		err = h.handleInit(msg, channelPath)
-	case messagedata.FederationActionExpect:
+	case channel.FederationActionExpect:
 		err = h.handleExpect(msg, channelPath)
-	case messagedata.FederationActionChallenge:
+	case channel.FederationActionChallenge:
 		err = h.handleChallenge(msg, channelPath)
-	case messagedata.FederationActionResult:
+	case channel.FederationActionResult:
 		err = h.handleResult(msg, channelPath)
 	default:
 		err = errors.NewInvalidMessageFieldError("failed to Handle %s#%s, invalid object#action", object, action)
@@ -147,8 +147,8 @@ func (h *Handler) handleRequestChallenge(msg mmessage.Message, channelPath strin
 	challengeValue := hex.EncodeToString(randomBytes)
 	expirationTime := time.Now().Add(time.Minute * 5).Unix()
 	federationChallenge := mfederation2.FederationChallenge{
-		Object:     messagedata.FederationObject,
-		Action:     messagedata.FederationActionChallenge,
+		Object:     channel.FederationObject,
+		Action:     channel.FederationActionChallenge,
 		Value:      challengeValue,
 		ValidUntil: expirationTime,
 	}
@@ -320,8 +320,8 @@ func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string) erro
 	}
 
 	result := mfederation2.FederationResult{
-		Object:       messagedata.FederationObject,
-		Action:       messagedata.FederationActionResult,
+		Object:       channel.FederationObject,
+		Action:       channel.FederationActionResult,
 		Status:       "success",
 		Reason:       "",
 		PublicKey:    federationExpect.PublicKey,
@@ -467,7 +467,7 @@ func (h *Handler) connectTo(serverAddress string) (socket.Socket, error) {
 	return client, nil
 }
 
-func (h *Handler) createMessage(data messagedata.MessageData) (mmessage.Message, error) {
+func (h *Handler) createMessage(data channel.MessageData) (mmessage.Message, error) {
 
 	dataBytes, err := json.Marshal(data)
 	if err != nil {
@@ -496,7 +496,7 @@ func (h *Handler) createMessage(data messagedata.MessageData) (mmessage.Message,
 		Data:              dataBase64,
 		Sender:            sender,
 		Signature:         signature,
-		MessageID:         messagedata.Hash(dataBase64, signature),
+		MessageID:         channel.Hash(dataBase64, signature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 

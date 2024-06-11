@@ -12,7 +12,7 @@ func Test_Message_Witness(t *testing.T) {
 	buf, err := testData.ReadFile("testdata/message_witness.json")
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := channel.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "message", object)
@@ -32,7 +32,7 @@ func Test_Message_Witness(t *testing.T) {
 func Test_Message_Witness_Interface_Functions(t *testing.T) {
 	var msg MessageWitness
 
-	require.Equal(t, messagedata.MessageObject, msg.GetObject())
-	require.Equal(t, messagedata.MessageActionWitness, msg.GetAction())
+	require.Equal(t, channel.MessageObject, msg.GetObject())
+	require.Equal(t, channel.MessageActionWitness, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }

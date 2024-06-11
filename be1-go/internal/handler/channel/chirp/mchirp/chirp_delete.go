@@ -35,15 +35,15 @@ func (message ChirpDelete) Verify() error {
 
 // GetObject implements MessageData
 func (ChirpDelete) GetObject() string {
-	return messagedata.ChirpObject
+	return channel.ChirpObject
 }
 
 // GetAction implements MessageData
 func (ChirpDelete) GetAction() string {
-	return messagedata.ChirpActionDelete
+	return channel.ChirpActionDelete
 }
 
 // NewEmpty implements MessageData
-func (ChirpDelete) NewEmpty() messagedata.MessageData {
+func (ChirpDelete) NewEmpty() channel.MessageData {
 	return &ChirpDelete{}
 }

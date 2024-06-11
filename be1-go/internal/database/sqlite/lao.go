@@ -18,7 +18,7 @@ func (s *SQLite) GetRollCallState(channelPath string) (string, error) {
 	defer dbLock.Unlock()
 
 	var state string
-	err := s.database.QueryRow(selectLastRollCallMessage, messagedata.RollCallObject, channelPath).Scan(&state)
+	err := s.database.QueryRow(selectLastRollCallMessage, channel.RollCallObject, channelPath).Scan(&state)
 	if err != nil {
 		return "", poperrors.NewDatabaseSelectErrorMsg(err.Error())
 	}
@@ -32,8 +32,8 @@ func (s *SQLite) CheckPrevOpenOrReopenID(channelPath, nextID string) (bool, erro
 	var lastMsg []byte
 	var lastAction string
 
-	err := s.database.QueryRow(selectLastRollCallMessageInList, channelPath, messagedata.RollCallObject,
-		messagedata.RollCallActionOpen, messagedata.RollCallActionReOpen).Scan(&lastMsg, &lastAction)
+	err := s.database.QueryRow(selectLastRollCallMessageInList, channelPath, channel.RollCallObject,
+		channel.RollCallActionOpen, channel.RollCallActionReOpen).Scan(&lastMsg, &lastAction)
 
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
@@ -42,14 +42,14 @@ func (s *SQLite) CheckPrevOpenOrReopenID(channelPath, nextID string) (bool, erro
 	}
 
 	switch lastAction {
-	case messagedata.RollCallActionOpen:
+	case channel.RollCallActionOpen:
 		var rollCallOpen mlao2.RollCallOpen
 		err = json.Unmarshal(lastMsg, &rollCallOpen)
 		if err != nil {
 			return false, poperrors.NewInternalServerError("failed to unmarshal last roll call open message: %v", err)
 		}
 		return rollCallOpen.UpdateID == nextID, nil
-	case messagedata.RollCallActionReOpen:
+	case channel.RollCallActionReOpen:
 		var rollCallReOpen mlao2.RollCallReOpen
 		err = json.Unmarshal(lastMsg, &rollCallReOpen)
 		if err != nil {
@@ -68,8 +68,8 @@ func (s *SQLite) CheckPrevCreateOrCloseID(channelPath, nextID string) (bool, err
 	var lastMsg []byte
 	var lastAction string
 
-	err := s.database.QueryRow(selectLastRollCallMessageInList, channelPath, messagedata.RollCallObject,
-		messagedata.RollCallActionCreate, messagedata.RollCallActionClose).Scan(&lastMsg, &lastAction)
+	err := s.database.QueryRow(selectLastRollCallMessageInList, channelPath, channel.RollCallObject,
+		channel.RollCallActionCreate, channel.RollCallActionClose).Scan(&lastMsg, &lastAction)
 
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
@@ -78,14 +78,14 @@ func (s *SQLite) CheckPrevCreateOrCloseID(channelPath, nextID string) (bool, err
 	}
 
 	switch lastAction {
-	case messagedata.RollCallActionCreate:
+	case channel.RollCallActionCreate:
 		var rollCallCreate mlao2.RollCallCreate
 		err = json.Unmarshal(lastMsg, &rollCallCreate)
 		if err != nil {
 			return false, poperrors.NewInternalServerError("failed to unmarshal last roll call create message: %v", err)
 		}
 		return rollCallCreate.ID == nextID, nil
-	case messagedata.RollCallActionClose:
+	case channel.RollCallActionClose:
 		var rollCallClose mlao2.RollCallClose
 		err = json.Unmarshal(lastMsg, &rollCallClose)
 		if err != nil {
@@ -102,7 +102,7 @@ func (s *SQLite) GetLaoWitnesses(laoPath string) (map[string]struct{}, error) {
 	defer dbLock.Unlock()
 
 	var witnesses []string
-	err := s.database.QueryRow(selectLaoWitnesses, laoPath, messagedata.LAOObject, messagedata.LAOActionCreate).Scan(&witnesses)
+	err := s.database.QueryRow(selectLaoWitnesses, laoPath, channel.LAOObject, channel.LAOActionCreate).Scan(&witnesses)
 	if err != nil {
 		return nil, poperrors.NewDatabaseSelectErrorMsg("lao witnesses: %v", err)
 	}
@@ -153,7 +153,7 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg mmess
 	}
 
 	for _, channelPath := range channels {
-		_, err = tx.Exec(insertChannel, channelPath, channelTypeToID[messagedata.ChirpObject], laoPath)
+		_, err = tx.Exec(insertChannel, channelPath, channelTypeToID[channel.ChirpObject], laoPath)
 		if err != nil {
 			return poperrors.NewDatabaseInsertErrorMsg("channel %s: %v", channelPath, err)
 		}
@@ -200,7 +200,7 @@ func (s *SQLite) storeElectionHelper(
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("relation election create message and lao channel: %v", err)
 	}
-	_, err = tx.Exec(insertChannel, electionPath, channelTypeToID[messagedata.ElectionObject], laoPath)
+	_, err = tx.Exec(insertChannel, electionPath, channelTypeToID[channel.ElectionObject], laoPath)
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("election channel: %v", err)
 	}

@@ -251,8 +251,8 @@ func Test_handleChannelFederation(t *testing.T) {
 	})
 
 	federationChallenge1 := mfederation2.FederationChallenge{
-		Object:     messagedata.FederationObject,
-		Action:     messagedata.FederationActionChallenge,
+		Object:     channel.FederationObject,
+		Action:     channel.FederationActionChallenge,
 		Value:      value,
 		ValidUntil: validUntil,
 	}
@@ -405,8 +405,8 @@ func Test_handleFederationExpect(t *testing.T) {
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
 
 	federationChallenge := mfederation2.FederationChallenge{
-		Object:     messagedata.FederationObject,
-		Action:     messagedata.FederationActionChallenge,
+		Object:     channel.FederationObject,
+		Action:     channel.FederationActionChallenge,
 		Value:      value,
 		ValidUntil: validUntil,
 	}
@@ -549,8 +549,8 @@ func Test_handleFederationChallenge(t *testing.T) {
 	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
 	challenge := mfederation2.FederationChallenge{
-		Object:     messagedata.FederationObject,
-		Action:     messagedata.FederationActionChallenge,
+		Object:     channel.FederationObject,
+		Action:     channel.FederationActionChallenge,
 		Value:      value,
 		ValidUntil: validUntil,
 	}
@@ -562,8 +562,8 @@ func Test_handleFederationChallenge(t *testing.T) {
 		value, validUntil, organizer2Sk)
 
 	federationExpect := mfederation2.FederationExpect{
-		Object:        messagedata.FederationObject,
-		Action:        messagedata.FederationActionExpect,
+		Object:        channel.FederationObject,
+		Action:        channel.FederationActionExpect,
 		LaoId:         laoID2,
 		ServerAddress: serverAddressA,
 		PublicKey:     organizer2,
@@ -643,8 +643,8 @@ func Test_handleFederationResult(t *testing.T) {
 	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
 	challenge := mfederation2.FederationChallenge{
-		Object:     messagedata.FederationObject,
-		Action:     messagedata.FederationActionChallenge,
+		Object:     channel.FederationObject,
+		Action:     channel.FederationActionChallenge,
 		Value:      value,
 		ValidUntil: validUntil,
 	}
@@ -656,8 +656,8 @@ func Test_handleFederationResult(t *testing.T) {
 		validUntil, organizer2Sk)
 
 	federationInit := mfederation2.FederationInit{
-		Object:        messagedata.FederationObject,
-		Action:        messagedata.FederationActionInit,
+		Object:        channel.FederationObject,
+		Action:        channel.FederationActionInit,
 		LaoId:         laoID,
 		ServerAddress: serverAddressA,
 		PublicKey:     organizer,

@@ -23,7 +23,7 @@ type AuthenticateUser struct {
 }
 
 // NewEmpty creates an empty auth user message
-func (msg AuthenticateUser) NewEmpty() messagedata.MessageData {
+func (msg AuthenticateUser) NewEmpty() channel.MessageData {
 	return &AuthenticateUser{}
 }
 
@@ -53,10 +53,10 @@ func (msg AuthenticateUser) Verify() error {
 
 // GetObject implements MessageData
 func (AuthenticateUser) GetObject() string {
-	return messagedata.AuthObject
+	return channel.AuthObject
 }
 
 // GetAction implements MessageData
 func (AuthenticateUser) GetAction() string {
-	return messagedata.AuthAction
+	return channel.AuthAction
 }

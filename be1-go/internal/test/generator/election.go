@@ -13,8 +13,8 @@ import (
 func NewElectionOpenMsg(t *testing.T, sender, lao, electionID string, openedAt int64,
 	senderSK kyber.Scalar) mmessage.Message {
 	electionOpen := melection2.ElectionOpen{
-		Object:   messagedata.ElectionObject,
-		Action:   messagedata.ElectionActionOpen,
+		Object:   channel.ElectionObject,
+		Action:   channel.ElectionActionOpen,
 		Lao:      lao,
 		Election: electionID,
 		OpenedAt: openedAt,
@@ -31,8 +31,8 @@ func NewElectionOpenMsg(t *testing.T, sender, lao, electionID string, openedAt i
 func NewElectionCloseMsg(t *testing.T, sender, lao, electionID, registeredVotes string, openedAt int64,
 	senderSK kyber.Scalar) mmessage.Message {
 	electionEnd := melection2.ElectionEnd{
-		Object:          messagedata.ElectionObject,
-		Action:          messagedata.ElectionActionEnd,
+		Object:          channel.ElectionObject,
+		Action:          channel.ElectionActionEnd,
 		Lao:             lao,
 		Election:        electionID,
 		CreatedAt:       openedAt,
@@ -50,8 +50,8 @@ func NewElectionCloseMsg(t *testing.T, sender, lao, electionID, registeredVotes 
 func NewElectionResultMsg(t *testing.T, sender string, questions []melection2.ElectionResultQuestion,
 	senderSK kyber.Scalar) mmessage.Message {
 	electionResult := melection2.ElectionResult{
-		Object:    messagedata.ElectionObject,
-		Action:    messagedata.ElectionActionResult,
+		Object:    channel.ElectionObject,
+		Action:    channel.ElectionActionResult,
 		Questions: questions,
 	}
 
@@ -66,8 +66,8 @@ func NewElectionResultMsg(t *testing.T, sender string, questions []melection2.El
 func NewVoteCastVoteIntMsg(t *testing.T, sender, lao, electionID string, createdAt int64, votes []VoteInt,
 	senderSK kyber.Scalar) mmessage.Message {
 	castVote := VoteCastVoteInt{
-		Object:    messagedata.ElectionObject,
-		Action:    messagedata.VoteActionCastVote,
+		Object:    channel.ElectionObject,
+		Action:    channel.VoteActionCastVote,
 		Lao:       lao,
 		Election:  electionID,
 		CreatedAt: createdAt,
@@ -83,8 +83,8 @@ func NewVoteCastVoteIntMsg(t *testing.T, sender, lao, electionID string, created
 func NewVoteCastVoteStringMsg(t *testing.T, sender, lao, electionID string, createdAt int64, votes []VoteString,
 	senderSK kyber.Scalar) mmessage.Message {
 	castVote := VoteCastVoteString{
-		Object:    messagedata.ElectionObject,
-		Action:    messagedata.VoteActionCastVote,
+		Object:    channel.ElectionObject,
+		Action:    channel.VoteActionCastVote,
 		Lao:       lao,
 		Election:  electionID,
 		CreatedAt: createdAt,

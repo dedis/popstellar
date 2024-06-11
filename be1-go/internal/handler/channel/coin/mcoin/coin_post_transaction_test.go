@@ -16,7 +16,7 @@ func Test_Coin_Post_Transaction(t *testing.T) {
 	buf, err := testData.ReadFile("testdata/post_transaction.json")
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := channel.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "coin", object)
@@ -45,8 +45,8 @@ func Test_Coin_Post_Transaction(t *testing.T) {
 func Test_Coin_Post_Transaction_Interface_Functions(t *testing.T) {
 	var msg PostTransaction
 
-	require.Equal(t, messagedata.CoinObject, msg.GetObject())
-	require.Equal(t, messagedata.CoinActionPostTransaction, msg.GetAction())
+	require.Equal(t, channel.CoinObject, msg.GetObject())
+	require.Equal(t, channel.CoinActionPostTransaction, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }
 
@@ -61,7 +61,7 @@ func Test_Coin_Post_Transaction_Verify(t *testing.T) {
 			buf, err := testData.ReadFile("testdata/" + file)
 			require.NoError(t, err)
 
-			obj, act, err := messagedata.GetObjectAndAction(buf)
+			obj, act, err := channel.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)

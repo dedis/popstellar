@@ -198,7 +198,7 @@ func Test_Chirp_Channel_Broadcast(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         channel.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -260,7 +260,7 @@ func Test_Send_Chirp(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         channel.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -285,7 +285,7 @@ func Test_Send_Chirp(t *testing.T) {
 	checkData := mchirp2.ChirpNotifyAdd{
 		Object:    "chirp",
 		Action:    "notify_add",
-		ChirpID:   messagedata.Hash(buf64, "h"),
+		ChirpID:   channel.Hash(buf64, "h"),
 		Channel:   generalName,
 		Timestamp: 1634760180,
 	}
@@ -331,7 +331,7 @@ func Test_Delete_Chirp(t *testing.T) {
 		Data:              buf64add,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64add, "h"),
+		MessageID:         channel.Hash(buf64add, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -378,7 +378,7 @@ func Test_Delete_Chirp(t *testing.T) {
 		Data:              buf64delete,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64delete, "h"),
+		MessageID:         channel.Hash(buf64delete, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -393,7 +393,7 @@ func Test_Delete_Chirp(t *testing.T) {
 	checkDataAdd := mchirp2.ChirpNotifyAdd{
 		Object:    "chirp",
 		Action:    "notify_add",
-		ChirpID:   messagedata.Hash(buf64add, "h"),
+		ChirpID:   channel.Hash(buf64add, "h"),
 		Channel:   generalName,
 		Timestamp: 1634760180,
 	}
@@ -404,7 +404,7 @@ func Test_Delete_Chirp(t *testing.T) {
 	checkDataDelete := mchirp2.ChirpNotifyDelete{
 		Object:    "chirp",
 		Action:    "notify_delete",
-		ChirpID:   messagedata.Hash(buf64delete, "h"),
+		ChirpID:   channel.Hash(buf64delete, "h"),
 		Channel:   generalName,
 		Timestamp: 1634760180,
 	}
@@ -451,7 +451,7 @@ func Test_Out_Of_Order_Delete(t *testing.T) {
 		Data:              buf64add,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64add, "h"),
+		MessageID:         channel.Hash(buf64add, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -504,7 +504,7 @@ func Test_Out_Of_Order_Delete(t *testing.T) {
 		Data:              buf64delete,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64delete, "h"),
+		MessageID:         channel.Hash(buf64delete, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 

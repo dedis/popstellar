@@ -25,15 +25,15 @@ type ElectionResultQuestionResult struct {
 
 // GetObject implements MessageData
 func (ElectionResult) GetObject() string {
-	return messagedata.ElectionObject
+	return channel.ElectionObject
 }
 
 // GetAction implements MessageData
 func (ElectionResult) GetAction() string {
-	return messagedata.ElectionActionResult
+	return channel.ElectionActionResult
 }
 
 // NewEmpty implements MessageData
-func (ElectionResult) NewEmpty() messagedata.MessageData {
+func (ElectionResult) NewEmpty() channel.MessageData {
 	return &ElectionResult{}
 }

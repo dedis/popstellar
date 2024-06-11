@@ -63,7 +63,7 @@ func (m Message) VerifyMessage() error {
 		return errors.NewInvalidMessageFieldError("failed to verify signature : %v", err)
 	}
 
-	expectedMessageID := messagedata.Hash(m.Data, m.Signature)
+	expectedMessageID := channel.Hash(m.Data, m.Signature)
 	if expectedMessageID != m.MessageID {
 		return errors.NewInvalidActionError("messageID is wrong: expected %s found %s", expectedMessageID, m.MessageID)
 	}

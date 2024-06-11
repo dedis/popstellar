@@ -50,15 +50,15 @@ func (message LaoUpdate) Verify() error {
 
 // GetObject implements MessageData
 func (LaoUpdate) GetObject() string {
-	return messagedata.LAOObject
+	return channel.LAOObject
 }
 
 // GetAction implements MessageData
 func (LaoUpdate) GetAction() string {
-	return messagedata.LAOActionUpdate
+	return channel.LAOActionUpdate
 }
 
 // NewEmpty implements MessageData
-func (LaoUpdate) NewEmpty() messagedata.MessageData {
+func (LaoUpdate) NewEmpty() channel.MessageData {
 	return &LaoUpdate{}
 }

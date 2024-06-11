@@ -31,7 +31,7 @@ func Test_Chirp_Broadcast_Verify(t *testing.T) {
 			buf, err := testData.ReadFile("testdata/" + file)
 			require.NoError(t, err)
 
-			obj, act, err := messagedata.GetObjectAndAction(buf)
+			obj, act, err := channel.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)

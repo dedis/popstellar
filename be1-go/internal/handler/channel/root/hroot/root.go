@@ -76,13 +76,13 @@ func (h *Handler) Handle(_ string, msg mmessage.Message) error {
 		return err
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := channel.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
 
 	switch object + "#" + action {
-	case messagedata.LAOObject + "#" + messagedata.LAOActionCreate:
+	case channel.LAOObject + "#" + channel.LAOActionCreate:
 		err = h.handleLaoCreate(msg)
 	default:
 		err = errors.NewInvalidMessageFieldError("failed to Handle %s#%s, invalid object#action", object, action)
@@ -99,7 +99,7 @@ func (h *Handler) handleLaoCreate(msg mmessage.Message) error {
 		return err
 	}
 
-	laoPath := messagedata.RootPrefix + laoCreate.ID
+	laoPath := channel.RootPrefix + laoCreate.ID
 
 	organizerPubBuf, err := h.verifyLaoCreation(msg, laoCreate, laoPath)
 	if err != nil {
@@ -168,13 +168,13 @@ func (h *Handler) verifyLaoCreation(msg mmessage.Message, laoCreate mroot.LaoCre
 
 func (h *Handler) createLaoAndChannels(msg, laoGreetMsg mmessage.Message, organizerPubBuf []byte, laoPath string) error {
 	channels := map[string]string{
-		laoPath:                          messagedata.LAOObject,
-		laoPath + messagedata.Chirps:     messagedata.ChirpObject,
-		laoPath + messagedata.Reactions:  messagedata.ReactionObject,
-		laoPath + messagedata.Consensus:  messagedata.ConsensusObject,
-		laoPath + messagedata.Coin:       messagedata.CoinObject,
-		laoPath + messagedata.Auth:       messagedata.AuthObject,
-		laoPath + messagedata.Federation: messagedata.FederationObject,
+		laoPath:                      channel.LAOObject,
+		laoPath + channel.Chirps:     channel.ChirpObject,
+		laoPath + channel.Reactions:  channel.ReactionObject,
+		laoPath + channel.Consensus:  channel.ConsensusObject,
+		laoPath + channel.Coin:       channel.CoinObject,
+		laoPath + channel.Auth:       channel.AuthObject,
+		laoPath + channel.Federation: channel.FederationObject,
 	}
 
 	err := h.db.StoreLaoWithLaoGreet(channels, laoPath, organizerPubBuf, msg, laoGreetMsg)
@@ -206,8 +206,8 @@ func (h *Handler) createLaoGreet(organizerBuf []byte, laoID string) (mmessage.Me
 	}
 
 	msgData := mlao.LaoGreet{
-		Object:   messagedata.LAOObject,
-		Action:   messagedata.LAOActionGreet,
+		Object:   channel.LAOObject,
+		Action:   channel.LAOActionGreet,
 		LaoID:    laoID,
 		Frontend: base64.URLEncoding.EncodeToString(organizerBuf),
 		Address:  clientServerAddress,
@@ -242,7 +242,7 @@ func (h *Handler) createLaoGreet(organizerBuf []byte, laoID string) (mmessage.Me
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(serverPubBuf),
 		Signature:         signature,
-		MessageID:         messagedata.Hash(newData64, signature),
+		MessageID:         channel.Hash(newData64, signature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 

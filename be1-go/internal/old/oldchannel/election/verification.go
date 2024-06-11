@@ -38,7 +38,7 @@ func (c *Channel) verifyMessageElectionOpen(electionOpen melection2.ElectionOpen
 	}
 
 	// split oldchannel to [lao id, election id]
-	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	noRoot := strings.ReplaceAll(c.channelID, channel.RootPrefix, "")
 
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
@@ -94,7 +94,7 @@ func (c *Channel) verifyMessageCastVote(castVote melection2.VoteCastVote) error 
 	}
 
 	// split oldchannel to [lao id, election id]
-	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	noRoot := strings.ReplaceAll(c.channelID, channel.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
 		return xerrors.Errorf(elecIDFormat, c.channelID)
@@ -161,7 +161,7 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd melection2.ElectionEnd) e
 	}
 
 	// split oldchannel to [lao id, election id]
-	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	noRoot := strings.ReplaceAll(c.channelID, channel.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
 		return xerrors.Errorf(elecIDFormat, c.channelID)
@@ -243,7 +243,7 @@ func verifyRegisteredVotes(electionEnd melection2.ElectionEnd,
 	sort.Strings(voteIDs)
 
 	// hash all valid vote ids
-	validVotesHash := messagedata.Hash(voteIDs...)
+	validVotesHash := channel.Hash(voteIDs...)
 
 	// compare registered votes with local saved votes
 	if electionEnd.RegisteredVotes != validVotesHash {
@@ -286,7 +286,7 @@ func (c *Channel) verifyVote(vote melection2.Vote, electionID string) error {
 		}
 	}
 
-	hash := messagedata.Hash("Vote", electionID, string(qs.ID), vs)
+	hash := channel.Hash("Vote", electionID, string(qs.ID), vs)
 	if vote.ID != hash {
 		return xerrors.Errorf("vote ID is incorrect")
 	}

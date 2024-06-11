@@ -16,7 +16,7 @@ func Test_Reaction_Add(t *testing.T) {
 	buf, err := testData.ReadFile("testdata/reaction_add.json")
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := channel.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "reaction", object)
@@ -40,8 +40,8 @@ func Test_Reaction_Add(t *testing.T) {
 func Test_Reaction_Add_Interface_Functions(t *testing.T) {
 	var msg ReactionAdd
 
-	require.Equal(t, messagedata.ReactionObject, msg.GetObject())
-	require.Equal(t, messagedata.ReactionActionAdd, msg.GetAction())
+	require.Equal(t, channel.ReactionObject, msg.GetObject())
+	require.Equal(t, channel.ReactionActionAdd, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }
 
@@ -56,7 +56,7 @@ func Test_Reaction_Add_Verify(t *testing.T) {
 			buf, err := testData.ReadFile("testdata/" + file)
 			require.NoError(t, err)
 
-			obj, act, err := messagedata.GetObjectAndAction(buf)
+			obj, act, err := channel.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)

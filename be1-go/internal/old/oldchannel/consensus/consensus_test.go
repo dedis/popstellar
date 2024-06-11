@@ -167,8 +167,8 @@ func Test_Consensus_Channel_Broadcast(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the oldchannel
-	channel := NewChannel("channel0", fakeHub, nolog, keypair.public)
-	consensusChannel, ok := channel.(*Channel)
+	channelHandler := NewChannel("channel0", fakeHub, nolog, keypair.public)
+	consensusChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	// Create a socket subscribed to the oldchannel
@@ -187,7 +187,7 @@ func Test_Consensus_Channel_Broadcast(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -231,8 +231,8 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
 	consensusChanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
-	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
-	consensusChannel, ok := channel.(*Channel)
+	channelHandler := NewChannel(chanName, fakeHub, nolog, keypair.public)
+	consensusChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	// Create a socket subscribed to the oldchannel
@@ -251,7 +251,7 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -283,7 +283,7 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 	byteBroad, err := json.Marshal(&messageBroadcast)
 	require.NoError(t, err)
 
-	err = channel.Publish(messagePublish, nil)
+	err = channelHandler.Publish(messagePublish, nil)
 	require.NoError(t, err)
 	require.Equal(t, byteBroad, socket.msg)
 }
@@ -303,8 +303,8 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 
 	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
-	consensusChannel, ok := channel.(*Channel)
+	channelHandler := NewChannel(chanName, fakeHub, nolog, keypair.public)
+	consensusChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	clock := clock.NewMock()
@@ -355,7 +355,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -387,7 +387,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	byteBroad, err := json.Marshal(&messageBroadcast)
 	require.NoError(t, err)
 
-	require.NoError(t, channel.Publish(messagePublish, nil))
+	require.NoError(t, channelHandler.Publish(messagePublish, nil))
 	require.Equal(t, byteBroad, cliSocket.msg)
 
 	// Unmarshal the prepare message sent to other servers to verify its values
@@ -427,8 +427,8 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 
 	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
-	consensusChannel, ok := channel.(*Channel)
+	channelHandler := NewChannel(chanName, fakeHub, nolog, keypair.public)
+	consensusChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	clock := clock.NewMock()
@@ -479,7 +479,7 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -511,7 +511,7 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 	byteBroad, err := json.Marshal(&messageBroadcast)
 	require.NoError(t, err)
 
-	require.NoError(t, channel.Publish(messagePublish, nil))
+	require.NoError(t, channelHandler.Publish(messagePublish, nil))
 	require.Equal(t, byteBroad, cliSocket.msg)
 
 	// Unmarshal the failure message sent to other servers to verify its values
@@ -549,8 +549,8 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 
 	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
-	consensusChannel, ok := channel.(*Channel)
+	channelHandler := NewChannel(chanName, fakeHub, nolog, keypair.public)
+	consensusChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	clock := clock.NewMock()
@@ -601,7 +601,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -633,7 +633,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 	byteBroad, err := json.Marshal(&messageBroadcast)
 	require.NoError(t, err)
 
-	require.NoError(t, channel.Publish(messagePublish, nil))
+	require.NoError(t, channelHandler.Publish(messagePublish, nil))
 	require.Equal(t, byteBroad, cliSocket.msg)
 
 	// Unmarshal the prepare message sent to other servers to verify its values
@@ -674,8 +674,8 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 
 	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
-	consensusChannel, ok := channel.(*Channel)
+	channelHandler := NewChannel(chanName, fakeHub, nolog, keypair.public)
+	consensusChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	clock := clock.NewMock()
@@ -707,7 +707,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	// Add a new consensus instance to the oldchannel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = proposerRole
-	consensusInstance.lastSent = messagedata.ConsensusActionPrepare
+	consensusInstance.lastSent = channel.ConsensusActionPrepare
 
 	// Add a new elect instance to the consensus instance
 	consensusInstance.createElectInstance(messageID, 1)
@@ -727,7 +727,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -759,7 +759,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	byteBroad, err := json.Marshal(&messageBroadcast)
 	require.NoError(t, err)
 
-	require.NoError(t, channel.Publish(messagePublish, nil))
+	require.NoError(t, channelHandler.Publish(messagePublish, nil))
 	require.Equal(t, byteBroad, cliSocket.msg)
 
 	// Unmarshal the propose message sent to other servers to verify its values
@@ -799,8 +799,8 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 
 	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
-	consensusChannel, ok := channel.(*Channel)
+	channelHandler := NewChannel(chanName, fakeHub, nolog, keypair.public)
+	consensusChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	clock := clock.NewMock()
@@ -851,7 +851,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -883,7 +883,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 	byteBroad, err := json.Marshal(&messageBroadcast)
 	require.NoError(t, err)
 
-	require.NoError(t, channel.Publish(messagePublish, nil))
+	require.NoError(t, channelHandler.Publish(messagePublish, nil))
 	require.Equal(t, byteBroad, cliSocket.msg)
 
 	// Unmarshal the prepare message sent to other servers to verify its values
@@ -923,8 +923,8 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 
 	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
-	consensusChannel, ok := channel.(*Channel)
+	channelHandler := NewChannel(chanName, fakeHub, nolog, keypair.public)
+	consensusChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	clock := clock.NewMock()
@@ -958,7 +958,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	consensusInstance.role = proposerRole
 	consensusInstance.proposedTry = 4
 	consensusInstance.proposedValue = true
-	consensusInstance.lastSent = messagedata.ConsensusActionPropose
+	consensusInstance.lastSent = channel.ConsensusActionPropose
 
 	// Add a new elect instance to the consensus instance
 	consensusInstance.createElectInstance(messageID, 1)
@@ -978,7 +978,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1013,7 +1013,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	byteBroad, err := json.Marshal(&messageBroadcast)
 	require.NoError(t, err)
 
-	require.NoError(t, channel.Publish(messagePublish, nil))
+	require.NoError(t, channelHandler.Publish(messagePublish, nil))
 	require.Equal(t, byteBroad, cliSocket.msg)
 
 	// Unmarshal the learn message sent to other servers to verify its values
@@ -1052,8 +1052,8 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 
 	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
-	consensusChannel, ok := channel.(*Channel)
+	channelHandler := NewChannel(chanName, fakeHub, nolog, keypair.public)
+	consensusChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	// Create a client socket subscribed to the oldchannel
@@ -1100,7 +1100,7 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1132,7 +1132,7 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 	byteBroad, err := json.Marshal(&messageBroadcast)
 	require.NoError(t, err)
 
-	require.NoError(t, channel.Publish(messagePublish, nil))
+	require.NoError(t, channelHandler.Publish(messagePublish, nil))
 	require.True(t, consensusInstance.decided)
 	require.Equal(t, byteBroad, cliSocket.msg)
 }
@@ -1151,8 +1151,8 @@ func Test_Consensus_Publish_Failure(t *testing.T) {
 
 	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
-	consensusChannel, ok := channel.(*Channel)
+	channelHandler := NewChannel(chanName, fakeHub, nolog, keypair.public)
+	consensusChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	// Create a client socket subscribed to the oldchannel
@@ -1199,7 +1199,7 @@ func Test_Consensus_Publish_Failure(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1231,7 +1231,7 @@ func Test_Consensus_Publish_Failure(t *testing.T) {
 	byteBroad, err := json.Marshal(&messageBroadcast)
 	require.NoError(t, err)
 
-	require.NoError(t, channel.Publish(messagePublish, nil))
+	require.NoError(t, channelHandler.Publish(messagePublish, nil))
 	require.True(t, consensusInstance.electInstances[messageID].failed)
 	require.Equal(t, byteBroad, cliSocket.msg)
 }
@@ -1247,8 +1247,8 @@ func Test_Publish_New_Message(t *testing.T) {
 
 	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
-	consensusChannel, ok := channel.(*Channel)
+	channelHandler := NewChannel(chanName, fakeHub, nolog, keypair.public)
+	consensusChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	// Get the data for the sent message
@@ -1275,7 +1275,7 @@ func Test_Publish_New_Message(t *testing.T) {
 		Data:              data64,
 		Sender:            base64.URLEncoding.EncodeToString(pubKeyServBuf),
 		Signature:         signature,
-		MessageID:         messagedata.Hash(data64, signature),
+		MessageID:         channel.Hash(data64, signature),
 		WitnessSignatures: make([]mmessage.WitnessSignature, 0),
 	}
 
@@ -1305,8 +1305,8 @@ func Test_Timeout_Elect(t *testing.T) {
 
 	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
-	consensusChannel, ok := channel.(*Channel)
+	channelHandler := NewChannel(chanName, fakeHub, nolog, keypair.public)
+	consensusChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	clock := clock.NewMock()
@@ -1328,7 +1328,7 @@ func Test_Timeout_Elect(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1344,7 +1344,7 @@ func Test_Timeout_Elect(t *testing.T) {
 
 	messagePublish.Params.Message = message
 
-	err = channel.Publish(messagePublish, nil)
+	err = channelHandler.Publish(messagePublish, nil)
 	require.NoError(t, err)
 
 	time.Sleep(500 * time.Millisecond)
@@ -1393,8 +1393,8 @@ func Test_Timeout_Prepare(t *testing.T) {
 
 	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
-	consensusChannel, ok := channel.(*Channel)
+	channelHandler := NewChannel(chanName, fakeHub, nolog, keypair.public)
+	consensusChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	clock := clock.NewMock()
@@ -1444,7 +1444,7 @@ func Test_Timeout_Prepare(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1460,7 +1460,7 @@ func Test_Timeout_Prepare(t *testing.T) {
 
 	messagePublish.Params.Message = message
 
-	err = channel.Publish(messagePublish, nil)
+	err = channelHandler.Publish(messagePublish, nil)
 	require.NoError(t, err)
 
 	// Verify that a prepare message was sent and empty the socket
@@ -1523,8 +1523,8 @@ func Test_Timeout_Promise(t *testing.T) {
 
 	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
-	consensusChannel, ok := channel.(*Channel)
+	channelHandler := NewChannel(chanName, fakeHub, nolog, keypair.public)
+	consensusChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	clock := clock.NewMock()
@@ -1574,7 +1574,7 @@ func Test_Timeout_Promise(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1590,7 +1590,7 @@ func Test_Timeout_Promise(t *testing.T) {
 
 	messagePublish.Params.Message = message
 
-	err = channel.Publish(messagePublish, nil)
+	err = channelHandler.Publish(messagePublish, nil)
 	require.NoError(t, err)
 
 	// Verify that a promise message was sent and empty the socket
@@ -1654,8 +1654,8 @@ func Test_Timeout_Propose(t *testing.T) {
 
 	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
-	consensusChannel, ok := channel.(*Channel)
+	channelHandler := NewChannel(chanName, fakeHub, nolog, keypair.public)
+	consensusChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	clock := clock.NewMock()
@@ -1686,7 +1686,7 @@ func Test_Timeout_Propose(t *testing.T) {
 	// Add a new consensus instance to the oldchannel
 	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
 	consensusInstance.role = proposerRole
-	consensusInstance.lastSent = messagedata.ConsensusActionPrepare
+	consensusInstance.lastSent = channel.ConsensusActionPrepare
 
 	// Add a new elect instance to the consensus instance
 	consensusInstance.createElectInstance(messageID, 1)
@@ -1706,7 +1706,7 @@ func Test_Timeout_Propose(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1722,7 +1722,7 @@ func Test_Timeout_Propose(t *testing.T) {
 
 	messagePublish.Params.Message = message
 
-	err = channel.Publish(messagePublish, nil)
+	err = channelHandler.Publish(messagePublish, nil)
 	require.NoError(t, err)
 
 	require.NotNil(t, fakeHub.fakeSock.msg)
@@ -1787,8 +1787,8 @@ func Test_Timeout_Accept(t *testing.T) {
 
 	// Create the oldchannel
 	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
-	channel := NewChannel(chanName, fakeHub, nolog, keypair.public)
-	consensusChannel, ok := channel.(*Channel)
+	channelHandler := NewChannel(chanName, fakeHub, nolog, keypair.public)
+	consensusChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	clock := clock.NewMock()
@@ -1838,7 +1838,7 @@ func Test_Timeout_Accept(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1854,7 +1854,7 @@ func Test_Timeout_Accept(t *testing.T) {
 
 	messagePublish.Params.Message = message
 
-	err = channel.Publish(messagePublish, nil)
+	err = channelHandler.Publish(messagePublish, nil)
 	require.NoError(t, err)
 
 	// Verify that a promise message was sent and empty the socket

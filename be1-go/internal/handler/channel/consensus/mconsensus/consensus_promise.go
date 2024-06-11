@@ -60,15 +60,15 @@ func (message ConsensusPromise) Verify() error {
 
 // GetObject implements MessageData
 func (ConsensusPromise) GetObject() string {
-	return messagedata.ConsensusObject
+	return channel.ConsensusObject
 }
 
 // GetAction implements MessageData
 func (ConsensusPromise) GetAction() string {
-	return messagedata.ConsensusActionPromise
+	return channel.ConsensusActionPromise
 }
 
 // NewEmpty implements MessageData
-func (ConsensusPromise) NewEmpty() messagedata.MessageData {
+func (ConsensusPromise) NewEmpty() channel.MessageData {
 	return &ConsensusPromise{}
 }

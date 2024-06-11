@@ -18,15 +18,15 @@ type FederationExpect struct {
 
 // GetObject implements MessageData
 func (FederationExpect) GetObject() string {
-	return messagedata.FederationObject
+	return channel.FederationObject
 }
 
 // GetAction implements MessageData
 func (FederationExpect) GetAction() string {
-	return messagedata.FederationActionExpect
+	return channel.FederationActionExpect
 }
 
 // NewEmpty implements MessageData
-func (FederationExpect) NewEmpty() messagedata.MessageData {
+func (FederationExpect) NewEmpty() channel.MessageData {
 	return &FederationExpect{}
 }

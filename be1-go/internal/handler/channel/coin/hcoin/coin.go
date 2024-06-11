@@ -44,13 +44,13 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 		return err
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := channel.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
 
 	switch object + "#" + action {
-	case messagedata.CoinObject + "#" + messagedata.CoinActionPostTransaction:
+	case channel.CoinObject + "#" + channel.CoinActionPostTransaction:
 		err = h.handleCoinPostTransaction(msg)
 	default:
 		err = errors.NewInvalidActionError("failed to Handle %s#%s, invalid object#action", object, action)

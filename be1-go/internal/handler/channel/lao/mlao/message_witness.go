@@ -14,15 +14,15 @@ type MessageWitness struct {
 
 // GetObject implements MessageData
 func (MessageWitness) GetObject() string {
-	return messagedata.MessageObject
+	return channel.MessageObject
 }
 
 // GetAction implements MessageData
 func (MessageWitness) GetAction() string {
-	return messagedata.MessageActionWitness
+	return channel.MessageActionWitness
 }
 
 // NewEmpty implements MessageData
-func (MessageWitness) NewEmpty() messagedata.MessageData {
+func (MessageWitness) NewEmpty() channel.MessageData {
 	return &MessageWitness{}
 }

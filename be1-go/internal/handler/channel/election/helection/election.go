@@ -98,7 +98,7 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 		return err
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := channel.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
@@ -106,11 +106,11 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 	storeMessage := true
 
 	switch object + "#" + action {
-	case messagedata.ElectionObject + "#" + messagedata.VoteActionCastVote:
+	case channel.ElectionObject + "#" + channel.VoteActionCastVote:
 		err = h.handleVoteCastVote(msg, channelPath)
-	case messagedata.ElectionObject + "#" + messagedata.ElectionActionOpen:
+	case channel.ElectionObject + "#" + channel.ElectionActionOpen:
 		err = h.handleElectionOpen(msg, channelPath)
-	case messagedata.ElectionObject + "#" + messagedata.ElectionActionEnd:
+	case channel.ElectionObject + "#" + channel.ElectionActionEnd:
 		err = h.handleElectionEnd(msg, channelPath)
 		storeMessage = false
 	default:
@@ -388,7 +388,7 @@ func (h *Handler) verifyVote(vote melection2.Vote, channelPath, electionID strin
 		return errors.NewInvalidMessageFieldError("invalid election type: %s", electionType)
 	}
 
-	hash := messagedata.Hash(voteFlag, electionID, string(question.ID), voteString)
+	hash := channel.Hash(voteFlag, electionID, string(question.ID), voteString)
 	if vote.ID != hash {
 		return errors.NewInvalidMessageFieldError("vote ID is not the expected hash")
 	}
@@ -408,7 +408,7 @@ func (h *Handler) verifyRegisteredVotes(electionEnd melection2.ElectionEnd,
 	sort.Strings(voteIDs)
 
 	// hash all valid vote ids
-	validVotesHash := messagedata.Hash(voteIDs...)
+	validVotesHash := channel.Hash(voteIDs...)
 
 	// compare registered votes with local saved votes
 	if electionEnd.RegisteredVotes != validVotesHash {
@@ -448,7 +448,7 @@ func (h *Handler) createElectionResult(questions map[string]telection.Question, 
 		Data:              buf64,
 		Sender:            base64.URLEncoding.EncodeToString(serverPubBuf),
 		Signature:         signature,
-		MessageID:         messagedata.Hash(buf64, signature),
+		MessageID:         channel.Hash(buf64, signature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -493,8 +493,8 @@ func (h *Handler) computeElectionResult(questions map[string]telection.Question,
 	}
 
 	resultElection := melection2.ElectionResult{
-		Object:    messagedata.ElectionObject,
-		Action:    messagedata.ElectionActionResult,
+		Object:    channel.ElectionObject,
+		Action:    channel.ElectionActionResult,
 		Questions: result,
 	}
 

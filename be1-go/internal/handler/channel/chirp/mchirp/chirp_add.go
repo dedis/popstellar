@@ -28,15 +28,15 @@ func (message ChirpAdd) Verify() error {
 
 // GetObject implements MessageData
 func (ChirpAdd) GetObject() string {
-	return messagedata.ChirpObject
+	return channel.ChirpObject
 }
 
 // GetAction implements MessageData
 func (ChirpAdd) GetAction() string {
-	return messagedata.ChirpActionAdd
+	return channel.ChirpActionAdd
 }
 
 // NewEmpty implements MessageData
-func (ChirpAdd) NewEmpty() messagedata.MessageData {
+func (ChirpAdd) NewEmpty() channel.MessageData {
 	return &ChirpAdd{}
 }

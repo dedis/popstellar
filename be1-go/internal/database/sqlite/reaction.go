@@ -16,8 +16,8 @@ func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {
 	var rollCallCloseBytes []byte
 	err := s.database.QueryRow(selectLastRollCallClose,
 		laoPath,
-		messagedata.RollCallObject,
-		messagedata.RollCallActionClose).
+		channel.RollCallObject,
+		channel.RollCallActionClose).
 		Scan(&rollCallCloseBytes)
 
 	if err != nil {
@@ -54,7 +54,7 @@ func (s *SQLite) GetReactionSender(messageID string) (string, error) {
 
 	}
 
-	if object != messagedata.ReactionObject || action != messagedata.ReactionActionAdd {
+	if object != channel.ReactionObject || action != channel.ReactionActionAdd {
 		return "", poperrors.NewInternalServerError("message ID %s is not a reaction add message", messageID)
 	}
 	return sender, nil

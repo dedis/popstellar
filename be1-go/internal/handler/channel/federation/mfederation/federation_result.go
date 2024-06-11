@@ -19,15 +19,15 @@ type FederationResult struct {
 
 // GetObject implements MessageData
 func (FederationResult) GetObject() string {
-	return messagedata.FederationObject
+	return channel.FederationObject
 }
 
 // GetAction implements MessageData
 func (FederationResult) GetAction() string {
-	return messagedata.FederationActionResult
+	return channel.FederationActionResult
 }
 
 // NewEmpty implements MessageData
-func (FederationResult) NewEmpty() messagedata.MessageData {
+func (FederationResult) NewEmpty() channel.MessageData {
 	return &FederationResult{}
 }

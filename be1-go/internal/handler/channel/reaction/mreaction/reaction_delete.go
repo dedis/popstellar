@@ -34,15 +34,15 @@ func (message ReactionDelete) Verify() error {
 
 // GetObject implements MessageData
 func (ReactionDelete) GetObject() string {
-	return messagedata.ReactionObject
+	return channel.ReactionObject
 }
 
 // GetAction implements MessageData
 func (ReactionDelete) GetAction() string {
-	return messagedata.ReactionActionDelete
+	return channel.ReactionActionDelete
 }
 
 // NewEmpty implements MessageData
-func (ReactionDelete) NewEmpty() messagedata.MessageData {
+func (ReactionDelete) NewEmpty() channel.MessageData {
 	return &ReactionDelete{}
 }

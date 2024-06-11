@@ -31,15 +31,15 @@ type ModificationSignature struct {
 
 // GetObject implements MessageData
 func (LaoState) GetObject() string {
-	return messagedata.LAOObject
+	return channel.LAOObject
 }
 
 // GetAction implements MessageData
 func (LaoState) GetAction() string {
-	return messagedata.LAOActionState
+	return channel.LAOActionState
 }
 
 // NewEmpty implements MessageData
-func (LaoState) NewEmpty() messagedata.MessageData {
+func (LaoState) NewEmpty() channel.MessageData {
 	return &LaoState{}
 }

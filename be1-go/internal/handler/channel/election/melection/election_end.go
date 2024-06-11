@@ -23,16 +23,16 @@ type ElectionEnd struct {
 
 // GetObject implements MessageData
 func (ElectionEnd) GetObject() string {
-	return messagedata.ElectionObject
+	return channel.ElectionObject
 }
 
 // GetAction implements MessageData
 func (ElectionEnd) GetAction() string {
-	return messagedata.ElectionActionEnd
+	return channel.ElectionActionEnd
 }
 
 // NewEmpty implements MessageData
-func (ElectionEnd) NewEmpty() messagedata.MessageData {
+func (ElectionEnd) NewEmpty() channel.MessageData {
 	return &ElectionEnd{}
 }
 
@@ -47,7 +47,7 @@ func (message ElectionEnd) Verify(electionPath string) error {
 		return errors.NewInvalidMessageFieldError("failed to decode election: %v", err)
 	}
 
-	noRoot := strings.ReplaceAll(electionPath, messagedata.RootPrefix, "")
+	noRoot := strings.ReplaceAll(electionPath, channel.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
 		return errors.NewInvalidMessageFieldError("failed to split channel: %v", message)

@@ -12,7 +12,7 @@ func Test_Vote_Cast_Vote(t *testing.T) {
 	buf, err := testData.ReadFile("testdata/vote_cast_vote.json")
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := channel.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "election", object)
@@ -39,8 +39,8 @@ func Test_Vote_Cast_Vote(t *testing.T) {
 func Test_Vote_Cast_Vote_Interface_Functions(t *testing.T) {
 	var msg VoteCastVote
 
-	require.Equal(t, messagedata.ElectionObject, msg.GetObject())
-	require.Equal(t, messagedata.VoteActionCastVote, msg.GetAction())
+	require.Equal(t, channel.ElectionObject, msg.GetObject())
+	require.Equal(t, channel.VoteActionCastVote, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }
 

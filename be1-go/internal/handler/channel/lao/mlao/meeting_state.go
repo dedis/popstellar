@@ -32,15 +32,15 @@ type MeetingState struct {
 
 // GetObject implements MessageData
 func (MeetingState) GetObject() string {
-	return messagedata.MeetingObject
+	return channel.MeetingObject
 }
 
 // GetAction implements MessageData
 func (MeetingState) GetAction() string {
-	return messagedata.MeetingActionState
+	return channel.MeetingActionState
 }
 
 // NewEmpty implements MessageData
-func (MeetingState) NewEmpty() messagedata.MessageData {
+func (MeetingState) NewEmpty() channel.MessageData {
 	return &MeetingState{}
 }

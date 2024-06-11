@@ -12,7 +12,7 @@ func Test_Roll_Call_Open(t *testing.T) {
 	buf, err := testData.ReadFile("testdata/roll_call_open.json")
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := channel.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "roll_call", object)
@@ -33,7 +33,7 @@ func Test_Roll_Call_Open(t *testing.T) {
 func Test_Roll_Call_Open_Interface_Functions(t *testing.T) {
 	var msg RollCallOpen
 
-	require.Equal(t, messagedata.RollCallObject, msg.GetObject())
-	require.Equal(t, messagedata.RollCallActionOpen, msg.GetAction())
+	require.Equal(t, channel.RollCallObject, msg.GetObject())
+	require.Equal(t, channel.RollCallActionOpen, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }

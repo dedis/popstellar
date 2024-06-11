@@ -537,8 +537,8 @@ func (c *Channel) createAndSendElectionKey() error {
 	}
 
 	msgData := melection2.ElectionKey{
-		Object:   messagedata.ElectionObject,
-		Action:   messagedata.ElectionActionKey,
+		Object:   channel.ElectionObject,
+		Action:   channel.ElectionActionKey,
 		Election: c.getElectionID(),
 		Key:      base64.URLEncoding.EncodeToString(ekBuf),
 	}
@@ -570,7 +570,7 @@ func (c *Channel) createAndSendElectionKey() error {
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(skBuf),
 		Signature:         signature,
-		MessageID:         messagedata.Hash(newData64, signature),
+		MessageID:         channel.Hash(newData64, signature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -587,7 +587,7 @@ func (c *Channel) createAndSendElectionKey() error {
 // getElectionID extracts and returns the electionID from the channelID
 func (c *Channel) getElectionID() string {
 	// split oldchannel to [lao id, election id]
-	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	noRoot := strings.ReplaceAll(c.channelID, channel.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 
 	return IDs[1]
@@ -644,7 +644,7 @@ func (c *Channel) broadcastElectionResult() error {
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(pkBuf),
 		Signature:         signature,
-		MessageID:         messagedata.Hash(newData64, signature),
+		MessageID:         channel.Hash(newData64, signature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -660,8 +660,8 @@ func (c *Channel) gatherResults(questions map[string]*question,
 	log.Info().Msgf("gathering results for the election")
 
 	resultElection := melection2.ElectionResult{
-		Object:    messagedata.ElectionObject,
-		Action:    messagedata.ElectionActionResult,
+		Object:    channel.ElectionObject,
+		Action:    channel.ElectionActionResult,
 		Questions: []melection2.ElectionResultQuestion{},
 	}
 

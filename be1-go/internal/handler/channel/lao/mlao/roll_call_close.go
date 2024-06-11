@@ -28,9 +28,9 @@ func (message RollCallClose) Verify(laoPath string) error {
 		return errors.NewInvalidMessageFieldError("failed to decode roll call update ID: %v", err)
 	}
 
-	expectedID := messagedata.Hash(
+	expectedID := channel.Hash(
 		RollCallFlag,
-		strings.ReplaceAll(laoPath, messagedata.RootPrefix, ""),
+		strings.ReplaceAll(laoPath, channel.RootPrefix, ""),
 		message.Closes,
 		strconv.Itoa(int(message.ClosedAt)),
 	)
@@ -52,15 +52,15 @@ func (message RollCallClose) Verify(laoPath string) error {
 
 // GetObject implements MessageData
 func (RollCallClose) GetObject() string {
-	return messagedata.RollCallObject
+	return channel.RollCallObject
 }
 
 // GetAction implements MessageData
 func (RollCallClose) GetAction() string {
-	return messagedata.RollCallActionClose
+	return channel.RollCallActionClose
 }
 
 // NewEmpty implements MessageData
-func (RollCallClose) NewEmpty() messagedata.MessageData {
+func (RollCallClose) NewEmpty() channel.MessageData {
 	return &RollCallClose{}
 }

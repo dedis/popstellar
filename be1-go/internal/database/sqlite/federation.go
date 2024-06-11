@@ -14,8 +14,8 @@ func (s *SQLite) IsChallengeValid(senderPk string, challenge mfederation2.Federa
 
 	var federationChallengeBytes []byte
 	err := s.database.QueryRow(selectValidFederationChallenges, channelPath,
-		senderPk, messagedata.FederationObject,
-		messagedata.FederationActionChallenge, challenge.Value,
+		senderPk, channel.FederationObject,
+		channel.FederationActionChallenge, challenge.Value,
 		challenge.ValidUntil).Scan(&federationChallengeBytes)
 	if err != nil {
 		return poperrors.NewDatabaseSelectErrorMsg("federation challenge: %v", err)
@@ -39,8 +39,8 @@ func (s *SQLite) RemoveChallenge(challenge mfederation2.FederationChallenge) err
 	defer dbLock.Unlock()
 
 	result, err := s.database.Exec(deleteFederationChallenge,
-		messagedata.FederationObject,
-		messagedata.FederationActionChallenge, challenge.Value,
+		channel.FederationObject,
+		channel.FederationActionChallenge, challenge.Value,
 		challenge.ValidUntil)
 	if err != nil {
 		return poperrors.NewDatabaseDeleteErrorMsg(err.Error())
@@ -63,8 +63,8 @@ func (s *SQLite) GetFederationExpect(senderPk string, remotePk string, challenge
 	defer dbLock.Unlock()
 
 	rows, err := s.database.Query(selectFederationExpects, channelPath,
-		senderPk, messagedata.FederationObject,
-		messagedata.FederationActionExpect, remotePk)
+		senderPk, channel.FederationObject,
+		channel.FederationActionExpect, remotePk)
 	if err != nil {
 		return mfederation2.FederationExpect{}, poperrors.NewDatabaseSelectErrorMsg("federation expect messages: %v", err)
 	}
@@ -104,8 +104,8 @@ func (s *SQLite) GetFederationInit(senderPk string, remotePk string, challenge m
 	defer dbLock.Unlock()
 
 	rows, err := s.database.Query(selectFederationExpects, channelPath,
-		senderPk, messagedata.FederationObject,
-		messagedata.FederationActionInit, remotePk)
+		senderPk, channel.FederationObject,
+		channel.FederationActionInit, remotePk)
 	if err != nil {
 		return mfederation2.FederationInit{}, poperrors.NewDatabaseSelectErrorMsg("federation expect messages: %v", err)
 	}

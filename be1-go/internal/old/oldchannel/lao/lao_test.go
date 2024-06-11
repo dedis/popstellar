@@ -46,10 +46,10 @@ func TestLAOChannel_Subscribe(t *testing.T) {
 
 	m := mmessage.Message{MessageID: "0"}
 
-	channel, err := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
+	channelHandler, err := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
 	require.NoError(t, err)
 
-	laoChannel, ok := channel.(*Channel)
+	laoChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	relativePath := filepath.Join(protocolRelativePath,
@@ -65,7 +65,7 @@ func TestLAOChannel_Subscribe(t *testing.T) {
 
 	socket := &fakeSocket{id: "sockSocket"}
 
-	err = channel.Subscribe(socket, message)
+	err = channelHandler.Subscribe(socket, message)
 	require.NoError(t, err)
 
 	require.True(t, laoChannel.sockets.Delete("sockSocket"))
@@ -78,10 +78,10 @@ func TestLAOChannel_Unsubscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	m := mmessage.Message{MessageID: "0"}
-	channel, err := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
+	channelHandler, err := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
 	require.NoError(t, err)
 
-	laoChannel, ok := channel.(*Channel)
+	laoChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	relativePath := filepath.Join(protocolRelativePath,
@@ -98,13 +98,13 @@ func TestLAOChannel_Unsubscribe(t *testing.T) {
 	socket := &fakeSocket{id: "sockSocket"}
 	laoChannel.sockets.Upsert(socket)
 
-	require.NoError(t, channel.Unsubscribe("sockSocket", message))
+	require.NoError(t, channelHandler.Unsubscribe("sockSocket", message))
 
 	// we check that the sockSocket has been deleted
 	require.False(t, laoChannel.sockets.Delete("sockSocket"))
 
 	// unsubscribing two times with the same sockSocket must fail
-	require.Error(t, channel.Unsubscribe("sockSocket", message))
+	require.Error(t, channelHandler.Unsubscribe("sockSocket", message))
 }
 
 func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
@@ -114,7 +114,7 @@ func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	m := mmessage.Message{MessageID: "0"}
-	channel, err := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
+	channelHandler, err := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
 	require.NoError(t, err)
 
 	relativePath := filepath.Join(protocolRelativePath,
@@ -129,7 +129,7 @@ func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	// Should fail as it is not subscribed
-	require.Error(t, channel.Unsubscribe("inexistingSocket", message))
+	require.Error(t, channelHandler.Unsubscribe("inexistingSocket", message))
 }
 
 // Tests that the oldchannel works when it receives a broadcast message
@@ -141,9 +141,9 @@ func TestLAOChannel_Broadcast(t *testing.T) {
 	require.NoError(t, err)
 
 	m := mmessage.Message{MessageID: "0"}
-	channel, err := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
+	channelHandler, err := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
 	require.NoError(t, err)
-	laoChannel := channel.(*Channel)
+	laoChannel := channelHandler.(*Channel)
 
 	// Creates a sockSocket subscribed to the oldchannel
 	fakeSock := &fakeSocket{id: "sockSocket"}
@@ -163,7 +163,7 @@ func TestLAOChannel_Broadcast(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -188,7 +188,7 @@ func TestLAOChannel_Broadcast(t *testing.T) {
 	message.Params.Channel = laoChannel.channelID
 	message.Params.Message = m1
 
-	require.NoError(t, channel.Broadcast(message, nil))
+	require.NoError(t, channelHandler.Broadcast(message, nil))
 
 	// Check that the message is broadcast to the subscribed sockets
 	bufBroad, err := json.Marshal(message)
@@ -213,10 +213,10 @@ func TestLAOChannel_Catchup(t *testing.T) {
 	messages[1] = mmessage.Message{MessageID: "1"}
 
 	// Create the oldchannel
-	channel, err := NewChannel("channel0", fakeHub, messages[0], nolog, keypair.public, nil)
+	channelHandler, err := NewChannel("channel0", fakeHub, messages[0], nolog, keypair.public, nil)
 	require.NoError(t, err)
 
-	laoChannel, ok := channel.(*Channel)
+	laoChannel, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	time.Sleep(time.Millisecond)
@@ -235,7 +235,7 @@ func TestLAOChannel_Catchup(t *testing.T) {
 	}
 
 	// Compute the catchup method
-	catchupAnswer := channel.Catchup(mcatchup.Catchup{ID: 0})
+	catchupAnswer := channelHandler.Catchup(mcatchup.Catchup{ID: 0})
 
 	// Change the greeting message id to make it easier to check
 	catchupAnswer[1] = mmessage.Message{MessageID: "1"}
@@ -256,7 +256,7 @@ func TestLAOChannel_Publish_LaoUpdate(t *testing.T) {
 	require.NoError(t, err)
 
 	m := mmessage.Message{MessageID: "0"}
-	channel, err := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
+	channelHandler, err := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
 	require.NoError(t, err)
 
 	// Create an update lao message
@@ -273,7 +273,7 @@ func TestLAOChannel_Publish_LaoUpdate(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -291,7 +291,7 @@ func TestLAOChannel_Publish_LaoUpdate(t *testing.T) {
 
 	messagePublish.Params.Message = m1
 
-	require.NoError(t, channel.Publish(messagePublish, nil))
+	require.NoError(t, channelHandler.Publish(messagePublish, nil))
 }
 
 func TestLAOChannel_Publish_LaoState(t *testing.T) {
@@ -302,9 +302,9 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 	require.NoError(t, err)
 
 	m := mmessage.Message{MessageID: "0"}
-	channel, err := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
+	channelHandler, err := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
 	require.NoError(t, err)
-	laoChannel := channel.(*Channel)
+	laoChannel := channelHandler.(*Channel)
 
 	// Create an update lao
 	relativePath := filepath.Join(protocolRelativePath,
@@ -320,7 +320,7 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -339,7 +339,7 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 	err = json.Unmarshal(bufState, &mState)
 	require.NoError(t, err)
 
-	mState.ModificationID = messagedata.Hash(bufb64, publicKey64)
+	mState.ModificationID = channel.Hash(bufb64, publicKey64)
 	mState.ModificationSignatures = []mlao2.ModificationSignature{}
 
 	mStateBuf, err := json.Marshal(mState)
@@ -351,7 +351,7 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 		Data:              bufState64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufState64, publicKey64),
+		MessageID:         channel.Hash(bufState64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -369,7 +369,7 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 
 	messageStatePublish.Params.Message = m2
 
-	require.NoError(t, channel.Publish(messageStatePublish, nil))
+	require.NoError(t, channelHandler.Publish(messageStatePublish, nil))
 }
 
 func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
@@ -382,10 +382,10 @@ func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
 	m := mmessage.Message{MessageID: "0"}
 
 	// Create the oldchannel
-	channel, err := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
+	channelHandler, err := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
 	require.NoError(t, err)
 
-	_, ok := channel.(*Channel)
+	_, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	time.Sleep(time.Millisecond)
@@ -406,10 +406,10 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 	m := mmessage.Message{MessageID: "0"}
 
 	// Create the oldchannel
-	channel, err := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
+	channelHandler, err := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
 	require.NoError(t, err)
 
-	_, ok := channel.(*Channel)
+	_, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	time.Sleep(time.Millisecond)
@@ -428,7 +428,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 		Data:              bufCreate64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufCreate64, publicKey64),
+		MessageID:         channel.Hash(bufCreate64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -446,7 +446,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 
 	messageCreatePub.Params.Message = m1
 
-	require.NoError(t, channel.Publish(messageCreatePub, nil))
+	require.NoError(t, channelHandler.Publish(messageCreatePub, nil))
 
 	// Create the roll_call_open message
 	relativePathOpen := filepath.Join(protocolRelativePath,
@@ -462,7 +462,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 		Data:              bufOpen64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufOpen64, publicKey64),
+		MessageID:         channel.Hash(bufOpen64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -470,7 +470,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 
 	messageOpenPub.Params.Message = m2
 
-	require.NoError(t, channel.Publish(messageOpenPub, nil))
+	require.NoError(t, channelHandler.Publish(messageOpenPub, nil))
 
 	// Create the roll_call_close message
 	relativePathClose := filepath.Join(protocolRelativePath,
@@ -486,14 +486,14 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 		Data:              bufClose64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufClose64, publicKey64),
+		MessageID:         channel.Hash(bufClose64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	messageClosePub := messageCreatePub
 	messageClosePub.Params.Message = m3
 
-	require.NoError(t, channel.Publish(messageClosePub, nil))
+	require.NoError(t, channelHandler.Publish(messageClosePub, nil))
 }
 
 func TestLAOChannel_Rollcall_Creation_Not_Organizer(t *testing.T) {
@@ -503,12 +503,12 @@ func TestLAOChannel_Rollcall_Creation_Not_Organizer(t *testing.T) {
 	require.NoError(t, err)
 
 	m := mmessage.Message{MessageID: "0"}
-	channel, err := NewChannel(sampleLao, fakeHub, m, nolog, keypair.public, nil)
+	channelHandler, err := NewChannel(sampleLao, fakeHub, m, nolog, keypair.public, nil)
 	require.NoError(t, err)
 
 	// Publish a rollcall create message with a different key than the
 	// organizer, an error is expected
-	err = channel.Publish(sampleRollCallCreatePublish, nil)
+	err = channelHandler.Publish(sampleRollCallCreatePublish, nil)
 	require.Error(t, err)
 }
 
@@ -519,24 +519,24 @@ func TestLAOChannel_Rollcall_Open_Not_Organizer(t *testing.T) {
 	fakeHub, err := NewFakeHub("", keypairOrg.public, nolog, nil)
 	require.NoError(t, err)
 
-	laoId := messagedata.Hash(base64.URLEncoding.EncodeToString(keypairOrg.
+	laoId := channel.Hash(base64.URLEncoding.EncodeToString(keypairOrg.
 		publicBuf), strconv.FormatInt(time.Now().Unix(), 10), "Lao 1")
 	laoChannel := "/root/" + laoId
 
 	m := mmessage.Message{MessageID: "0"}
-	channel, err := NewChannel(laoChannel, fakeHub, m, nolog, keypairOrg.public, nil)
+	channelHandler, err := NewChannel(laoChannel, fakeHub, m, nolog, keypairOrg.public, nil)
 	require.NoError(t, err)
 
 	rollcallCreate, rollcallId := createRollCallCreate(t, keypairOrg, laoId)
 
-	err = channel.Publish(rollcallCreate, nil)
+	err = channelHandler.Publish(rollcallCreate, nil)
 	require.NoError(t, err)
 
 	rollcallOpen := createRollCallOpen(t, keypairOther, laoId, rollcallId)
 
 	// Publish a rollcall open message with a different key than the
 	// organizer, an error is expected
-	err = channel.Publish(rollcallOpen, nil)
+	err = channelHandler.Publish(rollcallOpen, nil)
 	require.Error(t, err)
 }
 
@@ -547,28 +547,28 @@ func TestLAOChannel_Rollcall_Close_Not_Organizer(t *testing.T) {
 	fakeHub, err := NewFakeHub("", keypairOrg.public, nolog, nil)
 	require.NoError(t, err)
 
-	laoId := messagedata.Hash(base64.URLEncoding.EncodeToString(keypairOrg.
+	laoId := channel.Hash(base64.URLEncoding.EncodeToString(keypairOrg.
 		publicBuf), strconv.FormatInt(time.Now().Unix(), 10), "Lao 1")
 	laoChannel := "/root/" + laoId
 
 	m := mmessage.Message{MessageID: "0"}
-	channel, err := NewChannel(laoChannel, fakeHub, m, nolog, keypairOrg.public, nil)
+	channelHandler, err := NewChannel(laoChannel, fakeHub, m, nolog, keypairOrg.public, nil)
 	require.NoError(t, err)
 
 	rollcallCreate, rollcallId := createRollCallCreate(t, keypairOrg, laoId)
 
-	err = channel.Publish(rollcallCreate, nil)
+	err = channelHandler.Publish(rollcallCreate, nil)
 	require.NoError(t, err)
 
 	rollcallOpen := createRollCallOpen(t, keypairOrg, laoId, rollcallId)
-	err = channel.Publish(rollcallOpen, nil)
+	err = channelHandler.Publish(rollcallOpen, nil)
 	require.NoError(t, err)
 
 	rollcallClose := createRollCallClose(t, keypairOther, laoId, rollcallId)
 
 	// Publish a rollcall close message with a different key than the
 	// organizer, an error is expected
-	err = channel.Publish(rollcallClose, nil)
+	err = channelHandler.Publish(rollcallClose, nil)
 	require.Error(t, err)
 }
 
@@ -580,7 +580,7 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 	require.NoError(t, err)
 
 	m := mmessage.Message{MessageID: "0"}
-	channel, err := NewChannel("/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
+	channelHandler, err := NewChannel("/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
 	require.NoError(t, err)
 
 	// Create an update lao message
@@ -597,7 +597,7 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 		Data:              bufb64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		MessageID:         channel.Hash(bufb64, publicKey64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -615,7 +615,7 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 
 	messagePublish.Params.Message = m1
 
-	require.NoError(t, channel.Publish(messagePublish, nil))
+	require.NoError(t, channelHandler.Publish(messagePublish, nil))
 }
 
 func TestLAOChannel_Sends_Greeting(t *testing.T) {
@@ -631,10 +631,10 @@ func TestLAOChannel_Sends_Greeting(t *testing.T) {
 	}
 
 	m := mmessage.Message{MessageID: "0"}
-	channel, err := NewChannel("/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
+	channelHandler, err := NewChannel("/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
 	require.NoError(t, err)
 
-	catchupAnswer := channel.Catchup(mcatchup.Catchup{ID: 0})
+	catchupAnswer := channelHandler.Catchup(mcatchup.Catchup{ID: 0})
 	// should contain the creation message and the LAO greet
 	require.Len(t, catchupAnswer, 2)
 
@@ -645,8 +645,8 @@ func TestLAOChannel_Sends_Greeting(t *testing.T) {
 	err = greetMsg.UnmarshalData(&laoGreet)
 	require.NoError(t, err)
 
-	require.Equal(t, messagedata.LAOObject, laoGreet.Object)
-	require.Equal(t, messagedata.LAOActionGreet, laoGreet.Action)
+	require.Equal(t, channel.LAOObject, laoGreet.Object)
+	require.Equal(t, channel.LAOActionGreet, laoGreet.Action)
 	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", laoGreet.LaoID)
 	require.Equal(t, publicKey64, laoGreet.Frontend)
 	require.Equal(t, "ws://localhost:9000/client", laoGreet.Address)
@@ -663,15 +663,15 @@ func Test_LAOChannel_Witness_Message(t *testing.T) {
 
 	// Create new Lao oldchannel
 	m := mmessage.Message{MessageID: "0"}
-	channel, err := NewChannel(sampleLao, fakeHub, m, nolog, organizerPk, nil)
+	channelHandler, err := NewChannel(sampleLao, fakeHub, m, nolog, organizerPk, nil)
 	require.NoError(t, err)
 
 	// Publish roll_call_create message
-	require.NoError(t, channel.Publish(sampleRollCallCreatePublish, nil))
+	require.NoError(t, channelHandler.Publish(sampleRollCallCreatePublish, nil))
 
 	// Publish witness message and catchup on oldchannel to get the message back
-	require.NoError(t, channel.Publish(sampleWitnessMessagePublish, nil))
-	catchupAnswer := channel.Catchup(mcatchup.Catchup{ID: 0})
+	require.NoError(t, channelHandler.Publish(sampleWitnessMessagePublish, nil))
+	catchupAnswer := channelHandler.Catchup(mcatchup.Catchup{ID: 0})
 
 	// Check that the witness signature was added to the message
 	require.Equal(t, 1, len(catchupAnswer[2].WitnessSignatures))
@@ -685,16 +685,16 @@ func Test_LAOChannel_Witness_Message_Not_Received_Yet(t *testing.T) {
 
 	// Create new Lao oldchannel
 	m := mmessage.Message{MessageID: "0"}
-	channel, err := NewChannel(sampleLao, fakeHub, m, nolog, organizerPk, nil)
+	channelHandler, err := NewChannel(sampleLao, fakeHub, m, nolog, organizerPk, nil)
 	require.NoError(t, err)
 
 	// Publish witness message and catchup on oldchannel to get the message back
-	require.NoError(t, channel.Publish(sampleWitnessMessagePublish, nil))
+	require.NoError(t, channelHandler.Publish(sampleWitnessMessagePublish, nil))
 
 	// Publish roll_call_create message
-	require.NoError(t, channel.Publish(sampleRollCallCreatePublish, nil))
+	require.NoError(t, channelHandler.Publish(sampleRollCallCreatePublish, nil))
 
-	catchupAnswer := channel.Catchup(mcatchup.Catchup{ID: 0})
+	catchupAnswer := channelHandler.Catchup(mcatchup.Catchup{ID: 0})
 
 	// Check that the witness signature was added to the message
 	require.Equal(t, 1, len(catchupAnswer[3].WitnessSignatures))
@@ -965,7 +965,7 @@ func createPublish(t *testing.T, sender keypair, laoId string,
 		Data:              data64,
 		Sender:            senderPk,
 		Signature:         base64.URLEncoding.EncodeToString(signature),
-		MessageID:         messagedata.Hash(data64, senderPk),
+		MessageID:         channel.Hash(data64, senderPk),
 		WitnessSignatures: nil,
 	}
 
@@ -994,7 +994,7 @@ func createRollCallCreate(t *testing.T, sender keypair,
 
 	now := time.Now().Unix()
 	rollcallName := "Roll Call"
-	rollcallId := messagedata.Hash("R", laoId, strconv.FormatInt(now, 10), rollcallName)
+	rollcallId := channel.Hash("R", laoId, strconv.FormatInt(now, 10), rollcallName)
 	rollcallCreate, err := json.Marshal(mlao2.RollCallCreate{
 		Object:        "roll_call",
 		Action:        "create",
@@ -1017,7 +1017,7 @@ func createRollCallOpen(t *testing.T, sender keypair,
 	laoId string, rollcallId string) mpublish.Publish {
 
 	openAt := time.Now().Unix()
-	updateId := messagedata.Hash("R", laoId, rollcallId, strconv.FormatInt(openAt, 10))
+	updateId := channel.Hash("R", laoId, rollcallId, strconv.FormatInt(openAt, 10))
 
 	rollcallOpen, err := json.Marshal(mlao2.RollCallOpen{
 		Object:   "roll_call",
@@ -1037,7 +1037,7 @@ func createRollCallClose(t *testing.T, sender keypair,
 	laoId string, openId string) mpublish.Publish {
 
 	closeAt := time.Now().Unix()
-	updateId := messagedata.Hash("R", laoId, openId, strconv.FormatInt(closeAt, 10))
+	updateId := channel.Hash("R", laoId, openId, strconv.FormatInt(closeAt, 10))
 	attendees := []string{base64.URLEncoding.EncodeToString(sender.publicBuf)}
 
 	rollcallClose, err := json.Marshal(mlao2.RollCallClose{

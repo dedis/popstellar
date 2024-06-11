@@ -14,8 +14,8 @@ var testData embed.FS
 // TestAuthUserInterfaceFunctions tests the basic interface methods of messagedata
 func TestAuthUserInterfaceFunctions(t *testing.T) {
 	var authMsg AuthenticateUser
-	require.Equal(t, messagedata.AuthObject, authMsg.GetObject())
-	require.Equal(t, messagedata.AuthAction, authMsg.GetAction())
+	require.Equal(t, channel.AuthObject, authMsg.GetObject())
+	require.Equal(t, channel.AuthAction, authMsg.GetAction())
 	require.Empty(t, authMsg.NewEmpty())
 }
 
@@ -35,7 +35,7 @@ func TestVerify(t *testing.T) {
 			require.NoError(t, err)
 
 			// check on the object and action
-			obj, act, err := messagedata.GetObjectAndAction(buf)
+			obj, act, err := channel.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)

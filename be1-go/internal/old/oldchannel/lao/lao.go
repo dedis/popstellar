@@ -724,8 +724,8 @@ func (c *Channel) createAndSendLAOGreet() error {
 	}
 
 	msgData := mlao2.LaoGreet{
-		Object:   messagedata.LAOObject,
-		Action:   messagedata.LAOActionGreet,
+		Object:   channel.LAOObject,
+		Action:   channel.LAOActionGreet,
 		LaoID:    c.extractLaoID(),
 		Frontend: base64.URLEncoding.EncodeToString(orgPkBuf),
 		Address:  c.hub.GetClientServerAddress(),
@@ -759,7 +759,7 @@ func (c *Channel) createAndSendLAOGreet() error {
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(skBuf),
 		Signature:         signature,
-		MessageID:         messagedata.Hash(newData64, signature),
+		MessageID:         channel.Hash(newData64, signature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -774,7 +774,7 @@ func (c *Channel) createAndSendLAOGreet() error {
 }
 
 func (c *Channel) extractLaoID() string {
-	return strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	return strings.ReplaceAll(c.channelID, channel.RootPrefix, "")
 }
 
 // checkPrevID is a helper method which validates the roll call ID.

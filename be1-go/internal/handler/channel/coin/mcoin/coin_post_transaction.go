@@ -128,7 +128,7 @@ func (message PostTransaction) verifyTransactionId() error {
 
 	hashFields = append(hashFields, version)
 
-	expectedID := messagedata.Hash(hashFields...)
+	expectedID := channel.Hash(hashFields...)
 
 	if message.TransactionID != expectedID {
 		return errors.NewInvalidMessageFieldError("transaction id is not valid: %s != %s", message.TransactionID, expectedID)
@@ -181,15 +181,15 @@ func (message PostTransaction) verifySignature() error {
 
 // GetObject implements MessageData
 func (PostTransaction) GetObject() string {
-	return messagedata.CoinObject
+	return channel.CoinObject
 }
 
 // GetAction implements MessageData
 func (PostTransaction) GetAction() string {
-	return messagedata.CoinActionPostTransaction
+	return channel.CoinActionPostTransaction
 }
 
 // NewEmpty implements MessageData
-func (PostTransaction) NewEmpty() messagedata.MessageData {
+func (PostTransaction) NewEmpty() channel.MessageData {
 	return &PostTransaction{}
 }

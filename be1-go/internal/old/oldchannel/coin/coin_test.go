@@ -40,9 +40,9 @@ func Test_General_Channel_Subscribe(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	channel := NewChannel("channel0", fakeHub, nolog)
+	channelHandler := NewChannel("channel0", fakeHub, nolog)
 
-	channelDC, ok := channel.(*Channel)
+	channelDC, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	file := filepath.Join(protocolRelativePath, "examples", "query", "subscribe", "subscribe.json")
@@ -68,9 +68,9 @@ func Test_General_Channel_Unsubscribe(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	channel := NewChannel("channel0", fakeHub, nolog)
+	channelHandler := NewChannel("channel0", fakeHub, nolog)
 
-	channelDC, ok := channel.(*Channel)
+	channelDC, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	file := filepath.Join(protocolRelativePath, "examples", "query", "unsubscribe", "unsubscribe.json")
@@ -98,9 +98,9 @@ func Test_General_Channel_Wrong_Unsubscribe(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	channel := NewChannel("channel0", fakeHub, nolog)
+	channelHandler := NewChannel("channel0", fakeHub, nolog)
 
-	channelDC, ok := channel.(*Channel)
+	channelDC, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	file := filepath.Join(protocolRelativePath, "examples", "query", "unsubscribe", "unsubscribe.json")
@@ -128,9 +128,9 @@ func Test_Coin_Channel_Catchup(t *testing.T) {
 	messages := make([]mmessage.Message, numMessages)
 
 	// Create the oldchannel
-	channel := NewChannel("channel0", fakeHub, nolog)
+	channelHandler := NewChannel("channel0", fakeHub, nolog)
 
-	channelDC, ok := channel.(*Channel)
+	channelDC, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	for i := 0; i < numMessages; i++ {
@@ -166,9 +166,9 @@ func Test_General_Channel_Publish(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the oldchannel
-	channel := NewChannel("channel0", fakeHub, nolog)
+	channelHandler := NewChannel("channel0", fakeHub, nolog)
 
-	channelDC, ok := channel.(*Channel)
+	channelDC, ok := channelHandler.(*Channel)
 	require.True(t, ok)
 
 	file := filepath.Join(protocolRelativePath,
@@ -198,9 +198,9 @@ func Test_SendTransaction(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the oldchannel
-	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
+	channelHandler := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
-	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
+	fakeHub.RegisterNewChannel(digitalCashChannelName, channelHandler)
 	_, found := fakeHub.channelByID[digitalCashChannelName]
 	require.True(t, found)
 
@@ -219,7 +219,7 @@ func Test_SendTransaction(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         channel.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -238,7 +238,7 @@ func Test_SendTransaction(t *testing.T) {
 	message.Params.Message = m
 	message.Params.Channel = digitalCashChannelName
 
-	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
+	require.NoError(t, channelHandler.Publish(message, socket.ClientSocket{}))
 }
 
 // Tests that the oldchannel works correctly when it receives a large transaction
@@ -255,9 +255,9 @@ func Test_SendTransactionMaxAmount(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the oldchannel
-	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
+	channelHandler := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
-	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
+	fakeHub.RegisterNewChannel(digitalCashChannelName, channelHandler)
 	_, found := fakeHub.channelByID[digitalCashChannelName]
 	require.True(t, found)
 
@@ -276,7 +276,7 @@ func Test_SendTransactionMaxAmount(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         channel.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -295,7 +295,7 @@ func Test_SendTransactionMaxAmount(t *testing.T) {
 	message.Params.Message = m
 	message.Params.Channel = digitalCashChannelName
 
-	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
+	require.NoError(t, channelHandler.Publish(message, socket.ClientSocket{}))
 }
 
 // Tests that the oldchannel rejects transactions that exceed the maximum amount
@@ -312,9 +312,9 @@ func Test_SendTransactionOverflowAmount(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the oldchannel
-	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
+	channelHandler := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
-	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
+	fakeHub.RegisterNewChannel(digitalCashChannelName, channelHandler)
 	_, found := fakeHub.channelByID[digitalCashChannelName]
 	require.True(t, found)
 
@@ -333,7 +333,7 @@ func Test_SendTransactionOverflowAmount(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         channel.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -352,7 +352,7 @@ func Test_SendTransactionOverflowAmount(t *testing.T) {
 	message.Params.Message = m
 	message.Params.Channel = digitalCashChannelName
 
-	require.Error(t, channel.Publish(message, socket.ClientSocket{}))
+	require.Error(t, channelHandler.Publish(message, socket.ClientSocket{}))
 }
 
 // Tests that the oldchannel accepts transactions with zero amounts
@@ -369,9 +369,9 @@ func Test_SendTransactionZeroAmount(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the oldchannel
-	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
+	channelHandler := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
-	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
+	fakeHub.RegisterNewChannel(digitalCashChannelName, channelHandler)
 	_, found := fakeHub.channelByID[digitalCashChannelName]
 	require.True(t, found)
 
@@ -390,7 +390,7 @@ func Test_SendTransactionZeroAmount(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         channel.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -409,7 +409,7 @@ func Test_SendTransactionZeroAmount(t *testing.T) {
 	message.Params.Message = m
 	message.Params.Channel = digitalCashChannelName
 
-	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
+	require.NoError(t, channelHandler.Publish(message, socket.ClientSocket{}))
 }
 
 // Tests that the oldchannel rejects transactions with negative amounts
@@ -426,9 +426,9 @@ func Test_SendTransactionNegativeAmount(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the oldchannel
-	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
+	channelHandler := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
-	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
+	fakeHub.RegisterNewChannel(digitalCashChannelName, channelHandler)
 	_, found := fakeHub.channelByID[digitalCashChannelName]
 	require.True(t, found)
 
@@ -447,7 +447,7 @@ func Test_SendTransactionNegativeAmount(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         channel.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -466,7 +466,7 @@ func Test_SendTransactionNegativeAmount(t *testing.T) {
 	message.Params.Message = m
 	message.Params.Channel = digitalCashChannelName
 
-	require.Error(t, channel.Publish(message, socket.ClientSocket{}))
+	require.Error(t, channelHandler.Publish(message, socket.ClientSocket{}))
 }
 
 // Tests that the oldchannel throw an error when receiving an incomplete json message
@@ -483,9 +483,9 @@ func Test_SendTransaction_MissingData(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the oldchannel
-	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
+	channelHandler := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
-	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
+	fakeHub.RegisterNewChannel(digitalCashChannelName, channelHandler)
 	_, found := fakeHub.channelByID[digitalCashChannelName]
 	require.True(t, found)
 
@@ -495,7 +495,7 @@ func Test_SendTransaction_MissingData(t *testing.T) {
 	m := mmessage.Message{
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash("helloworld", "h"),
+		MessageID:         channel.Hash("helloworld", "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -514,7 +514,7 @@ func Test_SendTransaction_MissingData(t *testing.T) {
 	message.Params.Message = m
 	message.Params.Channel = digitalCashChannelName
 
-	err = channel.Publish(message, socket.ClientSocket{})
+	err = channelHandler.Publish(message, socket.ClientSocket{})
 	require.Contains(t, err.Error(), "failed to validate schema:")
 }
 
@@ -532,9 +532,9 @@ func Test_SendTransactionWrongId(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the oldchannel
-	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
+	channelHandler := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
-	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
+	fakeHub.RegisterNewChannel(digitalCashChannelName, channelHandler)
 	_, found := fakeHub.channelByID[digitalCashChannelName]
 	require.True(t, found)
 
@@ -553,7 +553,7 @@ func Test_SendTransactionWrongId(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         channel.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -573,7 +573,7 @@ func Test_SendTransactionWrongId(t *testing.T) {
 	message.Params.Channel = digitalCashChannelName
 
 	// Transaction Id is not valid, value=0xBADID3AN0N0N0bvJC2LcZbm0chV1GrJDGfMlJSLRc=, computed=_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=
-	err = channel.Publish(message, socket.ClientSocket{})
+	err = channelHandler.Publish(message, socket.ClientSocket{})
 	require.Contains(t, err.Error(), "transaction id is not valid")
 }
 
@@ -591,9 +591,9 @@ func Test_SendTransactionBadSignature(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the oldchannel
-	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
+	channelHandler := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
-	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
+	fakeHub.RegisterNewChannel(digitalCashChannelName, channelHandler)
 	_, found := fakeHub.channelByID[digitalCashChannelName]
 	require.True(t, found)
 
@@ -612,7 +612,7 @@ func Test_SendTransactionBadSignature(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         channel.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -631,7 +631,7 @@ func Test_SendTransactionBadSignature(t *testing.T) {
 	message.Params.Message = m
 	message.Params.Channel = digitalCashChannelName
 
-	err = channel.Publish(message, socket.ClientSocket{})
+	err = channelHandler.Publish(message, socket.ClientSocket{})
 	require.Error(t, err)
 }
 
@@ -649,9 +649,9 @@ func Test_SendTransactionCoinbase(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the oldchannel
-	channel := NewChannel(digitalCashChannelName, fakeHub, nolog)
+	channelHandler := NewChannel(digitalCashChannelName, fakeHub, nolog)
 
-	fakeHub.RegisterNewChannel(digitalCashChannelName, channel)
+	fakeHub.RegisterNewChannel(digitalCashChannelName, channelHandler)
 	_, found := fakeHub.channelByID[digitalCashChannelName]
 	require.True(t, found)
 
@@ -670,7 +670,7 @@ func Test_SendTransactionCoinbase(t *testing.T) {
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         channel.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -689,7 +689,7 @@ func Test_SendTransactionCoinbase(t *testing.T) {
 	message.Params.Message = m
 	message.Params.Channel = digitalCashChannelName
 
-	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
+	require.NoError(t, channelHandler.Publish(message, socket.ClientSocket{}))
 }
 
 // -----------------------------------------------------------------------------

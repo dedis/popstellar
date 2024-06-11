@@ -12,7 +12,7 @@ func Test_Meeting_State(t *testing.T) {
 	buf, err := testData.ReadFile("testdata/meeting_state.json")
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := channel.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "meeting", object)
@@ -42,7 +42,7 @@ func Test_Meeting_State(t *testing.T) {
 func Test_Meeting_State_Interface_Functions(t *testing.T) {
 	var msg MeetingState
 
-	require.Equal(t, messagedata.MeetingObject, msg.GetObject())
-	require.Equal(t, messagedata.MeetingActionState, msg.GetAction())
+	require.Equal(t, channel.MeetingObject, msg.GetObject())
+	require.Equal(t, channel.MeetingActionState, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }

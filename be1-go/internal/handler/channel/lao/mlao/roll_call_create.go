@@ -38,9 +38,9 @@ func (message RollCallCreate) Verify(laoPath string) error {
 	}
 
 	// verify roll call create message id
-	expectedID := messagedata.Hash(
+	expectedID := channel.Hash(
 		RollCallFlag,
-		strings.ReplaceAll(laoPath, messagedata.RootPrefix, ""),
+		strings.ReplaceAll(laoPath, channel.RootPrefix, ""),
 		strconv.Itoa(int(message.Creation)),
 		message.Name,
 	)
@@ -69,15 +69,15 @@ func (message RollCallCreate) Verify(laoPath string) error {
 
 // GetObject implements MessageData
 func (RollCallCreate) GetObject() string {
-	return messagedata.RollCallObject
+	return channel.RollCallObject
 }
 
 // GetAction implements MessageData
 func (RollCallCreate) GetAction() string {
-	return messagedata.RollCallActionCreate
+	return channel.RollCallActionCreate
 }
 
 // NewEmpty implements MessageData
-func (RollCallCreate) NewEmpty() messagedata.MessageData {
+func (RollCallCreate) NewEmpty() channel.MessageData {
 	return &RollCallCreate{}
 }

@@ -51,12 +51,12 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 		return err
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := channel.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
 
-	laoPath, _ := strings.CutSuffix(channelPath, messagedata.Reactions)
+	laoPath, _ := strings.CutSuffix(channelPath, channel.Reactions)
 	isAttendee, err := h.db.IsAttendee(laoPath, msg.Sender)
 	if err != nil {
 		return err
@@ -66,9 +66,9 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 	}
 
 	switch object + "#" + action {
-	case messagedata.ReactionObject + "#" + messagedata.ReactionActionAdd:
+	case channel.ReactionObject + "#" + channel.ReactionActionAdd:
 		err = h.handleReactionAdd(msg)
-	case messagedata.ReactionObject + "#" + messagedata.ReactionActionDelete:
+	case channel.ReactionObject + "#" + channel.ReactionActionDelete:
 		err = h.handleReactionDelete(msg)
 	default:
 		err = errors.NewInvalidMessageFieldError("failed to Handle %s#%s, invalid object#action", object, action)

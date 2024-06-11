@@ -12,7 +12,7 @@ func Test_Election_Key(t *testing.T) {
 	buf, err := testData.ReadFile("testdata/election_key.json")
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := channel.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "election", object)

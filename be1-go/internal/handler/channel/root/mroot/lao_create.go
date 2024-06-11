@@ -30,7 +30,7 @@ func (message LaoCreate) Verify() error {
 	}
 
 	// verify lao id
-	expectedLaoID := messagedata.Hash(
+	expectedLaoID := channel.Hash(
 		message.Organizer,
 		fmt.Sprintf("%d", message.Creation),
 		message.Name,
@@ -68,15 +68,15 @@ func (message LaoCreate) Verify() error {
 
 // GetObject implements MessageData
 func (LaoCreate) GetObject() string {
-	return messagedata.LAOObject
+	return channel.LAOObject
 }
 
 // GetAction implements MessageData
 func (LaoCreate) GetAction() string {
-	return messagedata.LAOActionCreate
+	return channel.LAOActionCreate
 }
 
 // NewEmpty implements MessageData
-func (LaoCreate) NewEmpty() messagedata.MessageData {
+func (LaoCreate) NewEmpty() channel.MessageData {
 	return &LaoCreate{}
 }

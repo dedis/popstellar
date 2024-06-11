@@ -64,19 +64,19 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message, fromRumor boo
 	}
 
 	switch channelType {
-	case messagedata.RootObject:
+	case channel.RootObject:
 		err = h.handlers.Root.Handle(channelPath, msg)
-	case messagedata.LAOObject:
+	case channel.LAOObject:
 		err = h.handlers.Lao.Handle(channelPath, msg)
-	case messagedata.ElectionObject:
+	case channel.ElectionObject:
 		err = h.handlers.Election.Handle(channelPath, msg)
-	case messagedata.ChirpObject:
+	case channel.ChirpObject:
 		err = h.handlers.Chirp.Handle(channelPath, msg)
-	case messagedata.ReactionObject:
+	case channel.ReactionObject:
 		err = h.handlers.Reaction.Handle(channelPath, msg)
-	case messagedata.CoinObject:
+	case channel.CoinObject:
 		err = h.handlers.Coin.Handle(channelPath, msg)
-	case messagedata.FederationObject:
+	case channel.FederationObject:
 		err = h.handlers.Federation.Handle(channelPath, msg)
 	default:
 		err = errors.NewInvalidResourceError("unknown channelPath type for %s", channelPath)

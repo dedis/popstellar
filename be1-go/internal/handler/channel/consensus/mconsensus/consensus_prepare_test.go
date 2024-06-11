@@ -12,7 +12,7 @@ func Test_Consensus_Prepare(t *testing.T) {
 	buf, err := testData.ReadFile("testdata/prepare.json")
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := channel.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "consensus", object)
@@ -37,8 +37,8 @@ func Test_Consensus_Prepare(t *testing.T) {
 func Test_Consensus_Prepare_Interface_Functions(t *testing.T) {
 	var msg ConsensusPrepare
 
-	require.Equal(t, messagedata.ConsensusObject, msg.GetObject())
-	require.Equal(t, messagedata.ConsensusActionPrepare, msg.GetAction())
+	require.Equal(t, channel.ConsensusObject, msg.GetObject())
+	require.Equal(t, channel.ConsensusActionPrepare, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }
 
@@ -53,7 +53,7 @@ func Test_Consensus_Prepare_Verify(t *testing.T) {
 			buf, err := testData.ReadFile("testdata/" + file)
 			require.NoError(t, err)
 
-			obj, act, err := messagedata.GetObjectAndAction(buf)
+			obj, act, err := channel.GetObjectAndAction(buf)
 			require.NoError(t, err)
 
 			require.Equal(t, object, obj)

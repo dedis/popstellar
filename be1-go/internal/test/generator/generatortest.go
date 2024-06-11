@@ -24,7 +24,7 @@ func newMessage(t *testing.T, sender string, senderSK kyber.Scalar, data []byte)
 		signature64 = base64.URLEncoding.EncodeToString(signatureBuf)
 	}
 
-	messageID64 := messagedata.Hash(data64, signature64)
+	messageID64 := channel.Hash(data64, signature64)
 
 	return mmessage.Message{
 		Data:              data64,

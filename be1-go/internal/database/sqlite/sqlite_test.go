@@ -803,8 +803,8 @@ func Test_SQLite_IsChallengeValid(t *testing.T) {
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
 
 	challenge := mfederation.FederationChallenge{
-		Object:     messagedata.FederationObject,
-		Action:     messagedata.FederationActionChallenge,
+		Object:     channel.FederationObject,
+		Action:     channel.FederationActionChallenge,
 		Value:      value,
 		ValidUntil: validUntil,
 	}
@@ -848,8 +848,8 @@ func Test_SQLite_GetFederationExpect(t *testing.T) {
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
 
 	challenge := mfederation.FederationChallenge{
-		Object:     messagedata.FederationObject,
-		Action:     messagedata.FederationActionChallenge,
+		Object:     channel.FederationObject,
+		Action:     channel.FederationActionChallenge,
 		Value:      value,
 		ValidUntil: validUntil,
 	}
@@ -894,8 +894,8 @@ func Test_SQLite_GetFederationInit(t *testing.T) {
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
 
 	challenge := mfederation.FederationChallenge{
-		Object:     messagedata.FederationObject,
-		Action:     messagedata.FederationActionChallenge,
+		Object:     channel.FederationObject,
+		Action:     channel.FederationActionChallenge,
 		Value:      value,
 		ValidUntil: validUntil,
 	}

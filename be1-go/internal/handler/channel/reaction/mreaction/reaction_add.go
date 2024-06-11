@@ -35,15 +35,15 @@ func (message ReactionAdd) Verify() error {
 
 // GetObject implements MessageData
 func (ReactionAdd) GetObject() string {
-	return messagedata.ReactionObject
+	return channel.ReactionObject
 }
 
 // GetAction implements MessageData
 func (ReactionAdd) GetAction() string {
-	return messagedata.ReactionActionAdd
+	return channel.ReactionActionAdd
 }
 
 // NewEmpty implements MessageData
-func (ReactionAdd) NewEmpty() messagedata.MessageData {
+func (ReactionAdd) NewEmpty() channel.MessageData {
 	return &ReactionAdd{}
 }

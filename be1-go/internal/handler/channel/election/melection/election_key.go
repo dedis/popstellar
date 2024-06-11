@@ -14,15 +14,15 @@ type ElectionKey struct {
 
 // GetObject implements MessageData
 func (ElectionKey) GetObject() string {
-	return messagedata.ElectionObject
+	return channel.ElectionObject
 }
 
 // GetAction implements MessageData
 func (ElectionKey) GetAction() string {
-	return messagedata.ElectionActionKey
+	return channel.ElectionActionKey
 }
 
 // NewEmpty implements MessageData
-func (ElectionKey) NewEmpty() messagedata.MessageData {
+func (ElectionKey) NewEmpty() channel.MessageData {
 	return &ElectionKey{}
 }

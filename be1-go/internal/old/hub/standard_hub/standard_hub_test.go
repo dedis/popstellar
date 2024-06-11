@@ -63,11 +63,11 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := channel.Hash(base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -88,7 +88,7 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -138,11 +138,11 @@ func Test_Create_LAO_Different_Sender_And_Organizer_Keys(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := channel.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -163,7 +163,7 @@ func Test_Create_LAO_Different_Sender_And_Organizer_Keys(t *testing.T) {
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -212,11 +212,11 @@ func Test_Create_LAO_No_Key(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := channel.Hash(base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -237,7 +237,7 @@ func Test_Create_LAO_No_Key(t *testing.T) {
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -288,11 +288,11 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := channel.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -348,7 +348,7 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 		Message: publishBuf,
 	})
 
-	expectedMessageID := messagedata.Hash(dataBase64, signatureBase64)
+	expectedMessageID := channel.Hash(dataBase64, signatureBase64)
 	require.EqualError(t, sock.err, fmt.Sprintf("invalid message field: message_id is wrong: expected %q found %q", expectedMessageID, badMessageID))
 }
 
@@ -366,11 +366,11 @@ func Test_Create_LAO_Bad_Signature(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := channel.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -392,7 +392,7 @@ func Test_Create_LAO_Bad_Signature(t *testing.T) {
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         badSignatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, expectedSignature),
+		MessageID:         channel.Hash(dataBase64, expectedSignature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -443,11 +443,11 @@ func Test_Create_LAO_Data_Not_Base64(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := channel.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -468,7 +468,7 @@ func Test_Create_LAO_Data_Not_Base64(t *testing.T) {
 		Data:              "ThisIsNotBase64Encoded",
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         expectedSignature,
-		MessageID:         messagedata.Hash(dataBase64, expectedSignature),
+		MessageID:         channel.Hash(dataBase64, expectedSignature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -540,7 +540,7 @@ func Test_Create_Invalid_Json_Schema(t *testing.T) {
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         expectedSignature,
-		MessageID:         messagedata.Hash(dataBase64, expectedSignature),
+		MessageID:         channel.Hash(dataBase64, expectedSignature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -591,12 +591,12 @@ func Test_Create_Invalid_Lao_Id(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), "wrongName")
-	trueLaoId := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := channel.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), "wrongName")
+	trueLaoId := channel.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -617,7 +617,7 @@ func Test_Create_Invalid_Lao_Id(t *testing.T) {
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         expectedSignature,
-		MessageID:         messagedata.Hash(dataBase64, expectedSignature),
+		MessageID:         channel.Hash(dataBase64, expectedSignature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -668,11 +668,11 @@ func Test_Create_LAO(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := channel.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -693,7 +693,7 @@ func Test_Create_LAO(t *testing.T) {
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -759,8 +759,8 @@ func Test_Wrong_Root_Publish(t *testing.T) {
 	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	data := mlao.LaoState{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      "channel0",
 		Creation:  123,
@@ -970,7 +970,7 @@ func Test_Handle_Publish_From_Client(t *testing.T) {
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1037,7 +1037,7 @@ func Test_Handle_Publish_From_Server(t *testing.T) {
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1104,7 +1104,7 @@ func Test_Receive_Publish_Twice(t *testing.T) {
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1172,11 +1172,11 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 	organizer := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
+	laoID := channel.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  int64(creationTime),
@@ -1197,7 +1197,7 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -1273,11 +1273,11 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 	organizer := base64.URLEncoding.EncodeToString([]byte("Somebody"))
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
+	laoID := channel.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  int64(creationTime),
@@ -1341,7 +1341,7 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 		Message: answerBuf,
 	})
 
-	expectedMessageID := messagedata.Hash(dataBase64, signatureBase64)
+	expectedMessageID := channel.Hash(dataBase64, signatureBase64)
 	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle answer message: failed to process messages: message_id is wrong: expected %q found %q", expectedMessageID, fakeMessageID))
 }
 
@@ -1578,7 +1578,7 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 

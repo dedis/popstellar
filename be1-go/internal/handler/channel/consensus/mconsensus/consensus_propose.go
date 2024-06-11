@@ -65,15 +65,15 @@ func (message ConsensusPropose) Verify() error {
 
 // GetObject implements MessageData
 func (ConsensusPropose) GetObject() string {
-	return messagedata.ConsensusObject
+	return channel.ConsensusObject
 }
 
 // GetAction implements MessageData
 func (ConsensusPropose) GetAction() string {
-	return messagedata.ConsensusActionPropose
+	return channel.ConsensusActionPropose
 }
 
 // NewEmpty implements MessageData
-func (ConsensusPropose) NewEmpty() messagedata.MessageData {
+func (ConsensusPropose) NewEmpty() channel.MessageData {
 	return &ConsensusPropose{}
 }

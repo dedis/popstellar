@@ -24,9 +24,9 @@ func (message RollCallOpen) Verify(laoPath string) error {
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode roll call update ID: %v", err)
 	}
-	expectedID := messagedata.Hash(
+	expectedID := channel.Hash(
 		RollCallFlag,
-		strings.ReplaceAll(laoPath, messagedata.RootPrefix, ""),
+		strings.ReplaceAll(laoPath, channel.RootPrefix, ""),
 		message.Opens,
 		strconv.Itoa(int(message.OpenedAt)),
 	)
@@ -49,15 +49,15 @@ func (message RollCallOpen) Verify(laoPath string) error {
 
 // GetObject implements MessageData
 func (RollCallOpen) GetObject() string {
-	return messagedata.RollCallObject
+	return channel.RollCallObject
 }
 
 // GetAction implements MessageData
 func (RollCallOpen) GetAction() string {
-	return messagedata.RollCallActionOpen
+	return channel.RollCallActionOpen
 }
 
 // NewEmpty implements MessageData
-func (RollCallOpen) NewEmpty() messagedata.MessageData {
+func (RollCallOpen) NewEmpty() channel.MessageData {
 	return &RollCallOpen{}
 }

@@ -12,7 +12,7 @@ func Test_Election_Open(t *testing.T) {
 	buf, err := testData.ReadFile("testdata/election_open.json")
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := channel.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "election", object)
@@ -33,7 +33,7 @@ func Test_Election_Open(t *testing.T) {
 func Test_Election_Open_Interface_Functions(t *testing.T) {
 	var msg ElectionOpen
 
-	require.Equal(t, messagedata.ElectionObject, msg.GetObject())
-	require.Equal(t, messagedata.ElectionActionOpen, msg.GetAction())
+	require.Equal(t, channel.ElectionObject, msg.GetObject())
+	require.Equal(t, channel.ElectionActionOpen, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }

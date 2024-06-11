@@ -16,7 +16,7 @@ func Test_Lao_Greet(t *testing.T) {
 	buf, err := testData.ReadFile("testdata/greeting.json")
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := channel.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "lao", object)
@@ -40,8 +40,8 @@ func Test_Lao_Greet(t *testing.T) {
 func Test_Lao_Greet_Interface_Functions(t *testing.T) {
 	var msg LaoGreet
 
-	require.Equal(t, messagedata.LAOObject, msg.GetObject())
-	require.Equal(t, messagedata.LAOActionGreet, msg.GetAction())
+	require.Equal(t, channel.LAOObject, msg.GetObject())
+	require.Equal(t, channel.LAOActionGreet, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }
 

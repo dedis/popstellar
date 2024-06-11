@@ -18,16 +18,16 @@ type FederationChallenge struct {
 
 // GetObject implements MessageData
 func (FederationChallenge) GetObject() string {
-	return messagedata.FederationObject
+	return channel.FederationObject
 }
 
 // GetAction implements MessageData
 func (FederationChallenge) GetAction() string {
-	return messagedata.FederationActionChallenge
+	return channel.FederationActionChallenge
 }
 
 // NewEmpty implements MessageData
-func (FederationChallenge) NewEmpty() messagedata.MessageData {
+func (FederationChallenge) NewEmpty() channel.MessageData {
 	return &FederationChallenge{}
 }
 

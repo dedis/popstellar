@@ -93,23 +93,23 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 		return err
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := channel.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
 
 	storeMessage := true
 	switch object + "#" + action {
-	case messagedata.RollCallObject + "#" + messagedata.RollCallActionClose:
+	case channel.RollCallObject + "#" + channel.RollCallActionClose:
 		storeMessage = false
 		err = h.handleRollCallClose(msg, channelPath)
-	case messagedata.RollCallObject + "#" + messagedata.RollCallActionCreate:
+	case channel.RollCallObject + "#" + channel.RollCallActionCreate:
 		err = h.handleRollCallCreate(msg, channelPath)
-	case messagedata.RollCallObject + "#" + messagedata.RollCallActionOpen:
+	case channel.RollCallObject + "#" + channel.RollCallActionOpen:
 		err = h.handleRollCallOpen(msg, channelPath)
-	case messagedata.RollCallObject + "#" + messagedata.RollCallActionReOpen:
+	case channel.RollCallObject + "#" + channel.RollCallActionReOpen:
 		err = h.handleRollCallReOpen(msg, channelPath)
-	case messagedata.ElectionObject + "#" + messagedata.ElectionActionSetup:
+	case channel.ElectionObject + "#" + channel.ElectionActionSetup:
 		storeMessage = false
 		err = h.handleElectionSetup(msg, channelPath)
 	default:
@@ -208,7 +208,7 @@ func (h *Handler) createNewAttendeeChannels(channelPath string, rollCallClose ml
 			return nil, errors.NewInvalidMessageFieldError("failed to decode poptoken: %v", err)
 		}
 
-		chirpingChannelPath := channelPath + messagedata.Social + "/" + popToken
+		chirpingChannelPath := channelPath + channel.Social + "/" + popToken
 		channels = append(channels, chirpingChannelPath)
 	}
 
@@ -242,7 +242,7 @@ func (h *Handler) handleElectionSetup(msg mmessage.Message, channelPath string) 
 		return err
 	}
 
-	laoID, _ := strings.CutPrefix(channelPath, messagedata.RootPrefix)
+	laoID, _ := strings.CutPrefix(channelPath, channel.RootPrefix)
 
 	err = electionSetup.Verify(laoID)
 	if err != nil {
@@ -314,8 +314,8 @@ func (h *Handler) createElectionKey(electionID string, electionPubKey kyber.Poin
 	}
 
 	msgData := melection.ElectionKey{
-		Object:   messagedata.ElectionObject,
-		Action:   messagedata.ElectionActionKey,
+		Object:   channel.ElectionObject,
+		Action:   channel.ElectionActionKey,
 		Election: electionID,
 		Key:      base64.URLEncoding.EncodeToString(electionPubBuf),
 	}
@@ -342,7 +342,7 @@ func (h *Handler) createElectionKey(electionID string, electionPubKey kyber.Poin
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(serverPubBuf),
 		Signature:         signature,
-		MessageID:         messagedata.Hash(newData64, signature),
+		MessageID:         channel.Hash(newData64, signature),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 

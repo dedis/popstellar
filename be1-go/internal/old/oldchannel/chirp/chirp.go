@@ -250,7 +250,7 @@ func (c *Channel) verifyMessage(msg mmessage.Message) error {
 	return nil
 }
 
-func (c *Channel) verifyChirpMessage(msg mmessage.Message, chirpMsg messagedata.Verifiable) error {
+func (c *Channel) verifyChirpMessage(msg mmessage.Message, chirpMsg channel.Verifiable) error {
 	err := chirpMsg.Verify()
 	if err != nil {
 		return xerrors.Errorf("invalid chirp message: %v", err)
@@ -309,13 +309,13 @@ func (c *Channel) broadcastViaGeneral(msg mmessage.Message) error {
 		return xerrors.Errorf("failed to decode the data: %v", err)
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := channel.GetObjectAndAction(jsonData)
 	action = "notify_" + action
 	if err != nil {
 		return xerrors.Errorf("failed to read the message data: %v", err)
 	}
 
-	timestamp, err := messagedata.GetTime(jsonData)
+	timestamp, err := channel.GetTime(jsonData)
 	if err != nil {
 		return xerrors.Errorf("failed to read the message data: %v", err)
 	}

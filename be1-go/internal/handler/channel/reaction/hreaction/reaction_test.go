@@ -41,7 +41,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 1: successfully add a reaction 👍
 
 	laoID := "lao1"
-	channelID := messagedata.RootPrefix + laoID + messagedata.Social + messagedata.Reactions
+	channelID := channel.RootPrefix + laoID + channel.Reactions
 
 	args = append(args, input{
 		name:        "Test 1",
@@ -55,7 +55,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 2: successfully add a reaction 👎
 
 	laoID = "lao2"
-	channelID = messagedata.RootPrefix + laoID + messagedata.Social + messagedata.Reactions
+	channelID = channel.RootPrefix + laoID + channel.Reactions
 
 	args = append(args, input{
 		name:        "Test 2",
@@ -69,7 +69,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 3: successfully add a reaction ❤️
 
 	laoID = "lao3"
-	channelID = messagedata.RootPrefix + laoID + messagedata.Social + messagedata.Reactions
+	channelID = channel.RootPrefix + laoID + channel.Reactions
 
 	args = append(args, input{
 		name:        "Test 3",
@@ -83,7 +83,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 4: failed to add a reaction because wrong chirpID
 
 	laoID = "lao4"
-	channelID = messagedata.RootPrefix + laoID + messagedata.Social + messagedata.Reactions
+	channelID = channel.RootPrefix + laoID + channel.Reactions
 
 	args = append(args, input{
 		name:        "Test 4",
@@ -97,7 +97,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 5: failed to add a reaction because negative timestamp
 
 	laoID = "lao5"
-	channelID = messagedata.RootPrefix + laoID + messagedata.Social + messagedata.Reactions
+	channelID = channel.RootPrefix + laoID + channel.Reactions
 
 	args = append(args, input{
 		name:        "Test 5",
@@ -111,7 +111,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 6: failed to add a reaction because didn't participate in roll-call
 
 	laoID = "lao6"
-	channelID = messagedata.RootPrefix + laoID + messagedata.Social + messagedata.Reactions
+	channelID = channel.RootPrefix + laoID + channel.Reactions
 
 	args = append(args, input{
 		name:        "Test 6",
@@ -125,7 +125,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 7: successfully delete a reaction
 
 	laoID = "lao7"
-	channelID = messagedata.RootPrefix + laoID + messagedata.Social + messagedata.Reactions
+	channelID = channel.RootPrefix + laoID + channel.Reactions
 	reactionID := "AAAAdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sK="
 
 	args = append(args, input{
@@ -140,7 +140,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 8: failed to delete a reaction because negative timestamp
 
 	laoID = "lao8"
-	channelID = messagedata.RootPrefix + laoID + messagedata.Social + messagedata.Reactions
+	channelID = channel.RootPrefix + laoID + channel.Reactions
 	reactionID = "AAAAABu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sK="
 
 	args = append(args, input{
@@ -155,7 +155,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 9: failed to delete a reaction because reaction doesn't exist
 
 	laoID = "lao9"
-	channelID = messagedata.RootPrefix + laoID + messagedata.Social + messagedata.Reactions
+	channelID = channel.RootPrefix + laoID + channel.Reactions
 	reactionID = "AAAAdBB8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sK="
 
 	args = append(args, input{
@@ -170,7 +170,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 10: failed to delete a reaction because not owner
 
 	laoID = "lao10"
-	channelID = messagedata.RootPrefix + laoID + messagedata.Social + messagedata.Reactions
+	channelID = channel.RootPrefix + laoID + channel.Reactions
 	reactionID = "AAAAdBB8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4KK="
 
 	args = append(args, input{
@@ -185,7 +185,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 11: failed to delete a reaction because didn't participate in roll-call
 
 	laoID = "lao11"
-	channelID = messagedata.RootPrefix + laoID + messagedata.Social + messagedata.Reactions
+	channelID = channel.RootPrefix + laoID + channel.Reactions
 	reactionID = "AAAAdBB8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dRYKK="
 
 	args = append(args, input{
@@ -220,7 +220,7 @@ func newReactionAddMsg(t *testing.T, channelID string, sender string, reactionCo
 	err := subs.AddChannel(channelID)
 	require.NoError(t, err)
 
-	laoPath, _ := strings.CutSuffix(channelID, messagedata.Social+messagedata.Reactions)
+	laoPath, _ := strings.CutSuffix(channelID, channel.Reactions)
 
 	if !hasInvalidField && !isNotAttendee {
 		db.On("IsAttendee", laoPath, sender).Return(true, nil)
@@ -243,7 +243,7 @@ func newReactionDeleteMsg(t *testing.T, channelID string, sender string, reactio
 	err := subs.AddChannel(channelID)
 	require.NoError(t, err)
 
-	laoPath, _ := strings.CutSuffix(channelID, messagedata.Social+messagedata.Reactions)
+	laoPath, _ := strings.CutSuffix(channelID, channel.Reactions)
 
 	if !hasInvalidField && !hasNotReaction && !isNotOwner && !isNotAttendee {
 		db.On("IsAttendee", laoPath, sender).Return(true, nil)

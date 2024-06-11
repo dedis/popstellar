@@ -14,8 +14,8 @@ func NewReactionAddMsg(t *testing.T, sender string, senderSK kyber.Scalar, react
 	timestamp int64) mmessage.Message {
 
 	reactionAdd := mreaction2.ReactionAdd{
-		Object:            messagedata.ReactionObject,
-		Action:            messagedata.ReactionActionAdd,
+		Object:            channel.ReactionObject,
+		Action:            channel.ReactionActionAdd,
 		ReactionCodepoint: reactionCodePoint,
 		ChirpID:           ChirpID,
 		Timestamp:         timestamp,
@@ -33,8 +33,8 @@ func NewReactionDeleteMsg(t *testing.T, sender string, senderSK kyber.Scalar, re
 	timestamp int64) mmessage.Message {
 
 	reactionDelete := mreaction2.ReactionDelete{
-		Object:     messagedata.ReactionObject,
-		Action:     messagedata.ReactionActionDelete,
+		Object:     channel.ReactionObject,
+		Action:     channel.ReactionActionDelete,
 		ReactionID: reactionID,
 		Timestamp:  timestamp,
 	}

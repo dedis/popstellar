@@ -12,7 +12,7 @@ func Test_Lao_State(t *testing.T) {
 	buf, err := testData.ReadFile("testdata/lao_state.json")
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := channel.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "lao", object)
@@ -44,7 +44,7 @@ func Test_Lao_State(t *testing.T) {
 func Test_Lao_State_Interface_Functions(t *testing.T) {
 	var msg LaoState
 
-	require.Equal(t, messagedata.LAOObject, msg.GetObject())
-	require.Equal(t, messagedata.LAOActionState, msg.GetAction())
+	require.Equal(t, channel.LAOObject, msg.GetObject())
+	require.Equal(t, channel.LAOActionState, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }

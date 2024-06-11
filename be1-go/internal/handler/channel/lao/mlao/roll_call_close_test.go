@@ -12,7 +12,7 @@ func Test_Roll_Call_Close(t *testing.T) {
 	buf, err := testData.ReadFile("testdata/roll_call_close.json")
 	require.NoError(t, err)
 
-	object, action, err := messagedata.GetObjectAndAction(buf)
+	object, action, err := channel.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "roll_call", object)
@@ -35,7 +35,7 @@ func Test_Roll_Call_Close(t *testing.T) {
 func Test_Roll_Call_Close_Interface_Functions(t *testing.T) {
 	var msg RollCallClose
 
-	require.Equal(t, messagedata.RollCallObject, msg.GetObject())
-	require.Equal(t, messagedata.RollCallActionClose, msg.GetAction())
+	require.Equal(t, channel.RollCallObject, msg.GetObject())
+	require.Equal(t, channel.RollCallActionClose, msg.GetAction())
 	require.Empty(t, msg.NewEmpty())
 }

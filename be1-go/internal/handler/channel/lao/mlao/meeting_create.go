@@ -27,15 +27,15 @@ type MeetingCreate struct {
 
 // GetObject implements MessageData
 func (MeetingCreate) GetObject() string {
-	return messagedata.MeetingObject
+	return channel.MeetingObject
 }
 
 // GetAction implements MessageData
 func (MeetingCreate) GetAction() string {
-	return messagedata.MeetingActionCreate
+	return channel.MeetingActionCreate
 }
 
 // NewEmpty implements MessageData
-func (MeetingCreate) NewEmpty() messagedata.MessageData {
+func (MeetingCreate) NewEmpty() channel.MessageData {
 	return &MeetingCreate{}
 }

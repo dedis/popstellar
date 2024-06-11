@@ -66,11 +66,11 @@ func Test_handleMessagesByChannel(t *testing.T) {
 	now := time.Now().Unix()
 	name := "LAO X"
 
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := channel.Hash(base64.URLEncoding.EncodeToString(publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := mroot.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -90,7 +90,7 @@ func Test_handleMessagesByChannel(t *testing.T) {
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 

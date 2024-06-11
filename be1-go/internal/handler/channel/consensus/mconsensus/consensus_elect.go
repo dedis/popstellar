@@ -35,7 +35,7 @@ func (message ConsensusElect) Verify() error {
 	}
 
 	// verify the instance ID
-	expectedID := messagedata.Hash(
+	expectedID := channel.Hash(
 		message.Object,
 		message.Key.Type,
 		message.Key.ID,
@@ -56,15 +56,15 @@ func (message ConsensusElect) Verify() error {
 
 // GetObject implements MessageData
 func (ConsensusElect) GetObject() string {
-	return messagedata.ConsensusObject
+	return channel.ConsensusObject
 }
 
 // GetAction implements MessageData
 func (ConsensusElect) GetAction() string {
-	return messagedata.ConsensusActionElect
+	return channel.ConsensusActionElect
 }
 
 // NewEmpty implements MessageData
-func (ConsensusElect) NewEmpty() messagedata.MessageData {
+func (ConsensusElect) NewEmpty() channel.MessageData {
 	return &ConsensusElect{}
 }

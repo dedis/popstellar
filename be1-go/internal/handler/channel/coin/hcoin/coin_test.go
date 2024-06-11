@@ -121,7 +121,7 @@ func Test_handleChannelCoin(t *testing.T) {
 
 func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string, mockRepository *mocks.Repository,
 	subs *state.Subscribers) inputTestHandleChannelCoin {
-	laoID := messagedata.Hash(name)
+	laoID := channel.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
 
@@ -134,7 +134,7 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         channel.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -166,7 +166,7 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 
 func newFailTestHandleChannelCoin(t *testing.T, filename string, name string,
 	subs *state.Subscribers) inputTestHandleChannelCoin {
-	laoID := messagedata.Hash(name)
+	laoID := channel.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
 
@@ -179,7 +179,7 @@ func newFailTestHandleChannelCoin(t *testing.T, filename string, name string,
 		Data:              buf64,
 		Sender:            sender,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         channel.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 

@@ -58,7 +58,7 @@ func Test_Creation_Fails_If_Identical_Questions(t *testing.T) {
 	// object and action
 	object, action := "election", "setup"
 
-	obj, act, err := messagedata.GetObjectAndAction(buf)
+	obj, act, err := channel.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, object, obj)
@@ -234,7 +234,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 		Data:              buf64,
 		Sender:            pkOrganizer,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         channel.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -286,7 +286,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 		Data:              buf64,
 		Sender:            pkOrganizer,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         channel.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -327,7 +327,7 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 	require.NoError(t, err)
 
 	object, action := "election", "cast_vote"
-	obj, act, err := messagedata.GetObjectAndAction(buf)
+	obj, act, err := channel.GetObjectAndAction(buf)
 	require.NoError(t, err)
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
@@ -361,7 +361,7 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 	require.NoError(t, err)
 
 	object, action = "election", "result"
-	obj, act, err = messagedata.GetObjectAndAction(buf)
+	obj, act, err = channel.GetObjectAndAction(buf)
 	require.NoError(t, err)
 	require.Equal(t, object, obj)
 	require.Equal(t, action, act)
@@ -450,7 +450,7 @@ func Test_Publish_Election_Open(t *testing.T) {
 		Data:              buf64,
 		Sender:            pkOrganizer,
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         channel.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -495,7 +495,7 @@ func Test_Process_Election_Open(t *testing.T) {
 		Data:              buf64,
 		Sender:            "@@@",
 		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, "h"),
+		MessageID:         channel.Hash(buf64, "h"),
 		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
@@ -628,7 +628,7 @@ func newFakeChannel(t *testing.T, secret bool) (*Channel, string) {
 	// object and action
 	object, action := "election", "setup"
 
-	obj, act, err := messagedata.GetObjectAndAction(buf)
+	obj, act, err := channel.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
 	require.Equal(t, object, obj)

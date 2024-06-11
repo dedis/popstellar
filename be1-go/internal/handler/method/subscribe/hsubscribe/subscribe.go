@@ -27,7 +27,7 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 		return nil, errors.NewJsonUnmarshalError(err.Error())
 	}
 
-	if messagedata.Root == subscribe.Params.Channel {
+	if channel.Root == subscribe.Params.Channel {
 		return &subscribe.ID, errors.NewAccessDeniedError("cannot Subscribe to root channel")
 	}
 

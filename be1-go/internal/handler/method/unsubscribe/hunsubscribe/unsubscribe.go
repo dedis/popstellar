@@ -27,7 +27,7 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 		return nil, errors.NewJsonUnmarshalError(err.Error())
 	}
 
-	if messagedata.Root == unsubscribe.Params.Channel {
+	if channel.Root == unsubscribe.Params.Channel {
 		return &unsubscribe.ID, errors.NewAccessDeniedError("cannot Unsubscribe from root channel")
 	}
 

@@ -57,15 +57,15 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 		return err
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := channel.GetObjectAndAction(jsonData)
 	if err != nil {
 		return err
 	}
 
 	switch object + "#" + action {
-	case messagedata.ChirpObject + "#" + messagedata.ChirpActionAdd:
+	case channel.ChirpObject + "#" + channel.ChirpActionAdd:
 		err = h.handleChirpAdd(channelPath, msg)
-	case messagedata.ChirpObject + "#" + messagedata.ChirpActionDelete:
+	case channel.ChirpObject + "#" + channel.ChirpActionDelete:
 		err = h.handleChirpDelete(channelPath, msg)
 	default:
 		err = errors.NewInvalidMessageFieldError("failed to Handle %s#%s, invalid object#action", object, action)
@@ -80,7 +80,7 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 		return err
 	}
 
-	generalChirpsChannelID, ok := strings.CutSuffix(channelPath, messagedata.Social+"/"+msg.Sender)
+	generalChirpsChannelID, ok := strings.CutSuffix(channelPath, channel.Social+"/"+msg.Sender)
 	if !ok {
 		return errors.NewInvalidMessageFieldError("invalid channelPath path %s", channelPath)
 	}
@@ -155,13 +155,13 @@ func (h *Handler) createChirpNotify(channelID string, msg mmessage.Message) (mme
 		return mmessage.Message{}, errors.NewInvalidMessageFieldError("failed to decode the data: %v", err)
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := channel.GetObjectAndAction(jsonData)
 	action = "notify_" + action
 	if err != nil {
 		return mmessage.Message{}, err
 	}
 
-	timestamp, err := messagedata.GetTime(jsonData)
+	timestamp, err := channel.GetTime(jsonData)
 	if err != nil {
 		return mmessage.Message{}, err
 	}
@@ -195,7 +195,7 @@ func (h *Handler) createChirpNotify(channelID string, msg mmessage.Message) (mme
 
 	signature64 := base64.URLEncoding.EncodeToString(signatureBuf)
 
-	messageID64 := messagedata.Hash(data64, signature64)
+	messageID64 := channel.Hash(data64, signature64)
 
 	newMsg := mmessage.Message{
 		Data:              data64,
