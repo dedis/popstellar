@@ -12,6 +12,7 @@ import com.github.dedis.popstellar.testutils.Base64DataUtils
 import com.github.dedis.popstellar.testutils.BundleBuilder
 import com.github.dedis.popstellar.testutils.IntentUtils
 import com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject
+import com.github.dedis.popstellar.utility.GeneralUtils.generateUsernameFromBase64
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import java.time.Instant
@@ -59,6 +60,24 @@ class LaoActivityTest {
   @Test
   fun restoreConnectionsTest() {
     Assert.assertEquals(CHANNELS, globalNetworkManager.messageSender.subscriptions)
+  }
+
+  @Test
+  fun testMnemonic() {
+    //generate a list of different public keys generated
+    val base64List = listOf(
+      Base64DataUtils.generatePublicKey().encoded,
+      Base64DataUtils.generatePublicKey().encoded,
+      Base64DataUtils.generatePublicKey().encoded,
+      Base64DataUtils.generatePublicKey().encoded,
+      Base64DataUtils.generatePublicKey().encoded,
+      Base64DataUtils.generatePublicKey().encoded
+    )
+    val mnemonics = base64List.map {b64 -> generateUsernameFromBase64(b64) }
+    println("_______________________________________________________")
+    println("Base64: ${base64List.joinToString()}")
+    println("Mnemonics: ${mnemonics.joinToString()}")
+    println("_______________________________________________________")
   }
 
   companion object {
