@@ -202,9 +202,11 @@ func (s *baseSocket) SendPopError(id *int, err error) {
 		popError = poperror.NewPopError(-6, err.Error())
 	}
 
+	description := popError.Error() + "\n" + popError.StackTraceString()
+
 	msgError := manswer.Error{
 		Code:        popError.Code(),
-		Description: popError.StackTraceString(),
+		Description: description,
 	}
 
 	answer := manswer.Answer{
@@ -241,7 +243,7 @@ func (s *baseSocket) SendResult(id int, res []mmessage.Message, missingMessagesB
 
 	if res == nil && missingMessagesByChannel == nil {
 		answer = struct {
-			JSONRPC string `json:"mjsonrpc"`
+			JSONRPC string `json:"jsonrpc"`
 			ID      int    `json:"id"`
 			Result  int    `json:"result"`
 		}{
@@ -254,7 +256,7 @@ func (s *baseSocket) SendResult(id int, res []mmessage.Message, missingMessagesB
 			}
 		}
 		answer = struct {
-			JSONRPC string             `json:"mjsonrpc"`
+			JSONRPC string             `json:"jsonrpc"`
 			ID      int                `json:"id"`
 			Result  []mmessage.Message `json:"result"`
 		}{
@@ -262,7 +264,7 @@ func (s *baseSocket) SendResult(id int, res []mmessage.Message, missingMessagesB
 		}
 	} else if missingMessagesByChannel != nil {
 		answer = struct {
-			JSONRPC string                        `json:"mjsonrpc"`
+			JSONRPC string                        `json:"jsonrpc"`
 			ID      int                           `json:"id"`
 			Result  map[string][]mmessage.Message `json:"result"`
 		}{
