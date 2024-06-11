@@ -291,8 +291,12 @@ final case class DbActor(
         storage.write(pair)
       } else {
         val numberOfReactions = storage.read(storage.CHANNEL_DATA_KEY + newReactionsChannel.toString)
-        val numberOfReactionsInt = numberOfReactions.toString.toInt + 1
-        val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfReactionsInt.toString)
+        var numberOfNewChirpsReactionsInt = numberOfReactions match {
+          case Some(numReactions) => numReactions.toInt
+          case None => 0
+        }
+        numberOfNewChirpsReactionsInt += 1
+        val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfNewChirpsReactionsInt.toString)
         storage.write(pair)
       }
     }
@@ -330,7 +334,10 @@ final case class DbActor(
         var numberOfNewChirpsReactionsInt = 0
         if (checkChannelExistence(newReactionsChannel)) {
           val numberOfNewChirpsReactions = storage.read(storage.CHANNEL_DATA_KEY + newReactionsChannel.toString)
-          numberOfNewChirpsReactionsInt = numberOfNewChirpsReactions.toString.toInt
+          numberOfNewChirpsReactionsInt = numberOfNewChirpsReactions match {
+            case Some(numReactions) => numReactions.toInt
+            case None => 0
+          }
         }
         if (LocalDateTime.now().isAfter(topChirpsTimestamp.plusSeconds(5)) || numberOfNewChirpsReactionsInt >= 5) {
           if (numberOfNewChirpsReactionsInt >= 5) {
