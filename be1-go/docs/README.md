@@ -107,132 +107,122 @@ Refer to the channel returned by `Receiver()` in the `Hub` interface.
 We use [github.com/gorilla/websocket](github.com/gorilla/websocket) to manage
 websocket connections.
 
+
 ##### Handler Structure
 
-The directory `handler` contains all the modules of the backend logic for PoP as follow:
+The `handler` directory contains all the modules of the backend logic for PoP as follows:
 
-```
+```plaintext
 handler
-├── answer                      # logic for the jsonrpc answer (getmessagesbyid and rumor answers)
+├── answer                      # Logic for the JSON-RPC answer (getMessagesById and rumor answers)
 │
-├── channel                     # directory with all the channel modules
-│   ├── authentication             # for popcha#authenticate
-│   ├── chirp                      # for chirp#add|delete
-│   ├── coin                       # for coin#post_transaction
-│   ├── consensus                  # for consensus#elect|elect_accept|prepare|promise|propose|accept|learn|failure
-│   ├── election                   # for election#key|open|cast_vote|end|result
-│   ├── federation                 # for federation#challenge_request|challenge|expect|init|result
-│   ├── lao                        # for lao#update_properties|state|greet
-│   │                                    roll_call#create|open|close|reopen
-│   │                                    message#witness
-│   │                                    meeting#create|state
-│   ├── reaction                   # for reaction#add|delete
-│   └── root                       # for lao#create
+├── channel                     # Directory with all the channel modules
+│   ├── authentication          # For popcha#authenticate
+│   ├── chirp                   # For chirp#add|delete
+│   ├── coin                    # For coin#post_transaction
+│   ├── consensus               # For consensus#elect|elect_accept|prepare|promise|propose|accept|learn|failure
+│   ├── election                # For election#key|open|cast_vote|end|result
+│   ├── federation              # For federation#challenge_request|challenge|expect|init|result
+│   ├── lao                     # For lao#update_properties|state|greet
+│   │                                roll_call#create|open|close|reopen
+│   │                                message#witness
+│   │                                meeting#create|state
+│   ├── reaction                # For reaction#add|delete
+│   └── root                    # For lao#create
 │
-├── jsonrpc                     # logic to validate the incoming message
-│                                       to switch between the query and answer modules
+├── jsonrpc                     # Logic to validate the incoming message
+│                                   and switch between the query and answer modules
 │
-├── message                     # logic to validate the signature of a message
-│                                       to switch between the channel modules
+├── message                     # Logic to validate the signature of a message
+│                                   and switch between the channel modules
 │
-├── method                      # directory with all the method modules
-│   ├── broadcast
-│   ├── catchup      
-│   ├── getmessagesbyid
-│   ├── greetserver
-│   ├── heartbeat
-│   ├── publish
-│   ├── rumor
-│   ├── subscribe
-│   └── unsubscribe
+├── method                      # Directory with all the method modules
+│   ├── broadcast
+│   ├── catchup      
+│   ├── getMessagesById
+│   ├── greetServer
+│   ├── heartbeat
+│   ├── publish
+│   ├── rumor
+│   ├── subscribe
+│   └── unsubscribe
 │
-└── query                       # logic to switch between the methods
-                                        to respond an error to the sender in case of error deeper in the flow 
+└── query                       # Logic to switch between the methods
+                                    and respond with an error to the sender in case of an error deeper in the flow 
 ```
 
 ##### Module Structure
 
-Each module can have up to 3 packages using the following convention:
-1. A package starting with the letter __h for Handler__ with all the logic to handle the messages of the module
-2. A package starting with the letter __m for Message__ with the definition of the structure of all the messages of the module
-3. A package starting with the letter __t for Type__ with all the types used inside the module that could be also use outside (e.g with the database)
+Each module can have up to three packages using the following convention:
+1. A package starting with the letter **h for Handler** contains all the logic to handle the messages of the module.
+2. A package starting with the letter **m for Message** defines the structure of all the messages of the module.
+3. A package starting with the letter **t for Type** contains all the types used inside the module that could also be used outside (e.g., with the database).
 
-For example, the implementation of the `election` channel is divided as follow:
+For example, the implementation of the `election` channel is divided as follows:
 
-```
+```plaintext
 election                    
-├── helection                   # all the logic for the messages: election#key|open|cast_vote|end|result
-├── melection                   # all the structures for the messages: election#key|open|cast_vote|end|result
-└── telection                   # the type Question used to simplify the interactions with the database
+├── helection                   # All the logic for the messages: election#key|open|cast_vote|end|result
+├── melection                   # All the structures for the messages: election#key|open|cast_vote|end|result
+└── telection                   # The type Question used to simplify interactions with the database
 ```
 
-##### Type of Modules
+### Types of Modules
 
-As the PoP protocol has different level, the modules can have different type. At the moment, we have 3 different kind of module:
+As the PoP protocol has different levels, the modules can have different types. Currently, we have four different kinds of modules:
 
-1. The __jsonRPC-level__ with the modules `jsonrpc`,`query`, and `answer`
-   ```
-   type Module interface {
-	     Handle(Socket, message in byte) error
-   }
-   ```
-2. The __method-level__ with all the module inside the directory __method__
-   ```
-   type Module interface {
-	     Handle(Socket, message in byte) (jsonRPC ID, error)
-   }
-   ```
+1. **JSON-RPC Level** with the modules `jsonrpc`, `query`, and `answer`
 
-3. The __message-level__ with the module `message` (*need to be merge with channel-level by removing the last argument*)
+```go
+type Module interface {
+    Handle(socket Socket, message []byte) error
+}
+```
 
-   ```
-   type Module interface {
-	     Handle(channelPath, message in structure, is rumor?) error
-   }
-   ```
+2. **Method Level** with all the modules inside the `method` directory
 
-4. The __channel-level__ with all the modules inside the directory __channel__
+```go
+type Module interface {
+    Handle(socket Socket, message []byte) (*int, error)
+}
+```
 
-   ```
-   type Module interface {
-	     Handle(channelPath, message in structure) error
-   }
-   ```
-##### Building the Message-Handling flow
+3. **Message Level** with the `message` module (to be merged with the channel-level by removing the last argument)
 
-The __Message-Handling flow__ is created at the `Hub` creation. It builds it once with a __Top-Down__ construction by injecting the dependencies(`States`,`Database access`) in each __Module__ before assembling them together.
+```go
+type Module interface {
+    Handle(channelPath string, message Message, isRumor bool) error
+}
+```
 
-<div align="center">
-  <img src="images/handler/handler_build.png" alt="Message-Handling Flow"/>
-</div>
+4. **Channel Level** with all the modules inside the `channel` directory
 
-##### Processing messages in the application layer
+```go
+type Module interface {
+    Handle(channelPath string, message Message) error
+}
+```
 
-The incoming messages received by the `ReadPump` are propagated up the stack to the `Hub`. The `Hub`, on receiving a message,
-processes it by invoking the `HandleIncomingMessage` method from the package `handler` and in case of `Error`, while processing the message, it will log it.
-In parallel, the `Hub` will send a `Heartbeat` every 30 seconds to all the connected servers.
+##### Building the Message-Handling Flow
 
-The flowchart below describes all the possible way for a message inside the handlers from package `handler`.
+The **Message-Handling Flow** is created during the `Hub` creation. It is built once using a **Top-Down** construction by **injecting dependencies** (`States`, `Database access`) into each module before assembling them together.
 
 <div align="center">
-  <img src="images/handler/handler.png" alt="Flowchart"/>
+  <img width="600" src="images/handler/handler_build.png" alt="Message-Handling Flow"/>
 </div>
 
-<p align="center"><i>
-  Flowchart last updated on 11.05.2024 and everything in red is still missing in the refactoring
-</i></p>
+##### Processing Messages in the Application Layer
 
-We use `Socket.SendError` to send an `Error` back to the client. We use this function only in two places, inside `HandleIncomingMessage` 
-in case the format of message is wrong or inside `handleQuery` because we should never answer an error to an answer to avoid loops.
+The `Hub` has three primary responsibilities:
 
-We use `Socket.SendResult` to send a `Result` back to the client when there is no error after processing its query. We use it only inside `query.go` at the end of each method.
-
-We check the Mid-level communication inside `channel.go`.
+1. Handling the **Incoming Messages** received from all sockets using the **Message-Handling Flow** and logging any returned **errors**.
+2. Sending a **Heartbeat** to every known neighboring server every X seconds.
+3. Sending a **Rumor** to a random neighboring server every Y seconds if needed.
 
 ##### Database (*Need to be updated*)
 
 <div align="center">
-  <img src="images/database.png" alt="Flowchart"/>
+  <img width="600"  src="images/database.png" alt="Flowchart"/>
 </div>
 
 <p align="center"><i>
