@@ -3,6 +3,7 @@ package sqlite
 import (
 	"database/sql"
 	"encoding/base64"
+	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/channel"
@@ -14,6 +15,7 @@ var dbLock sync.RWMutex
 // SQLite is a wrapper around the SQLite database.
 type SQLite struct {
 	database *sql.DB
+	log      zerolog.Logger
 }
 
 //======================================================================================================================
@@ -21,7 +23,7 @@ type SQLite struct {
 //======================================================================================================================
 
 // NewSQLite returns a new SQLite instance.
-func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
+func NewSQLite(path string, foreignKeyOn bool, log zerolog.Logger) (SQLite, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
@@ -99,7 +101,10 @@ func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
 		return SQLite{}, poperrors.NewDatabaseTransactionCommitErrorMsg("%v", err)
 	}
 
-	return SQLite{database: db}, nil
+	return SQLite{
+		database: db,
+		log:      log.With().Str("module", "sqlite").Logger(),
+	}, nil
 }
 
 func initRumorTables(tx *sql.Tx) error {
