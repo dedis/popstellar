@@ -244,16 +244,14 @@ class RollCallFragment : AbstractEventFragment {
     binding.rollCallAttendeesText.visibility = visibility
     binding.listViewAttendees.visibility = visibility
 
-    var attendeesList: List<String>? = null
+    var attendeesList: List<PublicKey>? = null
     if (isOrganizer && rollCall.isOpen) {
       // Show the list of all time scanned attendees if the roll call is opened
       // and the user is the organizer
-      attendeesList =
-          rollCallViewModel
-              .getAttendees()
-              .stream()
-              .map(PublicKey::encoded)
-              .collect(Collectors.toList())
+      attendeesList = rollCallViewModel.getAttendees()
+          .stream()
+          .map { it }
+          .collect(Collectors.toList())
 
       binding.rollCallAttendeesText.text =
           String.format(
@@ -261,7 +259,10 @@ class RollCallFragment : AbstractEventFragment {
               rollCallViewModel.getAttendees().size)
     } else if (rollCall.isClosed) {
       attendeesList =
-          rollCall.attendees.stream().map(PublicKey::encoded).collect(Collectors.toList())
+          rollCall.attendees
+              .stream()
+              .map { it }
+              .collect(Collectors.toList())
 
       // Show the list of attendees if the roll call has ended
       binding.rollCallAttendeesText.text =
@@ -294,11 +295,12 @@ class RollCallFragment : AbstractEventFragment {
   private fun retrieveAndDisplayPublicKey() {
     val popToken = popToken ?: return
     val pk = popToken.publicKey.encoded
+    val pkUsername = popToken.publicKey.getUsername()
     Timber.tag(TAG).d("key displayed is %s", pk)
 
     // Set the QR visible only if the rollcall is opened and the user isn't the organizer
     if (rollCall.isOpen) {
-      binding.rollCallPopTokenText.text = pk
+      binding.rollCallPopTokenText.text = pkUsername
       binding.rollCallPkQrCode.visibility = View.VISIBLE
       binding.rollCallPopTokenText.visibility = View.VISIBLE
     } else {
