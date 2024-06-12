@@ -5,7 +5,9 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
+	"io"
 	"os"
 	"path/filepath"
 	"popstellar/internal/crypto"
@@ -82,7 +84,7 @@ func newFakeSQLite(t *testing.T) (SQLite, string, error) {
 	require.NoError(t, err)
 
 	fn := filepath.Join(dir, "test.DB")
-	lite, err := NewSQLite(fn, false)
+	lite, err := NewSQLite(fn, false, zerolog.New(io.Discard))
 	require.NoError(t, err)
 
 	return lite, dir, nil
