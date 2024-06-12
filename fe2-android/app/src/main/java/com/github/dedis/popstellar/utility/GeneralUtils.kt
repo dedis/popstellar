@@ -115,9 +115,9 @@ object GeneralUtils {
   }
 
   /**
-   * This function generates a unique and memorable username from a base64 string.
-   * The username is composed of two words and a 4 digits number. The result is deterministic.
-   * The 4 digits number is the first 4 digits found in the base64 string, starting from the left.
+   * This function generates a unique and memorable username from a base64 string. The username is
+   * composed of two words and a 4 digits number. The result is deterministic. The 4 digits number
+   * is the first 4 digits found in the base64 string, starting from the left.
    *
    * @param input base64 string.
    * @return a username composed of two words and a 4 digits number.
@@ -141,9 +141,7 @@ object GeneralUtils {
     return "$word1$word2$number"
   }
 
-  /**
-   * Filters the digits from a base64 string and returns the first n digits.
-   */
+  /** Filters the digits from a base64 string and returns the first n digits. */
   private fun getFirstNumberDigits(b64: String, nbDigits: Int): String {
     val digits = b64.filter { it.isDigit() }
     return digits.take(nbDigits).padStart(nbDigits, '0')

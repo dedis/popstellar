@@ -248,21 +248,15 @@ class RollCallFragment : AbstractEventFragment {
     if (isOrganizer && rollCall.isOpen) {
       // Show the list of all time scanned attendees if the roll call is opened
       // and the user is the organizer
-      attendeesList = rollCallViewModel.getAttendees()
-          .stream()
-          .map { it }
-          .collect(Collectors.toList())
+      attendeesList =
+          rollCallViewModel.getAttendees().stream().map { it }.collect(Collectors.toList())
 
       binding.rollCallAttendeesText.text =
           String.format(
               resources.getString(R.string.roll_call_scanned),
               rollCallViewModel.getAttendees().size)
     } else if (rollCall.isClosed) {
-      attendeesList =
-          rollCall.attendees
-              .stream()
-              .map { it }
-              .collect(Collectors.toList())
+      attendeesList = rollCall.attendees.stream().map { it }.collect(Collectors.toList())
 
       // Show the list of attendees if the roll call has ended
       binding.rollCallAttendeesText.text =

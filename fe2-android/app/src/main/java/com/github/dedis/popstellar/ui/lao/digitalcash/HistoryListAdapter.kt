@@ -110,6 +110,10 @@ class HistoryListAdapter(
               }
               .map { outputObject: OutputObject ->
                 TransactionHistoryElement(
+                    // TODO : was previously outputObject.pubKeyHash, but was wrong (hash is smaller
+                    // than 32 bytes and is clearly not the receivers public key)
+                    // I set it to ownKey so that it works for now, but should actually show the
+                    // public key of the receiver | Maxime @Kaz-ookid 06.2025
                     if (isSender) ownKey else PublicKey(transactionObject.inputs[0].pubKey.encoded),
                     outputObject.value.toString(),
                     transactionObject.transactionId,
