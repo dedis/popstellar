@@ -1923,8 +1923,8 @@ Each Chirp data object consists of the following:
 ```
 
 After validating the chirp, the organizer’s server propagates the above message
-on the channel it is meant for (like usual) but it also creates the following
-message and sends it to a universal chirp channel ("/root/lao_id/social/chirps"):
+on the channel it is meant for (like usual) and a universal chirp channel ("/root/lao_id/social/chirps").
+It also creates the following message and sends it to the universal chirp channel ("/root/lao_id/social/chirps"):
 
 <details>
 <summary>
@@ -2037,9 +2037,10 @@ protocol, the chirp will always exist in historical records of the users’ chan
 }
 ```
 
-After validating the removal of the chirp, the organizer’s server propagates the above message
-on the channel it is meant for (like usual) but it also creates the following message and sends
-it to a universal chirp channel ("/root/lao_id/social/chirps"):
+After validating the chirp, the organizer’s server propagates the above message
+on the channel it is meant for (like usual) and a universal chirp channel ("/root/lao_id/social/chirps").
+It also creates the following message and sends it to the universal chirp channel ("/root/lao_id/social/chirps"):
+
 
 <details>
 <summary>
