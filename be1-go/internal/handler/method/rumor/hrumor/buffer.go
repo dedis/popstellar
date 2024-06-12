@@ -44,11 +44,10 @@ func (b *buffer) deleteWithDelay(ID string) {
 
 	timer := time.NewTimer(bufferEntryLifeTime)
 
-	select {
-	case <-timer.C:
-		b.Lock()
-		delete(b.values, ID)
-	}
+	<-timer.C
+
+	b.Lock()
+	delete(b.values, ID)
 }
 
 func (b *buffer) getNextRumor(senderID string, rumorID int) (mrumor.Rumor, bool) {
