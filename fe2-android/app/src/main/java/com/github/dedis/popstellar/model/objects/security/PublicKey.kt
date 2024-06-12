@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.objects.security
 
 import com.github.dedis.popstellar.model.Immutable
+import com.github.dedis.popstellar.utility.GeneralUtils
 import com.google.crypto.tink.PublicKeyVerify
 import com.google.crypto.tink.subtle.Ed25519Verify
 import java.security.GeneralSecurityException
@@ -14,13 +15,17 @@ import timber.log.Timber
 @Immutable
 class PublicKey : Base64URLData {
   private val verifier: PublicKeyVerify
+  private var toUsername: String
 
   constructor(data: ByteArray) : super(data) {
     verifier = Ed25519Verify(data)
+    toUsername = GeneralUtils.generateUsernameFromBase64(this.encoded)
   }
 
   constructor(data: String) : super(data) {
+    Timber.tag(TAG).d("public key is %s", data)
     verifier = Ed25519Verify(this.data)
+    toUsername = GeneralUtils.generateUsernameFromBase64(this.encoded)
   }
 
   fun verify(signature: Signature, data: Base64URLData): Boolean {
@@ -31,6 +36,14 @@ class PublicKey : Base64URLData {
       Timber.tag(TAG).e("Failed to verify witness signature %s", e.message)
       false
     }
+  }
+
+  /**
+   * Function that return the username of the public key The username is deterministic and is
+   * computed from the hash of the public key
+   */
+  fun getUsername(): String {
+    return toUsername
   }
 
   /**

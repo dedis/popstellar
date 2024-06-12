@@ -7,13 +7,11 @@ import androidx.lifecycle.Lifecycle
 import com.github.dedis.popstellar.model.objects.security.Base64URLData
 import io.github.novacrypto.bip39.MnemonicGenerator
 import io.github.novacrypto.bip39.wordlists.English
-import okio.ByteString.Companion.decodeBase64
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.function.Consumer
 import kotlin.math.abs
 import timber.log.Timber
-import kotlin.random.Random
 
 /** Object containing general purpose utility functions */
 object GeneralUtils {
@@ -76,7 +74,7 @@ object GeneralUtils {
    *
    * @param input base64 string
    * @param numberOfWords number of mnemonic words we want to generate
-   * @return two mnemonic words
+   * @return numberOfWords mnemonic words
    */
   @JvmStatic
   fun generateMnemonicWordFromBase64(input: String, numberOfWords: Int): String {
@@ -99,7 +97,7 @@ object GeneralUtils {
     return stringBuilder.substring(1, stringBuilder.length)
   }
 
-  private fun generateMnemonic(data: ByteArray, defaultOnFailure: Boolean = false): Array<String> {
+  private fun generateMnemonic(data: ByteArray): Array<String> {
     return try {
       val digest = MessageDigest.getInstance("SHA-256")
       val sb = StringBuilder()
@@ -111,51 +109,43 @@ object GeneralUtils {
       sb.toString().split(" ").dropLastWhile { it.isEmpty() }.toTypedArray()
     } catch (e: NoSuchAlgorithmException) {
       Timber.tag(TAG)
-        .e(e, "Error generating mnemonic for base64 string %s", Base64URLData(data).encoded)
-      if (defaultOnFailure) arrayOf("default", "username") else emptyArray()
+          .e(e, "Error generating mnemonic for base64 string %s", Base64URLData(data).encoded)
+      emptyArray()
     }
   }
 
-
-  /*
-  * This function generates a unique and memorable username from a base64 string.
-  *
-  * @param input base64 string.
-  * @return a username composed of truncated mnemonic words and a numerical suffix.
-  */
+  /**
+   * This function generates a unique and memorable username from a base64 string.
+   * The username is composed of two words and a 4 digits number. The result is deterministic.
+   * The 4 digits number is the first 4 digits found in the base64 string, starting from the left.
+   *
+   * @param input base64 string.
+   * @return a username composed of two words and a 4 digits number.
+   */
   @JvmStatic
   fun generateUsernameFromBase64(input: String): String {
-    val data = input.decodeBase64()
-    val words = data?.let { generateMnemonic(it.toByteArray(), true) }
-    if (words != null) {
-      if (words.size < 2) {
-        return "defaultUsername${Random.nextInt(0, 9999999).toString().padStart(4, '0')}"
-      }
+    if (input.isEmpty()) {
+      Timber.tag(TAG).w("Empty input for username generation")
+      return "emptyBase64"
     }
 
-    val adjective = truncateWord(words?.get(0) ?: return "", 4)
-    val noun = truncateWord(words?.get(1) ?: return "", 6)
     val number = getFirstNumberDigits(input, 4)
+    val words = generateMnemonicWordFromBase64(input, 2)
+    if (words.isEmpty()) {
+      Timber.tag(TAG).w("Empty words for username generation for base64 string %s", input)
+      return "defaultUsername$number"
+    }
 
-    return "$adjective$noun$number"
+    val (word1, word2) = words.split(" ")
+
+    return "$word1$word2$number"
   }
 
-
-  // this function filters all non digits characters and returns the first nbDigits
-  fun getFirstNumberDigits(b64: String, nbDigits: Int): String {
+  /**
+   * Filters the digits from a base64 string and returns the first n digits.
+   */
+  private fun getFirstNumberDigits(b64: String, nbDigits: Int): String {
     val digits = b64.filter { it.isDigit() }
     return digits.take(nbDigits).padStart(nbDigits, '0')
-  }
-
-
-  /*
-  * Truncates a word to the specified number of characters.
-  *
-  * @param word the word to truncate.
-  * @param length the number of characters to keep.
-  * @return the truncated word.
-  */
-  private fun truncateWord(word: String, length: Int): String {
-    return if (word.length > length) word.substring(0, length) else word
   }
 }
