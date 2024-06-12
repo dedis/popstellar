@@ -30,7 +30,8 @@ func Test_insert(t *testing.T) {
 
 	// successful insert after the delay
 
-	time.Sleep(bufferEntryLifeTime)
+	time.Sleep(bufferEntryLifeTime * 2)
+
 	err = buf.insert(rumor)
 	require.NoError(t, err)
 }
