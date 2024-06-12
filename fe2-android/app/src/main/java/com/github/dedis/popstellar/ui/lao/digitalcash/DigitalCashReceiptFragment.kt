@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.SingleEvent
 import com.github.dedis.popstellar.databinding.DigitalCashReceiptFragmentBinding
+import com.github.dedis.popstellar.model.objects.security.PublicKey
 import com.github.dedis.popstellar.ui.lao.LaoActivity.Companion.addBackNavigationCallback
 import com.github.dedis.popstellar.ui.lao.LaoActivity.Companion.obtainDigitalCashViewModel
 import com.github.dedis.popstellar.ui.lao.LaoActivity.Companion.obtainViewModel
@@ -51,11 +52,12 @@ class DigitalCashReceiptFragment : Fragment() {
     }
 
     digitalCashViewModel.getUpdateReceiptAddressEvent().observe(viewLifecycleOwner) {
-        stringEvent: SingleEvent<String> ->
-      val address = stringEvent.contentIfNotHandled
-      if (address != null) {
+        stringEvent: SingleEvent<PublicKey> ->
+      val pk = stringEvent.contentIfNotHandled
+      if (pk != null) {
         binding.digitalCashReceiptBeneficiary.text =
-            String.format(resources.getString(R.string.digital_cash_beneficiary_address), address)
+            String.format(
+                resources.getString(R.string.digital_cash_beneficiary_address), pk.getUsername())
       }
     }
   }

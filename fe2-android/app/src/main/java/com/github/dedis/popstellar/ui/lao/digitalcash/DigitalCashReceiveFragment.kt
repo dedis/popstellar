@@ -60,7 +60,7 @@ class DigitalCashReceiveFragment : Fragment() {
                   val token = digitalCashViewModel.validToken
                   val publicKey = token.publicKey
 
-                  binding.digitalCashReceiveAddress.text = publicKey.encoded
+                  binding.digitalCashReceiveAddress.text = publicKey.getUsername()
 
                   val tokenData = PopTokenData(token.publicKey)
                   val myBitmap =

@@ -60,15 +60,17 @@ class DigitalCashSendFragment : Fragment() {
       val event = booleanEvent.contentIfNotHandled
       if (event != null) {
         val currentAmount = binding.digitalCashSendAmount.text.toString()
-        val currentPublicKeySelected = binding.digitalCashSendSpinner.editText?.text.toString()
+        val currentPublicKeySelected =
+            getPublicKeyFromUsername(binding.digitalCashSendSpinner.editText?.text.toString())
 
         if (digitalCashViewModel.canPerformTransaction(
-            currentAmount, currentPublicKeySelected, -1)) {
+            currentAmount, currentPublicKeySelected.encoded, -1)) {
           try {
             val token = digitalCashViewModel.validToken
             if (canPostTransaction(token.publicKey, currentAmount.toInt())) {
               laoViewModel.addDisposable(
-                  postTransaction(Collections.singletonMap(currentPublicKeySelected, currentAmount))
+                  postTransaction(
+                          Collections.singletonMap(currentPublicKeySelected.encoded, currentAmount))
                       .subscribe(
                           {
                             digitalCashViewModel.updateReceiptAddressEvent(currentPublicKeySelected)
@@ -124,7 +126,8 @@ class DigitalCashSendFragment : Fragment() {
     /* Roll Call attendees to which we can send */
     var myArray: MutableList<String>
     try {
-      myArray = digitalCashViewModel.attendeesFromTheRollCallList.toMutableList()
+      myArray =
+          digitalCashViewModel.attendeesFromTheRollCallList.map { it.getUsername() }.toMutableList()
     } catch (e: NoRollCallException) {
       Timber.tag(TAG).d(e)
       Toast.makeText(
@@ -148,6 +151,10 @@ class DigitalCashSendFragment : Fragment() {
     binding.digitalCashSendSpinnerTv.setAdapter(adapter)
   }
 
+  private fun getPublicKeyFromUsername(username: String): PublicKey {
+    return digitalCashViewModel.attendeesFromTheRollCallList.first { it.getUsername() == username }
+  }
+
   /**
    * Removes from the list of LAO members my pop token
    *
@@ -155,7 +162,7 @@ class DigitalCashSendFragment : Fragment() {
    */
   private fun removeOwnToken(members: MutableList<String>) {
     try {
-      members.remove(digitalCashViewModel.validToken.publicKey.encoded)
+      members.remove(digitalCashViewModel.validToken.publicKey.getUsername())
     } catch (e: KeyException) {
       Timber.tag(TAG).e(e, resources.getString(R.string.error_retrieve_own_token))
     }

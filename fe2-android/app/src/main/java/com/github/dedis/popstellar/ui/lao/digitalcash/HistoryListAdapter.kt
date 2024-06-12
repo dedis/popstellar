@@ -51,7 +51,10 @@ class HistoryListAdapter(
     holder.transactionIdValue.text = transactionId
     holder.transactionProvenanceTitle.setText(
         if (element.isSender) R.string.digital_cash_to else R.string.digital_cash_from)
-    holder.transactionProvenanceValue.text = element.senderOrReceiver
+    holder.transactionProvenanceValue.text =
+        if (element.senderOrReceiver.encoded == viewModel.organizer.encoded)
+            element.senderOrReceiver.encoded + " (organizer)"
+        else element.senderOrReceiver.getUsername()
 
     val listener =
         View.OnClickListener {
@@ -96,7 +99,6 @@ class HistoryListAdapter(
       // To know if we are in input or not. We assume that no two different person
       val isSender = transactionObject.isSender(ownKey)
       val isIssuance = transactionObject.isCoinBaseTransaction
-
       transactionHistoryElements.addAll(
           transactionObject.outputs
               .stream() // If we are in input, we want all output except us. If we are not in input,
@@ -108,8 +110,7 @@ class HistoryListAdapter(
               }
               .map { outputObject: OutputObject ->
                 TransactionHistoryElement(
-                    if (isSender) outputObject.pubKeyHash
-                    else transactionObject.inputs[0].pubKey.encoded,
+                    if (isSender) ownKey else PublicKey(transactionObject.inputs[0].pubKey.encoded),
                     outputObject.value.toString(),
                     transactionObject.transactionId,
                     !isIssuance && isSender)
@@ -125,9 +126,9 @@ class HistoryListAdapter(
     val transactionTypeTitle: TextView = itemView.findViewById(R.id.history_transaction_type_title)
     val transactionTypeValue: TextView = itemView.findViewById(R.id.history_transaction_type_value)
     val transactionProvenanceTitle: TextView =
-        itemView.findViewById(R.id.history_transaction_provenance_value)
-    val transactionProvenanceValue: TextView =
         itemView.findViewById(R.id.history_transaction_provenance_title)
+    val transactionProvenanceValue: TextView =
+        itemView.findViewById(R.id.history_transaction_provenance_value)
     val transactionIdValue: TextView =
         itemView.findViewById(R.id.history_transaction_transaction_id_value)
     val detailLayout: ConstraintLayout =
@@ -136,14 +137,14 @@ class HistoryListAdapter(
   }
 
   private class TransactionHistoryElement(
-      val senderOrReceiver: String,
+      val senderOrReceiver: PublicKey,
       val value: String,
       val id: String,
       val isSender: Boolean
   ) {
 
     override fun toString(): String {
-      return "TransactionHistoryElement{senderOrReceiver='$senderOrReceiver', value='$value', " +
+      return "TransactionHistoryElement{senderOrReceiverHash='${senderOrReceiver.encoded}', senderOrReceiverUsername='${senderOrReceiver.getUsername()}',value='$value', " +
           "id='$id', isSender=$isSender}"
     }
   }

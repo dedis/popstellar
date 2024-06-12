@@ -74,14 +74,16 @@ class DigitalCashIssueFragment : Fragment() {
   private fun issueCoins() {
     /*Take the amount entered by the user*/
     val currentAmount = binding.digitalCashIssueAmount.text.toString()
-    val currentPublicKeySelected = binding.digitalCashIssueSpinner.editText!!.text.toString()
+    val currentPublicKeySelected =
+        getPublicKeyFromUsername(binding.digitalCashIssueSpinner.editText!!.text.toString())
     val radioGroup = binding.digitalCashIssueSelect.checkedRadioButtonId
 
     if (digitalCashViewModel.canPerformTransaction(
-        currentAmount, currentPublicKeySelected, radioGroup)) {
+        currentAmount, currentPublicKeySelected.encoded, radioGroup)) {
       try {
         val issueMap =
-            computeMapForPostTransaction(currentAmount, currentPublicKeySelected, radioGroup)
+            computeMapForPostTransaction(
+                currentAmount, currentPublicKeySelected.encoded, radioGroup)
         if (issueMap.isEmpty()) {
           displayToast(radioGroup)
         } else {
@@ -91,6 +93,10 @@ class DigitalCashIssueFragment : Fragment() {
         logAndShow(requireContext(), TAG, r, R.string.no_rollcall_exception)
       }
     }
+  }
+
+  private fun getPublicKeyFromUsername(username: String): PublicKey {
+    return digitalCashViewModel.attendeesFromTheRollCallList.first { it.getUsername() == username }
   }
 
   private fun displayToast(radioGroup: Int) {
@@ -165,7 +171,7 @@ class DigitalCashIssueFragment : Fragment() {
     /* Roll Call attendees to which we can send*/
     var myArray: List<String>
     try {
-      myArray = digitalCashViewModel.attendeesFromTheRollCallList
+      myArray = digitalCashViewModel.attendeesFromTheRollCallList.map { it.getUsername() }
     } catch (e: NoRollCallException) {
       Timber.tag(TAG).e(getString(R.string.error_no_rollcall_closed_in_LAO))
       Toast.makeText(
