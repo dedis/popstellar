@@ -6,7 +6,7 @@ import (
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/catchup/hcatchup/mocks"
 	mocks2 "popstellar/internal/network/socket/mocks"
-	generator2 "popstellar/internal/test/generator"
+	"popstellar/internal/test/generator"
 	"testing"
 )
 
@@ -33,10 +33,10 @@ func Test_handleCatchUp(t *testing.T) {
 	ID := 1
 	channel := "/root/lao1"
 	messagesToCatchUp := []mmessage.Message{
-		generator2.NewNothingMsg(t, "sender1", nil),
-		generator2.NewNothingMsg(t, "sender2", nil),
-		generator2.NewNothingMsg(t, "sender3", nil),
-		generator2.NewNothingMsg(t, "sender4", nil),
+		generator.NewNothingMsg(t, "sender1", nil),
+		generator.NewNothingMsg(t, "sender2", nil),
+		generator.NewNothingMsg(t, "sender3", nil),
+		generator.NewNothingMsg(t, "sender4", nil),
 	}
 
 	db.On("GetAllMessagesFromChannel", channel).Return(messagesToCatchUp, nil)
@@ -45,7 +45,7 @@ func Test_handleCatchUp(t *testing.T) {
 		name:     "Test 1",
 		socket:   fakeSocket,
 		ID:       ID,
-		message:  generator2.NewCatchupQuery(t, ID, channel),
+		message:  generator.NewCatchupQuery(t, ID, channel),
 		expected: messagesToCatchUp,
 		isError:  false,
 	})
@@ -63,7 +63,7 @@ func Test_handleCatchUp(t *testing.T) {
 		name:     "Test 2",
 		socket:   fakeSocket,
 		ID:       ID,
-		message:  generator2.NewCatchupQuery(t, ID, channel),
+		message:  generator.NewCatchupQuery(t, ID, channel),
 		isError:  true,
 		contains: "DB is disconnected",
 	})

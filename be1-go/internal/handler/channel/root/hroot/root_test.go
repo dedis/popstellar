@@ -10,7 +10,7 @@ import (
 	"popstellar/internal/handler/channel/root/hroot/mocks"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/state"
-	generator2 "popstellar/internal/test/generator"
+	"popstellar/internal/test/generator"
 	"popstellar/internal/validation"
 	"testing"
 	"time"
@@ -86,7 +86,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	// Test 4: error when message data is not lao_create
 	args = append(args, input{
 		name:     "Test 4",
-		msg:      generator2.NewNothingMsg(t, owner, nil),
+		msg:      generator.NewNothingMsg(t, owner, nil),
 		isError:  true,
 		contains: "failed to validate schema",
 	})
@@ -119,7 +119,7 @@ func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockReposi
 		goodLaoName,
 	)
 
-	msg := generator2.NewLaoCreateMsg(t, sender, laoID, laoName, creation, organizer, nil)
+	msg := generator.NewLaoCreateMsg(t, sender, laoID, laoName, creation, organizer, nil)
 
 	mockRepository.On("HasChannel", channel.RootPrefix+laoID).Return(false, nil)
 	if !isError {

@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/handler/channel"
-	mreaction2 "popstellar/internal/handler/channel/reaction/mreaction"
+	"popstellar/internal/handler/channel/reaction/mreaction"
 	"popstellar/internal/handler/message/mmessage"
 	"testing"
 )
@@ -13,7 +13,7 @@ import (
 func NewReactionAddMsg(t *testing.T, sender string, senderSK kyber.Scalar, reactionCodePoint, ChirpID string,
 	timestamp int64) mmessage.Message {
 
-	reactionAdd := mreaction2.ReactionAdd{
+	reactionAdd := mreaction.ReactionAdd{
 		Object:            channel.ReactionObject,
 		Action:            channel.ReactionActionAdd,
 		ReactionCodepoint: reactionCodePoint,
@@ -32,7 +32,7 @@ func NewReactionAddMsg(t *testing.T, sender string, senderSK kyber.Scalar, react
 func NewReactionDeleteMsg(t *testing.T, sender string, senderSK kyber.Scalar, reactionID string,
 	timestamp int64) mmessage.Message {
 
-	reactionDelete := mreaction2.ReactionDelete{
+	reactionDelete := mreaction.ReactionDelete{
 		Object:     channel.ReactionObject,
 		Action:     channel.ReactionActionDelete,
 		ReactionID: reactionID,

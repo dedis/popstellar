@@ -3,16 +3,15 @@ package network
 import (
 	"context"
 	"fmt"
+	"github.com/gorilla/websocket"
+	"github.com/rs/zerolog"
+	"golang.org/x/xerrors"
 	"net/http"
 	"popstellar/internal/logger"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/hub"
 	"sync"
 	"time"
-
-	"github.com/gorilla/websocket"
-	"github.com/rs/zerolog"
-	"golang.org/x/xerrors"
 )
 
 type key int

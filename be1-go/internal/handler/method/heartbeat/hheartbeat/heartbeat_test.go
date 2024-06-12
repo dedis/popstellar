@@ -2,7 +2,7 @@ package hheartbeat
 
 import (
 	"encoding/json"
-	mock2 "github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 	"popstellar/internal/handler/method/getmessagesbyid/mgetmessagesbyid"
@@ -61,7 +61,7 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	db.On("GetParamsForGetMessageByID", heartbeatMsgIDs1).Return(expected1, nil)
 	queries.On("GetNextID").Return(1)
-	queries.On("AddQuery", 1, mock2.AnythingOfType("mgetmessagesbyid.GetMessagesById"))
+	queries.On("AddQuery", 1, mock.AnythingOfType("mgetmessagesbyid.GetMessagesById"))
 
 	args = append(args, input{
 		name:     "Test 1",

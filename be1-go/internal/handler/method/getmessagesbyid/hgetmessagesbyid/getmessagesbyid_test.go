@@ -6,7 +6,7 @@ import (
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/getmessagesbyid/hgetmessagesbyid/mocks"
 	mocks2 "popstellar/internal/network/socket/mocks"
-	generator2 "popstellar/internal/test/generator"
+	"popstellar/internal/test/generator"
 	"testing"
 )
 
@@ -34,14 +34,14 @@ func Test_handleGetMessagesByID(t *testing.T) {
 
 	expected1 := make(map[string][]mmessage.Message)
 	expected1["/root"] = []mmessage.Message{
-		generator2.NewNothingMsg(t, "sender1", nil),
-		generator2.NewNothingMsg(t, "sender2", nil),
-		generator2.NewNothingMsg(t, "sender3", nil),
-		generator2.NewNothingMsg(t, "sender4", nil),
+		generator.NewNothingMsg(t, "sender1", nil),
+		generator.NewNothingMsg(t, "sender2", nil),
+		generator.NewNothingMsg(t, "sender3", nil),
+		generator.NewNothingMsg(t, "sender4", nil),
 	}
 	expected1["/root/lao1"] = []mmessage.Message{
-		generator2.NewNothingMsg(t, "sender5", nil),
-		generator2.NewNothingMsg(t, "sender6", nil),
+		generator.NewNothingMsg(t, "sender5", nil),
+		generator.NewNothingMsg(t, "sender6", nil),
 	}
 
 	paramsGetMessagesByID1 := make(map[string][]string)
@@ -58,7 +58,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 		name:     "Test 1",
 		socket:   fakeSocket,
 		ID:       ID,
-		message:  generator2.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID1),
+		message:  generator.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID1),
 		expected: expected1,
 		isError:  false,
 	})
@@ -77,7 +77,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 		name:     "Test 2",
 		socket:   fakeSocket,
 		ID:       ID,
-		message:  generator2.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID2),
+		message:  generator.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID2),
 		isError:  true,
 		contains: "DB is disconnected",
 	})

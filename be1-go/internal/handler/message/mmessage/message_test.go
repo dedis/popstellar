@@ -3,11 +3,10 @@ package mmessage
 import (
 	"embed"
 	"encoding/base64"
+	"github.com/stretchr/testify/require"
 	"popstellar/internal/handler/channel/lao/mlao"
 	"popstellar/internal/handler/channel/root/mroot"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 )
 
 //go:embed testdata/*.json

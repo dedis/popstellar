@@ -1,7 +1,7 @@
 package mquery
 
 import (
-	message "popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 )
 
 const (
@@ -18,7 +18,7 @@ const (
 
 // Base defines all the common attributes for a Query RPC message
 type Base struct {
-	message.JSONRPCBase
+	mjsonrpc.JSONRPCBase
 
 	Method string `json:"method"`
 }

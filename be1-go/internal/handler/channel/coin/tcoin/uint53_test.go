@@ -1,9 +1,8 @@
 package tcoin
 
 import (
-	"testing"
-
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 func Test_Uint53Max_Equivalent(t *testing.T) {

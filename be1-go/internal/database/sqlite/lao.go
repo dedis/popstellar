@@ -8,7 +8,7 @@ import (
 	"go.dedis.ch/kyber/v3"
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/channel"
-	mlao2 "popstellar/internal/handler/channel/lao/mlao"
+	"popstellar/internal/handler/channel/lao/mlao"
 	"popstellar/internal/handler/message/mmessage"
 	"time"
 )
@@ -43,14 +43,14 @@ func (s *SQLite) CheckPrevOpenOrReopenID(channelPath, nextID string) (bool, erro
 
 	switch lastAction {
 	case channel.RollCallActionOpen:
-		var rollCallOpen mlao2.RollCallOpen
+		var rollCallOpen mlao.RollCallOpen
 		err = json.Unmarshal(lastMsg, &rollCallOpen)
 		if err != nil {
 			return false, poperrors.NewInternalServerError("failed to unmarshal last roll call open message: %v", err)
 		}
 		return rollCallOpen.UpdateID == nextID, nil
 	case channel.RollCallActionReOpen:
-		var rollCallReOpen mlao2.RollCallReOpen
+		var rollCallReOpen mlao.RollCallReOpen
 		err = json.Unmarshal(lastMsg, &rollCallReOpen)
 		if err != nil {
 			return false, poperrors.NewInternalServerError("failed to unmarshal last roll call re open message: %v", err)
@@ -79,14 +79,14 @@ func (s *SQLite) CheckPrevCreateOrCloseID(channelPath, nextID string) (bool, err
 
 	switch lastAction {
 	case channel.RollCallActionCreate:
-		var rollCallCreate mlao2.RollCallCreate
+		var rollCallCreate mlao.RollCallCreate
 		err = json.Unmarshal(lastMsg, &rollCallCreate)
 		if err != nil {
 			return false, poperrors.NewInternalServerError("failed to unmarshal last roll call create message: %v", err)
 		}
 		return rollCallCreate.ID == nextID, nil
 	case channel.RollCallActionClose:
-		var rollCallClose mlao2.RollCallClose
+		var rollCallClose mlao.RollCallClose
 		err = json.Unmarshal(lastMsg, &rollCallClose)
 		if err != nil {
 			return false, poperrors.NewInternalServerError("failed to unmarshal last roll call close message: %v", err)

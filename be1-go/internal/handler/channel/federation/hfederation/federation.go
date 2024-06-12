@@ -12,11 +12,11 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/channel"
-	mfederation2 "popstellar/internal/handler/channel/federation/mfederation"
-	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/handler/channel/federation/mfederation"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/publish/mpublish"
-	method2 "popstellar/internal/handler/method/subscribe/msubscribe"
+	"popstellar/internal/handler/method/subscribe/msubscribe"
 	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/logger"
 	"popstellar/internal/network/socket"
@@ -49,18 +49,18 @@ type Repository interface {
 	GetOrganizerPubKey(laoID string) (kyber.Point, error)
 
 	// IsChallengeValid returns true if the challenge is valid and not used yet
-	IsChallengeValid(senderPk string, challenge mfederation2.FederationChallenge, channelPath string) error
+	IsChallengeValid(senderPk string, challenge mfederation.FederationChallenge, channelPath string) error
 
 	// RemoveChallenge removes the challenge from the database to avoid reuse
-	RemoveChallenge(challenge mfederation2.FederationChallenge) error
+	RemoveChallenge(challenge mfederation.FederationChallenge) error
 
 	// GetFederationExpect return a FederationExpect where the organizer is
 	// the given public keys
-	GetFederationExpect(senderPk string, remotePk string, Challenge mfederation2.FederationChallenge, channelPath string) (mfederation2.FederationExpect, error)
+	GetFederationExpect(senderPk string, remotePk string, Challenge mfederation.FederationChallenge, channelPath string) (mfederation.FederationExpect, error)
 
 	// GetFederationInit return a FederationExpect where the organizer is
 	// the given public keys
-	GetFederationInit(senderPk string, remotePk string, Challenge mfederation2.FederationChallenge, channelPath string) (mfederation2.FederationInit, error)
+	GetFederationInit(senderPk string, remotePk string, Challenge mfederation.FederationChallenge, channelPath string) (mfederation.FederationInit, error)
 
 	// GetServerKeys get the keys of the server
 	GetServerKeys() (kyber.Point, kyber.Scalar, error)
@@ -127,7 +127,7 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 // a challenge message is then stored and broadcast on the same channelPath.
 // The FederationChallengeRequest message is neither stored nor broadcast
 func (h *Handler) handleRequestChallenge(msg mmessage.Message, channelPath string) error {
-	var requestChallenge mfederation2.FederationChallengeRequest
+	var requestChallenge mfederation.FederationChallengeRequest
 	err := msg.UnmarshalData(&requestChallenge)
 	if err != nil {
 		return err
@@ -146,7 +146,7 @@ func (h *Handler) handleRequestChallenge(msg mmessage.Message, channelPath strin
 
 	challengeValue := hex.EncodeToString(randomBytes)
 	expirationTime := time.Now().Add(time.Minute * 5).Unix()
-	federationChallenge := mfederation2.FederationChallenge{
+	federationChallenge := mfederation.FederationChallenge{
 		Object:     channel.FederationObject,
 		Action:     channel.FederationActionChallenge,
 		Value:      challengeValue,
@@ -172,7 +172,7 @@ func (h *Handler) handleRequestChallenge(msg mmessage.Message, channelPath strin
 // handleExpect checks that the message is from the local organizer and that
 // it contains a valid challenge, then stores the msg
 func (h *Handler) handleExpect(msg mmessage.Message, channelPath string) error {
-	var federationExpect mfederation2.FederationExpect
+	var federationExpect mfederation.FederationExpect
 	err := msg.UnmarshalData(&federationExpect)
 	if err != nil {
 		return err
@@ -190,7 +190,7 @@ func (h *Handler) handleExpect(msg mmessage.Message, channelPath string) error {
 		return err
 	}
 
-	var challenge mfederation2.FederationChallenge
+	var challenge mfederation.FederationChallenge
 	err = federationExpect.ChallengeMsg.UnmarshalData(&challenge)
 	if err != nil {
 		return err
@@ -221,7 +221,7 @@ func (h *Handler) handleExpect(msg mmessage.Message, channelPath string) error {
 // it contains a valid challenge, then stores the msg,
 // connect to the server and send the embedded challenge
 func (h *Handler) handleInit(msg mmessage.Message, channelPath string) error {
-	var federationInit mfederation2.FederationInit
+	var federationInit mfederation.FederationInit
 	err := msg.UnmarshalData(&federationInit)
 	if err != nil {
 		return err
@@ -239,7 +239,7 @@ func (h *Handler) handleInit(msg mmessage.Message, channelPath string) error {
 		return err
 	}
 
-	var challenge mfederation2.FederationChallenge
+	var challenge mfederation.FederationChallenge
 	err = federationInit.ChallengeMsg.UnmarshalData(&challenge)
 	if err != nil {
 		return err
@@ -268,14 +268,14 @@ func (h *Handler) handleInit(msg mmessage.Message, channelPath string) error {
 		return err
 	}
 
-	subscribeMsg := method2.Subscribe{
+	subscribeMsg := msubscribe.Subscribe{
 		Base: mquery.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: "subscribe",
 		},
-		Params: method2.SubscribeParams{Channel: channelPath},
+		Params: msubscribe.SubscribeParams{Channel: channelPath},
 	}
 
 	subscribeBytes, err := json.Marshal(subscribeMsg)
@@ -294,7 +294,7 @@ func (h *Handler) handleInit(msg mmessage.Message, channelPath string) error {
 }
 
 func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string) error {
-	var federationChallenge mfederation2.FederationChallenge
+	var federationChallenge mfederation.FederationChallenge
 	err := msg.UnmarshalData(&federationChallenge)
 	if err != nil {
 		return err
@@ -319,7 +319,7 @@ func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string) erro
 		return errors.NewAccessDeniedError("This challenge has expired: %v", federationChallenge)
 	}
 
-	result := mfederation2.FederationResult{
+	result := mfederation.FederationResult{
 		Object:       channel.FederationObject,
 		Action:       channel.FederationActionResult,
 		Status:       "success",
@@ -350,7 +350,7 @@ func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string) erro
 }
 
 func (h *Handler) handleResult(msg mmessage.Message, channelPath string) error {
-	var result mfederation2.FederationResult
+	var result mfederation.FederationResult
 	err := msg.UnmarshalData(&result)
 	if err != nil {
 		return err
@@ -377,7 +377,7 @@ func (h *Handler) handleResult(msg mmessage.Message, channelPath string) error {
 		return errors.NewInvalidMessageFieldError("invalid public key contained in FederationResult message")
 	}
 
-	var federationChallenge mfederation2.FederationChallenge
+	var federationChallenge mfederation.FederationChallenge
 	err = result.ChallengeMsg.UnmarshalData(&federationChallenge)
 	if err != nil {
 		return err
@@ -506,7 +506,7 @@ func (h *Handler) createMessage(data channel.MessageData) (mmessage.Message, err
 func (h *Handler) publishTo(msg mmessage.Message, channelPath string) error {
 	publishMsg := mpublish.Publish{
 		Base: mquery.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: "publish",

@@ -2,10 +2,9 @@ package mlao
 
 import (
 	"encoding/json"
+	"github.com/stretchr/testify/require"
 	"popstellar/internal/handler/channel"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 )
 
 func Test_Lao_Update(t *testing.T) {

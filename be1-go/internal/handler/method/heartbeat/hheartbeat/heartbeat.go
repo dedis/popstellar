@@ -5,7 +5,7 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/method/getmessagesbyid/mgetmessagesbyid"
-	method2 "popstellar/internal/handler/method/heartbeat/mheartbeat"
+	"popstellar/internal/handler/method/heartbeat/mheartbeat"
 	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
 )
@@ -33,7 +33,7 @@ func New(queries Queries, db Repository) *Handler {
 }
 
 func (h *Handler) Handle(socket socket.Socket, byteMessage []byte) (*int, error) {
-	var heartbeat method2.Heartbeat
+	var heartbeat mheartbeat.Heartbeat
 	err := json.Unmarshal(byteMessage, &heartbeat)
 	if err != nil {
 		return nil, errors.NewJsonUnmarshalError(err.Error())

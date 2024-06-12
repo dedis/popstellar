@@ -2,10 +2,9 @@ package melection
 
 import (
 	"encoding/base64"
+	"popstellar/internal/errors"
 	"popstellar/internal/handler/channel"
 	"strings"
-
-	"popstellar/internal/errors"
 )
 
 // ElectionOpen defines a message data

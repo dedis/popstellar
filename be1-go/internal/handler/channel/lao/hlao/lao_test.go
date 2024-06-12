@@ -8,7 +8,7 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/channel/lao/hlao/mocks"
-	mlao2 "popstellar/internal/handler/channel/lao/mlao"
+	"popstellar/internal/handler/channel/lao/mlao"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/state"
 	"popstellar/internal/test/generator"
@@ -186,7 +186,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 12: Error when sender is not the organizer of the handler for ElectionSetup
 	args = append(args, input{
 		name: "Test 12",
-		msg: newElectionSetupMsg(t, ownerPublicKey, wrongSender, laoID, laoID, electionsName, question, mlao2.OpenBallot,
+		msg: newElectionSetupMsg(t, ownerPublicKey, wrongSender, laoID, laoID, electionsName, question, mlao.OpenBallot,
 			creation, start, end, true, db),
 		channelPath: laoID,
 		isError:     true,
@@ -198,7 +198,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 13: Error when ElectionSetup handler is not the same as the channelPath
 	args = append(args, input{
 		name: "Test 13",
-		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, wrongLaoID, laoID, electionsName, question, mlao2.OpenBallot,
+		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, wrongLaoID, laoID, electionsName, question, mlao.OpenBallot,
 			creation, start, end, true, db),
 		channelPath: laoID,
 		isError:     true,
@@ -208,7 +208,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 14: Error when ElectionSetup ID is not the expected hash
 	args = append(args, input{
 		name: "Test 14",
-		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, "wrongName", question, mlao2.OpenBallot,
+		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, "wrongName", question, mlao.OpenBallot,
 			creation, start, end, true, db),
 		channelPath: laoID,
 		isError:     true,
@@ -218,7 +218,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 15: Error when proposedStart is before createdAt
 	args = append(args, input{
 		name: "Test 15",
-		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, question, mlao2.OpenBallot,
+		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, question, mlao.OpenBallot,
 			creation, creation-1, end, true, db),
 		channelPath: laoID,
 		isError:     true,
@@ -228,7 +228,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 16: Error when proposedEnd is before proposedStart
 	args = append(args, input{
 		name: "Test 16",
-		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, question, mlao2.OpenBallot,
+		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, question, mlao.OpenBallot,
 			creation, start, start-1, true, db),
 		channelPath: laoID,
 		isError:     true,
@@ -238,7 +238,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 17: Error when ElectionSetup question is empty
 	args = append(args, input{
 		name: "Test 17",
-		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, "", mlao2.OpenBallot,
+		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, "", mlao.OpenBallot,
 			creation, start, end, true, db),
 		channelPath: laoID,
 		isError:     true,
@@ -248,7 +248,7 @@ func Test_handleChannelLao(t *testing.T) {
 	//Test 18: Error when question hash is not the same as the expected hash
 	args = append(args, input{
 		name: "Test 18",
-		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, wrongQuestion, mlao2.OpenBallot,
+		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, wrongQuestion, mlao.OpenBallot,
 			creation, start, end, true, db),
 		channelPath: laoID,
 		isError:     true,
@@ -262,7 +262,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 19: Success for ElectionSetup message
 	args = append(args, input{
 		name: "Test 19",
-		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, question, mlao2.OpenBallot,
+		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, question, mlao.OpenBallot,
 			creation, start, end, false, db),
 		channelPath: laoID,
 		isError:     false,
@@ -296,7 +296,7 @@ func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation,
 	mockRepository *mocks.Repository) mmessage.Message {
 
 	createID := channel.Hash(
-		mlao2.RollCallFlag,
+		mlao.RollCallFlag,
 		strings.ReplaceAll(laoID, channel.RootPrefix, ""),
 		strconv.Itoa(int(creation)),
 		goodLaoName,
@@ -315,7 +315,7 @@ func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, opene
 	mockRepository *mocks.Repository) mmessage.Message {
 
 	openID := channel.Hash(
-		mlao2.RollCallFlag,
+		mlao.RollCallFlag,
 		strings.ReplaceAll(laoID, channel.RootPrefix, ""),
 		base64.URLEncoding.EncodeToString([]byte("opens")),
 		strconv.Itoa(int(openedAt)),
@@ -337,7 +337,7 @@ func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, clo
 	mockRepository *mocks.Repository) mmessage.Message {
 
 	closeID := channel.Hash(
-		mlao2.RollCallFlag,
+		mlao.RollCallFlag,
 		strings.ReplaceAll(laoID, channel.RootPrefix, ""),
 		base64.URLEncoding.EncodeToString([]byte("closes")),
 		strconv.Itoa(int(closedAt)),
@@ -367,13 +367,13 @@ func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 	isError bool, mockRepository *mocks.Repository) mmessage.Message {
 
 	electionSetupID := channel.Hash(
-		mlao2.ElectionFlag,
+		mlao.ElectionFlag,
 		setupLao,
 		strconv.Itoa(int(createdAt)),
 		"electionName",
 	)
 
-	var questions []mlao2.ElectionSetupQuestion
+	var questions []mlao.ElectionSetupQuestion
 
 	var questionField string
 	if question != "" {
@@ -383,7 +383,7 @@ func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 	}
 
 	questionID := channel.Hash("Question", electionSetupID, questionField)
-	questions = append(questions, mlao2.ElectionSetupQuestion{
+	questions = append(questions, mlao.ElectionSetupQuestion{
 		ID:            questionID,
 		Question:      question,
 		VotingMethod:  "Plurality",

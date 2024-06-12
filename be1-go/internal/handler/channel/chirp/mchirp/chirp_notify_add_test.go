@@ -2,10 +2,9 @@ package mchirp
 
 import (
 	"encoding/json"
+	"github.com/stretchr/testify/require"
 	"popstellar/internal/handler/channel"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 )
 
 func Test_Chirp_Notify_Add(t *testing.T) {

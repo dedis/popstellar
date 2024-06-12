@@ -3,10 +3,9 @@ package mheartbeat
 import (
 	"embed"
 	"encoding/json"
+	"github.com/stretchr/testify/require"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 )
 
 //go:embed testdata/*.json
