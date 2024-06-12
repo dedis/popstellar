@@ -5,14 +5,14 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/handler/channel"
-	mchirp2 "popstellar/internal/handler/channel/chirp/mchirp"
+	"popstellar/internal/handler/channel/chirp/mchirp"
 	"popstellar/internal/handler/message/mmessage"
 	"testing"
 )
 
 func NewChirpAddMsg(t *testing.T, sender string, senderSK kyber.Scalar, timestamp int64) mmessage.Message {
 
-	chirpAdd := mchirp2.ChirpAdd{
+	chirpAdd := mchirp.ChirpAdd{
 		Object:    channel.ChirpObject,
 		Action:    channel.ChirpActionAdd,
 		Text:      "just a chirp",
@@ -30,7 +30,7 @@ func NewChirpAddMsg(t *testing.T, sender string, senderSK kyber.Scalar, timestam
 func NewChirpDeleteMsg(t *testing.T, sender string, senderSK kyber.Scalar, chirpID string,
 	timestamp int64) mmessage.Message {
 
-	chirpAdd := mchirp2.ChirpDelete{
+	chirpAdd := mchirp.ChirpDelete{
 		Object:    channel.ChirpObject,
 		Action:    channel.ChirpActionDelete,
 		ChirpID:   chirpID,

@@ -9,7 +9,7 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/channel/election/melection"
-	mlao2 "popstellar/internal/handler/channel/lao/mlao"
+	"popstellar/internal/handler/channel/lao/mlao"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/validation"
 	"strings"
@@ -133,7 +133,7 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 }
 
 func (h *Handler) handleRollCallCreate(msg mmessage.Message, channelPath string) error {
-	var rollCallCreate mlao2.RollCallCreate
+	var rollCallCreate mlao.RollCallCreate
 	err := msg.UnmarshalData(&rollCallCreate)
 	if err != nil {
 		return err
@@ -143,7 +143,7 @@ func (h *Handler) handleRollCallCreate(msg mmessage.Message, channelPath string)
 }
 
 func (h *Handler) handleRollCallOpen(msg mmessage.Message, channelPath string) error {
-	var rollCallOpen mlao2.RollCallOpen
+	var rollCallOpen mlao.RollCallOpen
 	err := msg.UnmarshalData(&rollCallOpen)
 	if err != nil {
 		return err
@@ -165,7 +165,7 @@ func (h *Handler) handleRollCallOpen(msg mmessage.Message, channelPath string) e
 }
 
 func (h *Handler) handleRollCallReOpen(msg mmessage.Message, channelPath string) error {
-	var rollCallReOpen mlao2.RollCallReOpen
+	var rollCallReOpen mlao.RollCallReOpen
 	err := msg.UnmarshalData(&rollCallReOpen)
 	if err != nil {
 		return err
@@ -175,7 +175,7 @@ func (h *Handler) handleRollCallReOpen(msg mmessage.Message, channelPath string)
 }
 
 func (h *Handler) handleRollCallClose(msg mmessage.Message, channelPath string) error {
-	var rollCallClose mlao2.RollCallClose
+	var rollCallClose mlao.RollCallClose
 	err := msg.UnmarshalData(&rollCallClose)
 	if err != nil {
 		return err
@@ -201,7 +201,7 @@ func (h *Handler) handleRollCallClose(msg mmessage.Message, channelPath string) 
 	return h.db.StoreRollCallClose(newChannels, channelPath, msg)
 }
 
-func (h *Handler) createNewAttendeeChannels(channelPath string, rollCallClose mlao2.RollCallClose) ([]string, error) {
+func (h *Handler) createNewAttendeeChannels(channelPath string, rollCallClose mlao.RollCallClose) ([]string, error) {
 	channels := make([]string, 0, len(rollCallClose.Attendees))
 
 	for _, popToken := range rollCallClose.Attendees {
@@ -233,7 +233,7 @@ func (h *Handler) createNewAttendeeChannels(channelPath string, rollCallClose ml
 }
 
 func (h *Handler) handleElectionSetup(msg mmessage.Message, channelPath string) error {
-	var electionSetup mlao2.ElectionSetup
+	var electionSetup mlao.ElectionSetup
 	err := msg.UnmarshalData(&electionSetup)
 	if err != nil {
 		return err
@@ -285,11 +285,11 @@ func (h *Handler) verifySenderLao(channelPath string, msg mmessage.Message) erro
 	return nil
 }
 
-func (h *Handler) storeElection(msg mmessage.Message, electionSetup mlao2.ElectionSetup, channelPath string) error {
+func (h *Handler) storeElection(msg mmessage.Message, electionSetup mlao.ElectionSetup, channelPath string) error {
 	electionPubKey, electionSecretKey := h.generateKeys()
 	electionPath := channelPath + "/" + electionSetup.ID
 
-	if electionSetup.Version == mlao2.SecretBallot {
+	if electionSetup.Version == mlao.SecretBallot {
 		electionKeyMsg, err := h.createElectionKey(electionSetup.ID, electionPubKey)
 		if err != nil {
 			return err

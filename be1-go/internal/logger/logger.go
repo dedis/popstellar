@@ -11,10 +11,9 @@
 package logger
 
 import (
+	"github.com/rs/zerolog"
 	"os"
 	"time"
-
-	"github.com/rs/zerolog"
 )
 
 // Version contains the current or build version. This variable can be changed

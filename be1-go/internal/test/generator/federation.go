@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/handler/channel"
-	mfederation2 "popstellar/internal/handler/channel/federation/mfederation"
+	"popstellar/internal/handler/channel/federation/mfederation"
 	"popstellar/internal/handler/message/mmessage"
 	"testing"
 )
@@ -13,7 +13,7 @@ import (
 func NewFederationChallengeRequest(t *testing.T, sender string,
 	timestamp int64, senderSk kyber.Scalar) mmessage.Message {
 
-	challengeRequest := mfederation2.FederationChallengeRequest{
+	challengeRequest := mfederation.FederationChallengeRequest{
 		Object:    channel.FederationObject,
 		Action:    channel.FederationActionChallengeRequest,
 		Timestamp: timestamp,
@@ -30,7 +30,7 @@ func NewFederationChallengeRequest(t *testing.T, sender string,
 func NewFederationChallenge(t *testing.T, sender string, value string,
 	validUntil int64, senderSk kyber.Scalar) mmessage.Message {
 
-	challenge := mfederation2.FederationChallenge{
+	challenge := mfederation.FederationChallenge{
 		Object:     channel.FederationObject,
 		Action:     channel.FederationActionChallenge,
 		Value:      value,
@@ -49,7 +49,7 @@ func NewFederationExpect(t *testing.T, sender, laoId, serverAddress,
 	publicKey string, challengeMsg mmessage.Message,
 	senderSk kyber.Scalar) mmessage.Message {
 
-	expect := mfederation2.FederationExpect{
+	expect := mfederation.FederationExpect{
 		Object:        channel.FederationObject,
 		Action:        channel.FederationActionExpect,
 		LaoId:         laoId,
@@ -70,7 +70,7 @@ func NewFederationInit(t *testing.T, sender, laoId, serverAddress,
 	publicKey string, challengeMsg mmessage.Message,
 	senderSk kyber.Scalar) mmessage.Message {
 
-	expect := mfederation2.FederationInit{
+	expect := mfederation.FederationInit{
 		Object:        channel.FederationObject,
 		Action:        channel.FederationActionInit,
 		LaoId:         laoId,
@@ -90,7 +90,7 @@ func NewFederationInit(t *testing.T, sender, laoId, serverAddress,
 func NewSuccessFederationResult(t *testing.T, sender, publicKey string,
 	challengeMsg mmessage.Message, senderSk kyber.Scalar) mmessage.Message {
 
-	result := mfederation2.FederationResult{
+	result := mfederation.FederationResult{
 		Object:       channel.FederationObject,
 		Action:       channel.FederationActionResult,
 		Status:       "success",
@@ -110,7 +110,7 @@ func NewSuccessFederationResult(t *testing.T, sender, publicKey string,
 func NewFailedFederationResult(t *testing.T, sender, reason string,
 	challengeMsg mmessage.Message, senderSk kyber.Scalar) mmessage.Message {
 
-	result := mfederation2.FederationResult{
+	result := mfederation.FederationResult{
 		Object:       channel.FederationObject,
 		Action:       channel.FederationActionResult,
 		Status:       "failure",

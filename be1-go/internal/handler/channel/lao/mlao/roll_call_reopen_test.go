@@ -2,10 +2,9 @@ package mlao
 
 import (
 	"encoding/json"
+	"github.com/stretchr/testify/require"
 	"popstellar/internal/handler/channel"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 )
 
 func Test_Roll_Call_ReOpen(t *testing.T) {

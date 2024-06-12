@@ -1,9 +1,8 @@
 package manswer
 
 import (
-	"testing"
-
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 func Test_Error_Constructor(t *testing.T) {

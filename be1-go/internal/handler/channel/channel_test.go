@@ -2,9 +2,8 @@ package channel
 
 import (
 	"embed"
-	"testing"
-
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 //go:embed testdata/*.json

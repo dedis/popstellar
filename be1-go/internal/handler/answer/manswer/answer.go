@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"golang.org/x/xerrors"
-	message "popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 )
 
 // Answer defines the JSON RPC answer message
 type Answer struct {
-	message.JSONRPCBase
+	mjsonrpc.JSONRPCBase
 
 	ID     *int    `json:"id"`
 	Result *Result `json:"result,omitempty"`

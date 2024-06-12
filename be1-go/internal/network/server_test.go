@@ -1,6 +1,8 @@
 package network
 
 import (
+	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/require"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -8,9 +10,6 @@ import (
 	"popstellar/internal/old/hub"
 	"popstellar/internal/old/hub/standard_hub"
 	"testing"
-
-	"github.com/rs/zerolog"
-	"github.com/stretchr/testify/require"
 )
 
 func TestServerStartAndShutdown(t *testing.T) {

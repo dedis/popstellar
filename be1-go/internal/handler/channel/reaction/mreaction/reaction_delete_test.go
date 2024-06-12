@@ -2,10 +2,9 @@ package mreaction
 
 import (
 	"encoding/json"
+	"github.com/stretchr/testify/require"
 	"popstellar/internal/handler/channel"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 )
 
 func Test_Reaction_Delete(t *testing.T) {

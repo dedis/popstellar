@@ -3,10 +3,9 @@ package manswer
 import (
 	"embed"
 	"encoding/json"
-	message "popstellar/internal/handler/jsonrpc/mjsonrpc"
-	"testing"
-
 	"github.com/stretchr/testify/require"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"testing"
 )
 
 //go:embed testdata/*.json
@@ -16,18 +15,18 @@ func Test_Answer_General(t *testing.T) {
 	buf, err := testData.ReadFile("testdata/general_empty.json")
 	require.NoError(t, err)
 
-	var msg message.JSONRPCBase
+	var msg mjsonrpc.JSONRPCBase
 
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
 
 	require.Equal(t, "2.0", msg.JSONRPC)
 
-	rpctype, err := message.GetType(buf)
+	rpctype, err := mjsonrpc.GetType(buf)
 	require.NoError(t, err)
 
 	// > should be of type "answer"
-	require.Equal(t, message.RPCTypeAnswer, rpctype)
+	require.Equal(t, mjsonrpc.RPCTypeAnswer, rpctype)
 
 	var answer Answer
 

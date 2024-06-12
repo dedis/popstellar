@@ -3,10 +3,9 @@ package mreaction
 import (
 	"embed"
 	"encoding/json"
+	"github.com/stretchr/testify/require"
 	"popstellar/internal/handler/channel"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 )
 
 //go:embed testdata/*.json

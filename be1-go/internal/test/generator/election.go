@@ -5,14 +5,14 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/handler/channel"
-	melection2 "popstellar/internal/handler/channel/election/melection"
+	"popstellar/internal/handler/channel/election/melection"
 	"popstellar/internal/handler/message/mmessage"
 	"testing"
 )
 
 func NewElectionOpenMsg(t *testing.T, sender, lao, electionID string, openedAt int64,
 	senderSK kyber.Scalar) mmessage.Message {
-	electionOpen := melection2.ElectionOpen{
+	electionOpen := melection.ElectionOpen{
 		Object:   channel.ElectionObject,
 		Action:   channel.ElectionActionOpen,
 		Lao:      lao,
@@ -30,7 +30,7 @@ func NewElectionOpenMsg(t *testing.T, sender, lao, electionID string, openedAt i
 
 func NewElectionCloseMsg(t *testing.T, sender, lao, electionID, registeredVotes string, openedAt int64,
 	senderSK kyber.Scalar) mmessage.Message {
-	electionEnd := melection2.ElectionEnd{
+	electionEnd := melection.ElectionEnd{
 		Object:          channel.ElectionObject,
 		Action:          channel.ElectionActionEnd,
 		Lao:             lao,
@@ -47,9 +47,9 @@ func NewElectionCloseMsg(t *testing.T, sender, lao, electionID, registeredVotes 
 	return msg
 }
 
-func NewElectionResultMsg(t *testing.T, sender string, questions []melection2.ElectionResultQuestion,
+func NewElectionResultMsg(t *testing.T, sender string, questions []melection.ElectionResultQuestion,
 	senderSK kyber.Scalar) mmessage.Message {
-	electionResult := melection2.ElectionResult{
+	electionResult := melection.ElectionResult{
 		Object:    channel.ElectionObject,
 		Action:    channel.ElectionActionResult,
 		Questions: questions,

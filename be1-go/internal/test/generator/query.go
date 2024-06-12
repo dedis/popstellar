@@ -12,7 +12,7 @@ import (
 	"popstellar/internal/handler/method/publish/mpublish"
 	"popstellar/internal/handler/method/rumor/mrumor"
 	"popstellar/internal/handler/method/subscribe/msubscribe"
-	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
+	"popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
 	"testing"
 )
@@ -61,7 +61,7 @@ func NewSubscribeQuery(t *testing.T, queryID int, channel string) []byte {
 }
 
 func NewUnsubscribeQuery(t *testing.T, queryID int, channel string) []byte {
-	unsubscribe := method2.Unsubscribe{
+	unsubscribe := munsubscribe.Unsubscribe{
 		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -70,7 +70,7 @@ func NewUnsubscribeQuery(t *testing.T, queryID int, channel string) []byte {
 			Method: mquery.MethodUnsubscribe,
 		},
 		ID:     queryID,
-		Params: method2.UnsubscribeParams{Channel: channel},
+		Params: munsubscribe.UnsubscribeParams{Channel: channel},
 	}
 
 	unsubscribeBuf, err := json.Marshal(&unsubscribe)

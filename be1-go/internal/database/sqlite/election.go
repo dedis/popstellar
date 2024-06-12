@@ -11,7 +11,7 @@ import (
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/channel/election/melection"
 	"popstellar/internal/handler/channel/election/telection"
-	mlao2 "popstellar/internal/handler/channel/lao/mlao"
+	"popstellar/internal/handler/channel/lao/mlao"
 	"popstellar/internal/handler/message/mmessage"
 	"time"
 )
@@ -162,7 +162,7 @@ func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{},
 		return nil, poperrors.NewDatabaseSelectErrorMsg("roll call close message data: %v", err)
 	}
 
-	var rollCallClose mlao2.RollCallClose
+	var rollCallClose mlao.RollCallClose
 	err = json.Unmarshal(rollCallCloseBytes, &rollCallClose)
 	if err != nil {
 		return nil, poperrors.NewJsonUnmarshalError("roll call close message data: %v", err)
@@ -175,19 +175,19 @@ func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{},
 	return attendeesMap, nil
 }
 
-func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (mlao2.ElectionSetup, error) {
+func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (mlao.ElectionSetup, error) {
 
 	var electionSetupBytes []byte
 	err := tx.QueryRow(selectElectionSetup, electionPath, channel.ElectionObject, channel.ElectionActionSetup).
 		Scan(&electionSetupBytes)
 	if err != nil {
-		return mlao2.ElectionSetup{}, poperrors.NewDatabaseSelectErrorMsg("election setup message data: %v", err)
+		return mlao.ElectionSetup{}, poperrors.NewDatabaseSelectErrorMsg("election setup message data: %v", err)
 	}
 
-	var electionSetup mlao2.ElectionSetup
+	var electionSetup mlao.ElectionSetup
 	err = json.Unmarshal(electionSetupBytes, &electionSetup)
 	if err != nil {
-		return mlao2.ElectionSetup{}, poperrors.NewJsonUnmarshalError("election setup message data: %v", err)
+		return mlao.ElectionSetup{}, poperrors.NewJsonUnmarshalError("election setup message data: %v", err)
 	}
 	return electionSetup, nil
 }
@@ -273,7 +273,7 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 	return questions, nil
 }
 
-func getQuestionsFromMessage(electionSetup mlao2.ElectionSetup) (map[string]telection.Question, error) {
+func getQuestionsFromMessage(electionSetup mlao.ElectionSetup) (map[string]telection.Question, error) {
 
 	questions := make(map[string]telection.Question)
 	for _, question := range electionSetup.Questions {
