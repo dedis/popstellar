@@ -153,7 +153,7 @@ Feature: Cast a vote
   # upon a non-attendee casting a valid vote.
   @castVote6
   Scenario: Non attendee casting a vote should return an error
-    Given def nonAttendee = call createMockClient
+    Given def nonAttendee = call createMockFrontend
     And def validCastVote =
       """
         {

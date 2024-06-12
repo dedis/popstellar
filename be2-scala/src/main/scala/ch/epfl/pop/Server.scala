@@ -50,8 +50,8 @@ object Server {
 
       // Create necessary actors for server-server communications
       val monitorRef: ActorRef = system.actorOf(Monitor.props(dbActorRef))
-      val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
-      val gossipManagerRef: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
+      val gossipManagerRef: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef))
+      val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipManagerRef, messageRegistry))
 
       // Setup routes
       def publishSubscribeRoute: RequestContext => Future[RouteResult] = {

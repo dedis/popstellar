@@ -5,13 +5,13 @@ import akka.pattern.{AskableActorRef, ask}
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, ResultObject}
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, ResultMessage, ResultObject}
 import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import ch.epfl.pop.pubsub.graph.validators.SchemaVerifierSuite._
+import ch.epfl.pop.pubsub.graph.validators.SchemaVerifierSuite.*
 import ch.epfl.pop.storage.DbActor
 import org.scalatest.BeforeAndAfterAll
-import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
+import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike
 import org.scalatest.matchers.should.Matchers
 import util.examples.MessageExample
 
@@ -94,7 +94,7 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
     lazy val dbActorRef = mockDbWithMessages(Nil)
     val message: GraphMessage = new AnswerGenerator(dbActorRef).generateAnswer(Right(rpcCatchupReq))
 
-    def resultObject: ResultObject = new ResultObject(Nil)
+    def resultObject: ResultObject = new ResultObject(ResultMessage(Nil))
 
     val expected = Right(JsonRpcResponse(
       RpcValidator.JSON_RPC_VERSION,
@@ -113,7 +113,7 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
     lazy val dbActorRef = mockDbWithMessages(messages)
     val gmsg: GraphMessage = new AnswerGenerator(dbActorRef).generateAnswer(Right(rpcCatchupReq))
 
-    def resultObject: ResultObject = new ResultObject(messages)
+    def resultObject: ResultObject = new ResultObject(ResultMessage(messages))
 
     val expected = Right(JsonRpcResponse(
       RpcValidator.JSON_RPC_VERSION,

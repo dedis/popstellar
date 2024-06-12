@@ -8,9 +8,10 @@ import akka.stream.FlowShape
 import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Partition, Sink}
 import ch.epfl.pop.decentralized.{GossipManager, Monitor}
 import ch.epfl.pop.model.network.MethodType.*
-import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType}
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultInt, ResultMap, ResultObject, ResultRumor}
+import ch.epfl.pop.pubsub.PublishSubscribe.gossipManager
 import ch.epfl.pop.pubsub.graph.*
-import ch.epfl.pop.pubsub.graph.handlers.{ProcessMessagesHandler, ParamsHandler, ParamsWithMapHandler, ParamsWithMessageHandler}
+import ch.epfl.pop.pubsub.graph.handlers.{ParamsHandler, ParamsWithMapHandler, ParamsWithMessageHandler, ProcessMessagesHandler}
 
 object PublishSubscribe {
 
@@ -73,8 +74,7 @@ object PublishSubscribe {
 
         val requestPartition = builder.add(validateRequests(clientActorRef, messageRegistry))
 
-        val gossipMonitorPartition = builder.add(GossipManager.monitorResponse(gossipManager))
-        val getMsgByIdResponsePartition = builder.add(ProcessMessagesHandler.getMsgByIdResponseHandler(messageRegistry))
+        val responsePartitionGraph = builder.add(responsePartition(messageRegistry, gossipManager))
 
         // ResponseHandler messages do not go in the merger
         val merger = builder.add(Merge[GraphMessage](totalPorts - 1))
@@ -93,7 +93,7 @@ object PublishSubscribe {
 
         methodPartitioner.out(portPipelineError) ~> merger
         methodPartitioner.out(portRpcRequest) ~> requestPartition ~> merger
-        methodPartitioner.out(portRpcResponse) ~> gossipMonitorPartition ~> getMsgByIdResponsePartition ~> droppingSink
+        methodPartitioner.out(portRpcResponse) ~> responsePartitionGraph ~> droppingSink
 
         merger ~> broadcast
         broadcast ~> jsonRpcAnswerGenerator ~> jsonRpcAnswerer ~> output
@@ -103,6 +103,58 @@ object PublishSubscribe {
         FlowShape(input.in, output.out)
       }
   })
+
+  def responsePartition(messageRegistry: MessageRegistry, gossipManager: AskableActorRef)(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] =
+    Flow.fromGraph(GraphDSL.create() {
+      implicit builder: GraphDSL.Builder[NotUsed] =>
+        {
+          import GraphDSL.Implicits._
+
+          /* partitioner port numbers */
+          val portResponseMonitor = 0
+          val portGetMsgById = 1
+          val portRumorAns = 2
+          val portError = 3
+          val totalPorts = 4
+
+          /* building blocks */
+          val input = builder.add(Flow[GraphMessage].collect { case msg: GraphMessage => msg })
+
+          val responsePartitioner = builder.add(Partition[GraphMessage](
+            totalPorts,
+            {
+              case Right(m: JsonRpcResponse) => m.result match {
+                  case Some(resultObject) =>
+                    resultObject.result match
+                      case Some(ResultInt(_))   => portResponseMonitor
+                      case Some(ResultMap(_))   => portGetMsgById
+                      case Some(ResultRumor(_)) => portRumorAns
+                      case _                    => portError
+                  case None if m.error.isDefined => portResponseMonitor
+                  case _                         => portError
+                }
+              case _ => portError
+            }
+          ))
+
+          val merger = builder.add(Merge[GraphMessage](totalPorts))
+
+          val gossipMonitorPartition = builder.add(GossipManager.monitorResponse(gossipManager))
+          val getMsgByIdResponsePartition = builder.add(ProcessMessagesHandler.getMsgByIdResponseHandler(messageRegistry))
+          val rumorStateAnsPartition = builder.add(ProcessMessagesHandler.rumorStateAnsHandler(messageRegistry))
+
+          /* glue the components together */
+          input ~> responsePartitioner
+
+          responsePartitioner.out(portResponseMonitor) ~> gossipMonitorPartition ~> merger
+          responsePartitioner.out(portGetMsgById) ~> getMsgByIdResponsePartition ~> merger
+          responsePartitioner.out(portRumorAns) ~> rumorStateAnsPartition ~> merger
+          responsePartitioner.out(portError) ~> merger
+
+          /* close the shape */
+          FlowShape(input.in, merger.out)
+        }
+    })
 
   def validateRequests(clientActorRef: ActorRef, messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] =
     Flow.fromGraph(GraphDSL.create() {
@@ -120,7 +172,8 @@ object PublishSubscribe {
           val portGetMessagesById = 6
           val portGreetServer = 7
           val portRumor = 8
-          val totalPorts = 9
+          val portRumorState = 9
+          val totalPorts = 10
 
           /* building blocks */
           val input = builder.add(Flow[GraphMessage].collect { case msg: GraphMessage => msg })
@@ -139,6 +192,7 @@ object PublishSubscribe {
                   case MethodType.get_messages_by_id => portGetMessagesById
                   case MethodType.greet_server       => portGreetServer
                   case MethodType.rumor              => portRumor
+                  case MethodType.rumor_state        => portRumorState
                   case _                             => portPipelineError
                 }
 
@@ -154,8 +208,9 @@ object PublishSubscribe {
           val getMessagesByIdPartition = builder.add(ParamsWithMapHandler.getMessagesByIdHandler(dbActorRef))
           val greetServerPartition = builder.add(ParamsHandler.greetServerHandler(clientActorRef))
           val rumorPartition = builder.add(ParamsHandler.rumorHandler(dbActorRef, messageRegistry))
-          val gossipManagerPartition = builder.add(GossipManager.gossipHandler(gossipManager))
+          val gossipManagerPartition = builder.add(GossipManager.gossipHandler(gossipManager, clientActorRef))
           val gossipStartPartition = builder.add(GossipManager.startGossip(gossipManager, clientActorRef))
+          val rumorStatePartition = builder.add(ParamsHandler.rumorStateHandler(dbActorRef))
 
           val merger = builder.add(Merge[GraphMessage](totalPorts))
 
@@ -163,7 +218,7 @@ object PublishSubscribe {
           input ~> jsonRpcContentValidator ~> methodPartitioner
 
           methodPartitioner.out(portPipelineError) ~> merger
-          methodPartitioner.out(portParamsWithMessage) ~> gossipStartPartition ~> hasMessagePartition ~> merger
+          methodPartitioner.out(portParamsWithMessage) ~> hasMessagePartition ~> gossipStartPartition ~> merger
           methodPartitioner.out(portSubscribe) ~> subscribePartition ~> merger
           methodPartitioner.out(portUnsubscribe) ~> unsubscribePartition ~> merger
           methodPartitioner.out(portCatchup) ~> catchupPartition ~> merger
@@ -171,6 +226,7 @@ object PublishSubscribe {
           methodPartitioner.out(portGetMessagesById) ~> getMessagesByIdPartition ~> merger
           methodPartitioner.out(portGreetServer) ~> greetServerPartition ~> merger
           methodPartitioner.out(portRumor) ~> gossipManagerPartition ~> rumorPartition ~> merger
+          methodPartitioner.out(portRumorState) ~> rumorStatePartition ~> merger
 
           /* close the shape */
           FlowShape(input.in, merger.out)

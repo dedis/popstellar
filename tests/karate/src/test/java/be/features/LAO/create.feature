@@ -110,7 +110,7 @@ Feature: Create a pop LAO
 
   @create6
   Scenario: Create Lao request with public key different from the sender public key should fail
-    Given def notOrganizer = call createMockClient
+    Given def notOrganizer = call createMockFrontend
     And def laoCreateRequest =
       """
         {

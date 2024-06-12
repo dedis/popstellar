@@ -43,5 +43,4 @@ class RumorSuite extends FunSuite with Matchers {
     encodedDecoded.messages.values.zip(rumor.messages.values).foreach((arrMsg1, arrMsg2) => arrMsg1 shouldBe arrMsg2)
     encodedDecoded.messages.keys shouldBe rumor.messages.keys
   }
-
 }

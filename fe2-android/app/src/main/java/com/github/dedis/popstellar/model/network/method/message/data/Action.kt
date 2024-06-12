@@ -40,6 +40,10 @@ enum class Action
   KEY("key"),
   POST_TRANSACTION("post_transaction"),
   AUTH("authenticate"),
+  CHALLENGE_REQUEST("challenge_request"),
+  CHALLENGE("challenge"),
+  INIT("init"),
+  EXPECT("expect"),
   RUMOR("rumor");
 
   /**

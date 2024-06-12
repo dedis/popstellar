@@ -202,7 +202,7 @@ class CastVoteOpenBallotFragmentTest {
     private const val PLURALITY = "Plurality"
     private val laoSubject = BehaviorSubject.createDefault(LaoView(LAO))
     private val ROLL_CALL =
-      RollCall("id", "id", "rc", 0L, 1L, 2L, EventState.CLOSED, HashSet(), "nowhere", "none")
+      RollCall("id", "id", "rc", 0L, 1L, 2L, EventState.CLOSED, LinkedHashSet(), "nowhere", "none")
     private val ELECTION_ID = generateElectionSetupId(LAO_ID, CREATION, TITLE)
     private val ELECTION_QUESTION_1 =
       ElectionQuestion(

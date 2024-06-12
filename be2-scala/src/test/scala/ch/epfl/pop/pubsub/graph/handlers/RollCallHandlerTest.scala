@@ -5,10 +5,11 @@ import akka.pattern.{AskableActorRef, ask}
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.model.objects.DbActorNAckException
+import ch.epfl.pop.pubsub.{MessageRegistry, PublishSubscribe}
 import ch.epfl.pop.pubsub.graph.PipelineError
 import ch.epfl.pop.storage.DbActor
 import org.scalatest.BeforeAndAfterAll
-import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
+import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike
 import org.scalatest.matchers.should.Matchers
 import util.examples.data.{CloseRollCallMessages, CreateRollCallMessages, OpenRollCallMessages, ReopenRollCallMessages}
 
@@ -89,75 +90,77 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     system.actorOf(dbActorMock)
   }
 
+  private def injectDb(dbRef: AskableActorRef) = PublishSubscribe.buildGraph(Actor.noSender, dbRef, Actor.noSender, MessageRegistry(), Actor.noSender, Actor.noSender, Actor.noSender, false)
+
   test("CreateRollCall should fail if the database fails storing the message") {
     val mockedDB = mockDbWithNack
-    val rc = new RollCallHandler(mockedDB)
+    injectDb(mockedDB)
     val request = CreateRollCallMessages.createRollCall
-    rc.handleCreateRollCall(request) shouldBe an[Left[PipelineError, _]]
+    RollCallHandler.handleCreateRollCall(request) shouldBe an[Left[PipelineError, _]]
     system.stop(mockedDB.actorRef)
   }
 
   test("CreateRollCall should succeed if the rollcall doesn't already exist in the database") {
     val mockedDB = mockDbRollCallNotCreated
-    val rc = new RollCallHandler(mockedDB)
+    injectDb(mockedDB)
     val request = CreateRollCallMessages.createRollCall
-    rc.handleCreateRollCall(request) should matchPattern { case Right(_) => }
+    RollCallHandler.handleCreateRollCall(request) should matchPattern { case Right(_) => }
     system.stop(mockedDB.actorRef)
   }
 
   test("CreateRollCall should fail if the rollcall already exists in database") {
     val mockedDB = mockDbRollCallAlreadyCreated
-    val rc = new RollCallHandler(mockedDB)
+    injectDb(mockedDB)
     val request = CreateRollCallMessages.createRollCall
-    rc.handleCreateRollCall(request) shouldBe an[Left[PipelineError, _]]
+    RollCallHandler.handleCreateRollCall(request) shouldBe an[Left[PipelineError, _]]
     system.stop(mockedDB.actorRef)
   }
 
   test("OpenRollCall should fail if the rollcall does not exist in database") {
     val mockedDB = mockDbRollCallNotCreated
-    val rc = new RollCallHandler(mockedDB)
+    injectDb(mockedDB)
     val request = OpenRollCallMessages.openRollCall
-    rc.handleOpenRollCall(request) shouldBe an[Left[PipelineError, _]]
+    RollCallHandler.handleOpenRollCall(request) shouldBe an[Left[PipelineError, _]]
     system.stop(mockedDB.actorRef)
   }
 
   test("OpenRollCall should succeed if the rollcall is already created") {
     val mockedDB = mockDbRollCallAlreadyCreated
-    val rc = new RollCallHandler(mockedDB)
+    injectDb(mockedDB)
     val request = OpenRollCallMessages.openRollCall
-    rc.handleOpenRollCall(request) should matchPattern { case Right(_) => }
+    RollCallHandler.handleOpenRollCall(request) should matchPattern { case Right(_) => }
     system.stop(mockedDB.actorRef)
   }
 
   test("OpenRollCall should fail if the database fails storing the message") {
     val mockedDB = mockDbWithNack
-    val rc = new RollCallHandler(mockedDB)
+    injectDb(mockedDB)
     val request = OpenRollCallMessages.openRollCall
-    rc.handleOpenRollCall(request) shouldBe an[Left[PipelineError, _]]
+    RollCallHandler.handleOpenRollCall(request) shouldBe an[Left[PipelineError, _]]
     system.stop(mockedDB.actorRef)
   }
 
   test("ReopenRollcall should succeed if the rollcall is already created") {
     val mockedDB = mockDbRollCallAlreadyCreated
-    val rc = new RollCallHandler(mockedDB)
+    injectDb(mockedDB)
     val request = ReopenRollCallMessages.reopenRollCall
-    rc.handleReopenRollCall(request) should matchPattern { case Right(_) => }
+    RollCallHandler.handleReopenRollCall(request) should matchPattern { case Right(_) => }
     system.stop(mockedDB.actorRef)
   }
 
   test("ReopenRollcall should fail if the database fails storing the message") {
     val mockedDB = mockDbWithNack
-    val rc = new RollCallHandler(mockedDB)
+    injectDb(mockedDB)
     val request = ReopenRollCallMessages.reopenRollCall
-    rc.handleReopenRollCall(request) shouldBe an[Left[PipelineError, _]]
+    RollCallHandler.handleReopenRollCall(request) shouldBe an[Left[PipelineError, _]]
     system.stop(mockedDB.actorRef)
   }
 
   test("CloseRollcall should fail if the database fails storing the message") {
     val mockedDB = mockDbWithNack
-    val rc = new RollCallHandler(mockedDB)
+    injectDb(mockedDB)
     val request = CloseRollCallMessages.closeRollCall
-    rc.handleCloseRollCall(request) shouldBe an[Left[PipelineError, _]]
+    RollCallHandler.handleCloseRollCall(request) shouldBe an[Left[PipelineError, _]]
     system.stop(mockedDB.actorRef)
   }
 

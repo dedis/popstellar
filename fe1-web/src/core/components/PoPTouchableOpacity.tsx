@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleProp, TouchableOpacity, ViewStyle } from 'react-native';
+import { TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
 
 import { ExtendType } from 'core/types';
 /**

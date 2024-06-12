@@ -2,14 +2,16 @@ package ch.epfl.pop.json
 
 import ch.epfl.pop.IOHelper
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.{GreetServer, ParamsWithChannel, ParamsWithMap, ParamsWithMessage, Rumor}
-import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
+import ch.epfl.pop.model.network.method.{GreetServer, ParamsWithChannel, ParamsWithMap, ParamsWithMessage, Rumor, RumorState}
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultMessage, ResultObject, ResultRumor}
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import org.scalatest.Inspectors.forEvery
 import org.scalatest.funsuite.AnyFunSuite as FunSuite
 import org.scalatest.matchers.should.Matchers
 import spray.json.*
+import util.examples.MessageExample
+import util.examples.Rumor.RumorExample
 
 import scala.collection.immutable.{HashMap, Set}
 
@@ -274,7 +276,7 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     val jsonRpcRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(jsonRumor)
     val rumor: Rumor = jsonRpcRequest.getParams.asInstanceOf[Rumor]
 
-    rumor.rumorId should equal(1)
+    rumor.rumorId should equal(0)
     rumor.senderPk should equal(PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")))
     rumor.messages.keys.size should equal(2)
     rumor.messages.values.foreach { x =>
@@ -285,6 +287,19 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
   test("parse rumor jsonRPC fails on missing messages ") {
     val jsonRumor = IOHelper.readJsonFromPath("src/test/scala/util/examples/json/rumor/wrong_rumor_missing_messages.json")
     an[IllegalArgumentException] should be thrownBy JsonRpcRequest.buildFromJson(jsonRumor)
+  }
+
+  test("parse correctly jsonRPC to rumorState") {
+    val jsonRumorState = IOHelper.readJsonFromPath("src/test/scala/util/examples/json/rumor_state/rumor_state.json")
+    val jsonRpcRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(jsonRumorState)
+    val rumor: RumorState = jsonRpcRequest.getParams.asInstanceOf[RumorState]
+
+    rumor.state shouldBe Map(
+      PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")) -> 3,
+      PublicKey(Base64Data("RZOPi59Iy5gkpS2mkpfQJNl44HKc2jVbF0iTGm0RvfU=")) -> 5,
+      PublicKey(Base64Data("CfG2ByLhtLJH--T2BL9hZ6eGm11tpkE-5KuvysSCY0I=")) -> 1,
+      PublicKey(Base64Data("r8cG9HyJ1FGBke_5IblCdH19mvy39MvLFSArVmY3FpY=")) -> 10
+    )
   }
 
   test("parse correctly get_messages_by_id answers") {
@@ -308,6 +323,24 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     answerFromJson.id should equal(rpcId)
     answerFromJson.result.get should equal(resultObject)
     answerFromJson.error should equal(None)
+  }
+
+  test("result object parses list of rumor correctly") {
+    val resultRumor: ResultObject = new ResultObject(ResultRumor(List(RumorExample.rumorExample)))
+    val resultRumorJsValue = HighLevelProtocol.ResultObjectFormat.write(resultRumor)
+    val resultRumorFromJson = HighLevelProtocol.ResultObjectFormat.read(resultRumorJsValue)
+
+    resultRumor shouldBe resultRumorFromJson
+
+  }
+
+  test("result object parses list of message correctly") {
+    val resultMessage: ResultObject = new ResultObject(ResultMessage(List(MessageExample.MESSAGE)))
+    val resultMessageJsValue = HighLevelProtocol.ResultObjectFormat.write(resultMessage)
+    val resultMessageFromJson = HighLevelProtocol.ResultObjectFormat.read(resultMessageJsValue)
+
+    resultMessage shouldBe resultMessageFromJson
+
   }
 
   test("Parser correctly encodes and decodes MethodType and rejects incorrect type") {

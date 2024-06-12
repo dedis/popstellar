@@ -18,6 +18,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionOpen
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup
+import com.github.dedis.popstellar.model.network.method.message.data.federation.Challenge
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao
 import com.github.dedis.popstellar.model.network.method.message.data.lao.GreetLao
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao
@@ -39,6 +40,7 @@ import com.github.dedis.popstellar.utility.handler.data.ConsensusHandler
 import com.github.dedis.popstellar.utility.handler.data.ElectionHandler
 import com.github.dedis.popstellar.utility.handler.data.HandlerContext
 import com.github.dedis.popstellar.utility.handler.data.LaoHandler
+import com.github.dedis.popstellar.utility.handler.data.LinkedOrganizationsHandler
 import com.github.dedis.popstellar.utility.handler.data.MeetingHandler
 import com.github.dedis.popstellar.utility.handler.data.ReactionHandler
 import com.github.dedis.popstellar.utility.handler.data.RollCallHandler
@@ -67,7 +69,8 @@ object DataRegistryModule {
       chirpHandler: ChirpHandler,
       reactionHandler: ReactionHandler,
       transactionCoinHandler: TransactionCoinHandler,
-      witnessMessageHandler: WitnessingHandler
+      witnessMessageHandler: WitnessingHandler,
+      linkedOrganizationsHandler: LinkedOrganizationsHandler
   ): DataRegistry {
 
     val builder = DataRegistry.Builder()
@@ -249,6 +252,13 @@ object DataRegistryModule {
       transactionCoinHandler.handlePostTransactionCoin(context, postTransactionCoin)
     }
 
+    // Federation
+    builder.add(Objects.FEDERATION, Action.CHALLENGE, Challenge::class.java) {
+        context: HandlerContext,
+        challenge: Challenge ->
+      linkedOrganizationsHandler.handleChallenge(context, challenge)
+    }
+
     return builder.build()
   }
 
@@ -314,6 +324,9 @@ object DataRegistryModule {
 
     // Digital Cash
     builder.add(Objects.COIN, Action.POST_TRANSACTION, PostTransactionCoin::class.java, null)
+
+    // Federation
+    builder.add(Objects.FEDERATION, Action.CHALLENGE, Challenge::class.java, null)
 
     return builder.build()
   }

@@ -16,7 +16,12 @@ class RollCallArrayAdapter(
     private val layout: Int,
     private val attendeesList: List<PublicKey>,
     private val myToken: PoPToken?,
+    private val fragment: RollCallFragment
 ) : ArrayAdapter<PublicKey>(context, layout, attendeesList) {
+
+  init {
+    fragment.isAttendeeListSorted(attendeesList, context)
+  }
 
   override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
     val view: View
@@ -43,6 +48,7 @@ class RollCallArrayAdapter(
         holder.hashTextView.setTextColor(colorAccent)
       }
     }
+
     return view
   }
 

@@ -106,7 +106,7 @@ class KeyManagerTest {
         creation1 + 1,
         creation1 + 75,
         EventState.CLOSED,
-        HashSet(),
+        LinkedHashSet(),
         "location",
         "desc"
       )
@@ -119,7 +119,7 @@ class KeyManagerTest {
         creation2 + 1,
         creation2 + 75,
         EventState.CLOSED,
-        HashSet(),
+        LinkedHashSet(),
         "EPFL",
         "do not come"
       )
@@ -160,7 +160,7 @@ class KeyManagerTest {
         (5421364 + 1).toLong(),
         (5421364 + 145).toLong(),
         EventState.CLOSED,
-        HashSet(),
+        LinkedHashSet(),
         "ETHZ",
         "do come"
       )
