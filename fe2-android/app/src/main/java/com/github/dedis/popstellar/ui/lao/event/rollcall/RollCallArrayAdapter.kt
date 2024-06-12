@@ -20,7 +20,7 @@ class RollCallArrayAdapter(
 ) : ArrayAdapter<PublicKey>(context, layout, attendeesList) {
 
   init {
-    fragment.isAttendeeListSorted(attendeesList, context)
+    fragment.isAttendeeListSorted(attendeesList.map { it.encoded }, context)
   }
 
   override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {

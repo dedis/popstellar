@@ -253,7 +253,10 @@ class RollCallFragment : AbstractEventFragment {
       // Show the list of all time scanned attendees if the roll call is opened
       // and the user is the organizer
       attendeesList =
-          rollCallViewModel.getAttendees().stream().map { it }.sorted(compareBy(String::it.encoded))
+          rollCallViewModel
+              .getAttendees()
+              .stream()
+              .sorted(compareBy { it.encoded })
               .collect(Collectors.toList())
 
       binding.rollCallAttendeesText.text =
@@ -261,8 +264,8 @@ class RollCallFragment : AbstractEventFragment {
               resources.getString(R.string.roll_call_scanned),
               rollCallViewModel.getAttendees().size)
     } else if (rollCall.isClosed) {
-        val orderedAttendees: MutableSet<PublicKey> = LinkedHashSet(rollCall.attendees)
-      attendeesList = orderedAttendees.stream().map { it }.collect(Collectors.toList())
+      val orderedAttendees: MutableSet<PublicKey> = LinkedHashSet(rollCall.attendees)
+      attendeesList = orderedAttendees.stream().collect(Collectors.toList())
 
       // Show the list of attendees if the roll call has ended
       binding.rollCallAttendeesText.text =
@@ -272,11 +275,7 @@ class RollCallFragment : AbstractEventFragment {
     if (attendeesList != null) {
       binding.listViewAttendees.adapter =
           RollCallArrayAdapter(
-              requireContext(),
-              android.R.layout.simple_list_item_1,
-              attendeesList,
-              popToken,
-          )
+              requireContext(), android.R.layout.simple_list_item_1, attendeesList, popToken, this)
     }
   }
 
