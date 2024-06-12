@@ -21,7 +21,7 @@ type Subscribers struct {
 func NewSubscribers(log zerolog.Logger) *Subscribers {
 	return &Subscribers{
 		list: make(map[string]map[string]socket.Socket),
-		log:  log.With().Str("role", "subscribers").Logger(),
+		log:  log.With().Str("module", "subscribers").Logger(),
 	}
 }
 

@@ -21,7 +21,7 @@ func NewHubParams(log zerolog.Logger) *HubParams {
 		stop:             make(chan struct{}),
 		closedSockets:    make(chan string),
 		resetRumorSender: make(chan struct{}),
-		log:              log.With().Str("role", "hub_params").Logger(),
+		log:              log.With().Str("module", "hub_params").Logger(),
 	}
 }
 

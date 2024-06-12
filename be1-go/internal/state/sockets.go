@@ -14,7 +14,7 @@ func NewSockets(log zerolog.Logger) *Sockets {
 		rState:    make(map[string]rumorState),
 		socketIDs: make([]string, 0),
 		store:     make(map[string]socket.Socket),
-		log:       log.With().Str("role", "sockets").Logger(),
+		log:       log.With().Str("module", "sockets").Logger(),
 	}
 }
 

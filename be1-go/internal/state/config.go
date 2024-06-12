@@ -26,7 +26,7 @@ func CreateConfig(ownerPubKey, serverPubKey kyber.Point, serverSecretKey kyber.S
 		serverSecretKey:     serverSecretKey,
 		clientServerAddress: clientServerAddress,
 		serverServerAddress: serverServerAddress,
-		log:                 log.With().Str("role", "config").Logger(),
+		log:                 log.With().Str("module", "config").Logger(),
 	}
 }
 

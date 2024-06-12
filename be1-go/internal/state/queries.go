@@ -31,7 +31,7 @@ func NewQueries(log zerolog.Logger) *Queries {
 		state:                  make(map[int]bool),
 		getMessagesByIdQueries: make(map[int]mgetmessagesbyid.GetMessagesById),
 		getRumorQueries:        make(map[int]mrumor.Rumor),
-		log:                    log.With().Str("role", "queries").Logger(),
+		log:                    log.With().Str("module", "queries").Logger(),
 	}
 }
 

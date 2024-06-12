@@ -2,11 +2,12 @@ package hub
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/crypto"
 	"popstellar/internal/database/sqlite"
-	"popstellar/internal/errors"
+	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/answer/hanswer"
 	"popstellar/internal/handler/channel/chirp/hchirp"
 	"popstellar/internal/handler/channel/coin/hcoin"
@@ -25,7 +26,7 @@ import (
 	"popstellar/internal/handler/method/heartbeat/mheartbeat"
 	"popstellar/internal/handler/method/publish/hpublish"
 	"popstellar/internal/handler/method/rumor/hrumor"
-	method2 "popstellar/internal/handler/method/rumor/mrumor"
+	"popstellar/internal/handler/method/rumor/mrumor"
 	"popstellar/internal/handler/method/subscribe/hsubscribe"
 	"popstellar/internal/handler/method/unsubscribe/hunsubscribe"
 	"popstellar/internal/handler/query/hquery"
@@ -55,7 +56,7 @@ type Sockets interface {
 
 type Repository interface {
 	// GetAndIncrementMyRumor return false if the last rumor is empty otherwise returns the new rumor to send and create the next rumor
-	GetAndIncrementMyRumor() (bool, method2.Rumor, error)
+	GetAndIncrementMyRumor() (bool, mrumor.Rumor, error)
 
 	GetParamsHeartbeat() (map[string][]string, error)
 }
@@ -69,7 +70,7 @@ type GreetServerSender interface {
 }
 
 type RumorSender interface {
-	SendRumor(socket socket.Socket, rumor method2.Rumor)
+	SendRumor(socket socket.Socket, rumor mrumor.Rumor)
 }
 
 type Hub struct {
@@ -209,7 +210,7 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 		jsonRpcHandler:    jsonRpcHandler,
 		greetserverSender: greetserverHandler,
 		rumorSender:       rumorHandler,
-		log:               log.With().Str("role", "hub").Logger(),
+		log:               log.With().Str("module", "hub").Logger(),
 	}
 
 	return hub, nil
@@ -256,7 +257,19 @@ func (h *Hub) runMessageReceiver() {
 			h.log.Debug().Msg("start handling a message")
 			err := h.jsonRpcHandler.Handle(incomingMessage.Socket, incomingMessage.Message)
 			if err != nil {
-				h.log.Error().Err(err)
+				popError := &poperrors.PopError{}
+				if !errors.As(err, &popError) {
+					popError = poperrors.NewPopError(-6, err.Error())
+				}
+
+				stack, err := popError.GetStackTraceJSON()
+				if err != nil {
+					h.log.Error().Err(err).Msg("failed to get stacktrace")
+					h.log.Error().Err(popError).Msg("")
+				} else {
+					h.log.Error().Err(popError).RawJSON("stacktrace", stack).Msg("")
+				}
+
 			} else {
 				h.log.Debug().Msg("successfully handled a message")
 			}
@@ -348,7 +361,7 @@ func (h *Hub) sendHeartbeat() error {
 
 	buf, err := json.Marshal(heartbeatMessage)
 	if err != nil {
-		return errors.NewJsonMarshalError(err.Error())
+		return poperrors.NewJsonMarshalError(err.Error())
 	}
 
 	h.sockets.SendToAll(buf)

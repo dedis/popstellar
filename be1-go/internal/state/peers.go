@@ -25,7 +25,7 @@ func NewPeers(log zerolog.Logger) *Peers {
 	return &Peers{
 		peersInfo:    make(map[string]mgreetserver.GreetServerParams),
 		peersGreeted: make(map[string]struct{}),
-		log:          log.With().Str("role", "peers").Logger(),
+		log:          log.With().Str("module", "peers").Logger(),
 	}
 }
 
