@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.test.core.app.ApplicationProvider
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.model.objects.security.PoPToken
+import com.github.dedis.popstellar.model.objects.security.PublicKey
 import net.i2p.crypto.eddsa.Utils
 import org.junit.Assert
 import org.junit.Before
@@ -36,14 +37,14 @@ class RollCallArrayAdapterTest {
     private val OTHER_PUBLIC_KEY =
             Utils.hexToBytes("6015ae4d770294f94e651a9fd6ba9c6a11e5c80803c63ee472ad525f4c3523a6")
 
-    private lateinit var attendeesList: List<String>
+    private lateinit var attendeesList: List<PublicKey>
 
     @Before
     fun setup() {
         // Setting up a list of two tokens and the view
         val myToken = PoPToken(MY_PRIVATE_KEY, MY_PUBLIC_KEY)
         val otherToken = PoPToken(OTHER_PRIVATE_KEY, OTHER_PUBLIC_KEY)
-        attendeesList = listOf(myToken.publicKey.encoded, otherToken.publicKey.encoded)
+        attendeesList = listOf(myToken.publicKey, otherToken.publicKey)
         adapter = RollCallArrayAdapter(context, R.id.valid_token_layout_text, attendeesList, myToken, mock(RollCallFragment::class.java))
         mockView = TextView(context)
         val colorAccent = ContextCompat.getColor(context, R.color.textOnBackground)
