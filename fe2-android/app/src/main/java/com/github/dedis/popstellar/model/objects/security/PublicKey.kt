@@ -23,7 +23,6 @@ class PublicKey : Base64URLData {
   }
 
   constructor(data: String) : super(data) {
-    Timber.tag(TAG).d("public key is %s", data)
     verifier = Ed25519Verify(this.data)
     toUsername = GeneralUtils.generateUsernameFromBase64(this.encoded)
   }
