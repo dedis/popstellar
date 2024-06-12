@@ -259,7 +259,7 @@ func (h *Hub) runMessageReceiver() {
 			if err != nil {
 				popError := &poperrors.PopError{}
 				if !errors.As(err, &popError) {
-					popError = poperrors.NewPopError(-6, err.Error())
+					popError = poperrors.NewPopError(poperrors.InternalServerErrorCode, err.Error())
 				}
 
 				stack, err := popError.GetStackTraceJSON()

@@ -190,7 +190,7 @@ func (s *baseSocket) SendPopError(id *int, err error) {
 	popError := &poperror.PopError{}
 
 	if !errors.As(err, &popError) {
-		popError = poperror.NewPopError(-6, err.Error())
+		popError = poperror.NewPopError(poperror.InternalServerErrorCode, err.Error())
 	}
 
 	description := popError.Error() + "\n" + popError.StackTraceString()
