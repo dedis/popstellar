@@ -5,16 +5,20 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/internal/crypto"
-	jsonrpc "popstellar/internal/message"
-	"popstellar/internal/message/answer"
-	"popstellar/internal/message/messagedata"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/handler/answer/manswer"
+	"popstellar/internal/handler/channel/root/mroot"
+	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/method/broadcast/mbroadcast"
+	"popstellar/internal/handler/method/getmessagesbyid/mgetmessagesbyid"
+	"popstellar/internal/handler/method/greetserver/mgreetserver"
+	"popstellar/internal/handler/method/heartbeat/mheartbeat"
+	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
+	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
 	"popstellar/internal/old/hub/standard_hub/hub_state"
 	"popstellar/internal/old/inbox"
+	"popstellar/internal/old/oldchannel"
 	"popstellar/internal/validation"
 	"strings"
 	"sync"
@@ -28,16 +32,16 @@ import (
 )
 
 const (
-	// rootChannel denotes the id of the root channel
+	// rootChannel denotes the id of the root oldchannel
 	rootChannel = "/root"
 
-	// rootPrefix denotes the prefix for the root channel
+	// rootPrefix denotes the prefix for the root oldchannel
 	// used to keep an image of the laos
 	rootPrefix = rootChannel + "/"
 
 	// Strings used to return error messages
-	rootChannelErr = "failed to handle root channel message: %v"
-	getChannelErr  = "failed to get channel: %v"
+	rootChannelErr = "failed to handle root oldchannel message: %v"
+	getChannelErr  = "failed to get oldchannel: %v"
 
 	// numWorkers denote the number of worker go-routines
 	// allowed to process requests concurrently.
@@ -75,9 +79,9 @@ type Hub struct {
 
 	log zerolog.Logger
 
-	laoFac channel.LaoFactory
+	laoFac oldchannel.LaoFactory
 
-	serverSockets channel.Sockets
+	serverSockets oldchannel.Sockets
 
 	// hubInbox is used to remember the messages that the hub received
 	hubInbox inbox.HubInbox
@@ -97,7 +101,7 @@ type Hub struct {
 
 // NewHub returns a new Hub.
 func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAddress string, log zerolog.Logger,
-	laoFac channel.LaoFactory,
+	laoFac oldchannel.LaoFactory,
 ) (*Hub, error) {
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
@@ -122,7 +126,7 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		workers:             semaphore.NewWeighted(numWorkers),
 		log:                 log,
 		laoFac:              laoFac,
-		serverSockets:       channel.NewSockets(),
+		serverSockets:       oldchannel.NewSockets(),
 		hubInbox:            *inbox.NewHubInbox(rootChannel),
 		queries:             hub_state.NewQueries(log),
 		peers:               hub_state.NewPeers(),
@@ -167,9 +171,9 @@ func (h *Hub) Start() {
 					}
 				}()
 			case id := <-h.closedSockets:
-				h.channelByID.ForEach(func(c channel.Channel) {
+				h.channelByID.ForEach(func(c oldchannel.Channel) {
 					// dummy Unsubscribe message because it's only used for logging...
-					c.Unsubscribe(id, method.Unsubscribe{})
+					c.Unsubscribe(id, method2.Unsubscribe{})
 				})
 			case <-h.stop:
 				h.log.Info().Msg("stopping the hub")
@@ -204,7 +208,7 @@ func (h *Hub) GetServerNumber() int {
 
 // SendAndHandleMessage sends a publish message to all other known servers and
 // handle it
-func (h *Hub) SendAndHandleMessage(msg method.Broadcast) error {
+func (h *Hub) SendAndHandleMessage(msg mbroadcast.Broadcast) error {
 	byteMsg, err := json.Marshal(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to marshal publish message: %v", err)
@@ -236,18 +240,18 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 		return xerrors.Errorf("failed to marshal server public key: %v", err)
 	}
 
-	serverInfo := method.GreetServerParams{
+	serverInfo := mgreetserver.GreetServerParams{
 		PublicKey:     base64.URLEncoding.EncodeToString(pk),
 		ServerAddress: h.serverServerAddress,
 		ClientAddress: h.clientServerAddress,
 	}
 
-	serverGreet := &method.GreetServer{
-		Base: query.Base{
+	serverGreet := &mgreetserver.GreetServer{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: query.MethodGreetServer,
+			Method: mquery.MethodGreetServer,
 		},
 		Params: serverInfo,
 	}
@@ -263,14 +267,14 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 	return nil
 }
 
-func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
+func (h *Hub) getChan(channelPath string) (oldchannel.Channel, error) {
 	if !strings.HasPrefix(channelPath, rootPrefix) {
-		return nil, xerrors.Errorf("channel not prefixed with '%s': %q", rootPrefix, channelPath)
+		return nil, xerrors.Errorf("oldchannel not prefixed with '%s': %q", rootPrefix, channelPath)
 	}
 
 	channel, ok := h.channelByID.Get(channelPath)
 	if !ok {
-		return nil, xerrors.Errorf("channel %s does not exist", channelPath)
+		return nil, xerrors.Errorf("oldchannel %s does not exist", channelPath)
 	}
 
 	return channel, nil
@@ -302,31 +306,31 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 		return rpcErr
 	}
 
-	var queryBase query.Base
+	var queryBase mquery.Base
 
 	err = json.Unmarshal(byteMessage, &queryBase)
 	if err != nil {
-		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
+		err := manswer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
 		socket.SendError(nil, err)
 		return err
 	}
 
 	var id int
-	var msgs []message.Message
+	var msgs []mmessage.Message
 	var handlerErr error
 
 	switch queryBase.Method {
-	case query.MethodPublish:
+	case mquery.MethodPublish:
 		id, handlerErr = h.handlePublish(socket, byteMessage)
 		h.sendHeartbeatToServers()
-	case query.MethodSubscribe:
+	case mquery.MethodSubscribe:
 		id, handlerErr = h.handleSubscribe(socket, byteMessage)
-	case query.MethodUnsubscribe:
+	case mquery.MethodUnsubscribe:
 		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
-	case query.MethodCatchUp:
+	case mquery.MethodCatchUp:
 		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
 	default:
-		err = answer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
+		err = manswer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
 		socket.SendError(nil, err)
 		return err
 	}
@@ -336,7 +340,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 		return err
 	}
 
-	if queryBase.Method == query.MethodCatchUp {
+	if queryBase.Method == mquery.MethodCatchUp {
 		socket.SendResult(id, msgs, nil)
 		return nil
 	}
@@ -370,7 +374,7 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 	if rpctype == jsonrpc.RPCTypeAnswer {
 		err = h.handleAnswer(socket, byteMessage)
 		if err != nil {
-			err = answer.NewErrorf(-4, "failed to handle answer message: %v", err)
+			err = manswer.NewErrorf(-4, "failed to handle answer message: %v", err)
 			socket.SendError(nil, err)
 			return err
 		}
@@ -384,47 +388,47 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		return rpcErr
 	}
 
-	var queryBase query.Base
+	var queryBase mquery.Base
 
 	err = json.Unmarshal(byteMessage, &queryBase)
 	if err != nil {
-		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
+		err := manswer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
 		socket.SendError(nil, err)
 		return err
 	}
 
 	id := -1
-	var msgsByChannel map[string][]message.Message
+	var msgsByChannel map[string][]mmessage.Message
 	var handlerErr error
 
 	switch queryBase.Method {
-	case query.MethodGreetServer:
+	case mquery.MethodGreetServer:
 		handlerErr = h.handleGreetServer(socket, byteMessage)
-	case query.MethodPublish:
+	case mquery.MethodPublish:
 		id, handlerErr = h.handlePublish(socket, byteMessage)
 		h.sendHeartbeatToServers()
-	case query.MethodSubscribe:
+	case mquery.MethodSubscribe:
 		id, handlerErr = h.handleSubscribe(socket, byteMessage)
-	case query.MethodUnsubscribe:
+	case mquery.MethodUnsubscribe:
 		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
-	case query.MethodHeartbeat:
+	case mquery.MethodHeartbeat:
 		handlerErr = h.handleHeartbeat(socket, byteMessage)
-	case query.MethodGetMessagesById:
+	case mquery.MethodGetMessagesById:
 		msgsByChannel, id, handlerErr = h.handleGetMessagesById(socket, byteMessage)
 
 	default:
-		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
+		err = manswer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
 		socket.SendError(nil, err)
 		return err
 	}
 
 	if handlerErr != nil {
-		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
+		err := manswer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
 		socket.SendError(&id, err)
 		return err
 	}
 
-	if queryBase.Method == query.MethodGetMessagesById {
+	if queryBase.Method == mquery.MethodGetMessagesById {
 		socket.SendResult(id, nil, msgsByChannel)
 		return nil
 	}
@@ -457,8 +461,8 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[string][]string) error {
 	queryId := h.queries.GetNextID()
 
-	getMessagesById := method.GetMessagesById{
-		Base: query.Base{
+	getMessagesById := mgetmessagesbyid.GetMessagesById{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
@@ -482,8 +486,8 @@ func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[s
 
 // sendHeartbeatToServers sends a heartbeat message to all servers
 func (h *Hub) sendHeartbeatToServers() {
-	heartbeatMessage := method.Heartbeat{
-		Base: query.Base{
+	heartbeatMessage := mheartbeat.Heartbeat{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
@@ -500,76 +504,76 @@ func (h *Hub) sendHeartbeatToServers() {
 }
 
 // createLao creates a new LAO using the data in the publish parameter.
-func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
+func (h *Hub) createLao(msg mmessage.Message, laoCreate mroot.LaoCreate,
 	socket socket.Socket,
 ) error {
 	laoChannelPath := rootPrefix + laoCreate.ID
 
 	if _, ok := h.channelByID.Get(laoChannelPath); ok {
-		return answer.NewDuplicateResourceError("failed to create lao: duplicate lao path: %q", laoChannelPath)
+		return manswer.NewDuplicateResourceError("failed to create lao: duplicate lao path: %q", laoChannelPath)
 	}
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to decode public key of the sender: %v", err)
+		return manswer.NewInvalidMessageFieldError("failed to decode public key of the sender: %v", err)
 	}
 
 	// Check if the sender of the LAO creation message is the organizer
 	senderPubKey := crypto.Suite.Point()
 	err = senderPubKey.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to unmarshal public key of the sender: %v", err)
+		return manswer.NewInvalidMessageFieldError("failed to unmarshal public key of the sender: %v", err)
 	}
 
 	organizerBuf, err := base64.URLEncoding.DecodeString(laoCreate.Organizer)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to decode public key of the organizer: %v", err)
+		return manswer.NewInvalidMessageFieldError("failed to decode public key of the organizer: %v", err)
 	}
 
 	organizerPubKey := crypto.Suite.Point()
 	err = organizerPubKey.UnmarshalBinary(organizerBuf)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to unmarshal public key of the organizer: %v", err)
+		return manswer.NewInvalidMessageFieldError("failed to unmarshal public key of the organizer: %v", err)
 	}
 
 	// Check if the sender and organizer fields of the create lao message are equal
 	if !organizerPubKey.Equal(senderPubKey) {
-		return answer.NewAccessDeniedError("sender's public key does not match the organizer field: %q != %q", senderPubKey, organizerPubKey)
+		return manswer.NewAccessDeniedError("sender's public key does not match the organizer field: %q != %q", senderPubKey, organizerPubKey)
 	}
 
 	// Check if the sender of the LAO creation message is the owner
 	if h.GetPubKeyOwner() != nil && !h.GetPubKeyOwner().Equal(senderPubKey) {
-		return answer.NewAccessDeniedError("sender's public key does not match the owner's: %q != %q", senderPubKey, h.GetPubKeyOwner())
+		return manswer.NewAccessDeniedError("sender's public key does not match the owner's: %q != %q", senderPubKey, h.GetPubKeyOwner())
 	}
 
 	laoCh, err := h.laoFac(laoChannelPath, h, msg, h.log, senderPubKey, socket)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to create the LAO: %v", err)
+		return manswer.NewInvalidMessageFieldError("failed to create the LAO: %v", err)
 	}
 
-	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, msg)
+	h.log.Info().Msgf("storing new oldchannel '%s' %v", laoChannelPath, msg)
 
 	h.NotifyNewChannel(laoChannelPath, laoCh, socket)
 
 	return nil
 }
 
-// GetPubKeyOwner implements channel.HubFunctionalities
+// GetPubKeyOwner implements oldchannel.HubFunctionalities
 func (h *Hub) GetPubKeyOwner() kyber.Point {
 	return h.pubKeyOwner
 }
 
-// GetPubKeyServ implements channel.HubFunctionalities
+// GetPubKeyServ implements oldchannel.HubFunctionalities
 func (h *Hub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
 }
 
-// GetClientServerAddress implements channel.HubFunctionalities
+// GetClientServerAddress implements oldchannel.HubFunctionalities
 func (h *Hub) GetClientServerAddress() string {
 	return h.clientServerAddress
 }
 
-// Sign implements channel.HubFunctionalities
+// Sign implements oldchannel.HubFunctionalities
 func (h *Hub) Sign(data []byte) ([]byte, error) {
 	signatureBuf, err := schnorr.Sign(crypto.Suite, h.secKeyServ, data)
 	if err != nil {
@@ -579,22 +583,22 @@ func (h *Hub) Sign(data []byte) ([]byte, error) {
 	return signatureBuf, nil
 }
 
-// GetSchemaValidator implements channel.HubFunctionalities
+// GetSchemaValidator implements oldchannel.HubFunctionalities
 func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
 }
 
-// NotifyNewChannel implements channel.HubFunctionalities
-func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock socket.Socket) {
+// NotifyNewChannel implements oldchannel.HubFunctionalities
+func (h *Hub) NotifyNewChannel(channelID string, channel oldchannel.Channel, sock socket.Socket) {
 	h.channelByID.Set(channelID, channel)
 }
 
-// NotifyWitnessMessage implements channel.HubFunctionalities
+// NotifyWitnessMessage implements oldchannel.HubFunctionalities
 func (h *Hub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {
 	h.hubInbox.AddWitnessSignature(messageId, publicKey, signature)
 }
 
-func (h *Hub) GetPeersInfo() []method.GreetServerParams {
+func (h *Hub) GetPeersInfo() []mgreetserver.GreetServerParams {
 	return h.peers.GetAllPeersInfo()
 }
 

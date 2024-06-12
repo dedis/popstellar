@@ -5,9 +5,7 @@ import (
 	"encoding/base64"
 	"go.dedis.ch/kyber/v3"
 	poperrors "popstellar/internal/errors"
-	"popstellar/internal/handler/message"
-	"popstellar/internal/handler/messagedata/root"
-	database "popstellar/internal/repository"
+	"popstellar/internal/handler/channel"
 	"sync"
 )
 
@@ -15,7 +13,6 @@ var dbLock sync.RWMutex
 
 // SQLite is a wrapper around the SQLite database.
 type SQLite struct {
-	database.Repository
 	database *sql.DB
 }
 
@@ -78,7 +75,7 @@ func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
 		return SQLite{}, poperrors.NewDatabaseCreateTableErrorMsg("channel: %v", err)
 	}
 
-	_, err = tx.Exec(insertOrIgnoreChannel, root.Root, channelTypeToID[message.RootType], "")
+	_, err = tx.Exec(insertOrIgnoreChannel, channel.Root, channelTypeToID[channel.RootObject], "")
 	if err != nil {
 		db.Close()
 		return SQLite{}, poperrors.NewDatabaseInsertErrorMsg("root channel: %v", err)

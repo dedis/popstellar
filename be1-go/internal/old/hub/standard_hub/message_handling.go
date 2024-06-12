@@ -4,12 +4,20 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/internal/crypto"
-	jsonrpc "popstellar/internal/message"
-	"popstellar/internal/message/answer"
-	"popstellar/internal/message/messagedata"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
+	manswer2 "popstellar/internal/handler/answer/manswer"
+	"popstellar/internal/handler/channel"
+	"popstellar/internal/handler/channel/root/mroot"
+	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/method/broadcast/mbroadcast"
+	"popstellar/internal/handler/method/catchup/mcatchup"
+	"popstellar/internal/handler/method/getmessagesbyid/mgetmessagesbyid"
+	"popstellar/internal/handler/method/greetserver/mgreetserver"
+	"popstellar/internal/handler/method/heartbeat/mheartbeat"
+	"popstellar/internal/handler/method/publish/mpublish"
+	"popstellar/internal/handler/method/subscribe/msubscribe"
+	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
+	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/hub/standard_hub/hub_state"
 	"popstellar/internal/validation"
@@ -28,11 +36,11 @@ const (
 	maxRetry            = 10
 )
 
-// handleRootChannelPublishMessage handles an incoming publish message on the root channel.
-func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method.Publish) error {
+// handleRootChannelPublishMessage handles an incoming publish message on the root oldchannel.
+func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish mpublish.Publish) error {
 	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
 	if err != nil {
-		err := answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
+		err := manswer2.NewInvalidMessageFieldError("failed to decode message data: %v", err)
 
 		return err
 	}
@@ -40,25 +48,25 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 	// validate message data against the json schema
 	err = h.schemaValidator.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
-		err := answer.NewInvalidMessageFieldError("failed to validate message against json schema: %v", err)
+		err := manswer2.NewInvalidMessageFieldError("failed to validate message against json schema: %v", err)
 		return err
 	}
 
 	// get object#action
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := channel.GetObjectAndAction(jsonData)
 	if err != nil {
-		err := answer.NewInvalidMessageFieldError("failed to get object#action: %v", err)
+		err := manswer2.NewInvalidMessageFieldError("failed to get object#action: %v", err)
 		return err
 	}
 
 	// must be "lao#create"
-	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
-		err := answer.NewInvalidMessageFieldError("only lao#create is allowed on root, "+
+	if object != channel.LAOObject || action != channel.LAOActionCreate {
+		err := manswer2.NewInvalidMessageFieldError("only lao#create is allowed on root, "+
 			"but found %s#%s", object, action)
 		return err
 	}
 
-	var laoCreate messagedata.LaoCreate
+	var laoCreate mroot.LaoCreate
 
 	err = publish.Params.Message.UnmarshalData(&laoCreate)
 	if err != nil {
@@ -82,9 +90,9 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 	return nil
 }
 
-// handleRootChannelPublishMessage handles an incoming publish message on the root channel.
+// handleRootChannelPublishMessage handles an incoming publish message on the root oldchannel.
 func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
-	broadcast method.Broadcast,
+	broadcast mbroadcast.Broadcast,
 ) error {
 	jsonData, err := base64.URLEncoding.DecodeString(broadcast.Params.Message.Data)
 	if err != nil {
@@ -102,7 +110,7 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 	}
 
 	// get object#action
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := channel.GetObjectAndAction(jsonData)
 	if err != nil {
 		err := xerrors.Errorf("failed to get object#action: %v", err)
 		sock.SendError(nil, err)
@@ -110,14 +118,14 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 	}
 
 	// must be "lao#create"
-	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
+	if object != channel.LAOObject || action != channel.LAOActionCreate {
 		err := xerrors.Errorf("only lao#create is allowed on root, but found %s#%s",
 			object, action)
 		sock.SendError(nil, err)
 		return err
 	}
 
-	var laoCreate messagedata.LaoCreate
+	var laoCreate mroot.LaoCreate
 
 	err = broadcast.Params.Message.UnmarshalData(&laoCreate)
 	if err != nil {
@@ -144,11 +152,11 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 	return nil
 }
 
-// handleRootCatchup handles an incoming catchup message on the root channel
+// handleRootCatchup handles an incoming catchup message on the root oldchannel
 func (h *Hub) handleRootCatchup(senderSocket socket.Socket,
 	byteMessage []byte,
-) ([]message.Message, int, error) {
-	var catchup method.Catchup
+) ([]mmessage.Message, int, error) {
+	var catchup mcatchup.Catchup
 
 	err := json.Unmarshal(byteMessage, &catchup)
 	if err != nil {
@@ -157,7 +165,7 @@ func (h *Hub) handleRootCatchup(senderSocket socket.Socket,
 
 	if catchup.Params.Channel != rootChannel {
 		return nil, catchup.ID, xerrors.Errorf("server catchup message can only " +
-			"be sent on /root channel")
+			"be sent on /root oldchannel")
 	}
 
 	messages := h.hubInbox.GetRootMessages()
@@ -167,7 +175,7 @@ func (h *Hub) handleRootCatchup(senderSocket socket.Socket,
 
 // handleAnswer handles the answer to a message sent by the server
 func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error {
-	var answerMsg answer.Answer
+	var answerMsg manswer2.Answer
 
 	err := json.Unmarshal(byteMessage, &answerMsg)
 	if err != nil {
@@ -198,7 +206,7 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 	return nil
 }
 
-func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg answer.Answer) error {
+func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg manswer2.Answer) error {
 	var err error
 	messages := answerMsg.Result.GetMessagesByChannel()
 	tempBlacklist := make([]string, 0)
@@ -216,7 +224,7 @@ func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg 
 }
 
 func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, error) {
-	var publish method.Publish
+	var publish mpublish.Publish
 
 	err := json.Unmarshal(byteMessage, &publish)
 	if err != nil {
@@ -235,22 +243,22 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	publicKeySender, err := base64.URLEncoding.DecodeString(publish.Params.Message.Sender)
 	if err != nil {
 		h.log.Info().Msg("Sender is : " + publish.Params.Message.Sender)
-		return publish.ID, answer.NewInvalidMessageFieldError("failed to decode public key string: %v", err)
+		return publish.ID, manswer2.NewInvalidMessageFieldError("failed to decode public key string: %v", err)
 	}
 
 	signatureBytes, err := base64.URLEncoding.DecodeString(signature)
 	if err != nil {
-		return publish.ID, answer.NewInvalidMessageFieldError("failed to decode signature string: %v", err)
+		return publish.ID, manswer2.NewInvalidMessageFieldError("failed to decode signature string: %v", err)
 	}
 
 	err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes)
 	if err != nil {
-		return publish.ID, answer.NewInvalidMessageFieldError("failed to verify signature : %v", err)
+		return publish.ID, manswer2.NewInvalidMessageFieldError("failed to verify signature : %v", err)
 	}
 
-	expectedMessageID := message.Hash(data, signature)
+	expectedMessageID := channel.Hash(data, signature)
 	if expectedMessageID != messageID {
-		return publish.ID, answer.NewInvalidMessageFieldError(wrongMessageIdError,
+		return publish.ID, manswer2.NewInvalidMessageFieldError(wrongMessageIdError,
 			expectedMessageID, messageID)
 	}
 
@@ -270,12 +278,12 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 
 	channel, err := h.getChan(publish.Params.Channel)
 	if err != nil {
-		return publish.ID, answer.NewInvalidMessageFieldError(getChannelErr, err)
+		return publish.ID, manswer2.NewInvalidMessageFieldError(getChannelErr, err)
 	}
 
 	err = channel.Publish(publish, socket)
 	if err != nil {
-		return publish.ID, answer.NewInvalidMessageFieldError(publishError, err)
+		return publish.ID, manswer2.NewInvalidMessageFieldError(publishError, err)
 	}
 
 	h.hubInbox.StoreMessage(publish.Params.Channel, publish.Params.Message)
@@ -283,7 +291,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 }
 
 func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
-	var broadcast method.Broadcast
+	var broadcast mbroadcast.Broadcast
 
 	err := json.Unmarshal(byteMessage, &broadcast)
 	if err != nil {
@@ -294,7 +302,7 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 	messageID := broadcast.Params.Message.MessageID
 	data := broadcast.Params.Message.Data
 
-	expectedMessageID := message.Hash(data, signature)
+	expectedMessageID := channel.Hash(data, signature)
 	if expectedMessageID != messageID {
 		return xerrors.Errorf(wrongMessageIdError,
 			expectedMessageID, messageID)
@@ -333,7 +341,7 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 }
 
 func (h *Hub) handleSubscribe(socket socket.Socket, byteMessage []byte) (int, error) {
-	var subscribe method.Subscribe
+	var subscribe msubscribe.Subscribe
 
 	err := json.Unmarshal(byteMessage, &subscribe)
 	if err != nil {
@@ -342,7 +350,7 @@ func (h *Hub) handleSubscribe(socket socket.Socket, byteMessage []byte) (int, er
 
 	channel, err := h.getChan(subscribe.Params.Channel)
 	if err != nil {
-		return subscribe.ID, xerrors.Errorf("failed to get subscribe channel: %v", err)
+		return subscribe.ID, xerrors.Errorf("failed to get subscribe oldchannel: %v", err)
 	}
 
 	err = channel.Subscribe(socket, subscribe)
@@ -354,7 +362,7 @@ func (h *Hub) handleSubscribe(socket socket.Socket, byteMessage []byte) (int, er
 }
 
 func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, error) {
-	var unsubscribe method.Unsubscribe
+	var unsubscribe method2.Unsubscribe
 
 	err := json.Unmarshal(byteMessage, &unsubscribe)
 	if err != nil {
@@ -363,7 +371,7 @@ func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, 
 
 	channel, err := h.getChan(unsubscribe.Params.Channel)
 	if err != nil {
-		return unsubscribe.ID, xerrors.Errorf("failed to get unsubscribe channel: %v", err)
+		return unsubscribe.ID, xerrors.Errorf("failed to get unsubscribe oldchannel: %v", err)
 	}
 
 	err = channel.Unsubscribe(socket.ID(), unsubscribe)
@@ -376,8 +384,8 @@ func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, 
 
 func (h *Hub) handleCatchup(socket socket.Socket,
 	byteMessage []byte,
-) ([]message.Message, int, error) {
-	var catchup method.Catchup
+) ([]mmessage.Message, int, error) {
+	var catchup mcatchup.Catchup
 
 	err := json.Unmarshal(byteMessage, &catchup)
 	if err != nil {
@@ -390,7 +398,7 @@ func (h *Hub) handleCatchup(socket socket.Socket,
 
 	channel, err := h.getChan(catchup.Params.Channel)
 	if err != nil {
-		return nil, catchup.ID, xerrors.Errorf("failed to get catchup channel: %v", err)
+		return nil, catchup.ID, xerrors.Errorf("failed to get catchup oldchannel: %v", err)
 	}
 
 	msg := channel.Catchup(catchup)
@@ -404,7 +412,7 @@ func (h *Hub) handleCatchup(socket socket.Socket,
 func (h *Hub) handleHeartbeat(socket socket.Socket,
 	byteMessage []byte,
 ) error {
-	var heartbeat method.Heartbeat
+	var heartbeat mheartbeat.Heartbeat
 
 	err := json.Unmarshal(byteMessage, &heartbeat)
 	if err != nil {
@@ -427,8 +435,8 @@ func (h *Hub) handleHeartbeat(socket socket.Socket,
 
 func (h *Hub) handleGetMessagesById(socket socket.Socket,
 	byteMessage []byte,
-) (map[string][]message.Message, int, error) {
-	var getMessagesById method.GetMessagesById
+) (map[string][]mmessage.Message, int, error) {
+	var getMessagesById mgetmessagesbyid.GetMessagesById
 
 	err := json.Unmarshal(byteMessage, &getMessagesById)
 	if err != nil {
@@ -444,7 +452,7 @@ func (h *Hub) handleGetMessagesById(socket socket.Socket,
 }
 
 func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error {
-	var greetServer method.GreetServer
+	var greetServer mgreetserver.GreetServer
 
 	err := json.Unmarshal(byteMessage, &greetServer)
 	if err != nil {
@@ -470,7 +478,7 @@ func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error 
 
 //-----------------------Helper methods for message handling---------------------------
 
-// getMissingIds compares two maps of channel Ids associated to slices of message Ids to
+// getMissingIds compares two maps of oldchannel Ids associated to slices of message Ids to
 // determine the missing Ids from the storedIds map with respect to the receivedIds map
 func getMissingIds(receivedIds map[string][]string, storedIds map[string][]string, blacklist *hub_state.ThreadSafeSlice[string]) map[string][]string {
 	missingIds := make(map[string][]string)
@@ -495,8 +503,8 @@ func getMissingIds(receivedIds map[string][]string, storedIds map[string][]strin
 }
 
 // getMissingMessages retrieves the missing messages from the inbox given their Ids
-func (h *Hub) getMissingMessages(missingIds map[string][]string) (map[string][]message.Message, error) {
-	missingMsgs := make(map[string][]message.Message)
+func (h *Hub) getMissingMessages(missingIds map[string][]string) (map[string][]mmessage.Message, error) {
+	missingMsgs := make(map[string][]mmessage.Message)
 	for channelId, messageIds := range missingIds {
 		for _, messageId := range messageIds {
 			msg, exists := h.hubInbox.GetMessage(messageId)
@@ -511,20 +519,20 @@ func (h *Hub) getMissingMessages(missingIds map[string][]string) (map[string][]m
 
 // handleReceivedMessage handle a message obtained by the server receiving a
 // getMessagesById result
-func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Message, targetChannel string) error {
+func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData mmessage.Message, targetChannel string) error {
 	signature := messageData.Signature
 	messageID := messageData.MessageID
 	data := messageData.Data
 	log.Info().Msgf("Received message on %s", targetChannel)
 
-	expectedMessageID := message.Hash(data, signature)
+	expectedMessageID := channel.Hash(data, signature)
 	if expectedMessageID != messageID {
 		return xerrors.Errorf(wrongMessageIdError,
 			expectedMessageID, messageID)
 	}
 
-	publish := method.Publish{
-		Base: query.Base{
+	publish := mpublish.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
@@ -532,8 +540,8 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Me
 		},
 
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: targetChannel,
 			Message: messageData,
@@ -577,7 +585,7 @@ func (h *Hub) loopOverMessages(messages *map[string][]json.RawMessage, senderSoc
 
 		// Try to process each message
 		for _, msg := range messageArray {
-			var messageData message.Message
+			var messageData mmessage.Message
 			err := json.Unmarshal(msg, &messageData)
 			if err != nil {
 				h.log.Error().Msgf("failed to unmarshal message during getMessagesById answer handling: %v", err)
@@ -600,7 +608,7 @@ func (h *Hub) loopOverMessages(messages *map[string][]json.RawMessage, senderSoc
 		}
 		// Update the list of messages to process during the next iteration
 		(*messages)[channel] = newMessageArray
-		// if no messages left for the channel, remove the channel from the map
+		// if no messages left for the oldchannel, remove the oldchannel from the map
 		if len(newMessageArray) == 0 {
 			delete(*messages, channel)
 		}

@@ -5,7 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	poperrors "popstellar/internal/errors"
-	"popstellar/internal/message/messagedata"
+	"popstellar/internal/handler/channel"
+	"popstellar/internal/handler/channel/lao/mlao"
 )
 
 func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {
@@ -15,15 +16,15 @@ func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {
 	var rollCallCloseBytes []byte
 	err := s.database.QueryRow(selectLastRollCallClose,
 		laoPath,
-		messagedata.RollCallObject,
-		messagedata.RollCallActionClose).
+		channel.RollCallObject,
+		channel.RollCallActionClose).
 		Scan(&rollCallCloseBytes)
 
 	if err != nil {
-		return false, poperrors.NewDatabaseSelectErrorMsg("last roll call close message data: %v", err)
+		return false, poperrors.NewDatabaseSelectErrorMsg("last roll call close message data (%s, %s): %v", laoPath, poptoken, err)
 	}
 
-	var rollCallClose messagedata.RollCallClose
+	var rollCallClose mlao.RollCallClose
 	err = json.Unmarshal(rollCallCloseBytes, &rollCallClose)
 	if err != nil {
 		return false, poperrors.NewInternalServerError("failed to unmarshal last roll call close message: %v", err)
@@ -53,7 +54,7 @@ func (s *SQLite) GetReactionSender(messageID string) (string, error) {
 
 	}
 
-	if object != messagedata.ReactionObject || action != messagedata.ReactionActionAdd {
+	if object != channel.ReactionObject || action != channel.ReactionActionAdd {
 		return "", poperrors.NewInternalServerError("message ID %s is not a reaction add message", messageID)
 	}
 	return sender, nil

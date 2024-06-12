@@ -3,17 +3,15 @@ package socket
 import (
 	"encoding/json"
 	"errors"
-	"sync"
-	"time"
-
 	"github.com/gorilla/websocket"
 	"github.com/rs/xid"
 	"github.com/rs/zerolog"
-
 	poperror "popstellar/internal/errors"
-	jsonrpc "popstellar/internal/message"
-	"popstellar/internal/message/answer"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/handler/answer/manswer"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/handler/message/mmessage"
+	"sync"
+	"time"
 )
 
 // SocketType represents different socket types
@@ -167,14 +165,14 @@ func (s *baseSocket) Send(msg []byte) {
 // SendError is a utility method that allows sending an `error` as a
 // `message.Error` message to the socket.
 func (s *baseSocket) SendError(id *int, err error) {
-	msgError := &answer.Error{}
+	msgError := &manswer.Error{}
 
 	if !errors.As(err, &msgError) {
-		msgError = answer.NewError(-6, err.Error())
+		msgError = manswer.NewError(-6, err.Error())
 	}
 
-	answer := answer.Answer{
-		JSONRPCBase: jsonrpc.JSONRPCBase{
+	answer := manswer.Answer{
+		JSONRPCBase: mjsonrpc.JSONRPCBase{
 			JSONRPC: "2.0",
 		},
 		ID:    id,
@@ -204,13 +202,15 @@ func (s *baseSocket) SendPopError(id *int, err error) {
 		popError = poperror.NewPopError(-6, err.Error())
 	}
 
-	msgError := answer.Error{
+	description := popError.Error() + "\n" + popError.StackTraceString()
+
+	msgError := manswer.Error{
 		Code:        popError.Code(),
-		Description: popError.StackTraceString(),
+		Description: description,
 	}
 
-	answer := answer.Answer{
-		JSONRPCBase: jsonrpc.JSONRPCBase{
+	answer := manswer.Answer{
+		JSONRPCBase: mjsonrpc.JSONRPCBase{
 			JSONRPC: "2.0",
 		},
 		ID:    id,
@@ -233,7 +233,7 @@ func (s *baseSocket) SendPopError(id *int, err error) {
 
 // SendResult is a utility method that allows sending a `message.Result` to the
 // socket.
-func (s *baseSocket) SendResult(id int, res []message.Message, missingMessagesByChannel map[string][]message.Message) {
+func (s *baseSocket) SendResult(id int, res []mmessage.Message, missingMessagesByChannel map[string][]mmessage.Message) {
 	var answer interface{}
 
 	if res != nil && missingMessagesByChannel != nil {
@@ -252,21 +252,21 @@ func (s *baseSocket) SendResult(id int, res []message.Message, missingMessagesBy
 	} else if res != nil {
 		for _, r := range res {
 			if r.WitnessSignatures == nil {
-				r.WitnessSignatures = []message.WitnessSignature{}
+				r.WitnessSignatures = []mmessage.WitnessSignature{}
 			}
 		}
 		answer = struct {
-			JSONRPC string            `json:"jsonrpc"`
-			ID      int               `json:"id"`
-			Result  []message.Message `json:"result"`
+			JSONRPC string             `json:"jsonrpc"`
+			ID      int                `json:"id"`
+			Result  []mmessage.Message `json:"result"`
 		}{
 			"2.0", id, res,
 		}
 	} else if missingMessagesByChannel != nil {
 		answer = struct {
-			JSONRPC string                       `json:"jsonrpc"`
-			ID      int                          `json:"id"`
-			Result  map[string][]message.Message `json:"result"`
+			JSONRPC string                        `json:"jsonrpc"`
+			ID      int                           `json:"id"`
+			Result  map[string][]mmessage.Message `json:"result"`
 		}{
 			"2.0", id, missingMessagesByChannel,
 		}

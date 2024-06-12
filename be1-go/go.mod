@@ -11,7 +11,6 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.4.2
-	github.com/pkg/errors v0.9.1
 	github.com/rs/xid v1.3.0
 	github.com/rs/zerolog v1.25.0
 	github.com/rzajac/zltest v0.12.0

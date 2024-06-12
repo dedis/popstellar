@@ -5,8 +5,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/fsnotify/fsnotify"
+	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+	"github.com/urfave/cli/v2"
+	"go.dedis.ch/kyber/v3"
 	"golang.org/x/exp/slices"
+	"golang.org/x/xerrors"
 	"net/url"
 	"os"
 	"popstellar/internal/crypto"
@@ -17,15 +23,6 @@ import (
 	oldHub "popstellar/internal/old/hub"
 	"sync"
 	"time"
-
-	"github.com/rs/zerolog/log"
-	"go.dedis.ch/kyber/v3"
-
-	"github.com/gorilla/websocket"
-
-	"github.com/fsnotify/fsnotify"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
 )
 
 const (

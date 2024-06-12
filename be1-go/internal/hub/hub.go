@@ -6,33 +6,34 @@ import (
 	"popstellar/internal/crypto"
 	"popstellar/internal/database/sqlite"
 	"popstellar/internal/errors"
-	answerHandler "popstellar/internal/handler/answer"
-	"popstellar/internal/handler/jsonrpc"
-	messageHandler "popstellar/internal/handler/message"
-	"popstellar/internal/handler/messagedata/chirp"
-	"popstellar/internal/handler/messagedata/coin"
-	"popstellar/internal/handler/messagedata/election"
-	"popstellar/internal/handler/messagedata/federation"
-	"popstellar/internal/handler/messagedata/lao"
-	"popstellar/internal/handler/messagedata/reaction"
-	"popstellar/internal/handler/messagedata/root"
-	"popstellar/internal/handler/method/catchup"
-	"popstellar/internal/handler/method/getmessagesbyid"
-	"popstellar/internal/handler/method/greetserver"
-	"popstellar/internal/handler/method/heartbeat"
-	"popstellar/internal/handler/method/publish"
-	"popstellar/internal/handler/method/rumor"
-	"popstellar/internal/handler/method/subscribe"
-	"popstellar/internal/handler/method/unsubscribe"
-	queryHandler "popstellar/internal/handler/query"
+	"popstellar/internal/handler/answer/hanswer"
+	"popstellar/internal/handler/channel/chirp/hchirp"
+	"popstellar/internal/handler/channel/coin/hcoin"
+	"popstellar/internal/handler/channel/election/helection"
+	"popstellar/internal/handler/channel/federation/hfederation"
+	"popstellar/internal/handler/channel/lao/hlao"
+	"popstellar/internal/handler/channel/reaction/hreaction"
+	"popstellar/internal/handler/channel/root/hroot"
+	"popstellar/internal/handler/jsonrpc/hjsonrpc"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/handler/message/hmessage"
+	"popstellar/internal/handler/method/catchup/hcatchup"
+	"popstellar/internal/handler/method/getmessagesbyid/hgetmessagesbyid"
+	"popstellar/internal/handler/method/greetserver/hgreetserver"
+	"popstellar/internal/handler/method/heartbeat/hheartbeat"
+	"popstellar/internal/handler/method/heartbeat/mheartbeat"
+	"popstellar/internal/handler/method/publish/hpublish"
+	"popstellar/internal/handler/method/rumor/hrumor"
+	method2 "popstellar/internal/handler/method/rumor/mrumor"
+	"popstellar/internal/handler/method/subscribe/hsubscribe"
+	"popstellar/internal/handler/method/unsubscribe/hunsubscribe"
+	"popstellar/internal/handler/query/hquery"
+	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/logger"
-	"popstellar/internal/message"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/repository"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
+	"sync"
 	"time"
 )
 
@@ -40,6 +41,24 @@ const (
 	heartbeatDelay = time.Second * 30
 	rumorDelay     = time.Second * 5
 )
+
+type Subscribers interface {
+	HasChannel(channelPath string) bool
+	AddChannel(channelPath string) error
+	UnsubscribeFromAll(socketID string)
+}
+
+type Sockets interface {
+	Upsert(socket socket.Socket)
+	SendToAll(buf []byte)
+}
+
+type Repository interface {
+	// GetAndIncrementMyRumor return false if the last rumor is empty otherwise returns the new rumor to send and create the next rumor
+	GetAndIncrementMyRumor() (bool, method2.Rumor, error)
+
+	GetParamsHeartbeat() (map[string][]string, error)
+}
 
 type JsonRpcHandler interface {
 	Handle(socket socket.Socket, msg []byte) error
@@ -50,18 +69,22 @@ type GreetServerSender interface {
 }
 
 type RumorSender interface {
-	SendRumor(socket socket.Socket, rumor method.Rumor)
+	SendRumor(socket socket.Socket, rumor method2.Rumor)
 }
 
 type Hub struct {
+	wg               *sync.WaitGroup
+	messageChan      chan socket.IncomingMessage
+	closedSockets    chan string
+	stop             chan struct{}
+	resetRumorSender chan struct{}
+
 	// in memory states
-	conf    repository.ConfigManager
-	control repository.HubManager
-	subs    repository.SubscriptionManager
-	sockets repository.SocketManager
+	subs    Subscribers
+	sockets Sockets
 
 	// database
-	db repository.HubRepository
+	db Repository
 
 	// handlers
 	jsonRpcHandler    JsonRpcHandler
@@ -131,56 +154,59 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	}
 
 	// Create the message data handlers
-	dataHandlers := messageHandler.MessageDataHandlers{
-		Root:       root.New(conf, &db, subs, peers, schemaValidator),
-		Lao:        lao.New(conf, subs, &db, schemaValidator),
-		Election:   election.New(conf, subs, &db, schemaValidator),
-		Chirp:      chirp.New(conf, subs, &db, schemaValidator),
-		Reaction:   reaction.New(subs, &db, schemaValidator),
-		Coin:       coin.New(subs, &db, schemaValidator),
-		Federation: federation.New(&db, subs, sockets, hubParams, schemaValidator),
+	dataHandlers := hmessage.DataHandlers{
+		Root:       hroot.New(conf, &db, subs, peers, schemaValidator),
+		Lao:        hlao.New(conf, subs, &db, schemaValidator),
+		Election:   helection.New(conf, subs, &db, schemaValidator),
+		Chirp:      hchirp.New(conf, subs, &db, schemaValidator),
+		Reaction:   hreaction.New(subs, &db, schemaValidator),
+		Coin:       hcoin.New(subs, &db, schemaValidator),
+		Federation: hfederation.New(hubParams, subs, &db, schemaValidator),
 	}
 
 	// Create the message handler
-	msgHandler := messageHandler.New(&db, dataHandlers)
+	msgHandler := hmessage.New(&db, dataHandlers)
 
 	// Create the greetserver handler
-	greetserverHandler := greetserver.New(conf, peers)
+	greetserverHandler := hgreetserver.New(conf, peers)
 
 	// Create the rumor handler
-	rumorHandler := rumor.New(queries, sockets, &db, msgHandler)
+	rumorHandler := hrumor.New(queries, sockets, &db, msgHandler)
 
 	// Create the query handler
-	qHandler := queryHandler.New(queryHandler.MethodHandlers{
-		Catchup:         catchup.New(&db),
-		GetMessagesbyid: getmessagesbyid.New(&db),
+	qHandler := hquery.New(hquery.MethodHandlers{
+		Catchup:         hcatchup.New(&db),
+		GetMessagesbyid: hgetmessagesbyid.New(&db),
 		Greetserver:     greetserverHandler,
-		Heartbeat:       heartbeat.New(queries, &db),
-		Publish:         publish.New(hubParams, &db, msgHandler),
-		Subscribe:       subscribe.New(subs),
-		Unsubscribe:     unsubscribe.New(subs),
+		Heartbeat:       hheartbeat.New(queries, &db),
+		Publish:         hpublish.New(hubParams, &db, msgHandler),
+		Subscribe:       hsubscribe.New(subs),
+		Unsubscribe:     hunsubscribe.New(subs),
 		Rumor:           rumorHandler,
 	})
 
 	// Create the answer handler
-	aHandler := answerHandler.New(queries, answerHandler.AnswerHandlers{
+	aHandler := hanswer.New(queries, hanswer.Handlers{
 		MessageHandler: msgHandler,
 		RumorSender:    rumorHandler,
 	})
 
 	// Create the json rpc handler
-	jsonRpcHandler := jsonrpc.New(schemaValidator, qHandler, aHandler)
+	jsonRpcHandler := hjsonrpc.New(schemaValidator, qHandler, aHandler)
 
 	// Create the hub
 	hub := &Hub{
-		conf:              conf,
-		control:           hubParams,
+		wg:                hubParams.GetWaitGroup(),
+		messageChan:       hubParams.GetMessageChan(),
+		closedSockets:     hubParams.GetClosedSockets(),
+		stop:              hubParams.GetStopChan(),
+		resetRumorSender:  hubParams.GetResetRumorSender(),
 		subs:              subs,
 		sockets:           sockets,
+		db:                &db,
 		jsonRpcHandler:    jsonRpcHandler,
 		greetserverSender: greetserverHandler,
 		rumorSender:       rumorHandler,
-		db:                &db,
 	}
 
 	return hub, nil
@@ -191,23 +217,23 @@ func (h *Hub) NotifyNewServer(socket socket.Socket) {
 }
 
 func (h *Hub) Start() {
-	h.control.GetWaitGroup().Add(3)
+	h.wg.Add(3)
 	go h.runHeartbeat()
 	go h.runRumorSender()
 	go h.runMessageReceiver()
 }
 
 func (h *Hub) Stop() {
-	close(h.control.GetStopChan())
-	h.control.GetWaitGroup().Wait()
+	close(h.stop)
+	h.wg.Wait()
 }
 
 func (h *Hub) Receiver() chan<- socket.IncomingMessage {
-	return h.control.GetMessageChan()
+	return h.messageChan
 }
 
 func (h *Hub) OnSocketClose() chan<- string {
-	return h.control.GetClosedSockets()
+	return h.closedSockets
 }
 
 func (h *Hub) SendGreetServer(socket socket.Socket) error {
@@ -215,7 +241,7 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 }
 
 func (h *Hub) runMessageReceiver() {
-	defer h.control.GetWaitGroup().Done()
+	defer h.wg.Done()
 	defer logger.Logger.Info().Msg("stopping hub")
 
 	logger.Logger.Info().Msg("starting hub")
@@ -223,7 +249,7 @@ func (h *Hub) runMessageReceiver() {
 	for {
 		logger.Logger.Debug().Msg("waiting for a new message")
 		select {
-		case incomingMessage := <-h.control.GetMessageChan():
+		case incomingMessage := <-h.messageChan:
 			logger.Logger.Debug().Msg("start handling a message")
 			err := h.jsonRpcHandler.Handle(incomingMessage.Socket, incomingMessage.Message)
 			if err != nil {
@@ -231,10 +257,10 @@ func (h *Hub) runMessageReceiver() {
 			} else {
 				logger.Logger.Debug().Msg("successfully handled a message")
 			}
-		case socketID := <-h.control.GetClosedSockets():
+		case socketID := <-h.closedSockets:
 			logger.Logger.Debug().Msgf("stopping the Socket " + socketID)
 			h.subs.UnsubscribeFromAll(socketID)
-		case <-h.control.GetStopChan():
+		case <-h.stop:
 			return
 		}
 	}
@@ -243,7 +269,7 @@ func (h *Hub) runMessageReceiver() {
 func (h *Hub) runRumorSender() {
 	ticker := time.NewTicker(rumorDelay)
 	defer ticker.Stop()
-	defer h.control.GetWaitGroup().Done()
+	defer h.wg.Done()
 	defer logger.Logger.Info().Msg("stopping rumor sender")
 
 	logger.Logger.Info().Msg("starting rumor sender")
@@ -256,14 +282,14 @@ func (h *Hub) runRumorSender() {
 			if err != nil {
 				logger.Logger.Error().Err(err)
 			}
-		case <-h.control.GetResetRumorSender():
+		case <-h.resetRumorSender:
 			logger.Logger.Debug().Msgf("sender rumor reset")
 			ticker.Reset(rumorDelay)
 			err := h.tryToSendRumor()
 			if err != nil {
 				logger.Logger.Error().Err(err)
 			}
-		case <-h.control.GetStopChan():
+		case <-h.stop:
 			return
 		}
 	}
@@ -287,7 +313,7 @@ func (h *Hub) tryToSendRumor() error {
 func (h *Hub) runHeartbeat() {
 	ticker := time.NewTicker(heartbeatDelay)
 	defer ticker.Stop()
-	defer h.control.GetWaitGroup().Done()
+	defer h.wg.Done()
 	defer logger.Logger.Info().Msg("stopping heartbeat sender")
 
 	logger.Logger.Info().Msg("starting heartbeat sender")
@@ -299,7 +325,7 @@ func (h *Hub) runHeartbeat() {
 			if err != nil {
 				logger.Logger.Error().Err(err)
 			}
-		case <-h.control.GetStopChan():
+		case <-h.stop:
 			return
 		}
 	}
@@ -307,9 +333,9 @@ func (h *Hub) runHeartbeat() {
 
 // sendHeartbeat sends a heartbeat message to all servers
 func (h *Hub) sendHeartbeat() error {
-	heartbeatMessage := method.Heartbeat{
-		Base: query.Base{
-			JSONRPCBase: message.JSONRPCBase{
+	heartbeatMessage := mheartbeat.Heartbeat{
+		Base: mquery.Base{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: "heartbeat",
