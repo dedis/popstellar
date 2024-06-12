@@ -49,7 +49,11 @@ type Server struct {
 // /<hubType>/<socketType> endpoint. Please use the Start() method to start
 // listening for connections.
 func NewServer(hub hub.Hub, addr string, port int, st socket.SocketType, log zerolog.Logger) *Server {
-	log = log.With().Str("role", "server").Logger()
+	if st == socket.ClientSocketType {
+		log = log.With().Str("server", "client").Logger()
+	} else {
+		log = log.With().Str("server", "server").Logger()
+	}
 
 	server := &Server{
 		hub:     hub,

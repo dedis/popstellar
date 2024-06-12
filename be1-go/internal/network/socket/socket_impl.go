@@ -81,15 +81,14 @@ func (s *baseSocket) ReadPump() {
 		_, message, err := s.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				s.log.Err(err).
-					Str("socket", s.conn.RemoteAddr().String()).
-					Msg("connection dropped unexpectedly")
+				s.log.Err(err).Msg("connection dropped unexpectedly")
 			} else {
 				s.log.Info().Msg("closing the read pump")
 			}
 			break
 		}
 
+		s.log.Info().RawJSON("received", message).Msg("")
 		msg := IncomingMessage{
 			Socket:  s,
 			Message: message,
@@ -134,6 +133,7 @@ func (s *baseSocket) WritePump() {
 			}
 
 			w.Write(message)
+			s.log.Info().RawJSON("sent", message).Msg("")
 
 			if err := w.Close(); err != nil {
 				s.log.Err(err).Msg("failed to close writer")
@@ -155,10 +155,6 @@ func (s *baseSocket) WritePump() {
 
 // Send allows sending a serialized message to the socket.
 func (s *baseSocket) Send(msg []byte) {
-	s.log.Info().
-		Str("to", s.conn.RemoteAddr().String()).
-		Str("msg", string(msg)).
-		Msg("send generic msg")
 	s.send <- msg
 }
 
@@ -184,11 +180,6 @@ func (s *baseSocket) SendError(id *int, err error) {
 		s.log.Err(err).Msg("failed to marshal error")
 		return
 	}
-
-	s.log.Info().
-		Str("to", s.conn.RemoteAddr().String()).
-		Str("msg", string(answerBuf)).
-		Msg("send error")
 
 	s.send <- answerBuf
 }
@@ -222,11 +213,6 @@ func (s *baseSocket) SendPopError(id *int, err error) {
 		s.log.Err(err).Msg("failed to marshal poperror")
 		return
 	}
-
-	s.log.Info().
-		Str("to", s.conn.RemoteAddr().String()).
-		Str("msg", string(answerBuf)).
-		Msg("send error")
 
 	s.send <- answerBuf
 }
@@ -278,10 +264,6 @@ func (s *baseSocket) SendResult(id int, res []mmessage.Message, missingMessagesB
 		return
 	}
 
-	s.log.Info().
-		Str("to", s.id).
-		Str("msg", string(answerBuf)).
-		Msg("send result")
 	s.send <- answerBuf
 }
 
@@ -289,8 +271,13 @@ func newBaseSocket(socketType SocketType, receiver chan<- IncomingMessage,
 	closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup,
 	done chan struct{}, log zerolog.Logger,
 ) *baseSocket {
+	id := xid.New().String()
+	log = log.With().Dict("socket", zerolog.Dict().
+		Str("ID", id).
+		Str("IP", conn.RemoteAddr().String())).Logger()
+
 	return &baseSocket{
-		id:            xid.New().String(),
+		id:            id,
 		socketType:    socketType,
 		receiver:      receiver,
 		closedSockets: closedSockets,
@@ -312,8 +299,6 @@ func NewClientSocket(receiver chan<- IncomingMessage,
 	closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup,
 	done chan struct{}, log zerolog.Logger,
 ) *ClientSocket {
-	log = log.With().Str("role", "client socket").Logger()
-
 	return &ClientSocket{
 		baseSocket: newBaseSocket(ClientSocketType, receiver, closedSockets,
 			conn, wg, done, log),
@@ -330,8 +315,6 @@ func NewServerSocket(receiver chan<- IncomingMessage,
 	closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup,
 	done chan struct{}, log zerolog.Logger,
 ) *ServerSocket {
-	log = log.With().Str("role", "server socket").Logger()
-
 	return &ServerSocket{
 		baseSocket: newBaseSocket(ServerSocketType, receiver, closedSockets,
 			conn, wg, done, log),
