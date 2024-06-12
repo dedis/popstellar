@@ -73,6 +73,7 @@ class TokenFragment : Fragment() {
               .bitmap()
 
       binding.tokenQrCode.setImageBitmap(bitmap)
+      binding.tokenTextUsernameView.text = poPToken.publicKey.getUsername()
       binding.tokenTextView.text = poPToken.publicKey.encoded
       clipboardManager.setupCopyButton(binding.tokenCopyButton, binding.tokenTextView, "Token")
     } catch (e: Exception) {
