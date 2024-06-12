@@ -104,7 +104,7 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	sockets := state.NewSockets(log)
 
 	// Initialize the database
-	db, err := sqlite.NewSQLite(dbPath, true)
+	db, err := sqlite.NewSQLite(dbPath, true, log)
 	if err != nil {
 		return nil, err
 	}
