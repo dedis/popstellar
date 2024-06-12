@@ -2,9 +2,11 @@ package hheartbeat
 
 import (
 	"encoding/json"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
+	"io"
 	"popstellar/internal/handler/method/getmessagesbyid/mgetmessagesbyid"
 	mocks2 "popstellar/internal/handler/method/heartbeat/hheartbeat/mocks"
 	"popstellar/internal/network/socket/mocks"
@@ -16,7 +18,7 @@ func Test_handleHeartbeat(t *testing.T) {
 	queries := mocks2.NewQueries(t)
 	db := mocks2.NewRepository(t)
 
-	handler := New(queries, db)
+	handler := New(queries, db, zerolog.New(io.Discard))
 
 	type input struct {
 		name     string

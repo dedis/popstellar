@@ -7,7 +7,6 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/rs/xid"
 	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
@@ -25,7 +24,6 @@ import (
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/greetserver/mgreetserver"
 	method2 "popstellar/internal/handler/method/publish/mpublish"
-	"popstellar/internal/logger"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/old/oldchannel"
 	"popstellar/internal/validation"
@@ -54,7 +52,7 @@ func TestJWTToken(t *testing.T) {
 	idToken, err := createJWTString(webAddr, ppid, cID, nonce, sk)
 	require.NoError(t, err)
 
-	log.Info().Msg(idToken)
+	//log.Info().Msg(idToken)
 	// verifying the token
 	token, err := jwt.Parse(idToken, func(jwtToken *jwt.Token) (interface{}, error) {
 		_, ok := jwtToken.Method.(*jwt.SigningMethodRSA)
@@ -106,7 +104,7 @@ func Test_Authenticate_User(t *testing.T) {
 	require.NoError(t, err)
 	name := "3hfd5xSty1VShCdcfLUDsgNF_EnMSRiFk74xvH5LRjM=/authenticate"
 	// Create the oldchannel
-	authCha := NewChannel("3hfd5xSty1VShCdcfLUDsgNF_EnMSRiFk74xvH5LRjM=/authenticate", fakeHub, logger.Logger, secPathTest, pubPathtest)
+	authCha := NewChannel("3hfd5xSty1VShCdcfLUDsgNF_EnMSRiFk74xvH5LRjM=/authenticate", fakeHub, zerolog.New(io.Discard), secPathTest, pubPathtest)
 
 	fakeHub.RegisterNewChannel(name, authCha)
 	_, found := fakeHub.channelByID[name]

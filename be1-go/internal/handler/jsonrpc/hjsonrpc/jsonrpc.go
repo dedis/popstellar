@@ -1,6 +1,7 @@
 package hjsonrpc
 
 import (
+	"github.com/rs/zerolog"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/network/socket"
@@ -19,13 +20,16 @@ type Handler struct {
 	schema        *validation.SchemaValidator
 	queryHandler  QueryHandler
 	answerHandler AnswerHandler
+	log           zerolog.Logger
 }
 
-func New(schema *validation.SchemaValidator, queryHandler QueryHandler, answerHandler AnswerHandler) *Handler {
+func New(schema *validation.SchemaValidator, queryHandler QueryHandler,
+	answerHandler AnswerHandler, log zerolog.Logger) *Handler {
 	return &Handler{
 		schema:        schema,
 		queryHandler:  queryHandler,
 		answerHandler: answerHandler,
+		log:           log.With().Str("module", "jsonrpc").Logger(),
 	}
 }
 

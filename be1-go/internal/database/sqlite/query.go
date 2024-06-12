@@ -149,7 +149,7 @@ func (s *SQLite) CheckRumor(senderID string, rumorID int) (bool, error) {
 	if rumorID == 0 {
 		err := s.database.QueryRow(selectAnyRumor, senderID).Scan(&id)
 		if err != nil && !errors.Is(err, sql.ErrNoRows) {
-			return false, err
+			return false, poperrors.NewDatabaseSelectErrorMsg(err.Error())
 		} else if errors.Is(err, sql.ErrNoRows) {
 			return true, nil
 		}
@@ -158,7 +158,7 @@ func (s *SQLite) CheckRumor(senderID string, rumorID int) (bool, error) {
 
 	err := s.database.QueryRow(selectLastRumor, senderID).Scan(&id)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return false, err
+		return false, poperrors.NewDatabaseSelectErrorMsg(err.Error())
 	} else if errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	}

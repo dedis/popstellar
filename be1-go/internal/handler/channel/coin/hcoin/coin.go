@@ -2,6 +2,7 @@ package hcoin
 
 import (
 	"encoding/base64"
+	"github.com/rs/zerolog"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/channel/coin/mcoin"
@@ -22,14 +23,15 @@ type Handler struct {
 	subs   Subscribers
 	db     Repository
 	schema *validation.SchemaValidator
+	log    zerolog.Logger
 }
 
-func New(subs Subscribers, db Repository,
-	schema *validation.SchemaValidator) *Handler {
+func New(subs Subscribers, db Repository, schema *validation.SchemaValidator, log zerolog.Logger) *Handler {
 	return &Handler{
 		subs:   subs,
 		db:     db,
 		schema: schema,
+		log:    log.With().Str("module", "coin").Logger(),
 	}
 }
 

@@ -1,7 +1,9 @@
 package hquery
 
 import (
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
+	"io"
 	"popstellar/internal/handler/query/hquery/mocks"
 	mocks2 "popstellar/internal/network/socket/mocks"
 	"popstellar/internal/test/generator"
@@ -29,7 +31,7 @@ func Test_handleQuery(t *testing.T) {
 		Rumor:           methodHandler,
 	}
 
-	handler := New(methodHandlers)
+	handler := New(methodHandlers, zerolog.New(io.Discard))
 
 	args := make([]input, 0)
 

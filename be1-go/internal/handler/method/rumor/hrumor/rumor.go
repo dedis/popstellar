@@ -2,6 +2,7 @@ package hrumor
 
 import (
 	"encoding/json"
+	"github.com/rs/zerolog"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/rumor/mrumor"
@@ -41,15 +42,16 @@ type Handler struct {
 	sockets        Sockets
 	db             Repository
 	messageHandler MessageHandler
+	log            zerolog.Logger
 }
 
-func New(queries Queries, sockets Sockets, db Repository,
-	messageHandler MessageHandler) *Handler {
+func New(queries Queries, sockets Sockets, db Repository, messageHandler MessageHandler, log zerolog.Logger) *Handler {
 	return &Handler{
 		queries:        queries,
 		sockets:        sockets,
 		db:             db,
 		messageHandler: messageHandler,
+		log:            log.With().Str("module", "rumor").Logger(),
 	}
 }
 

@@ -2,6 +2,7 @@ package hgreetserver
 
 import (
 	"encoding/json"
+	"github.com/rs/zerolog"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/method/greetserver/mgreetserver"
@@ -22,12 +23,14 @@ type Peers interface {
 type Handler struct {
 	conf  Config
 	peers Peers
+	log   zerolog.Logger
 }
 
-func New(conf Config, peers Peers) *Handler {
+func New(conf Config, peers Peers, log zerolog.Logger) *Handler {
 	return &Handler{
 		conf:  conf,
 		peers: peers,
+		log:   log.With().Str("module", "greetserver").Logger(),
 	}
 }
 

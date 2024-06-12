@@ -35,8 +35,6 @@ import (
 
 	"go.dedis.ch/kyber/v3"
 
-	"github.com/rs/zerolog/log"
-
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
@@ -610,7 +608,7 @@ func createGeneralChirpingChannel(laoID string, hub oldchannel.HubFunctionalitie
 	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, popstellar.Logger)
 	hub.NotifyNewChannel(generalChannelPath, generalChirpingChannel, socket)
 
-	log.Info().Msgf("storing new oldchannel '%s' ", generalChannelPath)
+	//log.Info().Msgf("storing new oldchannel '%s' ", generalChannelPath)
 
 	return generalChirpingChannel
 }
@@ -620,7 +618,7 @@ func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) 
 
 	cha := chirp.NewChannel(chirpingChannelPath, publicKey, c.hub, c.general, popstellar.Logger)
 	c.hub.NotifyNewChannel(chirpingChannelPath, cha, socket)
-	log.Info().Msgf("storing new chirp oldchannel (%s) for: '%s'", c.channelID, publicKey)
+	//log.Info().Msgf("storing new chirp oldchannel (%s) for: '%s'", c.channelID, publicKey)
 }
 
 // createAuthChannel creates an authentication oldchannel associated to the laoID, handling PopCHA requests

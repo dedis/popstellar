@@ -35,7 +35,7 @@ var ShortSHA = "unknown"
 // level.
 const EnvLogLevel = "LLVL"
 
-const defaultLevel = zerolog.DebugLevel
+const defaultLevel = zerolog.InfoLevel
 
 func init() {
 	lvl := os.Getenv(EnvLogLevel)

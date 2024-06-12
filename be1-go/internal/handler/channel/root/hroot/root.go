@@ -3,6 +3,7 @@ package hroot
 import (
 	"encoding/base64"
 	"encoding/json"
+	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
@@ -51,16 +52,18 @@ type Handler struct {
 	peers  Peers
 	db     Repository
 	schema *validation.SchemaValidator
+	log    zerolog.Logger
 }
 
-func New(config Config, db Repository,
-	subs Subscribers, peers Peers, schema *validation.SchemaValidator) *Handler {
+func New(config Config, db Repository, subs Subscribers, peers Peers,
+	schema *validation.SchemaValidator, log zerolog.Logger) *Handler {
 	return &Handler{
 		conf:   config,
 		subs:   subs,
 		peers:  peers,
 		db:     db,
 		schema: schema,
+		log:    log.With().Str("module", "root").Logger(),
 	}
 }
 

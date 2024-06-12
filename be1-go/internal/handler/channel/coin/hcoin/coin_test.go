@@ -4,7 +4,9 @@ import (
 	"embed"
 	"encoding/base64"
 	"encoding/json"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
+	"io"
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/channel/coin/hcoin/mocks"
 	"popstellar/internal/handler/message/mmessage"
@@ -27,14 +29,16 @@ type inputTestHandleChannelCoin struct {
 }
 
 func Test_handleChannelCoin(t *testing.T) {
-	subs := state.NewSubscribers()
+	log := zerolog.New(io.Discard)
+
+	subs := state.NewSubscribers(log)
 
 	db := mocks.NewRepository(t)
 
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	coin := New(subs, db, schema)
+	coin := New(subs, db, schema, log)
 
 	inputs := make([]inputTestHandleChannelCoin, 0)
 

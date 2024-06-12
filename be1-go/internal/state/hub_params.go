@@ -1,6 +1,7 @@
 package state
 
 import (
+	"github.com/rs/zerolog"
 	"popstellar/internal/network/socket"
 	"sync"
 )
@@ -11,14 +12,16 @@ type HubParams struct {
 	closedSockets    chan string
 	stop             chan struct{}
 	resetRumorSender chan struct{}
+	log              zerolog.Logger
 }
 
-func NewHubParams() *HubParams {
+func NewHubParams(log zerolog.Logger) *HubParams {
 	return &HubParams{
 		messageChan:      make(chan socket.IncomingMessage),
 		stop:             make(chan struct{}),
 		closedSockets:    make(chan string),
 		resetRumorSender: make(chan struct{}),
+		log:              log.With().Str("module", "hub_params").Logger(),
 	}
 }
 

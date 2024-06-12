@@ -20,17 +20,18 @@ type Queries struct {
 
 	// nextID store the ID of the next query
 	nextID int
+
 	// zerolog
-	log *zerolog.Logger
+	log zerolog.Logger
 }
 
 // NewQueries creates a new queries struct
-func NewQueries(log *zerolog.Logger) *Queries {
+func NewQueries(log zerolog.Logger) *Queries {
 	return &Queries{
 		state:                  make(map[int]bool),
 		getMessagesByIdQueries: make(map[int]mgetmessagesbyid.GetMessagesById),
 		getRumorQueries:        make(map[int]mrumor.Rumor),
-		log:                    log,
+		log:                    log.With().Str("module", "queries").Logger(),
 	}
 }
 
@@ -68,8 +69,7 @@ func (q *Queries) SetQueryReceived(id int) error {
 	}
 
 	if currentState {
-		q.log.Info().Msgf("query with id %d already answered", id)
-		return nil
+		return errors.NewDuplicateResourceError("query with id %d already answered", id)
 	}
 
 	q.state[id] = true

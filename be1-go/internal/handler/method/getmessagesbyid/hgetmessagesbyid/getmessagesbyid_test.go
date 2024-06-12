@@ -1,8 +1,10 @@
 package hgetmessagesbyid
 
 import (
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
+	"io"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/getmessagesbyid/hgetmessagesbyid/mocks"
 	mocks2 "popstellar/internal/network/socket/mocks"
@@ -13,7 +15,7 @@ import (
 func Test_handleGetMessagesByID(t *testing.T) {
 	db := mocks.NewRepository(t)
 
-	handler := New(db)
+	handler := New(db, zerolog.New(io.Discard))
 
 	type input struct {
 		name     string

@@ -1,7 +1,9 @@
 package hreaction
 
 import (
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
+	"io"
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/channel/reaction/hreaction/mocks"
 	"popstellar/internal/handler/message/mmessage"
@@ -22,14 +24,16 @@ func Test_handleChannelReaction(t *testing.T) {
 		contains    string
 	}
 
-	subs := state.NewSubscribers()
+	log := zerolog.New(io.Discard)
+
+	subs := state.NewSubscribers(log)
 
 	db := mocks.NewRepository(t)
 
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	reactionHandler := New(subs, db, schema)
+	reactionHandler := New(subs, db, schema, log)
 
 	sender := "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
 	//wrongSender := "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sK="

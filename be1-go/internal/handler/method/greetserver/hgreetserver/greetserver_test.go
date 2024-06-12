@@ -1,7 +1,9 @@
 package hgreetserver
 
 import (
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
+	"io"
 	"popstellar/internal/errors"
 	mocks2 "popstellar/internal/handler/method/greetserver/hgreetserver/mocks"
 	"popstellar/internal/network/socket/mocks"
@@ -13,7 +15,7 @@ func Test_handleGreetServer(t *testing.T) {
 	conf := mocks2.NewConfig(t)
 	peers := mocks2.NewPeers(t)
 
-	handler := New(conf, peers)
+	handler := New(conf, peers, zerolog.New(io.Discard))
 
 	type input struct {
 		name      string

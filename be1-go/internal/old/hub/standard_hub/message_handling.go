@@ -22,8 +22,6 @@ import (
 	"popstellar/internal/old/hub/standard_hub/hub_state"
 	"popstellar/internal/validation"
 
-	"github.com/rs/zerolog/log"
-
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 
 	"golang.org/x/exp/slices"
@@ -523,7 +521,7 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData mmessage.M
 	signature := messageData.Signature
 	messageID := messageData.MessageID
 	data := messageData.Data
-	log.Info().Msgf("Received message on %s", targetChannel)
+	//log.Info().Msgf("Received message on %s", targetChannel)
 
 	expectedMessageID := channel.Hash(data, signature)
 	if expectedMessageID != messageID {

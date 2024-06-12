@@ -2,7 +2,6 @@ package socket
 
 import (
 	"encoding/json"
-	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"os"
@@ -88,7 +87,7 @@ var socket = *newBaseSocket(
 	ServerSocketType,
 	make(chan IncomingMessage),
 	make(chan string),
-	&websocket.Conn{},
+	nil,
 	&sync.WaitGroup{},
 	make(chan struct{}),
 	zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout}).With().Timestamp().Logger(),
