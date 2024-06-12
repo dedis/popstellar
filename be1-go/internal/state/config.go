@@ -2,6 +2,7 @@ package state
 
 import (
 	"encoding/base64"
+	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/internal/crypto"
@@ -14,16 +15,18 @@ type Config struct {
 	serverSecretKey     kyber.Scalar
 	clientServerAddress string
 	serverServerAddress string
+	log                 zerolog.Logger
 }
 
 func CreateConfig(ownerPubKey, serverPubKey kyber.Point, serverSecretKey kyber.Scalar,
-	clientServerAddress, serverServerAddress string) *Config {
+	clientServerAddress, serverServerAddress string, log zerolog.Logger) *Config {
 	return &Config{
 		ownerPubKey:         ownerPubKey,
 		serverPubKey:        serverPubKey,
 		serverSecretKey:     serverSecretKey,
 		clientServerAddress: clientServerAddress,
 		serverServerAddress: serverServerAddress,
+		log:                 log.With().Str("role", "config").Logger(),
 	}
 }
 

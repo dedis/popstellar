@@ -1,6 +1,7 @@
 package state
 
 import (
+	"github.com/rs/zerolog"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/method/greetserver/mgreetserver"
 	"sync"
@@ -16,13 +17,15 @@ type Peers struct {
 	peersInfo map[string]mgreetserver.GreetServerParams
 	// peersGreeted stores the peers that were greeted by the socket ID
 	peersGreeted map[string]struct{}
+	log          zerolog.Logger
 }
 
 // NewPeers creates a new Peers structure
-func NewPeers() *Peers {
+func NewPeers(log zerolog.Logger) *Peers {
 	return &Peers{
 		peersInfo:    make(map[string]mgreetserver.GreetServerParams),
 		peersGreeted: make(map[string]struct{}),
+		log:          log.With().Str("role", "peers").Logger(),
 	}
 }
 

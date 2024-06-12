@@ -2,6 +2,7 @@ package state
 
 import (
 	"encoding/json"
+	"github.com/rs/zerolog"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
@@ -14,11 +15,13 @@ import (
 type Subscribers struct {
 	sync.RWMutex
 	list map[string]map[string]socket.Socket
+	log  zerolog.Logger
 }
 
-func NewSubscribers() *Subscribers {
+func NewSubscribers(log zerolog.Logger) *Subscribers {
 	return &Subscribers{
 		list: make(map[string]map[string]socket.Socket),
+		log:  log.With().Str("role", "subscribers").Logger(),
 	}
 }
 

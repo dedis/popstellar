@@ -2,6 +2,7 @@ package hub
 
 import (
 	"encoding/json"
+	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/crypto"
 	"popstellar/internal/database/sqlite"
@@ -29,7 +30,6 @@ import (
 	"popstellar/internal/handler/method/unsubscribe/hunsubscribe"
 	"popstellar/internal/handler/query/hquery"
 	"popstellar/internal/handler/query/mquery"
-	"popstellar/internal/logger"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/state"
 	"popstellar/internal/validation"
@@ -90,16 +90,18 @@ type Hub struct {
 	jsonRpcHandler    JsonRpcHandler
 	greetserverSender GreetServerSender
 	rumorSender       RumorSender
+
+	log zerolog.Logger
 }
 
-func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress string) (*Hub, error) {
+func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress string, log zerolog.Logger) (*Hub, error) {
 
 	// Initialize the in memory states
-	subs := state.NewSubscribers()
-	peers := state.NewPeers()
-	queries := state.NewQueries(&logger.Logger)
-	hubParams := state.NewHubParams()
-	sockets := state.NewSockets()
+	subs := state.NewSubscribers(log)
+	peers := state.NewPeers(log)
+	queries := state.NewQueries(log)
+	hubParams := state.NewHubParams(log)
+	sockets := state.NewSockets(log)
 
 	// Initialize the database
 	db, err := sqlite.NewSQLite(dbPath, true)
@@ -121,7 +123,7 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	}
 
 	// Create the in memory configuration state
-	conf := state.CreateConfig(ownerPubKey, serverPublicKey, serverSecretKey, clientAddress, serverAddress)
+	conf := state.CreateConfig(ownerPubKey, serverPublicKey, serverSecretKey, clientAddress, serverAddress, log)
 
 	// Store the rumor with id 0 associated to the server if the database is empty
 	err = db.StoreFirstRumor()
@@ -207,6 +209,7 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 		jsonRpcHandler:    jsonRpcHandler,
 		greetserverSender: greetserverHandler,
 		rumorSender:       rumorHandler,
+		log:               log.With().Str("role", "hub").Logger(),
 	}
 
 	return hub, nil
@@ -242,23 +245,23 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 
 func (h *Hub) runMessageReceiver() {
 	defer h.wg.Done()
-	defer logger.Logger.Info().Msg("stopping hub")
+	defer h.log.Info().Msg("stopping hub")
 
-	logger.Logger.Info().Msg("starting hub")
+	h.log.Info().Msg("starting hub")
 
 	for {
-		logger.Logger.Debug().Msg("waiting for a new message")
+		h.log.Debug().Msg("waiting for a new message")
 		select {
 		case incomingMessage := <-h.messageChan:
-			logger.Logger.Debug().Msg("start handling a message")
+			h.log.Debug().Msg("start handling a message")
 			err := h.jsonRpcHandler.Handle(incomingMessage.Socket, incomingMessage.Message)
 			if err != nil {
-				logger.Logger.Error().Err(err)
+				h.log.Error().Err(err)
 			} else {
-				logger.Logger.Debug().Msg("successfully handled a message")
+				h.log.Debug().Msg("successfully handled a message")
 			}
 		case socketID := <-h.closedSockets:
-			logger.Logger.Debug().Msgf("stopping the Socket " + socketID)
+			h.log.Debug().Msgf("stopping the Socket " + socketID)
 			h.subs.UnsubscribeFromAll(socketID)
 		case <-h.stop:
 			return
@@ -270,24 +273,24 @@ func (h *Hub) runRumorSender() {
 	ticker := time.NewTicker(rumorDelay)
 	defer ticker.Stop()
 	defer h.wg.Done()
-	defer logger.Logger.Info().Msg("stopping rumor sender")
+	defer h.log.Info().Msg("stopping rumor sender")
 
-	logger.Logger.Info().Msg("starting rumor sender")
+	h.log.Info().Msg("starting rumor sender")
 
 	for {
 		select {
 		case <-ticker.C:
-			logger.Logger.Debug().Msgf("sender rumor trigerred")
+			h.log.Debug().Msgf("sender rumor trigerred")
 			err := h.tryToSendRumor()
 			if err != nil {
-				logger.Logger.Error().Err(err)
+				h.log.Error().Err(err)
 			}
 		case <-h.resetRumorSender:
-			logger.Logger.Debug().Msgf("sender rumor reset")
+			h.log.Debug().Msgf("sender rumor reset")
 			ticker.Reset(rumorDelay)
 			err := h.tryToSendRumor()
 			if err != nil {
-				logger.Logger.Error().Err(err)
+				h.log.Error().Err(err)
 			}
 		case <-h.stop:
 			return
@@ -301,7 +304,7 @@ func (h *Hub) tryToSendRumor() error {
 		return err
 	}
 	if !ok {
-		logger.Logger.Debug().Msg("no new rumor to send")
+		h.log.Debug().Msg("no new rumor to send")
 		return nil
 	}
 
@@ -314,16 +317,16 @@ func (h *Hub) runHeartbeat() {
 	ticker := time.NewTicker(heartbeatDelay)
 	defer ticker.Stop()
 	defer h.wg.Done()
-	defer logger.Logger.Info().Msg("stopping heartbeat sender")
+	defer h.log.Info().Msg("stopping heartbeat sender")
 
-	logger.Logger.Info().Msg("starting heartbeat sender")
+	h.log.Info().Msg("starting heartbeat sender")
 
 	for {
 		select {
 		case <-ticker.C:
 			err := h.sendHeartbeat()
 			if err != nil {
-				logger.Logger.Error().Err(err)
+				h.log.Error().Err(err)
 			}
 		case <-h.stop:
 			return
