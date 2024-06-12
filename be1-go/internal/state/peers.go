@@ -2,12 +2,11 @@ package state
 
 import (
 	"github.com/rs/zerolog"
+	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/method/greetserver/mgreetserver"
 	"sync"
-
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 )
 
 // Peers stores the peers' information

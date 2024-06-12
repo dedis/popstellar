@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"github.com/fsnotify/fsnotify"
+	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 	"io"
 	"os"
@@ -14,9 +16,6 @@ import (
 	"sync"
 	"testing"
 	"time"
-
-	"github.com/rs/zerolog"
-	"github.com/stretchr/testify/require"
 )
 
 const (
