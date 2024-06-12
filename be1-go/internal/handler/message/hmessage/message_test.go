@@ -2,8 +2,10 @@ package hmessage
 
 import (
 	"encoding/base64"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
+	"io"
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/message/hmessage/mocks"
 	"popstellar/internal/handler/message/mmessage"
@@ -26,7 +28,7 @@ func Test_handleChannel(t *testing.T) {
 		Federation: dataHandler,
 	}
 
-	msgHandler := New(db, subHandlers)
+	msgHandler := New(db, subHandlers, zerolog.New(io.Discard))
 
 	_, publicBuf, private, _ := generator.GenerateKeyPair(t)
 	sender := base64.URLEncoding.EncodeToString(publicBuf)

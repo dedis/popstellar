@@ -2,6 +2,7 @@ package hheartbeat
 
 import (
 	"encoding/json"
+	"github.com/rs/zerolog"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/method/getmessagesbyid/mgetmessagesbyid"
@@ -23,12 +24,14 @@ type Repository interface {
 type Handler struct {
 	queries Queries
 	db      Repository
+	log     zerolog.Logger
 }
 
-func New(queries Queries, db Repository) *Handler {
+func New(queries Queries, db Repository, log zerolog.Logger) *Handler {
 	return &Handler{
 		queries: queries,
 		db:      db,
+		log:     log.With().Str("module", "heartbeat").Logger(),
 	}
 }
 

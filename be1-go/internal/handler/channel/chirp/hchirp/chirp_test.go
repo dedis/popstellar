@@ -2,8 +2,10 @@ package hchirp
 
 import (
 	"encoding/base64"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"io"
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/channel/chirp/hchirp/mocks"
@@ -27,7 +29,9 @@ func Test_handleChannelChirp(t *testing.T) {
 		contains    string
 	}
 
-	subs := state.NewSubscribers()
+	log := zerolog.New(io.Discard)
+
+	subs := state.NewSubscribers(log)
 
 	db := mocks.NewRepository(t)
 
@@ -44,9 +48,9 @@ func Test_handleChannelChirp(t *testing.T) {
 	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
 
-	conf := state.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
+	conf := state.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress", log)
 
-	chirp := New(conf, subs, db, schema)
+	chirp := New(conf, subs, db, schema, log)
 
 	sender := "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
 	wrongSender := "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sK="

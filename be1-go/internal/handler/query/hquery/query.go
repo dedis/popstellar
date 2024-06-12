@@ -2,6 +2,7 @@ package hquery
 
 import (
 	"encoding/json"
+	"github.com/rs/zerolog"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
@@ -24,11 +25,13 @@ type MethodHandlers struct {
 
 type Handler struct {
 	handlers MethodHandlers
+	log      zerolog.Logger
 }
 
-func New(handlers MethodHandlers) *Handler {
+func New(handlers MethodHandlers, log zerolog.Logger) *Handler {
 	return &Handler{
 		handlers: handlers,
+		log:      log.With().Str("module", "query").Logger(),
 	}
 }
 

@@ -1,6 +1,7 @@
 package hmessage
 
 import (
+	"github.com/rs/zerolog"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/message/mmessage"
@@ -32,12 +33,14 @@ type DataHandlers struct {
 type Handler struct {
 	db       Repository
 	handlers DataHandlers
+	log      zerolog.Logger
 }
 
-func New(db Repository, handlers DataHandlers) *Handler {
+func New(db Repository, handlers DataHandlers, log zerolog.Logger) *Handler {
 	return &Handler{
 		db:       db,
 		handlers: handlers,
+		log:      log.With().Str("module", "message").Logger(),
 	}
 }
 

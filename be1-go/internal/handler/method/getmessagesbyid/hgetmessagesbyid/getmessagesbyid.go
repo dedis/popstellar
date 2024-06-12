@@ -2,6 +2,7 @@ package hgetmessagesbyid
 
 import (
 	"encoding/json"
+	"github.com/rs/zerolog"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/getmessagesbyid/mgetmessagesbyid"
@@ -13,12 +14,14 @@ type Repository interface {
 }
 
 type Handler struct {
-	db Repository
+	db  Repository
+	log zerolog.Logger
 }
 
-func New(db Repository) *Handler {
+func New(db Repository, log zerolog.Logger) *Handler {
 	return &Handler{
-		db: db,
+		db:  db,
+		log: log.With().Str("module", "getmessagesbyid").Logger(),
 	}
 }
 

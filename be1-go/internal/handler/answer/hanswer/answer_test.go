@@ -45,16 +45,16 @@ func (n *nullRumorSender) SendRumor(socket socket.Socket, rumor mrumor.Rumor) {
 
 func Test_handleMessagesByChannel(t *testing.T) {
 
-	l := zerolog.New(io.Discard)
+	log := zerolog.New(io.Discard)
 
-	queries := state.NewQueries(&l)
+	queries := state.NewQueries(log)
 
 	answerHandlers := Handlers{
 		MessageHandler: &nullMessageHandler{},
 		RumorSender:    &nullRumorSender{},
 	}
 
-	handler := New(queries, answerHandlers)
+	handler := New(queries, answerHandlers, log)
 
 	type input struct {
 		name     string

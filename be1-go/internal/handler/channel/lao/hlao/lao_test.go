@@ -2,9 +2,11 @@ package hlao
 
 import (
 	"encoding/base64"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
+	"io"
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/channel/lao/hlao/mocks"
@@ -35,7 +37,9 @@ func Test_handleChannelLao(t *testing.T) {
 		contains    string
 	}
 
-	subs := state.NewSubscribers()
+	log := zerolog.New(io.Discard)
+
+	subs := state.NewSubscribers(log)
 
 	db := mocks.NewRepository(t)
 
@@ -52,9 +56,9 @@ func Test_handleChannelLao(t *testing.T) {
 	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
 
-	conf := state.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
+	conf := state.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress", log)
 
-	handler := New(conf, subs, db, schema)
+	handler := New(conf, subs, db, schema, log)
 
 	var args []input
 

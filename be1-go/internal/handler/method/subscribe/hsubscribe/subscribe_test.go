@@ -1,7 +1,9 @@
 package hsubscribe
 
 import (
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
+	"io"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/method/subscribe/hsubscribe/mocks"
 	mocks2 "popstellar/internal/network/socket/mocks"
@@ -12,7 +14,7 @@ import (
 func Test_handleSubscribe(t *testing.T) {
 	subs := mocks.NewSubscribers(t)
 
-	handler := New(subs)
+	handler := New(subs, zerolog.New(io.Discard))
 
 	type input struct {
 		name     string

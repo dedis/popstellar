@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
+	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/internal/crypto"
@@ -18,7 +19,6 @@ import (
 	"popstellar/internal/handler/method/publish/mpublish"
 	method2 "popstellar/internal/handler/method/subscribe/msubscribe"
 	"popstellar/internal/handler/query/mquery"
-	"popstellar/internal/logger"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/validation"
 	"strings"
@@ -74,14 +74,16 @@ type Handler struct {
 	subs   Subscribers
 	db     Repository
 	schema *validation.SchemaValidator
+	log    zerolog.Logger
 }
 
-func New(hub Hub, subs Subscribers, db Repository, schema *validation.SchemaValidator) *Handler {
+func New(hub Hub, subs Subscribers, db Repository, schema *validation.SchemaValidator, log zerolog.Logger) *Handler {
 	return &Handler{
 		hub:    hub,
 		subs:   subs,
 		db:     db,
 		schema: schema,
+		log:    log.With().Str("module", "federation").Logger(),
 	}
 }
 
@@ -457,7 +459,7 @@ func (h *Handler) connectTo(serverAddress string) (socket.Socket, error) {
 	wg := h.hub.GetWaitGroup()
 	stopChan := h.hub.GetStopChan()
 
-	client := socket.NewClientSocket(messageChan, closedSockets, ws, wg, stopChan, logger.Logger)
+	client := socket.NewClientSocket(messageChan, closedSockets, ws, wg, stopChan, h.log)
 
 	wg.Add(2)
 

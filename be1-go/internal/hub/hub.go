@@ -157,44 +157,44 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 
 	// Create the message data handlers
 	dataHandlers := hmessage.DataHandlers{
-		Root:       hroot.New(conf, &db, subs, peers, schemaValidator),
-		Lao:        hlao.New(conf, subs, &db, schemaValidator),
-		Election:   helection.New(conf, subs, &db, schemaValidator),
-		Chirp:      hchirp.New(conf, subs, &db, schemaValidator),
-		Reaction:   hreaction.New(subs, &db, schemaValidator),
-		Coin:       hcoin.New(subs, &db, schemaValidator),
-		Federation: hfederation.New(hubParams, subs, &db, schemaValidator),
+		Root:       hroot.New(conf, &db, subs, peers, schemaValidator, log),
+		Lao:        hlao.New(conf, subs, &db, schemaValidator, log),
+		Election:   helection.New(conf, subs, &db, schemaValidator, log),
+		Chirp:      hchirp.New(conf, subs, &db, schemaValidator, log),
+		Reaction:   hreaction.New(subs, &db, schemaValidator, log),
+		Coin:       hcoin.New(subs, &db, schemaValidator, log),
+		Federation: hfederation.New(hubParams, subs, &db, schemaValidator, log),
 	}
 
 	// Create the message handler
-	msgHandler := hmessage.New(&db, dataHandlers)
+	msgHandler := hmessage.New(&db, dataHandlers, log)
 
 	// Create the greetserver handler
-	greetserverHandler := hgreetserver.New(conf, peers)
+	greetserverHandler := hgreetserver.New(conf, peers, log)
 
 	// Create the rumor handler
-	rumorHandler := hrumor.New(queries, sockets, &db, msgHandler)
+	rumorHandler := hrumor.New(queries, sockets, &db, msgHandler, log)
 
 	// Create the query handler
 	qHandler := hquery.New(hquery.MethodHandlers{
-		Catchup:         hcatchup.New(&db),
-		GetMessagesbyid: hgetmessagesbyid.New(&db),
+		Catchup:         hcatchup.New(&db, log),
+		GetMessagesbyid: hgetmessagesbyid.New(&db, log),
 		Greetserver:     greetserverHandler,
-		Heartbeat:       hheartbeat.New(queries, &db),
-		Publish:         hpublish.New(hubParams, &db, msgHandler),
-		Subscribe:       hsubscribe.New(subs),
-		Unsubscribe:     hunsubscribe.New(subs),
+		Heartbeat:       hheartbeat.New(queries, &db, log),
+		Publish:         hpublish.New(hubParams, &db, msgHandler, log),
+		Subscribe:       hsubscribe.New(subs, log),
+		Unsubscribe:     hunsubscribe.New(subs, log),
 		Rumor:           rumorHandler,
-	})
+	}, log)
 
 	// Create the answer handler
 	aHandler := hanswer.New(queries, hanswer.Handlers{
 		MessageHandler: msgHandler,
 		RumorSender:    rumorHandler,
-	})
+	}, log)
 
 	// Create the json rpc handler
-	jsonRpcHandler := hjsonrpc.New(schemaValidator, qHandler, aHandler)
+	jsonRpcHandler := hjsonrpc.New(schemaValidator, qHandler, aHandler, log)
 
 	// Create the hub
 	hub := &Hub{

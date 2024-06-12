@@ -2,7 +2,9 @@ package hjsonrpc
 
 import (
 	"encoding/base64"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
+	"io"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/network/socket/mocks"
 	generator2 "popstellar/internal/test/generator"
@@ -35,7 +37,7 @@ func Test_handleIncomingMessage(t *testing.T) {
 	queryHandler := &nullQueryHandler{}
 	answerHandler := &nullAnswerHandler{}
 
-	handler := New(schema, queryHandler, answerHandler)
+	handler := New(schema, queryHandler, answerHandler, zerolog.New(io.Discard))
 
 	args := make([]input, 0)
 

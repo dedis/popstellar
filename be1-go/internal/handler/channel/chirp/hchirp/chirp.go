@@ -3,6 +3,7 @@ package hchirp
 import (
 	"encoding/base64"
 	"encoding/json"
+	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/channel"
@@ -34,15 +35,16 @@ type Handler struct {
 	subs   Subscribers
 	db     Repository
 	schema *validation.SchemaValidator
+	log    zerolog.Logger
 }
 
-func New(conf Config, subs Subscribers,
-	db Repository, schema *validation.SchemaValidator) *Handler {
+func New(conf Config, subs Subscribers, db Repository, schema *validation.SchemaValidator, log zerolog.Logger) *Handler {
 	return &Handler{
 		conf:   conf,
 		subs:   subs,
 		db:     db,
 		schema: schema,
+		log:    log.With().Str("module", "chirp").Logger(),
 	}
 }
 

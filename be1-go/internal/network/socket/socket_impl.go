@@ -272,9 +272,14 @@ func newBaseSocket(socketType SocketType, receiver chan<- IncomingMessage,
 	done chan struct{}, log zerolog.Logger,
 ) *baseSocket {
 	id := xid.New().String()
-	log = log.With().Dict("socket", zerolog.Dict().
-		Str("ID", id).
-		Str("IP", conn.RemoteAddr().String())).Logger()
+
+	if conn != nil {
+		log = log.With().Dict("socket", zerolog.Dict().
+			Str("ID", id).
+			Str("IP", conn.RemoteAddr().String())).Logger()
+	} else {
+		log = log.With().Str("socketID", id).Logger()
+	}
 
 	return &baseSocket{
 		id:            id,

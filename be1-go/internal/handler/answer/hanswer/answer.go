@@ -2,12 +2,12 @@ package hanswer
 
 import (
 	"encoding/json"
+	"github.com/rs/zerolog"
 	"math/rand"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/rumor/mrumor"
-	"popstellar/internal/logger"
 	"popstellar/internal/network/socket"
 	"sort"
 )
@@ -39,12 +39,14 @@ type Handlers struct {
 type Handler struct {
 	queries  Queries
 	handlers Handlers
+	log      zerolog.Logger
 }
 
-func New(queries Queries, handlers Handlers) *Handler {
+func New(queries Queries, handlers Handlers, log zerolog.Logger) *Handler {
 	return &Handler{
 		queries:  queries,
 		handlers: handlers,
+		log:      log.With().Str("module", "answer").Logger(),
 	}
 }
 
@@ -57,7 +59,7 @@ func (h *Handler) Handle(msg []byte) error {
 	}
 
 	if answerMsg.ID == nil {
-		logger.Logger.Info().Msg("received an answer with a null id")
+		h.log.Info().Msg("received an answer with a null id")
 		return nil
 	}
 
@@ -67,14 +69,14 @@ func (h *Handler) Handle(msg []byte) error {
 	}
 
 	if answerMsg.Result == nil {
-		logger.Logger.Info().Msg("received an error, nothing to handle")
+		h.log.Info().Msg("received an error, nothing to handle")
 		// don't send any error to avoid infinite error loop as a server will
 		// send an error to another server that will create another error
 		return nil
 	}
 
 	if answerMsg.Result.IsEmpty() {
-		logger.Logger.Info().Msg("expected isn't an answer to a popquery, nothing to handle")
+		h.log.Info().Msg("expected isn't an answer to a popquery, nothing to handle")
 		return nil
 	}
 
@@ -94,26 +96,26 @@ func (h *Handler) handleRumorAnswer(msg manswer.Answer) error {
 		return err
 	}
 
-	logger.Logger.Debug().Msgf("received an answer to rumor query %d", *msg.ID)
+	h.log.Debug().Msgf("received an answer to rumor query %d", *msg.ID)
 
 	if msg.Error != nil {
-		logger.Logger.Debug().Msgf("received an answer error to rumor query %d", *msg.ID)
+		h.log.Debug().Msgf("received an answer error to rumor query %d", *msg.ID)
 		if msg.Error.Code != errors.DuplicateResourceErrorCode {
-			logger.Logger.Debug().Msgf("invalid error code to rumor query %d", *msg.ID)
+			h.log.Debug().Msgf("invalid error code to rumor query %d", *msg.ID)
 			return nil
 		}
 
 		stop := rand.Float64() < continueMongering
 
 		if stop {
-			logger.Logger.Debug().Msgf("stop mongering rumor query %d", *msg.ID)
+			h.log.Debug().Msgf("stop mongering rumor query %d", *msg.ID)
 			return nil
 		}
 
-		logger.Logger.Debug().Msgf("continue mongering rumor query %d", *msg.ID)
+		h.log.Debug().Msgf("continue mongering rumor query %d", *msg.ID)
 	}
 
-	logger.Logger.Debug().Msgf("sender rumor need to continue sending query %d", *msg.ID)
+	h.log.Debug().Msgf("sender rumor need to continue sending query %d", *msg.ID)
 	rumor, ok := h.queries.GetRumorFromPastQuery(*msg.ID)
 	if !ok {
 		return errors.NewInternalServerError("rumor query %d doesn't exist", *msg.ID)
@@ -140,7 +142,7 @@ func (h *Handler) handleGetMessagesByIDAnswer(msg manswer.Answer) {
 			}
 
 			err = errors.NewJsonUnmarshalError(err.Error())
-			logger.Logger.Error().Err(err)
+			h.log.Error().Err(err)
 		}
 
 		if len(msgsByChan[channelID]) == 0 {
@@ -176,7 +178,7 @@ func (h *Handler) tryToHandleMessages(msgsByChannel map[string]map[string]mmessa
 				continue
 			}
 
-			logger.Logger.Error().Err(err)
+			h.log.Error().Err(err)
 		}
 
 		if len(msgsByChannel[channelID]) == 0 {

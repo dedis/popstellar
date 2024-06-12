@@ -3,9 +3,11 @@ package helection
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
+	"io"
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/channel/election/helection/mocks"
@@ -34,7 +36,9 @@ func Test_handleChannelElection(t *testing.T) {
 
 	var args []input
 
-	subs := state.NewSubscribers()
+	log := zerolog.New(io.Discard)
+
+	subs := state.NewSubscribers(log)
 
 	db := mocks.NewRepository(t)
 
@@ -51,9 +55,9 @@ func Test_handleChannelElection(t *testing.T) {
 	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
 
-	conf := state.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
+	conf := state.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress", log)
 
-	election := New(conf, subs, db, schema)
+	election := New(conf, subs, db, schema, log)
 
 	laoID := base64.URLEncoding.EncodeToString([]byte("laoID"))
 	electionID := base64.URLEncoding.EncodeToString([]byte("electionID"))

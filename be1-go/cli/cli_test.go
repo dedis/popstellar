@@ -52,7 +52,7 @@ func TestConnectToSocket(t *testing.T) {
 	wh.Start()
 
 	wg := &sync.WaitGroup{}
-	err = connectToSocket("localhost:9001", wh, wg, wDone)
+	err = connectToSocket("localhost:9001", wh, wg, wDone, log)
 	require.NoError(t, err)
 
 	err = remoteSrv.Shutdown()
@@ -100,6 +100,8 @@ func TestLoadConfigFileWithInvalidAuthPort(t *testing.T) {
 
 // TestWatchConfigFile tests that a config file is watched correctly and the updated servers are received
 func TestWatchConfigFile(t *testing.T) {
+	log := zerolog.New(io.Discard)
+
 	// Load the config from the file
 	serverConfig, err := loadConfig(validConfigWatcherPath)
 	require.NoError(t, err)
@@ -119,7 +121,7 @@ func TestWatchConfigFile(t *testing.T) {
 	updatedServersChan := make(chan []string)
 
 	// Start watching the config file
-	go watchConfigFile(watcher, validConfigWatcherPath, &serverConfig.OtherServers, updatedServersChan)
+	go watchConfigFile(watcher, validConfigWatcherPath, &serverConfig.OtherServers, updatedServersChan, log)
 	defer func(watcher *fsnotify.Watcher) {
 		require.NoError(t, watcher.Close())
 	}(watcher)

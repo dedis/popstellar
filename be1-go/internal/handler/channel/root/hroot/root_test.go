@@ -3,8 +3,10 @@ package hroot
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"io"
 	"popstellar/internal/crypto"
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/channel/root/hroot/mocks"
@@ -31,6 +33,8 @@ func Test_handleChannelRoot(t *testing.T) {
 		contains string
 	}
 
+	log := zerolog.New(io.Discard)
+
 	organizerBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
 	require.NoError(t, err)
 
@@ -42,16 +46,16 @@ func Test_handleChannelRoot(t *testing.T) {
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
 
 	conf := state.CreateConfig(ownerPublicKey, serverPublicKey, serverSecretKey,
-		"clientAddress", "serverAddress")
+		"clientAddress", "serverAddress", log)
 	db := mocks.NewRepository(t)
 
-	subs := state.NewSubscribers()
-	peers := state.NewPeers()
+	subs := state.NewSubscribers(log)
+	peers := state.NewPeers(log)
 
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	rootHandler := New(conf, db, subs, peers, schema)
+	rootHandler := New(conf, db, subs, peers, schema, log)
 
 	var args []input
 

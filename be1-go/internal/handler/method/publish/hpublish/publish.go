@@ -2,6 +2,7 @@ package hpublish
 
 import (
 	"encoding/json"
+	"github.com/rs/zerolog"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/publish/mpublish"
@@ -29,13 +30,15 @@ type Handler struct {
 	hub            Hub
 	db             Repository
 	messageHandler MessageHandler
+	log            zerolog.Logger
 }
 
-func New(hub Hub, db Repository, messageHandler MessageHandler) *Handler {
+func New(hub Hub, db Repository, messageHandler MessageHandler, log zerolog.Logger) *Handler {
 	return &Handler{
 		hub:            hub,
 		db:             db,
 		messageHandler: messageHandler,
+		log:            log.With().Str("module", "publish").Logger(),
 	}
 }
 
