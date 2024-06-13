@@ -177,16 +177,17 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	rumorHandler := hrumor.New(queries, sockets, &db, msgHandler, log)
 
 	// Create the query handler
-	qHandler := hquery.New(hquery.MethodHandlers{
-		Catchup:         hcatchup.New(&db, log),
-		GetMessagesbyid: hgetmessagesbyid.New(&db, log),
-		Greetserver:     greetserverHandler,
-		Heartbeat:       hheartbeat.New(queries, &db, log),
-		Publish:         hpublish.New(hubParams, &db, msgHandler, log),
-		Subscribe:       hsubscribe.New(subs, log),
-		Unsubscribe:     hunsubscribe.New(subs, log),
-		Rumor:           rumorHandler,
-	}, log)
+	methodHandlers := make(hquery.MethodHandlers)
+	methodHandlers[mquery.MethodCatchUp] = hcatchup.New(&db, log)
+	methodHandlers[mquery.MethodGetMessagesById] = hgetmessagesbyid.New(&db, log)
+	methodHandlers[mquery.MethodGreetServer] = greetserverHandler
+	methodHandlers[mquery.MethodHeartbeat] = hheartbeat.New(queries, &db, log)
+	methodHandlers[mquery.MethodPublish] = hpublish.New(hubParams, &db, msgHandler, log)
+	methodHandlers[mquery.MethodSubscribe] = hsubscribe.New(subs, log)
+	methodHandlers[mquery.MethodUnsubscribe] = hunsubscribe.New(subs, log)
+	methodHandlers[mquery.MethodRumor] = rumorHandler
+
+	qHandler := hquery.New(methodHandlers, log)
 
 	// Create the answer handler
 	aHandler := hanswer.New(queries, hanswer.Handlers{
