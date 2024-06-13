@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>12 Jun 2024, 04:15</td>
+      <td>13 Jun 2024, 04:18</td>
     </tr>
   </tbody>
 </table>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >1</td>
           <td class="total">1</td>
 
-          <td class="duration" data-value="4042827">0.004</td>
+          <td class="duration" data-value="3714458">0.003</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -182,7 +182,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.003</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -279,7 +279,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">def validElectionOpen =</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -393,11 +393,11 @@ $(document).ready(function() {
       <div id="msg-4" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1981813564,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:67\npopstellar/internal/handler/jsonrpc.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/jsonrpc/jsonrpc.go:45\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:228\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.4/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-2021678972,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;-6: sql: no rows in result set\nhquery.(*Handler).Handle\n\tquery.go:70\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:258\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
-    {&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:67\npopstellar/internal/handler/jsonrpc.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/jsonrpc/jsonrpc.go:45\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:228\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.4/x64/src/runtime/asm_amd64.s:1695\n&quot;}
+    {&quot;code&quot;:-6,&quot;description&quot;:&quot;-6: sql: no rows in result set\nhquery.(*Handler).Handle\n\tquery.go:70\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:258\n&quot;}
     {&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}
 
       $.error.code | not equal (NUMBER:NUMBER)
@@ -418,15 +418,15 @@ classpath:be/features/election/electionOpen.feature:55</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-5" class="collapse collapsable-details">
-        <pre>04:12:17.093 classpath:be/features/election/electionOpen.feature:55
+        <pre>04:13:52.855 classpath:be/features/election/electionOpen.feature:55
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1981813564,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:67\npopstellar/internal/handler/jsonrpc.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/jsonrpc/jsonrpc.go:45\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:228\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.4/x64/src/runtime/asm_amd64.s:1695\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-2021678972,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;-6: sql: no rows in result set\nhquery.(*Handler).Handle\n\tquery.go:70\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:258\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
-    {&quot;code&quot;:-6,&quot;description&quot;:&quot;popstellar/internal/network/socket.(*baseSocket).SendPopError\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/network/socket/socket_impl.go:204\npopstellar/internal/handler/query.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/query/query.go:67\npopstellar/internal/handler/jsonrpc.(*Handler).Handle\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/handler/jsonrpc/jsonrpc.go:45\npopstellar/internal/hub.(*Hub).runMessageReceiver\n\t/home/runner/work/popstellar/popstellar/be1-go/internal/hub/hub.go:228\nruntime.goexit\n\t/opt/hostedtoolcache/go/1.22.4/x64/src/runtime/asm_amd64.s:1695\n&quot;}
+    {&quot;code&quot;:-6,&quot;description&quot;:&quot;-6: sql: no rows in result set\nhquery.(*Handler).Handle\n\tquery.go:70\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:258\n&quot;}
     {&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}
 
       $.error.code | not equal (NUMBER:NUMBER)

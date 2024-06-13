@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>12 Jun 2024, 04:15</td>
+      <td>13 Jun 2024, 04:18</td>
     </tr>
   </tbody>
 </table>
@@ -127,18 +127,18 @@ $(document).ready(function() {
         <tbody>
         <tr>
           <td class="tagname">be/features/LAO/update.feature</td>
-          <td      class="passed"    >36</td>
-          <td      class="failed"    >3</td>
-          <td     class="skipped"   >6</td>
+          <td      class="passed"    >43</td>
+          <td      class="failed"    >1</td>
+          <td     class="skipped"   >1</td>
           <td >0</td>
           <td >0</td>
           <td class="total">45</td>
 
-          <td >0</td>
-          <td  class="failed"    >3</td>
+          <td  class="passed"    >2</td>
+          <td  class="failed"    >1</td>
           <td class="total">3</td>
 
-          <td class="duration" data-value="16062082145">16.062</td>
+          <td class="duration" data-value="26056743606">26.056</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.358</span>
+  <span class="lead-duration duration">5.360</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.268</span>
+  <span class="lead-duration duration">5.269</span>
 
 </div>
 
@@ -342,7 +342,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.010</span>
 
 </div>
 
@@ -396,7 +396,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -423,7 +423,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def lao = organizer.generateValidLao()</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -450,7 +450,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(createLaoScenario) { organizer: '#(organizer)', lao: '#(lao)' }</span>
 
-  <span class="lead-duration duration">0.064</span>
+  <span class="lead-duration duration">0.066</span>
 
 </div>
 
@@ -496,8 +496,8 @@ $(document).ready(function() {
       </div>
       <div id="msg-3" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@2bcda694&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@2cc75b25&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@2cc75b25&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@30036a18&quot;
 }
 </pre>
       </div>
@@ -532,7 +532,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">0.010</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-4">
@@ -575,7 +575,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">def updateLaoRequest =</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -619,7 +619,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(updateLaoRequest, lao.channel)</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -642,11 +642,38 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And failed">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(updateLaoRequest)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.004</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then failed">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains VALID_MESSAGE</span>
+
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -658,22 +685,16 @@ $(document).ready(function() {
   <div class="inner-level">
     <div class="message indention">
       <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-7">
-          <a>js</a>
+          <a>match</a>
       </div>
       <div id="msg-7" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(updateLaoRequest)
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
-- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
-- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
-- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
-- com.intuit.karate.Json.of(Json.java:63)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
-- &lt;js&gt;.:program(Unnamed:1)
+        <pre>match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-654316219,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;-4: invalid message field: failed to Handle lao#update_properties, invalid object#action\nhlao.(*Handler).Handle\n\tlao.go:118\nhmessage.(*Handler).Handle\n\tmessage.go:73\nhpublish.(*Handler).Handle\n\tpublish.go:52\nhquery.(*Handler).Handle\n\tquery.go:58\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:258\n&quot;}}
+  {&quot;result&quot;:0}
 
-classpath:be/features/LAO/update.feature:30</pre>
+
+classpath:be/features/LAO/update.feature:31</pre>
       </div>
     </div>
   </div>
@@ -687,52 +708,19 @@ classpath:be/features/LAO/update.feature:30</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-8" class="collapse collapsable-details">
-        <pre>04:07:35.343 classpath:be/features/LAO/update.feature:30
-And json answer = organizer.getBackendResponse(updateLaoRequest)
-js failed:
-&gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(updateLaoRequest)
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
-- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
-- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
-- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
-- com.intuit.karate.Json.of(Json.java:63)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
-- &lt;js&gt;.:program(Unnamed:1)
+        <pre>04:08:06.857 classpath:be/features/LAO/update.feature:31
+Then match answer contains VALID_MESSAGE
+match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-654316219,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;-4: invalid message field: failed to Handle lao#update_properties, invalid object#action\nhlao.(*Handler).Handle\n\tlao.go:118\nhmessage.(*Handler).Handle\n\tmessage.go:73\nhpublish.(*Handler).Handle\n\tpublish.go:52\nhquery.(*Handler).Handle\n\tquery.go:58\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:258\n&quot;}}
+  {&quot;result&quot;:0}
 
-classpath:be/features/LAO/update.feature:30
+
+classpath:be/features/LAO/update.feature:31
 </pre>
       </div>
     </div>
   </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains VALID_MESSAGE</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
 
 
 
@@ -822,601 +810,6 @@ classpath:be/features/LAO/update.feature:30
   </div>
 
   <div id="steps-10" class="inner-level collapse collapsable-details ">
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
-
-  <span class="lead-duration duration">0.010</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/features/utils/constants.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read(serverFeature)</span>
-
-  <span class="lead-duration duration">5.273</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/features/utils/server.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read(mockClientFeature)</span>
-
-  <span class="lead-duration duration">0.007</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/features/utils/mockClient.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def organizer = call createMockFrontend</span>
-
-  <span class="lead-duration duration">0.005</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def lao = organizer.generateValidLao()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read(createLaoScenario) { organizer: '#(organizer)', lao: '#(lao)' }</span>
-
-  <span class="lead-duration duration">0.050</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/features/utils/simpleScenarios.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-11">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-11" class="collapse collapsable-details">
-        <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@30036a18&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@537b3b2e&quot;
-}
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-       <a href="report-tag_1783765064.html">@update2</a>
-</div>
-
-
-  <span class="lead-duration duration">0.007</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-12">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Update Lao request with empty lao name should fail with an error response</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-12" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-13">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-13" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given passed">
-  <span class="keyword indention">Given</span>
-  <span class="name">def badUpdateLaoReq =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-14">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-14" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;lao&quot;,
-  &quot;action&quot;: &quot;update_properties&quot;,
-  &quot;id&quot;: '#(lao.id)',
-  &quot;name&quot;: &quot;&quot;,
-  &quot;last_modified&quot;: '#(lao.creation)',
-  &quot;witnesses&quot;: '#(lao.witnesses)'
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When passed">
-  <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(badUpdateLaoReq, lao.channel)</span>
-
-  <span class="lead-duration duration">0.002</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And failed">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(badUpdateLaoReq)</span>
-
-  <span class="lead-duration duration">0.004</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-15">
-          <a>js</a>
-      </div>
-      <div id="msg-15" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(badUpdateLaoReq)
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
-- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
-- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
-- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
-- com.intuit.karate.Json.of(Json.java:63)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/features/LAO/update.feature:48</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-16">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-16" class="collapse collapsable-details">
-        <pre>04:07:40.724 classpath:be/features/LAO/update.feature:48
-And json answer = organizer.getBackendResponse(badUpdateLaoReq)
-js failed:
-&gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(badUpdateLaoReq)
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
-- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
-- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
-- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
-- com.intuit.karate.Json.of(Json.java:63)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/features/LAO/update.feature:48
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-</div>
-
-
-  <span class="lead-duration duration">5.331</span>
-
-
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-17">
-
-<div class="brief passed">
-  <span class="keyword indention">Background</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-17" class="collapse collapsable-details ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-18">
-
-<div class="brief passed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-18" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -1532,6 +925,553 @@ classpath:be/features/LAO/update.feature:48
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
+  <span class="lead-duration duration">0.007</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/mockClient.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def organizer = call createMockFrontend</span>
+
+  <span class="lead-duration duration">0.004</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def lao = organizer.generateValidLao()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read(createLaoScenario) { organizer: '#(organizer)', lao: '#(lao)' }</span>
+
+  <span class="lead-duration duration">0.063</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/simpleScenarios.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-11">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-11" class="collapse collapsable-details">
+        <pre>{
+  &quot;organizer&quot;: &quot;common.utils.MockClient@537b3b2e&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@1544ded3&quot;
+}
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+       <a href="report-tag_1783765064.html">@update2</a>
+</div>
+
+
+  <span class="lead-duration duration">5.008</span>
+
+
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-12">
+
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Update Lao request with empty lao name should fail with an error response</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-12" class="collapse collapsable-details ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-13">
+
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-13" class="inner-level collapse collapsable-details ">
+      <div class="step">
+
+
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">def badUpdateLaoReq =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-14">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-14" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;update_properties&quot;,
+  &quot;id&quot;: '#(lao.id)',
+  &quot;name&quot;: &quot;&quot;,
+  &quot;last_modified&quot;: '#(lao.creation)',
+  &quot;witnesses&quot;: '#(lao.witnesses)'
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">organizer.publish(badUpdateLaoReq, lao.channel)</span>
+
+  <span class="lead-duration duration">0.005</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = organizer.getBackendResponse(badUpdateLaoReq)</span>
+
+  <span class="lead-duration duration">0.001</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">5.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+</div>
+
+
+  <span class="lead-duration duration">5.321</span>
+
+
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-15">
+
+<div class="brief passed">
+  <span class="keyword indention">Background</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-15" class="collapse collapsable-details ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-16">
+
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-16" class="inner-level collapse collapsable-details ">
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
+
+  <span class="lead-duration duration">0.003</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/constants.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read(serverFeature)</span>
+
+  <span class="lead-duration duration">5.261</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/server.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read(mockClientFeature)</span>
+
   <span class="lead-duration duration">0.006</span>
 
 </div>
@@ -1586,7 +1526,7 @@ classpath:be/features/LAO/update.feature:48
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.006</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -1640,7 +1580,7 @@ classpath:be/features/LAO/update.feature:48
   <span class="keyword indention">*</span>
   <span class="name">call read(createLaoScenario) { organizer: '#(organizer)', lao: '#(lao)' }</span>
 
-  <span class="lead-duration duration">0.047</span>
+  <span class="lead-duration duration">0.042</span>
 
 </div>
 
@@ -1681,13 +1621,13 @@ classpath:be/features/LAO/update.feature:48
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-19">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-17">
           <a>Doc string</a>
       </div>
-      <div id="msg-19" class="collapse collapsable-details">
+      <div id="msg-17" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@1544ded3&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@3ccb12d&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@3ccb12d&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@28b458e6&quot;
 }
 </pre>
       </div>
@@ -1722,12 +1662,12 @@ classpath:be/features/LAO/update.feature:48
 </div>
 
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">5.008</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-20">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-18">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Update Lao with last_modified before creation time should fail with an error response</span>
 
@@ -1738,16 +1678,16 @@ classpath:be/features/LAO/update.feature:48
   </span>
   <div class="description indention"></div>
 
-  <div id="element-20" class="collapse collapsable-details  in ">
+  <div id="element-18" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-21">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-19">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -1757,7 +1697,7 @@ classpath:be/features/LAO/update.feature:48
 
   </div>
 
-  <div id="steps-21" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-19" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -1765,7 +1705,7 @@ classpath:be/features/LAO/update.feature:48
   <span class="keyword indention">Given</span>
   <span class="name">def badUpdateLaoReq =</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -1779,10 +1719,10 @@ classpath:be/features/LAO/update.feature:48
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-22">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-20">
           <a>Doc string</a>
       </div>
-      <div id="msg-22" class="collapse collapsable-details">
+      <div id="msg-20" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;lao&quot;,
   &quot;action&quot;: &quot;update_properties&quot;,
@@ -1832,11 +1772,11 @@ classpath:be/features/LAO/update.feature:48
       <div class="step">
 
 
-<div class="brief step-name-And failed">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(badUpdateLaoReq)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -1845,57 +1785,9 @@ classpath:be/features/LAO/update.feature:48
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-23">
-          <a>js</a>
-      </div>
-      <div id="msg-23" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(badUpdateLaoReq)
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
-- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
-- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
-- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
-- com.intuit.karate.Json.of(Json.java:63)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/features/LAO/update.feature:66</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-24">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-24" class="collapse collapsable-details">
-        <pre>04:07:46.078 classpath:be/features/LAO/update.feature:66
-And json answer = organizer.getBackendResponse(badUpdateLaoReq)
-js failed:
-&gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(badUpdateLaoReq)
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: net.minidev.json.parser.ParseException: Unexpected End Of File position 1024: null
-- com.jayway.jsonpath.spi.json.JsonSmartJsonProvider.parse(JsonSmartJsonProvider.java:64)
-- com.jayway.jsonpath.internal.ParseContextImpl.parse(ParseContextImpl.java:37)
-- com.jayway.jsonpath.JsonPath.parse(JsonPath.java:640)
-- com.intuit.karate.Json.of(Json.java:63)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:87)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/features/LAO/update.feature:66
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -1907,7 +1799,7 @@ classpath:be/features/LAO/update.feature:66
       <div class="step">
 
 
-<div class="brief step-name-Then skipped">
+<div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
@@ -1934,11 +1826,11 @@ classpath:be/features/LAO/update.feature:66
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.000</span>
 
 </div>
 
