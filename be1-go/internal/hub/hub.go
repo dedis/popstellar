@@ -9,6 +9,7 @@ import (
 	"popstellar/internal/database/sqlite"
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/answer/hanswer"
+	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/channel/chirp/hchirp"
 	"popstellar/internal/handler/channel/coin/hcoin"
 	"popstellar/internal/handler/channel/election/helection"
@@ -156,19 +157,18 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 		return nil, err
 	}
 
-	// Create the message data handlers
-	dataHandlers := hmessage.DataHandlers{
-		Root:       hroot.New(conf, &db, subs, peers, schemaValidator, log),
-		Lao:        hlao.New(conf, subs, &db, schemaValidator, log),
-		Election:   helection.New(conf, subs, &db, schemaValidator, log),
-		Chirp:      hchirp.New(conf, subs, &db, schemaValidator, log),
-		Reaction:   hreaction.New(subs, &db, schemaValidator, log),
-		Coin:       hcoin.New(subs, &db, schemaValidator, log),
-		Federation: hfederation.New(hubParams, subs, &db, schemaValidator, log),
-	}
+	// Create the message channel handlers
+	channelHandlers := make(hmessage.ChannelHandlers)
+	channelHandlers[channel.RootObject] = hroot.New(conf, &db, subs, peers, schemaValidator, log)
+	channelHandlers[channel.LAOObject] = hlao.New(conf, subs, &db, schemaValidator, log)
+	channelHandlers[channel.ElectionObject] = helection.New(conf, subs, &db, schemaValidator, log)
+	channelHandlers[channel.ChirpObject] = hchirp.New(conf, subs, &db, schemaValidator, log)
+	channelHandlers[channel.ReactionObject] = hreaction.New(subs, &db, schemaValidator, log)
+	channelHandlers[channel.CoinObject] = hcoin.New(subs, &db, schemaValidator, log)
+	channelHandlers[channel.FederationObject] = hfederation.New(hubParams, subs, &db, schemaValidator, log)
 
 	// Create the message handler
-	msgHandler := hmessage.New(&db, dataHandlers, log)
+	msgHandler := hmessage.New(&db, channelHandlers, log)
 
 	// Create the greetserver handler
 	greetserverHandler := hgreetserver.New(conf, peers, log)
