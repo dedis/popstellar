@@ -141,28 +141,39 @@ func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[str
 	return missingIDs, nil
 }
 
-func (s *SQLite) CheckRumor(senderID string, rumorID int) (bool, error) {
+func (s *SQLite) CheckRumor(senderID string, rumorID int) (bool, bool, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
+
+	s.log.Info().Msgf("trying to check rumor %s:%d", senderID, rumorID)
 
 	var id int
 	if rumorID == 0 {
 		err := s.database.QueryRow(selectAnyRumor, senderID).Scan(&id)
 		if err != nil && !errors.Is(err, sql.ErrNoRows) {
-			return false, poperrors.NewDatabaseSelectErrorMsg(err.Error())
+			return false, false, poperrors.NewDatabaseSelectErrorMsg(err.Error())
 		} else if errors.Is(err, sql.ErrNoRows) {
-			return true, nil
+			return true, false, nil
 		}
-		return false, nil
+		return false, true, nil
 	}
 
 	err := s.database.QueryRow(selectLastRumor, senderID).Scan(&id)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return false, poperrors.NewDatabaseSelectErrorMsg(err.Error())
+		s.log.Error().Err(err).Msg("")
+		return false, false, poperrors.NewDatabaseSelectErrorMsg(err.Error())
 	} else if errors.Is(err, sql.ErrNoRows) {
-		return false, nil
+		s.log.Error().Err(err).Msg("")
+		return false, false, nil
 	}
-	return id == rumorID-1, nil
+
+	s.log.Debug().Msgf("ID = %d", id)
+
+	alreadyHas := id >= rumorID
+
+	valid := id == rumorID-1
+
+	return valid, alreadyHas, nil
 }
 
 //======================================================================================================================

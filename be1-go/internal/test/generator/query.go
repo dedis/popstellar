@@ -157,7 +157,7 @@ func NewGetMessagesByIDQuery(t *testing.T, queryID int, msgIDsByChannel map[stri
 	return getMessagesByIDBuf
 }
 
-func NewRumorQuery(t *testing.T, queryID int, senderID string, rumorID int, messages map[string][]mmessage.Message) []byte {
+func NewRumorQuery(t *testing.T, queryID int, senderID string, rumorID int, messages map[string][]mmessage.Message) (mrumor.Rumor, []byte) {
 	rumor := mrumor.Rumor{
 		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
@@ -176,5 +176,5 @@ func NewRumorQuery(t *testing.T, queryID int, senderID string, rumorID int, mess
 	rumorBuf, err := json.Marshal(&rumor)
 	require.NoError(t, err)
 
-	return rumorBuf
+	return rumor, rumorBuf
 }
