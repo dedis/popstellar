@@ -10,6 +10,7 @@ import (
 	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/method/rumor/mrumor"
 	"sync"
 	"time"
 )
@@ -255,6 +256,36 @@ func (s *baseSocket) SendResult(id int, res []mmessage.Message, missingMessagesB
 			Result  map[string][]mmessage.Message `json:"result"`
 		}{
 			"2.0", id, missingMessagesByChannel,
+		}
+	}
+
+	answerBuf, err := json.Marshal(&answer)
+	if err != nil {
+		s.log.Err(err).Msg("failed to marshal result")
+		return
+	}
+
+	s.send <- answerBuf
+}
+
+func (s *baseSocket) SendRumorStateAnswer(id int, rumors []mrumor.Rumor) {
+	var answer interface{}
+
+	if rumors == nil {
+		answer = struct {
+			JSONRPC string `json:"jsonrpc"`
+			ID      int    `json:"id"`
+			Result  int    `json:"result"`
+		}{
+			"2.0", id, 0,
+		}
+	} else {
+		answer = struct {
+			JSONRPC string         `json:"jsonrpc"`
+			ID      int            `json:"id"`
+			Result  []mrumor.Rumor `json:"result"`
+		}{
+			"2.0", id, rumors,
 		}
 	}
 
