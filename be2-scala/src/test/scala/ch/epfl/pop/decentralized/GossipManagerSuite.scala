@@ -342,7 +342,6 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
   test("Gossip sends rumor state when there is one server connected") {
     val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, pullRate = 2.seconds))
     connectionMediatorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipManager, messageRegistry))
-    val watcher = TestProbe()
     val server = TestProbe()
 
     val writeRumor = dbActorRef ? DbActor.WriteRumor(rumor)

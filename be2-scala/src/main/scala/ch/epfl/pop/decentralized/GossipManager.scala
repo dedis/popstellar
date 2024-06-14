@@ -147,7 +147,7 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
           case Some(rumorIdInDb) => rumorIdInDb
           case None              => -1
   }
-  
+
   private def sendRumorState(): Unit = {
     val randomPeer = connectionMediatorRef ? ConnectionMediator.GetRandomPeer()
     Await.result(randomPeer, duration) match {
@@ -211,7 +211,13 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
       log.info(s"Actor $self received a ping from Connection Mediator")
       connectionMediatorRef = sender()
 
-    case TriggerPullState =>
+    case Monitor.AtLeastOneServerConnected =>
+      timers.startTimerWithFixedDelay(periodicRumorStateKey, TriggerPullState(), pullRate)
+
+    case Monitor.NoServerConnected =>
+      timers.cancel(periodicRumorStateKey)
+
+    case TriggerPullState() =>
       sendRumorState()
 
     case _ =>
