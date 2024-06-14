@@ -11,7 +11,7 @@ func (r *RumorTimestamp) IsValid(rumor mrumor.Rumor) bool {
 	if !ok && rumor.Params.RumorID != 0 {
 		return false
 	}
-	if myRumorID+1 != rumor.Params.RumorID {
+	if ok && myRumorID+1 != rumor.Params.RumorID {
 		return false
 	}
 
