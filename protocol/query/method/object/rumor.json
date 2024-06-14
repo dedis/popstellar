@@ -15,6 +15,10 @@
       "description": "[Integer] ID of the rumor",
       "type": "integer"
     },
+    "clock" : {
+      "description": "Rumor state in which this message has been sent",
+      "$ref": "./rumor_state.json"
+    },
     "messages": {
       "description": "Key-value of channels and messages per channel",
       "type": "object",
@@ -24,6 +28,7 @@
   "required": [
     "sender_id",
     "rumor_id",
-    "messages"
+    "messages",
+    "clock"
   ]
 }
