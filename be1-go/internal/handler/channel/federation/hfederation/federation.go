@@ -17,7 +17,6 @@ import (
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/publish/mpublish"
-	"popstellar/internal/handler/method/subscribe/msubscribe"
 	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
 	"popstellar/internal/validation"
@@ -42,6 +41,10 @@ type Subscribers interface {
 	AddChannel(channel string) error
 	Subscribe(channel string, socket socket.Socket) error
 	SendToAll(buf []byte, channel string) error
+}
+
+type Sockets interface {
+	Upsert(socket socket.Socket)
 }
 
 type Repository interface {
@@ -70,24 +73,28 @@ type Repository interface {
 }
 
 type Handler struct {
-	hub    Hub
-	subs   Subscribers
-	db     Repository
-	schema *validation.SchemaValidator
-	log    zerolog.Logger
+	hub     Hub
+	subs    Subscribers
+	sockets Sockets
+	db      Repository
+	schema  *validation.SchemaValidator
+	log     zerolog.Logger
 }
 
-func New(hub Hub, subs Subscribers, db Repository, schema *validation.SchemaValidator, log zerolog.Logger) *Handler {
+func New(hub Hub, subs Subscribers, sockets Sockets, db Repository,
+	schema *validation.SchemaValidator, log zerolog.Logger) *Handler {
 	return &Handler{
-		hub:    hub,
-		subs:   subs,
-		db:     db,
-		schema: schema,
-		log:    log.With().Str("module", "federation").Logger(),
+		hub:     hub,
+		subs:    subs,
+		sockets: sockets,
+		db:      db,
+		schema:  schema,
+		log:     log.With().Str("module", "federation").Logger(),
 	}
 }
 
-func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
+func (h *Handler) Handle(channelPath string, msg mmessage.Message,
+	socket socket.Socket) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
@@ -115,9 +122,11 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 	case channel.FederationActionExpect:
 		err = h.handleExpect(msg, channelPath)
 	case channel.FederationActionChallenge:
-		err = h.handleChallenge(msg, channelPath)
+		err = h.handleChallenge(msg, channelPath, socket)
 	case channel.FederationActionResult:
 		err = h.handleResult(msg, channelPath)
+	case channel.FederationActionTokensExchange:
+		err = h.handleTokensExchange(msg, channelPath)
 	default:
 		err = errors.NewInvalidMessageFieldError("failed to Handle %s#%s, invalid object#action", object, action)
 	}
@@ -262,40 +271,14 @@ func (h *Handler) handleInit(msg mmessage.Message, channelPath string) error {
 		return err
 	}
 
-	//Force the remote server to be subscribed to /root/<remote_lao>/federation
 	remoteChannel := fmt.Sprintf(channelPattern, federationInit.LaoId)
-	_ = h.subs.AddChannel(remoteChannel)
-	err = h.subs.Subscribe(remoteChannel, remote)
-	if err != nil {
-		return err
-	}
 
-	subscribeMsg := msubscribe.Subscribe{
-		Base: mquery.Base{
-			JSONRPCBase: mjsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: "subscribe",
-		},
-		Params: msubscribe.SubscribeParams{Channel: channelPath},
-	}
-
-	subscribeBytes, err := json.Marshal(subscribeMsg)
-	if err != nil {
-		return errors.NewJsonMarshalError(err.Error())
-	}
-
-	// Subscribe to /root/<local_lao>/federation on the remote server
-	err = h.subs.SendToAll(subscribeBytes, remoteChannel)
-	if err != nil {
-		return err
-	}
-
-	// send the challenge to a channelPath where the remote server is subscribed to
-	return h.publishTo(federationInit.ChallengeMsg, remoteChannel)
+	// send the challenge to the remote channelPath on the remote socket
+	return h.publishTo(federationInit.ChallengeMsg, remoteChannel, remote)
 }
 
-func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string) error {
+func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string,
+	socket socket.Socket) error {
 	var federationChallenge mfederation.FederationChallenge
 	err := msg.UnmarshalData(&federationChallenge)
 	if err != nil {
@@ -340,12 +323,17 @@ func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string) erro
 		return err
 	}
 
+	// Add the socket to the list of server sockets
+	h.sockets.Upsert(socket)
+
 	// publish the FederationResult to the other server
 	remoteChannel := fmt.Sprintf(channelPattern, federationExpect.LaoId)
-	err = h.publishTo(resultMsg, remoteChannel)
+	err = h.publishTo(resultMsg, remoteChannel, socket)
 	if err != nil {
 		return err
 	}
+
+	h.log.Info().Msgf("A federation was successfully")
 
 	// broadcast the FederationResult to the local organizer
 	return h.subs.BroadcastToAllClients(resultMsg, channelPath)
@@ -393,6 +381,26 @@ func (h *Handler) handleResult(msg mmessage.Message, channelPath string) error {
 	// try to get a matching FederationInit, if found then we know that
 	// the local organizer was waiting this result
 	_, err = h.db.GetFederationInit(organizerPk, result.ChallengeMsg.Sender, federationChallenge, channelPath)
+	if err != nil {
+		return err
+	}
+
+	err = h.db.StoreMessageAndData(channelPath, msg)
+	if err != nil {
+		return err
+	}
+
+	return h.subs.BroadcastToAllClients(msg, channelPath)
+}
+
+func (h *Handler) handleTokensExchange(msg mmessage.Message, channelPath string) error {
+	var tokensExchange mfederation.FederationTokensExchange
+	err := msg.UnmarshalData(&tokensExchange)
+	if err != nil {
+		return err
+	}
+
+	err = h.verifyLocalOrganizer(msg, channelPath)
 	if err != nil {
 		return err
 	}
@@ -459,14 +467,15 @@ func (h *Handler) connectTo(serverAddress string) (socket.Socket, error) {
 	wg := h.hub.GetWaitGroup()
 	stopChan := h.hub.GetStopChan()
 
-	client := socket.NewClientSocket(messageChan, closedSockets, ws, wg, stopChan, h.log)
+	server := socket.NewServerSocket(messageChan, closedSockets, ws, wg, stopChan, h.log)
+	h.sockets.Upsert(server)
 
 	wg.Add(2)
 
-	go client.WritePump()
-	go client.ReadPump()
+	go server.WritePump()
+	go server.ReadPump()
 
-	return client, nil
+	return server, nil
 }
 
 func (h *Handler) createMessage(data channel.MessageData) (mmessage.Message, error) {
@@ -505,13 +514,14 @@ func (h *Handler) createMessage(data channel.MessageData) (mmessage.Message, err
 	return msg, nil
 }
 
-func (h *Handler) publishTo(msg mmessage.Message, channelPath string) error {
+func (h *Handler) publishTo(msg mmessage.Message, channelPath string,
+	socket socket.Socket) error {
 	publishMsg := mpublish.Publish{
 		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: "publish",
+			Method: mquery.MethodPublish,
 		},
 		Params: mpublish.PublishParams{
 			Channel: channelPath,
@@ -524,5 +534,6 @@ func (h *Handler) publishTo(msg mmessage.Message, channelPath string) error {
 		return errors.NewJsonMarshalError(err.Error())
 	}
 
-	return h.subs.SendToAll(publishBytes, channelPath)
+	socket.Send(publishBytes)
+	return nil
 }

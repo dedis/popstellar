@@ -56,6 +56,7 @@ const (
 	FederationActionInit             = "init"
 	FederationActionExpect           = "expect"
 	FederationActionResult           = "result"
+	FederationActionTokensExchange   = "tokens_exchange"
 
 	ChirpObject             = "chirp"
 	ChirpActionAdd          = "add"
