@@ -332,7 +332,8 @@ const (
 		                                       WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?)))`
 
 	selectMyRumorInfos = `SELECT max(ID), sender FROM rumor WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?)`
-	selectLastRumor    = `SELECT ID FROM rumor WHERE sender = ? ORDER BY ID DESC LIMIT 1;`
+
+	selectRumorState = `SELECT max(ID), sender FROM rumor GROUP BY sender`
 
 	selectValidFederationChallenges = `
 	SELECT messageData

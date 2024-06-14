@@ -23,7 +23,7 @@ type Sockets interface {
 
 type Repository interface {
 	// CheckRumor returns true if the rumor already exists
-	CheckRumor(senderID string, rumorID int) (valid, alreadyHas bool, err error)
+	CheckRumor(senderID string, rumorID int, timestamp map[string]int) (valid, alreadyHas bool, err error)
 
 	// StoreRumor stores the new rumor with its processed and unprocessed messages
 	StoreRumor(rumorID int, sender string, unprocessed map[string][]mmessage.Message, processed []string) error
@@ -65,7 +65,7 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 
 	h.log.Debug().Msgf("received rumor %s-%d from query %d", rumor.Params.SenderID, rumor.Params.RumorID, rumor.ID)
 
-	ok, alreadyHas, err := h.db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID)
+	ok, alreadyHas, err := h.db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID, rumor.Params.Timestamp)
 	if err != nil {
 		return &rumor.ID, err
 	}
@@ -196,7 +196,7 @@ func (h *Handler) SendRumor(socket socket.Socket, rumor mrumor.Rumor) {
 }
 
 func (h *Handler) handleNextRumor(rumor mrumor.Rumor) error {
-	ok, _, err := h.db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID)
+	ok, _, err := h.db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID, rumor.Params.Timestamp)
 	if err != nil {
 		return err
 	}

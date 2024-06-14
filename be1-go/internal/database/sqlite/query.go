@@ -3,7 +3,6 @@ package sqlite
 import (
 	"database/sql"
 	"encoding/json"
-	"errors"
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
@@ -141,44 +140,45 @@ func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[str
 	return missingIDs, nil
 }
 
-func (s *SQLite) CheckRumor(senderID string, rumorID int) (bool, bool, error) {
+func (s *SQLite) CheckRumor(senderID string, rumorID int, timestamp map[string]int) (bool, bool, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
-	s.log.Info().Msgf("trying to check rumor %s:%d", senderID, rumorID)
+	tx, err := s.database.Begin()
+	if err != nil {
+		return false, false, poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
+	}
+	defer tx.Rollback()
 
-	var id int
-	if rumorID == 0 {
-		err := s.database.QueryRow(selectAnyRumor, senderID).Scan(&id)
-		if err != nil && !errors.Is(err, sql.ErrNoRows) {
-			return false, false, poperrors.NewDatabaseSelectErrorMsg(err.Error())
-		} else if errors.Is(err, sql.ErrNoRows) {
-			return true, false, nil
+	myTimestamp, err := s.GetRumorTimestampHelper(tx)
+	if err != nil {
+		return false, false, err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return false, false, poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
+	}
+
+	isValid := false
+	alreadyExist := false
+
+	curRumorID, ok := myTimestamp[senderID]
+	if ok && rumorID <= curRumorID {
+		alreadyExist = true
+	} else if (!ok && rumorID != 0) || (ok && rumorID > curRumorID+1) {
+		isValid = false
+	} else {
+		isValid = true
+		for senderID1, rumorID1 := range timestamp {
+			rumorID2, ok := myTimestamp[senderID1]
+			if !ok || rumorID1 > rumorID2 {
+				isValid = false
+				break
+			}
 		}
-		return false, true, nil
 	}
-
-	err := s.database.QueryRow(selectLastRumor, senderID).Scan(&id)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		s.log.Error().Err(err).Msg("")
-		return false, false, poperrors.NewDatabaseSelectErrorMsg(err.Error())
-	} else if errors.Is(err, sql.ErrNoRows) {
-		s.log.Error().Err(err).Msg("")
-		return false, false, nil
-	}
-
-	s.log.Debug().Msgf("ID = %d", id)
-
-	alreadyHas := id >= rumorID
-
-	valid := id == rumorID-1
-
-	return valid, alreadyHas, nil
+	return isValid, alreadyExist, nil
 }
-
-//======================================================================================================================
-// Rumor repository
-//======================================================================================================================
 
 func (s *SQLite) StoreRumor(rumorID int, sender string, unprocessed map[string][]mmessage.Message, processed []string) error {
 	dbLock.Lock()
@@ -318,7 +318,12 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, mrumor.Rumor, error) {
 		return false, mrumor.Rumor{}, poperrors.NewDatabaseSelectErrorMsg("current rumor id and sender: %v", err)
 	}
 
-	rumor := newRumor(rumorID, sender, messages)
+	timestamp, err := s.GetRumorTimestampHelper(tx)
+	if err != nil {
+		return false, mrumor.Rumor{}, err
+	}
+
+	rumor := newRumor(rumorID, sender, messages, timestamp)
 
 	_, err = tx.Exec(insertRumor, rumorID+1, sender)
 	if err != nil {
@@ -333,11 +338,12 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, mrumor.Rumor, error) {
 	return true, rumor, nil
 }
 
-func newRumor(rumorID int, sender string, messages map[string][]mmessage.Message) mrumor.Rumor {
+func newRumor(rumorID int, sender string, messages map[string][]mmessage.Message, timestamp map[string]int) mrumor.Rumor {
 	params := mrumor.ParamsRumor{
-		RumorID:  rumorID,
-		SenderID: sender,
-		Messages: messages,
+		RumorID:   rumorID,
+		SenderID:  sender,
+		Messages:  messages,
+		Timestamp: timestamp,
 	}
 
 	return mrumor.Rumor{
@@ -349,4 +355,49 @@ func newRumor(rumorID int, sender string, messages map[string][]mmessage.Message
 		},
 		Params: params,
 	}
+}
+
+func (s *SQLite) GetRumorTimestampHelper(tx *sql.Tx) (map[string]int, error) {
+
+	rows, err := tx.Query(selectRumorState)
+	if err != nil {
+		return nil, poperrors.NewDatabaseSelectErrorMsg("rumor state: %v", err)
+	}
+	defer rows.Close()
+
+	timestamp := make(map[string]int)
+
+	for rows.Next() {
+		var sender string
+		var rumorID int
+		if err = rows.Scan(&sender, &rumorID); err != nil {
+			return nil, poperrors.NewDatabaseScanErrorMsg(err.Error())
+		}
+		timestamp[sender] = rumorID
+	}
+
+	return timestamp, nil
+}
+
+func (s *SQLite) GetRumorTimestamp() (map[string]int, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	tx, err := s.database.Begin()
+	if err != nil {
+		return nil, poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
+	}
+	defer tx.Rollback()
+
+	timestamp, err := s.GetRumorTimestampHelper(tx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
+	}
+
+	return timestamp, nil
 }

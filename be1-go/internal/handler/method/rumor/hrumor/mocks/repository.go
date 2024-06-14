@@ -13,9 +13,9 @@ type Repository struct {
 	mock.Mock
 }
 
-// CheckRumor provides a mock function with given fields: senderID, rumorID
-func (_m *Repository) CheckRumor(senderID string, rumorID int) (bool, bool, error) {
-	ret := _m.Called(senderID, rumorID)
+// CheckRumor provides a mock function with given fields: senderID, rumorID, timestamp
+func (_m *Repository) CheckRumor(senderID string, rumorID int, timestamp map[string]int) (bool, bool, error) {
+	ret := _m.Called(senderID, rumorID, timestamp)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CheckRumor")
@@ -24,23 +24,23 @@ func (_m *Repository) CheckRumor(senderID string, rumorID int) (bool, bool, erro
 	var r0 bool
 	var r1 bool
 	var r2 error
-	if rf, ok := ret.Get(0).(func(string, int) (bool, bool, error)); ok {
-		return rf(senderID, rumorID)
+	if rf, ok := ret.Get(0).(func(string, int, map[string]int) (bool, bool, error)); ok {
+		return rf(senderID, rumorID, timestamp)
 	}
-	if rf, ok := ret.Get(0).(func(string, int) bool); ok {
-		r0 = rf(senderID, rumorID)
+	if rf, ok := ret.Get(0).(func(string, int, map[string]int) bool); ok {
+		r0 = rf(senderID, rumorID, timestamp)
 	} else {
 		r0 = ret.Get(0).(bool)
 	}
 
-	if rf, ok := ret.Get(1).(func(string, int) bool); ok {
-		r1 = rf(senderID, rumorID)
+	if rf, ok := ret.Get(1).(func(string, int, map[string]int) bool); ok {
+		r1 = rf(senderID, rumorID, timestamp)
 	} else {
 		r1 = ret.Get(1).(bool)
 	}
 
-	if rf, ok := ret.Get(2).(func(string, int) error); ok {
-		r2 = rf(senderID, rumorID)
+	if rf, ok := ret.Get(2).(func(string, int, map[string]int) error); ok {
+		r2 = rf(senderID, rumorID, timestamp)
 	} else {
 		r2 = ret.Error(2)
 	}
