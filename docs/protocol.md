@@ -197,6 +197,9 @@ and its arguments (`params`).
         },
         {
             "$ref": "method/rumor_state.json"
+        },
+        {
+            "$ref": "method/paged_catchup.json"
         }
     ],
 
@@ -1273,8 +1276,7 @@ Response (in case of success)
             "signature": "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==",
             "message_id": "2mAAevx61TZJi4groVGqqkeLEQq0e-qM6PGmTWuShyY=",
             "witness_signatures": []
-        },
-        // ...9 other messages
+        }
     ]
 }
 
