@@ -28,7 +28,7 @@ import scala.util.{Failure, Success, Try}
 
 object FederationHandler extends MessageHandler {
   final lazy val handlerInstance = new FederationHandler(super.dbActor, super.mediator, super.connectionMediator)
-  
+
   def handleFederationChallengeRequest(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleFederationChallengeRequest(rpcMessage)
 
   def handleFederationExpect(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleFederationExpect(rpcMessage)
@@ -208,7 +208,7 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
 
         Await.ready(combined, duration).value match {
           case Some(Success(_)) => Right(rpcMessage)
-          case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleChallengeResult unknown error", rpcMessage.getId))
+          case _                => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleChallengeResult unknown error", rpcMessage.getId))
         }
       case _ => Left(PipelineError(
           ErrorCodes.SERVER_ERROR.id,
