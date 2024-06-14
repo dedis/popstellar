@@ -7,18 +7,19 @@ import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.testkit.TestKit
 import ch.epfl.pop.IOHelper
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, ResultObject, ResultRumor}
-import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatest.funsuite.AnyFunSuiteLike
 import akka.pattern.ask
+import ch.epfl.pop.model.network.MethodType.publish
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.{Rumor, RumorState}
+import ch.epfl.pop.model.network.method.{Publish, Rumor, RumorState}
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.matchers.should.Matchers.{equal, should}
+import org.scalatest.matchers.should.Matchers.{a, equal, should, shouldBe}
 
 import scala.concurrent.Await
 
@@ -57,14 +58,12 @@ class RumorStateAnsHandlerSuite extends TestKit(ActorSystem("RumorStateAnsHandle
   }
 
   test("rumor state ans processes all msg well") {
-    println(rumor)
     val splitMsg = rumor.messages.toList.flatMap((channel, msgList) => msgList.map(msg => (channel, List(msg))))
     var rumorId = -1
     val rumorList = splitMsg.map((channel, msgList) => {
       rumorId += 1
       Rumor(rumor.senderPk, rumorId, Map(channel -> msgList))
-    }).toList
-    println(rumorList)
+    })
     val rumorStateAnsMsg = Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, ResultObject(ResultRumor(rumorList)), Some(1)))
 
     val output = Source.single(rumorStateAnsMsg).via(rumorStateAnsHandler).runWith(Sink.head)
@@ -83,6 +82,17 @@ class RumorStateAnsHandlerSuite extends TestKit(ActorSystem("RumorStateAnsHandle
     val messagesInRumor = rumor.messages.values.foldLeft(Set.empty: Set[Message])((acc, set) => acc ++ set)
 
     messagesInRumor.diff(messagesInDb) should equal(Set.empty)
+  }
+
+  test("rumor state ans handler fails on wrong type") {
+    val responseInt = JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, ResultObject(0), Some(0))
+    val outputResponseInt = Source.single(Right(responseInt)).via(rumorStateAnsHandler).runWith(Sink.head)
+    Await.result(outputResponseInt, duration) shouldBe a[Left[PipelineError, Nothing]]
+
+    val request = JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, publish, Publish(rumor.messages.head._1, rumor.messages.head._2.head), None)
+    val outputRequest = Source.single(Right(request)).via(rumorStateAnsHandler).runWith(Sink.head)
+    Await.result(outputRequest, duration) shouldBe a[Left[PipelineError, Nothing]]
+
   }
 
 }

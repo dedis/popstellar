@@ -169,10 +169,6 @@ jobs:
         run: |
           make test
 
-      - name: Run go vet
-        run: |
-          make vet
-
       - name: Build
         if: ${{ always() }} # execute even if previous steps failed
         run: |

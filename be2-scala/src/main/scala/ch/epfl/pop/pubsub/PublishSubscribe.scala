@@ -111,29 +111,29 @@ object PublishSubscribe {
           import GraphDSL.Implicits._
 
           /* partitioner port numbers */
-          val portPipelineError = 0
-          val portGossip = 1
-          val portGetMsgById = 2
-          val portRumorStateAns = 3
-          val portIgnore = 4
-          val totalPorts = 5
+          val portResponseMonitor = 0
+          val portGetMsgById = 1
+          val portRumorAns = 2
+          val portError = 3
+          val totalPorts = 4
 
           /* building blocks */
           val input = builder.add(Flow[GraphMessage].collect { case msg: GraphMessage => msg })
 
-          val methodPartitioner = builder.add(Partition[GraphMessage](
+          val responsePartitioner = builder.add(Partition[GraphMessage](
             totalPorts,
             {
               case Right(m: JsonRpcResponse) => m.result match {
                   case Some(resultObject) =>
                     resultObject.result match
-                      case Some(ResultInt(_))   => portGossip
+                      case Some(ResultInt(_))   => portResponseMonitor
                       case Some(ResultMap(_))   => portGetMsgById
-                      case Some(ResultRumor(_)) => portRumorStateAns
-                      case _                    => portIgnore
-                  case _ => portPipelineError
+                      case Some(ResultRumor(_)) => portRumorAns
+                      case _                    => portError
+                  case None if m.error.isDefined => portResponseMonitor
+                  case _                         => portError
                 }
-              case _ => portPipelineError // Pipeline error goes directly in merger
+              case _ => portError
             }
           ))
 
@@ -144,13 +144,12 @@ object PublishSubscribe {
           val rumorStateAnsPartition = builder.add(ProcessMessagesHandler.rumorStateAnsHandler(messageRegistry))
 
           /* glue the components together */
-          input ~> methodPartitioner
+          input ~> responsePartitioner
 
-          methodPartitioner.out(portPipelineError) ~> merger
-          methodPartitioner.out(portGossip) ~> gossipMonitorPartition ~> merger
-          methodPartitioner.out(portGetMsgById) ~> getMsgByIdResponsePartition ~> merger
-          methodPartitioner.out(portRumorStateAns) ~> rumorStateAnsPartition ~> merger
-          methodPartitioner.out(portIgnore) ~> merger
+          responsePartitioner.out(portResponseMonitor) ~> gossipMonitorPartition ~> merger
+          responsePartitioner.out(portGetMsgById) ~> getMsgByIdResponsePartition ~> merger
+          responsePartitioner.out(portRumorAns) ~> rumorStateAnsPartition ~> merger
+          responsePartitioner.out(portError) ~> merger
 
           /* close the shape */
           FlowShape(input.in, merger.out)

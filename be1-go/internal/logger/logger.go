@@ -11,10 +11,9 @@
 package logger
 
 import (
+	"github.com/rs/zerolog"
 	"os"
 	"time"
-
-	"github.com/rs/zerolog"
 )
 
 // Version contains the current or build version. This variable can be changed
@@ -36,7 +35,7 @@ var ShortSHA = "unknown"
 // level.
 const EnvLogLevel = "LLVL"
 
-const defaultLevel = zerolog.DebugLevel
+const defaultLevel = zerolog.InfoLevel
 
 func init() {
 	lvl := os.Getenv(EnvLogLevel)

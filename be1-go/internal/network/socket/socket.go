@@ -7,7 +7,7 @@
 package socket
 
 import (
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/handler/message/mmessage"
 	"time"
 )
 
@@ -50,12 +50,18 @@ type Socket interface {
 	// message which does not have an ID.
 	SendError(id *int, err error)
 
+	// SendPopError is used to send an error to the client.  Please refer to
+	// the Protocol Specification document for information on the error
+	// codes. id is a pointer type because an error might be for a
+	// message which does not have an ID.
+	SendPopError(id *int, err error)
+
 	// SendResult is used to send a result message to the client. Res can be
 	// nil, empty, or filled if the result is a slice of messages.
 	// MissingMessagesByChannel can be nil or filled if the result is a map
 	// associating a channel to a slice of messages. In case both are nil
 	// it sends the "0" return value. You can either send res or missingMessagesByChannel, not both.
-	SendResult(id int, res []message.Message, missingMessagesByChannel map[string][]message.Message)
+	SendResult(id int, res []mmessage.Message, missingMessagesByChannel map[string][]mmessage.Message)
 }
 
 // IncomingMessage wraps the raw message from the websocket connection and pairs

@@ -44,12 +44,12 @@ class EventListAdapterTest {
       1L,
       2L,
       EventState.CREATED,
-      HashSet(),
+      LinkedHashSet(),
       "not lausanne",
       "no"
     )
   private val ROLL_CALL2 =
-    RollCall("12345", "12345", "Name", 2L, 3L, 4L, EventState.CREATED, HashSet(), "nowhere", "foo")
+    RollCall("12345", "12345", "Name", 2L, 3L, 4L, EventState.CREATED, LinkedHashSet(), "nowhere", "foo")
 
   private lateinit var events: Subject<Set<Event>>
 

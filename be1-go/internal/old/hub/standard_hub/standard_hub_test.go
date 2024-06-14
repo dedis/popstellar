@@ -8,13 +8,22 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	jsonrpc "popstellar/internal/message"
-	"popstellar/internal/message/messagedata"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/handler/channel"
+	"popstellar/internal/handler/channel/lao/mlao"
+	"popstellar/internal/handler/channel/root/mroot"
+	jsonrpc "popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/method/broadcast/mbroadcast"
+	"popstellar/internal/handler/method/catchup/mcatchup"
+	"popstellar/internal/handler/method/getmessagesbyid/mgetmessagesbyid"
+	"popstellar/internal/handler/method/greetserver/mgreetserver"
+	"popstellar/internal/handler/method/heartbeat/mheartbeat"
+	"popstellar/internal/handler/method/publish/mpublish"
+	"popstellar/internal/handler/method/subscribe/msubscribe"
+	method2 "popstellar/internal/handler/method/unsubscribe/munsubscribe"
+	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/channel"
+	"popstellar/internal/old/oldchannel"
 	"sync"
 	"testing"
 	"time"
@@ -54,11 +63,11 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := channel.Hash(base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := messagedata.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+	data := mroot.LaoCreate{
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -75,28 +84,28 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
 	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method.Publish{
-		Base: query.Base{
+	publish := mpublish.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodPublish,
+			Method: mquery.MethodPublish,
 		},
 
 		ID: 1,
 
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: "/root",
 			Message: msg,
@@ -129,11 +138,11 @@ func Test_Create_LAO_Different_Sender_And_Organizer_Keys(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := channel.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := messagedata.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+	data := mroot.LaoCreate{
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -150,28 +159,28 @@ func Test_Create_LAO_Different_Sender_And_Organizer_Keys(t *testing.T) {
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
 	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method.Publish{
-		Base: query.Base{
+	publish := mpublish.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodPublish,
+			Method: mquery.MethodPublish,
 		},
 
 		ID: 1,
 
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: "/root",
 			Message: msg,
@@ -203,11 +212,11 @@ func Test_Create_LAO_No_Key(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := channel.Hash(base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := messagedata.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+	data := mroot.LaoCreate{
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -224,28 +233,28 @@ func Test_Create_LAO_No_Key(t *testing.T) {
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
 	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method.Publish{
-		Base: query.Base{
+	publish := mpublish.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodPublish,
+			Method: mquery.MethodPublish,
 		},
 
 		ID: 1,
 
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: "/root",
 			Message: msg,
@@ -279,11 +288,11 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := channel.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := messagedata.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+	data := mroot.LaoCreate{
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -301,28 +310,28 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
 	badMessageID := ""
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         signatureBase64,
 		MessageID:         badMessageID,
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method.Publish{
-		Base: query.Base{
+	publish := mpublish.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodPublish,
+			Method: mquery.MethodPublish,
 		},
 
 		ID: 1,
 
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: "/root",
 			Message: msg,
@@ -339,7 +348,7 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 		Message: publishBuf,
 	})
 
-	expectedMessageID := messagedata.Hash(dataBase64, signatureBase64)
+	expectedMessageID := channel.Hash(dataBase64, signatureBase64)
 	require.EqualError(t, sock.err, fmt.Sprintf("invalid message field: message_id is wrong: expected %q found %q", expectedMessageID, badMessageID))
 }
 
@@ -357,11 +366,11 @@ func Test_Create_LAO_Bad_Signature(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := channel.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := messagedata.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+	data := mroot.LaoCreate{
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -379,28 +388,28 @@ func Test_Create_LAO_Bad_Signature(t *testing.T) {
 	expectedSignature := base64.URLEncoding.EncodeToString(signature)
 	badSignatureBase64 := dataBase64
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         badSignatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, expectedSignature),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         channel.Hash(dataBase64, expectedSignature),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method.Publish{
-		Base: query.Base{
+	publish := mpublish.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodPublish,
+			Method: mquery.MethodPublish,
 		},
 
 		ID: 1,
 
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: "/root",
 			Message: msg,
@@ -434,11 +443,11 @@ func Test_Create_LAO_Data_Not_Base64(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := channel.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := messagedata.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+	data := mroot.LaoCreate{
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -455,28 +464,28 @@ func Test_Create_LAO_Data_Not_Base64(t *testing.T) {
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
 	expectedSignature := base64.URLEncoding.EncodeToString(signature)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              "ThisIsNotBase64Encoded",
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         expectedSignature,
-		MessageID:         messagedata.Hash(dataBase64, expectedSignature),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         channel.Hash(dataBase64, expectedSignature),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method.Publish{
-		Base: query.Base{
+	publish := mpublish.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodPublish,
+			Method: mquery.MethodPublish,
 		},
 
 		ID: 1,
 
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: "/root",
 			Message: msg,
@@ -527,28 +536,28 @@ func Test_Create_Invalid_Json_Schema(t *testing.T) {
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
 	expectedSignature := base64.URLEncoding.EncodeToString(signature)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         expectedSignature,
-		MessageID:         messagedata.Hash(dataBase64, expectedSignature),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         channel.Hash(dataBase64, expectedSignature),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method.Publish{
-		Base: query.Base{
+	publish := mpublish.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodPublish,
+			Method: mquery.MethodPublish,
 		},
 
 		ID: 1,
 
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: "/root",
 			Message: msg,
@@ -582,12 +591,12 @@ func Test_Create_Invalid_Lao_Id(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), "wrongName")
-	trueLaoId := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := channel.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), "wrongName")
+	trueLaoId := channel.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := messagedata.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+	data := mroot.LaoCreate{
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -604,28 +613,28 @@ func Test_Create_Invalid_Lao_Id(t *testing.T) {
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
 	expectedSignature := base64.URLEncoding.EncodeToString(signature)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         expectedSignature,
-		MessageID:         messagedata.Hash(dataBase64, expectedSignature),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         channel.Hash(dataBase64, expectedSignature),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method.Publish{
-		Base: query.Base{
+	publish := mpublish.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodPublish,
+			Method: mquery.MethodPublish,
 		},
 
 		ID: 1,
 
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: "/root",
 			Message: msg,
@@ -659,11 +668,11 @@ func Test_Create_LAO(t *testing.T) {
 	name := "LAO X"
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := channel.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
-	data := messagedata.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+	data := mroot.LaoCreate{
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
@@ -680,28 +689,28 @@ func Test_Create_LAO(t *testing.T) {
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
 	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method.Publish{
-		Base: query.Base{
+	publish := mpublish.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodPublish,
+			Method: mquery.MethodPublish,
 		},
 
 		ID: 1,
 
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: "/root",
 			Message: msg,
@@ -720,7 +729,7 @@ func Test_Create_LAO(t *testing.T) {
 
 	require.Equal(t, publish.ID, sock.resultID)
 
-	// we are expecting the lao channel factor be called with the right
+	// we are expecting the lao oldchannel factor be called with the right
 	// arguments.
 	require.Equal(t, rootPrefix+data.ID, fakeChannelFac.chanID)
 	require.Equal(t, msg.Data, fakeChannelFac.msg.Data)
@@ -729,7 +738,7 @@ func Test_Create_LAO(t *testing.T) {
 	require.Equal(t, msg.Signature, fakeChannelFac.msg.Signature)
 	require.Equal(t, msg.WitnessSignatures, fakeChannelFac.msg.WitnessSignatures)
 
-	// the server should have saved the channel locally
+	// the server should have saved the oldchannel locally
 
 	require.Contains(t, hub.channelByID.GetTable(), rootPrefix+data.ID)
 
@@ -749,9 +758,9 @@ func Test_Wrong_Root_Publish(t *testing.T) {
 
 	hub.channelByID.Set(rootPrefix+laoID, c)
 
-	data := messagedata.LaoState{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+	data := mlao.LaoState{
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      "channel0",
 		Creation:  123,
@@ -765,26 +774,26 @@ func Test_Wrong_Root_Publish(t *testing.T) {
 	signature, err := schnorr.Sign(suite, keypair.private, dataBuf)
 	require.NoError(t, err)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              base64.URLEncoding.EncodeToString(dataBuf),
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         base64.URLEncoding.EncodeToString(signature),
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
-	publish := method.Publish{
-		Base: query.Base{
+	publish := mpublish.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodPublish,
+			Method: mquery.MethodPublish,
 		},
 
 		ID: 1,
 
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: rootPrefix + laoID,
 			Message: msg,
@@ -838,13 +847,13 @@ func Test_Handle_Answer(t *testing.T) {
 	}
 
 	serverAnswer := struct {
-		JSONRPC string            `json:"jsonrpc"`
-		ID      int               `json:"id"`
-		Result  []message.Message `json:"result"`
+		JSONRPC string             `json:"jsonrpc"`
+		ID      int                `json:"id"`
+		Result  []mmessage.Message `json:"result"`
 	}{
 		JSONRPC: "2.0",
 		ID:      1,
-		Result:  make([]message.Message, 1),
+		Result:  make([]mmessage.Message, 1),
 	}
 	messageDataPath := filepath.Join("..", "..", "..", "validation", "protocol",
 		"examples", "messageData", "lao_create", "lao_create.json")
@@ -854,21 +863,21 @@ func Test_Handle_Answer(t *testing.T) {
 
 	messageData := base64.URLEncoding.EncodeToString(messageDataBuf)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              messageData,
 		Sender:            publicKey64,
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 	serverAnswer.Result[0] = msg
 
 	serverAnswerBis := struct {
-		JSONRPC string            `json:"jsonrpc"`
-		ID      int               `json:"id"`
-		Result  []message.Message `json:"result"`
+		JSONRPC string             `json:"jsonrpc"`
+		ID      int                `json:"id"`
+		Result  []mmessage.Message `json:"result"`
 	}{
 		JSONRPC: "2.0",
 		ID:      2,
-		Result:  make([]message.Message, 0),
+		Result:  make([]mmessage.Message, 0),
 	}
 
 	resultBuf, err := json.Marshal(result)
@@ -880,8 +889,8 @@ func Test_Handle_Answer(t *testing.T) {
 	answerBisBuf, err := json.Marshal(serverAnswerBis)
 	require.NoError(t, err)
 
-	query := method.GetMessagesById{
-		Base:   query.Base{},
+	query := mgetmessagesbyid.GetMessagesById{
+		Base:   mquery.Base{},
 		ID:     1,
 		Params: nil,
 	}
@@ -938,7 +947,7 @@ func Test_Handle_Answer(t *testing.T) {
 }
 
 // Check that if the server receives a publish message from an end user, it will call the
-// publish function on the appropriate channel.
+// publish function on the appropriate oldchannel.
 func Test_Handle_Publish_From_Client(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -957,28 +966,28 @@ func Test_Handle_Publish_From_Client(t *testing.T) {
 	dataBase64 := base64.URLEncoding.EncodeToString([]byte("XXX"))
 	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method.Publish{
-		Base: query.Base{
+	publish := mpublish.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodPublish,
+			Method: mquery.MethodPublish,
 		},
 
 		ID: 1,
 
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: rootPrefix + laoID,
 			Message: msg,
@@ -1000,12 +1009,12 @@ func Test_Handle_Publish_From_Client(t *testing.T) {
 	require.NoError(t, sock.err)
 	require.Equal(t, publish.ID, sock.resultID)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, publish, c.publish)
 }
 
 // Check that if the server receives a publish message from an end user, it will call the
-// publish function on the appropriate channel.
+// publish function on the appropriate oldchannel.
 func Test_Handle_Publish_From_Server(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -1024,28 +1033,28 @@ func Test_Handle_Publish_From_Server(t *testing.T) {
 	dataBase64 := base64.URLEncoding.EncodeToString([]byte("XXX"))
 	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method.Publish{
-		Base: query.Base{
+	publish := mpublish.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodPublish,
+			Method: mquery.MethodPublish,
 		},
 
 		ID: 1,
 
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: rootPrefix + laoID,
 			Message: msg,
@@ -1067,7 +1076,7 @@ func Test_Handle_Publish_From_Server(t *testing.T) {
 	require.NoError(t, sock.err)
 	require.Equal(t, publish.ID, sock.resultID)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, publish, c.publish)
 }
 
@@ -1091,28 +1100,28 @@ func Test_Receive_Publish_Twice(t *testing.T) {
 	dataBase64 := base64.URLEncoding.EncodeToString([]byte("XXX"))
 	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	publish := method.Publish{
-		Base: query.Base{
+	publish := mpublish.Publish{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodPublish,
+			Method: mquery.MethodPublish,
 		},
 
 		ID: 1,
 
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: rootPrefix + laoID,
 			Message: msg,
@@ -1134,7 +1143,7 @@ func Test_Receive_Publish_Twice(t *testing.T) {
 	require.NoError(t, sock.err)
 	require.Equal(t, publish.ID, sock.resultID)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, publish, c.publish)
 
 	// Receive the same message again
@@ -1163,11 +1172,11 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 	organizer := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
+	laoID := channel.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
 
-	data := messagedata.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+	data := mroot.LaoCreate{
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  int64(creationTime),
@@ -1184,26 +1193,26 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
 	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	result := make(map[string][]message.Message)
-	result["/root"] = []message.Message{msg}
+	result := make(map[string][]mmessage.Message)
+	result["/root"] = []mmessage.Message{msg}
 
 	missingMessages := make(map[string][]string)
 	missingMessages["/root"] = []string{msg.MessageID}
 
-	getMessagesByIdQuery := method.GetMessagesById{
-		Base: query.Base{
+	getMessagesByIdQuery := mgetmessagesbyid.GetMessagesById{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: query.MethodGetMessagesById,
+			Method: mquery.MethodGetMessagesById,
 		}, ID: 1,
 		Params: missingMessages,
 	}
@@ -1211,9 +1220,9 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 	hub.queries.AddQuery(1, getMessagesByIdQuery)
 
 	ans := struct {
-		JSONRPC string                       `json:"jsonrpc"`
-		ID      int                          `json:"id"`
-		Result  map[string][]message.Message `json:"result"`
+		JSONRPC string                        `json:"jsonrpc"`
+		ID      int                           `json:"id"`
+		Result  map[string][]mmessage.Message `json:"result"`
 	}{
 		JSONRPC: "2.0",
 		ID:      1,
@@ -1232,7 +1241,7 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 
 	require.Equal(t, 0, sock.resultID)
 
-	// we are expecting the lao channel factor be called with the right
+	// we are expecting the lao oldchannel factor be called with the right
 	// arguments.
 	require.Equal(t, rootPrefix+data.ID, fakeChannelFac.chanID)
 	require.Equal(t, msg.Data, fakeChannelFac.msg.Data)
@@ -1241,7 +1250,7 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 	require.Equal(t, msg.Signature, fakeChannelFac.msg.Signature)
 	require.Equal(t, msg.WitnessSignatures, fakeChannelFac.msg.WitnessSignatures)
 
-	// the server should have saved the channel locally
+	// the server should have saved the oldchannel locally
 
 	require.Contains(t, hub.channelByID.GetTable(), rootPrefix+data.ID)
 	channel, _ := hub.channelByID.Get(rootPrefix + laoID)
@@ -1264,11 +1273,11 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 	organizer := base64.URLEncoding.EncodeToString([]byte("Somebody"))
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	laoID := messagedata.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
+	laoID := channel.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
 
-	data := messagedata.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
+	data := mroot.LaoCreate{
+		Object:    channel.LAOObject,
+		Action:    channel.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
 		Creation:  int64(creationTime),
@@ -1286,26 +1295,26 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
 	fakeMessageID := ""
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         signatureBase64,
 		MessageID:         fakeMessageID,
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	result := make(map[string][]message.Message)
-	result["/root"] = []message.Message{msg}
+	result := make(map[string][]mmessage.Message)
+	result["/root"] = []mmessage.Message{msg}
 
 	missingMessages := make(map[string][]string)
 	missingMessages["/root"] = []string{msg.MessageID}
 
-	getMessagesByIdQuery := method.GetMessagesById{
-		Base: query.Base{
+	getMessagesByIdQuery := mgetmessagesbyid.GetMessagesById{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: query.MethodGetMessagesById,
+			Method: mquery.MethodGetMessagesById,
 		}, ID: 1,
 		Params: missingMessages,
 	}
@@ -1313,9 +1322,9 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 	hub.queries.AddQuery(1, getMessagesByIdQuery)
 
 	ans := struct {
-		JSONRPC string                       `json:"jsonrpc"`
-		ID      int                          `json:"id"`
-		Result  map[string][]message.Message `json:"result"`
+		JSONRPC string                        `json:"jsonrpc"`
+		ID      int                           `json:"id"`
+		Result  map[string][]mmessage.Message `json:"result"`
 	}{
 		JSONRPC: "2.0",
 		ID:      1,
@@ -1332,12 +1341,12 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 		Message: answerBuf,
 	})
 
-	expectedMessageID := messagedata.Hash(dataBase64, signatureBase64)
+	expectedMessageID := channel.Hash(dataBase64, signatureBase64)
 	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle answer message: failed to process messages: message_id is wrong: expected %q found %q", expectedMessageID, fakeMessageID))
 }
 
 // Check that if the server receives a subscribe message, it will call the
-// subscribe function on the appropriate channel.
+// subscribe function on the appropriate oldchannel.
 func Test_Handle_Subscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -1350,13 +1359,13 @@ func Test_Handle_Subscribe(t *testing.T) {
 
 	hub.channelByID.Set(rootPrefix+laoID, c)
 
-	subscribe := method.Subscribe{
-		Base: query.Base{
+	subscribe := msubscribe.Subscribe{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodSubscribe,
+			Method: mquery.MethodSubscribe,
 		},
 
 		ID: 1,
@@ -1382,7 +1391,7 @@ func Test_Handle_Subscribe(t *testing.T) {
 	require.NoError(t, sock.err)
 	require.Equal(t, subscribe.ID, sock.resultID)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, subscribe, c.subscribe)
 
 	// check that there is no errors with messages from witness too
@@ -1395,12 +1404,12 @@ func Test_Handle_Subscribe(t *testing.T) {
 	require.NoError(t, sock.err)
 	require.Equal(t, subscribe.ID, sock.resultID)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, subscribe, c.subscribe)
 }
 
 // Check that if the server receives an unsubscribe message, it will call the
-// unsubscribe function on the appropriate channel.
+// unsubscribe function on the appropriate oldchannel.
 func TestServer_Handle_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -1413,13 +1422,13 @@ func TestServer_Handle_Unsubscribe(t *testing.T) {
 
 	hub.channelByID.Set(rootPrefix+laoID, c)
 
-	unsubscribe := method.Unsubscribe{
-		Base: query.Base{
+	unsubscribe := method2.Unsubscribe{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodUnsubscribe,
+			Method: mquery.MethodUnsubscribe,
 		},
 
 		ID: 1,
@@ -1445,7 +1454,7 @@ func TestServer_Handle_Unsubscribe(t *testing.T) {
 	require.NoError(t, sock.err)
 	require.Equal(t, unsubscribe.ID, sock.resultID)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, unsubscribe, c.unsubscribe)
 	require.Equal(t, sock.id, c.socketID)
 
@@ -1459,23 +1468,23 @@ func TestServer_Handle_Unsubscribe(t *testing.T) {
 	require.NoError(t, sock.err)
 	require.Equal(t, unsubscribe.ID, sock.resultID)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, unsubscribe, c.unsubscribe)
 	require.Equal(t, sock.id, c.socketID)
 }
 
 // Check that if the server receives a catchup message, it will call the
-// catchup function on the appropriate channel.
+// catchup function on the appropriate oldchannel.
 func TestServer_Handle_Catchup(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeMessages := []message.Message{
+	fakeMessages := []mmessage.Message{
 		{
 			MessageID: "XXX",
 		},
 	}
 
-	// set fake messages on the channel
+	// set fake messages on the oldchannel
 	c := &fakeChannel{
 		msgs: fakeMessages,
 	}
@@ -1487,13 +1496,13 @@ func TestServer_Handle_Catchup(t *testing.T) {
 
 	hub.channelByID.Set(rootPrefix+laoID, c)
 
-	catchup := method.Catchup{
-		Base: query.Base{
+	catchup := mcatchup.Catchup{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodCatchUp,
+			Method: mquery.MethodCatchUp,
 		},
 
 		ID: 1,
@@ -1519,11 +1528,11 @@ func TestServer_Handle_Catchup(t *testing.T) {
 	require.NoError(t, sock.err)
 	require.Equal(t, catchup.ID, sock.resultID)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, catchup, c.catchup)
 	require.Equal(t, fakeMessages, c.msgs)
 
-	// check that the channel has been called with the publish message
+	// check that the oldchannel has been called with the publish message
 	require.Equal(t, catchup, c.catchup)
 	require.Equal(t, fakeMessages, c.msgs)
 }
@@ -1565,26 +1574,26 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 	dataBase64 := base64.URLEncoding.EncodeToString([]byte("XXX"))
 	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
 
-	msg := message.Message{
+	msg := mmessage.Message{
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
-		WitnessSignatures: []message.WitnessSignature{},
+		MessageID:         channel.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	broadcast := method.Broadcast{
-		Base: query.Base{
+	broadcast := mbroadcast.Broadcast{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodBroadcast,
+			Method: mquery.MethodBroadcast,
 		},
 
 		Params: struct {
-			Channel string          "json:\"channel\""
-			Message message.Message "json:\"message\""
+			Channel string           `json:"channel"`
+			Message mmessage.Message `json:"message"`
 		}{
 			Channel: rootPrefix + laoID,
 			Message: msg,
@@ -1608,7 +1617,7 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 	require.Equal(t, broadcastBuf, sock.msg)
 	sock.Unlock()
 
-	// check that the channel has been called with the broadcast message
+	// check that the oldchannel has been called with the broadcast message
 	c.Lock()
 	require.Equal(t, broadcast, c.broadcast)
 	c.Unlock()
@@ -1633,7 +1642,7 @@ func Test_Send_Heartbeat_Message(t *testing.T) {
 
 	heartbeatMsg := sock.msg
 
-	var heartbeat method.Heartbeat
+	var heartbeat mheartbeat.Heartbeat
 
 	err = json.Unmarshal(heartbeatMsg, &heartbeat)
 	require.NoError(t, err)
@@ -1671,12 +1680,12 @@ func Test_Handle_Heartbeat(t *testing.T) {
 	missingIds["/root"] = []string{msg2.MessageID}
 	missingIds["/root/channel1"] = idsChannel1
 
-	heartbeatMessage := method.Heartbeat{
-		Base: query.Base{
+	heartbeatMessage := mheartbeat.Heartbeat{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: query.MethodHeartbeat,
+			Method: mquery.MethodHeartbeat,
 		},
 		Params: messageIds,
 	}
@@ -1692,7 +1701,7 @@ func Test_Handle_Heartbeat(t *testing.T) {
 	require.NoError(t, sock.err)
 
 	// socket should receive a getMessagesById query after handling of heartbeat
-	var getMessagesById method.GetMessagesById
+	var getMessagesById mgetmessagesbyid.GetMessagesById
 
 	err = json.Unmarshal(sock.msg, &getMessagesById)
 	require.NoError(t, err)
@@ -1729,16 +1738,16 @@ func Test_Handle_GetMessagesById(t *testing.T) {
 	missingIds["/root/channel1"] = idsChannel1
 
 	// The missing messages the server should receive
-	missingMessages := make(map[string][]message.Message)
-	missingMessages["/root"] = []message.Message{msg2}
+	missingMessages := make(map[string][]mmessage.Message)
+	missingMessages["/root"] = []mmessage.Message{msg2}
 	missingMessages["/root/channel1"] = res2
 
-	getMessagesById := method.GetMessagesById{
-		Base: query.Base{
+	getMessagesById := mgetmessagesbyid.GetMessagesById{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: query.MethodGetMessagesById,
+			Method: mquery.MethodGetMessagesById,
 		}, ID: 5,
 		Params: missingIds,
 	}
@@ -1779,10 +1788,10 @@ func Test_Send_GreetServer_Message(t *testing.T) {
 
 	greetServerMsg := sock.msg
 
-	var greetServer method.GreetServer
+	var greetServer mgreetserver.GreetServer
 	err = json.Unmarshal(greetServerMsg, &greetServer)
 	require.NoError(t, err)
-	require.Equal(t, query.MethodGreetServer, greetServer.Method)
+	require.Equal(t, mquery.MethodGreetServer, greetServer.Method)
 	require.Equal(t, pk, greetServer.Params.PublicKey)
 	require.Equal(t, "ws://localhost:9001/server", greetServer.Params.ServerAddress)
 	require.Equal(t, "ws://localhost:9000/client", greetServer.Params.ClientAddress)
@@ -1801,18 +1810,18 @@ func Test_Handle_GreetServer_First_Time(t *testing.T) {
 
 	sock := &fakeSocket{}
 
-	serverInfo := method.GreetServerParams{
+	serverInfo := mgreetserver.GreetServerParams{
 		PublicKey:     "",
 		ServerAddress: "ws://localhost:9003/server",
 		ClientAddress: "ws://localhost:9002/client",
 	}
 
-	serverGreet := method.GreetServer{
-		Base: query.Base{
+	serverGreet := mgreetserver.GreetServer{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: query.MethodGreetServer,
+			Method: mquery.MethodGreetServer,
 		},
 		Params: serverInfo,
 	}
@@ -1828,12 +1837,12 @@ func Test_Handle_GreetServer_First_Time(t *testing.T) {
 	require.NoError(t, sock.err)
 
 	// socket should receive a server greet back after handling of server greet
-	var serverGreetResponse method.GreetServer
+	var serverGreetResponse mgreetserver.GreetServer
 
 	err = json.Unmarshal(sock.msg, &serverGreetResponse)
 	require.NoError(t, err)
 
-	require.Equal(t, query.MethodGreetServer, serverGreetResponse.Method)
+	require.Equal(t, mquery.MethodGreetServer, serverGreetResponse.Method)
 	require.Equal(t, pk, serverGreetResponse.Params.PublicKey)
 	require.Equal(t, "ws://localhost:9001/server", serverGreetResponse.Params.ServerAddress)
 	require.Equal(t, "ws://localhost:9000/client", serverGreetResponse.Params.ClientAddress)
@@ -1856,18 +1865,18 @@ func Test_Handle_GreetServer_Already_Greeted(t *testing.T) {
 	// reset socket message
 	sock.msg = nil
 
-	serverInfo := method.GreetServerParams{
+	serverInfo := mgreetserver.GreetServerParams{
 		PublicKey:     "",
 		ServerAddress: "ws://localhost:9003/server",
 		ClientAddress: "ws://localhost:9002/client",
 	}
 
-	serverGreet := method.GreetServer{
-		Base: query.Base{
+	serverGreet := mgreetserver.GreetServer{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: query.MethodGreetServer,
+			Method: mquery.MethodGreetServer,
 		},
 		Params: serverInfo,
 	}
@@ -1894,34 +1903,34 @@ func Test_Handle_GreetServer_Already_Received(t *testing.T) {
 	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
-	serverInfo1 := method.GreetServerParams{
+	serverInfo1 := mgreetserver.GreetServerParams{
 		PublicKey:     "",
 		ServerAddress: "ws://localhost:9003/server",
 		ClientAddress: "ws://localhost:9002/client",
 	}
 
-	serverInfo2 := method.GreetServerParams{
+	serverInfo2 := mgreetserver.GreetServerParams{
 		PublicKey:     "",
 		ServerAddress: "ws://localhost:9005/server",
 		ClientAddress: "ws://localhost:9004/client",
 	}
 
-	serverGreet1 := method.GreetServer{
-		Base: query.Base{
+	serverGreet1 := mgreetserver.GreetServer{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: query.MethodGreetServer,
+			Method: mquery.MethodGreetServer,
 		},
 		Params: serverInfo1,
 	}
 
-	serverGreet2 := method.GreetServer{
-		Base: query.Base{
+	serverGreet2 := mgreetserver.GreetServer{
+		Base: mquery.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: query.MethodGreetServer,
+			Method: mquery.MethodGreetServer,
 		},
 		Params: serverInfo2,
 	}
@@ -1979,36 +1988,36 @@ func generateKeyPair(t *testing.T) keypair {
 	return keypair{point, pkbuf, secret}
 }
 
-// fakeChannelFac implements a channel.LaoFactory function. It takes care
+// fakeChannelFac implements a oldchannel.LaoFactory function. It takes care
 // of keeping what has been provided to that function for check in the tests.
 type fakeChannelFac struct {
 	chanID string
-	msg    message.Message
-	c      channel.Channel
+	msg    mmessage.Message
+	c      oldchannel.Channel
 	log    zerolog.Logger
 }
 
-// newChannel implement the type channel.LaoFactory
-func (c *fakeChannelFac) newChannel(channelID string, hub channel.HubFunctionalities,
-	msg message.Message, log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket,
-) (channel.Channel, error) {
+// newChannel implement the type oldchannel.LaoFactory
+func (c *fakeChannelFac) newChannel(channelID string, hub oldchannel.HubFunctionalities,
+	msg mmessage.Message, log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket,
+) (oldchannel.Channel, error) {
 	c.chanID = channelID
 	c.msg = msg
 	c.log = log
 	return c.c, nil
 }
 
-// fakeChannel is a fake implementation of a channel
+// fakeChannel is a fake implementation of a oldchannel
 //
-// - implements channel.Channel
+// - implements oldchannel.Channel
 type fakeChannel struct {
 	sync.Mutex
 
-	subscribe   method.Subscribe
-	unsubscribe method.Unsubscribe
-	publish     method.Publish
-	catchup     method.Catchup
-	broadcast   method.Broadcast
+	subscribe   msubscribe.Subscribe
+	unsubscribe method2.Unsubscribe
+	publish     mpublish.Publish
+	catchup     mcatchup.Catchup
+	broadcast   mbroadcast.Broadcast
 
 	// set by the subscribe
 	socket socket.Socket
@@ -2016,11 +2025,11 @@ type fakeChannel struct {
 	socketID string
 
 	// fake messages to return in a catchup
-	msgs []message.Message
+	msgs []mmessage.Message
 }
 
-// Subscribe implements channel.Channel
-func (f *fakeChannel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
+// Subscribe implements oldchannel.Channel
+func (f *fakeChannel) Subscribe(socket socket.Socket, msg msubscribe.Subscribe) error {
 	f.Lock()
 	defer f.Unlock()
 
@@ -2029,8 +2038,8 @@ func (f *fakeChannel) Subscribe(socket socket.Socket, msg method.Subscribe) erro
 	return nil
 }
 
-// Unsubscribe implements channel.Channel
-func (f *fakeChannel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
+// Unsubscribe implements oldchannel.Channel
+func (f *fakeChannel) Unsubscribe(socketID string, msg method2.Unsubscribe) error {
 	f.Lock()
 	defer f.Unlock()
 
@@ -2039,8 +2048,8 @@ func (f *fakeChannel) Unsubscribe(socketID string, msg method.Unsubscribe) error
 	return nil
 }
 
-// Publish implements channel.Channel
-func (f *fakeChannel) Publish(msg method.Publish, socket socket.Socket) error {
+// Publish implements oldchannel.Channel
+func (f *fakeChannel) Publish(msg mpublish.Publish, socket socket.Socket) error {
 	f.Lock()
 	defer f.Unlock()
 
@@ -2048,8 +2057,8 @@ func (f *fakeChannel) Publish(msg method.Publish, socket socket.Socket) error {
 	return nil
 }
 
-// Catchup implements channel.Channel
-func (f *fakeChannel) Catchup(msg method.Catchup) []message.Message {
+// Catchup implements oldchannel.Channel
+func (f *fakeChannel) Catchup(msg mcatchup.Catchup) []mmessage.Message {
 	f.Lock()
 	defer f.Unlock()
 
@@ -2057,8 +2066,8 @@ func (f *fakeChannel) Catchup(msg method.Catchup) []message.Message {
 	return f.msgs
 }
 
-// Broadcast implements channel.Channel
-func (f *fakeChannel) Broadcast(msg method.Broadcast, _ socket.Socket) error {
+// Broadcast implements oldchannel.Channel
+func (f *fakeChannel) Broadcast(msg mbroadcast.Broadcast, _ socket.Socket) error {
 	f.Lock()
 	defer f.Unlock()
 
@@ -2074,8 +2083,8 @@ type fakeSocket struct {
 	socket.Socket
 
 	resultID    int
-	res         []message.Message
-	missingMsgs map[string][]message.Message
+	res         []mmessage.Message
+	missingMsgs map[string][]mmessage.Message
 	msg         []byte
 
 	err error
@@ -2093,7 +2102,7 @@ func (f *fakeSocket) Send(msg []byte) {
 }
 
 // SendResult implements socket.Socket
-func (f *fakeSocket) SendResult(id int, res []message.Message, missingMsgs map[string][]message.Message) {
+func (f *fakeSocket) SendResult(id int, res []mmessage.Message, missingMsgs map[string][]mmessage.Message) {
 	f.Lock()
 	defer f.Unlock()
 
@@ -2124,7 +2133,7 @@ func (f *fakeSocket) Type() socket.SocketType {
 // -------------------------------------
 // Test variables definition
 
-var msg1 = message.Message{
+var msg1 = mmessage.Message{
 	Data:              "data1",
 	Sender:            "sender1",
 	Signature:         "signature1",
@@ -2132,7 +2141,7 @@ var msg1 = message.Message{
 	WitnessSignatures: nil,
 }
 
-var msg2 = message.Message{
+var msg2 = mmessage.Message{
 	Data:              "data2",
 	Sender:            "sender2",
 	Signature:         "signature2",
@@ -2140,7 +2149,7 @@ var msg2 = message.Message{
 	WitnessSignatures: nil,
 }
 
-var msg3 = message.Message{
+var msg3 = mmessage.Message{
 	Data:              "data3",
 	Sender:            "sender3",
 	Signature:         "signature3",
@@ -2148,7 +2157,7 @@ var msg3 = message.Message{
 	WitnessSignatures: nil,
 }
 
-var res2 = []message.Message{msg3}
+var res2 = []mmessage.Message{msg3}
 
 var (
 	idsRoot     = []string{msg1.MessageID, msg2.MessageID}

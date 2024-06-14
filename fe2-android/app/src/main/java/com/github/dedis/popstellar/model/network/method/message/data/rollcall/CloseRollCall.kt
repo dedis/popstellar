@@ -4,8 +4,9 @@ import com.github.dedis.popstellar.model.Immutable
 import com.github.dedis.popstellar.model.network.method.message.data.Action
 import com.github.dedis.popstellar.model.network.method.message.data.Data
 import com.github.dedis.popstellar.model.network.method.message.data.Objects
-import com.github.dedis.popstellar.model.objects.RollCall
+import com.github.dedis.popstellar.model.objects.RollCall.Companion.generateCloseRollCallId
 import com.github.dedis.popstellar.model.objects.security.PublicKey
+import com.github.dedis.popstellar.utility.MessageValidator.verify
 import com.google.gson.annotations.SerializedName
 
 /** Data sent to close a Roll-Call */
@@ -25,11 +26,22 @@ class CloseRollCall(
     @field:SerializedName("closed_at") val closedAt: Long,
     attendees: List<PublicKey>
 ) : Data {
-  @SerializedName("update_id")
-  val updateId: String = RollCall.generateCloseRollCallId(laoId, closes, closedAt)
+  @SerializedName("update_id") val updateId: String
 
-  val attendees: List<PublicKey> = ArrayList(attendees)
+  var attendees: List<PublicKey> = ArrayList()
     get() = ArrayList(field)
+
+  init {
+    verify()
+        .stringListIsSorted(attendees, "attendees")
+        .validPastTimes(closedAt)
+        .greaterOrEqualThan(closedAt, 0, "closedAt")
+        .isNotEmptyBase64(laoId, "laoId")
+        .isNotEmptyBase64(closes, "closes")
+
+    this.updateId = generateCloseRollCallId(laoId, closes, closedAt)
+    this.attendees = ArrayList(attendees)
+  }
 
   override val `object`: String
     get() = Objects.ROLL_CALL.`object`

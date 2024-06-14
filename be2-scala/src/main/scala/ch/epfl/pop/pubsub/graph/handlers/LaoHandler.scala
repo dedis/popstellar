@@ -28,7 +28,7 @@ case object LaoHandler extends MessageHandler {
         socialChannel: Channel = Channel(s"$laoChannel${Channel.SOCIAL_MEDIA_CHIRPS_PREFIX}")
         reactionChannel: Channel = Channel(s"$laoChannel${Channel.REACTIONS_CHANNEL_PREFIX}")
         popchaChannel: Channel = Channel(s"$laoChannel${Channel.POPCHA_CHANNEL_PREFIX}")
-        federationChannel: Channel = Channel(s"$laoChannel/federation")
+        federationChannel: Channel = Channel(s"$laoChannel${Channel.FEDERATION_CHANNEL_PREFIX}")
         // we get access to the canonical address of the server
         address: Option[String] = Some(s"${serverConf.externalAddress}/${serverConf.clientPath}")
 

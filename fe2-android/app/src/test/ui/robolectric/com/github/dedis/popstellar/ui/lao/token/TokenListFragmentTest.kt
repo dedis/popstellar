@@ -54,7 +54,7 @@ class TokenListFragmentTest {
       ROLL_CALL_START,
       ROLL_CALL_END,
       EventState.CREATED,
-      HashSet(),
+      LinkedHashSet(),
       LOCATION,
       ROLL_CALL_DESC
     )

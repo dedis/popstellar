@@ -4,7 +4,7 @@ import akka.NotUsed
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.{Broadcast, Catchup, GetMessagesById}
-import ch.epfl.pop.model.network._
+import ch.epfl.pop.model.network.*
 import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator

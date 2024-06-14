@@ -50,18 +50,25 @@ object ProcessMessagesHandler extends AskPatternConstants {
   }
 
   def rumorStateAnsHandler(messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-    case msg @ Right(JsonRpcResponse(_, Some(resultObject), None, _)) =>
+    case msg @ Right(JsonRpcResponse(_, Some(resultObject), None, jsonId)) =>
       resultObject.resultRumor match
         case Some(rumorList) =>
-          val mergedMsg = rumorList.flatMap(rumor => rumor.messages)
-            .map((channel, msgList) => (channel, msgList.toSet))
-            .foldLeft(Map.empty[Channel, Set[Message]]) { case (acc, (key, values)) =>
-              acc.updated(key, acc.getOrElse(key, Set.empty[Message]) ++ values)
-            }
+          val mergedMsg = rumorList
+            .flatMap(_.messages)
+            .groupBy(_._1)
+            .view.mapValues(_.flatMap(_._2).toSet).toMap
           processMsgMap(mergedMsg, messageRegistry)
           msg
-        case _ => msg
-    case graphMessage @ _ => graphMessage
+        case _ => Left(PipelineError(
+            ErrorCodes.SERVER_ERROR.id,
+            s"Rumor state handler received an unexpected type of result $msg",
+            jsonId
+          ))
+    case graphMessage @ _ => Left(PipelineError(
+        ErrorCodes.SERVER_ERROR.id,
+        s"Rumor state handler received an unexpected type of message $graphMessage",
+        None
+      ))
   }
 
   def rumorHandler(messageRegistry: MessageRegistry, rumor: Rumor)(implicit system: ActorSystem): Boolean = {

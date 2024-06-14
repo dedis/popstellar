@@ -1,189 +1,156 @@
 package channel
 
 import (
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"go.dedis.ch/kyber/v3"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"popstellar/internal/crypto"
-	jsonrpc "popstellar/internal/message"
-	"popstellar/internal/message/answer"
-	"popstellar/internal/message/messagedata"
-	"popstellar/internal/message/query"
-	"popstellar/internal/message/query/method"
-	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/singleton/config"
-	"popstellar/internal/singleton/database"
-	"popstellar/internal/singleton/state"
-	"popstellar/internal/singleton/utils"
-	"popstellar/internal/sqlite"
-	"popstellar/internal/validation"
+	"fmt"
+	"popstellar/internal/errors"
 )
 
-func HandleChannel(channelPath string, msg message.Message, fromRumor bool) *answer.Error {
-	errAnswer := verifyMessage(msg)
-	if errAnswer != nil {
-		return errAnswer.Wrap("HandleChannel")
-	}
+const (
+	RootObject = "root"
 
-	db, errAnswer := database.GetChannelRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("HandleChannel")
-	}
+	ConsensusObject            = "consensus"
+	ConsensusActionAccept      = "accept"
+	ConsensusActionElect       = "elect"
+	ConsensusActionElectAccept = "elect_accept"
+	ConsensusActionFailure     = "failure"
+	ConsensusActionLearn       = "learn"
+	ConsensusActionPrepare     = "prepare"
+	ConsensusActionPromise     = "promise"
+	ConsensusActionPropose     = "propose"
 
-	msgAlreadyExists, err := db.HasMessage(msg.MessageID)
-	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("if message exists: %v", err)
-		return errAnswer.Wrap("HandleChannel")
-	}
-	if msgAlreadyExists && fromRumor {
-		return nil
-	}
-	if msgAlreadyExists {
-		errAnswer := answer.NewInvalidActionError("message %s was already received", msg.MessageID)
-		return errAnswer.Wrap("HandleChannel")
-	}
+	ElectionObject       = "election"
+	ElectionActionSetup  = "setup"
+	ElectionActionKey    = "key"
+	ElectionActionOpen   = "open"
+	ElectionActionEnd    = "end"
+	ElectionActionResult = "result"
 
-	channelType, err := db.GetChannelType(channelPath)
-	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("channelPath type: %v", err)
-		return errAnswer.Wrap("HandleChannel")
-	}
+	LAOObject       = "lao"
+	LAOActionCreate = "create"
+	LAOActionState  = "state"
+	LAOActionUpdate = "update_properties"
+	LAOActionGreet  = "greet"
 
-	switch channelType {
-	case sqlite.RootType:
-		errAnswer = handleChannelRoot(msg)
-	case sqlite.LaoType:
-		errAnswer = handleChannelLao(channelPath, msg)
-	case sqlite.ElectionType:
-		errAnswer = handleChannelElection(channelPath, msg)
-	case sqlite.ChirpType:
-		errAnswer = handleChannelChirp(channelPath, msg)
-	case sqlite.ReactionType:
-		errAnswer = handleChannelReaction(channelPath, msg)
-	case sqlite.CoinType:
-		errAnswer = handleChannelCoin(channelPath, msg)
-	case sqlite.FederationType:
-		errAnswer = handleChannelFederation(channelPath, msg)
-	default:
-		errAnswer = answer.NewInvalidResourceError("unknown channelPath type for %s", channelPath)
-	}
+	MeetingObject       = "meeting"
+	MeetingActionCreate = "create"
+	MeetingActionState  = "state"
 
-	if errAnswer != nil {
-		return errAnswer.Wrap("HandleChannel")
-	}
+	MessageObject        = "message"
+	MessageActionWitness = "witness"
 
-	return nil
+	RollCallObject       = "roll_call"
+	RollCallActionClose  = "close"
+	RollCallActionCreate = "create"
+	RollCallActionOpen   = "open"
+	RollCallActionReOpen = "reopen"
+
+	VoteActionCastVote = "cast_vote"
+	VoteActionWriteIn  = "write_in"
+
+	FederationObject                 = "federation"
+	FederationActionChallengeRequest = "challenge_request"
+	FederationActionChallenge        = "challenge"
+	FederationActionInit             = "init"
+	FederationActionExpect           = "expect"
+	FederationActionResult           = "result"
+
+	ChirpObject             = "chirp"
+	ChirpActionAdd          = "add"
+	ChirpActionDelete       = "delete"
+	ChirpActionNotifyAdd    = "notify_add"
+	ChirpActionNotifyDelete = "notify_delete"
+
+	ReactionObject       = "reaction"
+	ReactionActionAdd    = "add"
+	ReactionActionDelete = "delete"
+
+	CoinObject                = "coin"
+	CoinActionPostTransaction = "post_transaction"
+
+	// AuthObject popcha messagedata object
+	AuthObject = "popcha"
+	// AuthAction popcha messagedata action
+	AuthAction = "authenticate"
+
+	Root       = "/root"
+	RootPrefix = "/root/"
+	Social     = "/social"
+	Chirps     = Social + "/chirps"
+	Reactions  = Social + "/reactions"
+	Consensus  = "/consensus"
+	Coin       = "/coin"
+	Auth       = "/authentication"
+	Federation = "/federation"
+)
+
+// MessageData defines a common interface for message data to be used with a
+// registry.
+type MessageData interface {
+	GetObject() string
+	GetAction() string
+	NewEmpty() MessageData
 }
 
-// util for the channels
-
-func verifyMessage(msg message.Message) *answer.Error {
-	dataBytes, err := base64.URLEncoding.DecodeString(msg.Data)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode data: %v", err)
-		return errAnswer.Wrap("verifyMessage")
-	}
-
-	publicKeySender, err := base64.URLEncoding.DecodeString(msg.Sender)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode public key: %v", err)
-		return errAnswer.Wrap("verifyMessage")
-	}
-
-	signatureBytes, err := base64.URLEncoding.DecodeString(msg.Signature)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode signature: %v", err)
-		return errAnswer.Wrap("verifyMessage")
-	}
-
-	err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to verify signature : %v", err)
-		return errAnswer.Wrap("verifyMessage")
-	}
-
-	expectedMessageID := messagedata.Hash(msg.Data, msg.Signature)
-	if expectedMessageID != msg.MessageID {
-		errAnswer := answer.NewInvalidActionError("messageID is wrong: expected %s found %s",
-			expectedMessageID, msg.MessageID)
-		return errAnswer.Wrap("verifyMessage")
-	}
-	return nil
+// Verifiable defines a MessageData that offers message verification
+type Verifiable interface {
+	MessageData
+	Verify() error
 }
 
-func verifyDataAndGetObjectAction(msg message.Message) (string, string, *answer.Error) {
-	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+// GetObjectAndAction returns the object and action of a JSON RPC message.
+func GetObjectAndAction(buf []byte) (string, string, error) {
+	var objmap map[string]json.RawMessage
+
+	err := json.Unmarshal(buf, &objmap)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
-		return "", "", errAnswer.Wrap("verifyDataAndGetObjectAction")
+		return "", "", errors.NewInvalidMessageFieldError("failed to unmarshal objmap: %v", err)
 	}
 
-	// validate message data against the json schema
-	errAnswer := utils.VerifyJSON(jsonData, validation.Data)
-	if errAnswer != nil {
-		return "", "", errAnswer.Wrap("verifyDataAndGetObjectAction")
+	var object string
+	var action string
+
+	err = json.Unmarshal(objmap["object"], &object)
+	if err != nil {
+		return "", "", errors.NewInvalidActionError("failed to get object: %v", err)
 	}
 
-	// get object#action
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	err = json.Unmarshal(objmap["action"], &action)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to get object#action: %v", err)
-		return "", "", errAnswer.Wrap("verifyDataAndGetObjectAction")
+		return "", "", errors.NewInvalidActionError("failed to get action: %v", err)
 	}
+
 	return object, action, nil
 }
 
-func Sign(data []byte) ([]byte, *answer.Error) {
-	var errAnswer *answer.Error
+// GetTime returns the time of a JSON RPC message.
+func GetTime(buf []byte) (int64, error) {
+	var objmap map[string]json.RawMessage
 
-	serverSecretKey, errAnswer := config.GetServerSecretKeyInstance()
-	if errAnswer != nil {
-		return nil, errAnswer.Wrap("Sign")
-	}
-
-	signatureBuf, err := schnorr.Sign(crypto.Suite, serverSecretKey, data)
+	err := json.Unmarshal(buf, &objmap)
 	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to sign the data: %v", err)
-		return nil, errAnswer.Wrap("Sign")
+		return 0, errors.NewInvalidMessageFieldError("failed to unmarshal objmap: %v", err)
 	}
-	return signatureBuf, nil
+
+	var time int64
+
+	err = json.Unmarshal(objmap["timestamp"], &time)
+	if err != nil {
+		return 0, errors.NewInvalidMessageFieldError("failed to get time: %v", err)
+	}
+
+	return time, nil
 }
 
-// generateKeys generates and returns a key pair
-func generateKeys() (kyber.Point, kyber.Scalar) {
-	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-	point := crypto.Suite.Point().Mul(secret, nil)
-	return point, secret
-}
-
-func broadcastToAllClients(msg message.Message, channel string) *answer.Error {
-	rpcMessage := method.Broadcast{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: "broadcast",
-		},
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			channel,
-			msg,
-		},
+// Hash returns the sha256 created from an array of strings
+func Hash(strs ...string) string {
+	h := sha256.New()
+	for _, s := range strs {
+		h.Write([]byte(fmt.Sprintf("%d", len(s))))
+		h.Write([]byte(s))
 	}
 
-	buf, err := json.Marshal(&rpcMessage)
-	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to marshal broadcast query: %v", err)
-		return errAnswer.Wrap("broadcastToAllClients")
-	}
-
-	errAnswer := state.SendToAll(buf, channel)
-	if errAnswer != nil {
-		return errAnswer.Wrap("broadcastToAllClients")
-	}
-
-	return nil
+	return base64.URLEncoding.EncodeToString(h.Sum(nil))
 }
