@@ -1,7 +1,7 @@
 package hub_state
 
 import (
-	"popstellar/internal/message/query/method"
+	"popstellar/internal/handler/method/getmessagesbyid/mgetmessagesbyid"
 	"sync"
 
 	"github.com/rs/zerolog"
@@ -15,7 +15,7 @@ type Queries struct {
 	// query not yet answered, else true.
 	state map[int]bool
 	// getMessagesByIdQueries stores the server's getMessagesByIds queries by their ID.
-	getMessagesByIdQueries map[int]method.GetMessagesById
+	getMessagesByIdQueries map[int]mgetmessagesbyid.GetMessagesById
 	// nextID store the ID of the next query
 	nextID int
 	// zerolog
@@ -26,7 +26,7 @@ type Queries struct {
 func NewQueries(log zerolog.Logger) Queries {
 	return Queries{
 		state:                  make(map[int]bool),
-		getMessagesByIdQueries: make(map[int]method.GetMessagesById),
+		getMessagesByIdQueries: make(map[int]mgetmessagesbyid.GetMessagesById),
 		log:                    log,
 	}
 }
@@ -74,7 +74,7 @@ func (q *Queries) SetQueryReceived(id int) error {
 }
 
 // AddQuery adds the given query to the table
-func (q *Queries) AddQuery(id int, query method.GetMessagesById) {
+func (q *Queries) AddQuery(id int, query mgetmessagesbyid.GetMessagesById) {
 	q.Lock()
 	defer q.Unlock()
 

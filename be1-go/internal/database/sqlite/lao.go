@@ -7,9 +7,9 @@ import (
 	"errors"
 	"go.dedis.ch/kyber/v3"
 	poperrors "popstellar/internal/errors"
-	messageHandler "popstellar/internal/handler/message"
-	"popstellar/internal/message/messagedata"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/handler/channel"
+	"popstellar/internal/handler/channel/lao/mlao"
+	"popstellar/internal/handler/message/mmessage"
 	"time"
 )
 
@@ -18,22 +18,22 @@ func (s *SQLite) GetRollCallState(channelPath string) (string, error) {
 	defer dbLock.Unlock()
 
 	var state string
-	err := s.database.QueryRow(selectLastRollCallMessage, messagedata.RollCallObject, channelPath).Scan(&state)
+	err := s.database.QueryRow(selectLastRollCallMessage, channel.RollCallObject, channelPath).Scan(&state)
 	if err != nil {
 		return "", poperrors.NewDatabaseSelectErrorMsg(err.Error())
 	}
 	return state, nil
 }
 
-func (s *SQLite) CheckPrevOpenOrReopenID(channel, nextID string) (bool, error) {
+func (s *SQLite) CheckPrevOpenOrReopenID(channelPath, nextID string) (bool, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
 	var lastMsg []byte
 	var lastAction string
 
-	err := s.database.QueryRow(selectLastRollCallMessageInList, channel, messagedata.RollCallObject,
-		messagedata.RollCallActionOpen, messagedata.RollCallActionReOpen).Scan(&lastMsg, &lastAction)
+	err := s.database.QueryRow(selectLastRollCallMessageInList, channelPath, channel.RollCallObject,
+		channel.RollCallActionOpen, channel.RollCallActionReOpen).Scan(&lastMsg, &lastAction)
 
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
@@ -42,15 +42,15 @@ func (s *SQLite) CheckPrevOpenOrReopenID(channel, nextID string) (bool, error) {
 	}
 
 	switch lastAction {
-	case messagedata.RollCallActionOpen:
-		var rollCallOpen messagedata.RollCallOpen
+	case channel.RollCallActionOpen:
+		var rollCallOpen mlao.RollCallOpen
 		err = json.Unmarshal(lastMsg, &rollCallOpen)
 		if err != nil {
 			return false, poperrors.NewInternalServerError("failed to unmarshal last roll call open message: %v", err)
 		}
 		return rollCallOpen.UpdateID == nextID, nil
-	case messagedata.RollCallActionReOpen:
-		var rollCallReOpen messagedata.RollCallReOpen
+	case channel.RollCallActionReOpen:
+		var rollCallReOpen mlao.RollCallReOpen
 		err = json.Unmarshal(lastMsg, &rollCallReOpen)
 		if err != nil {
 			return false, poperrors.NewInternalServerError("failed to unmarshal last roll call re open message: %v", err)
@@ -61,15 +61,15 @@ func (s *SQLite) CheckPrevOpenOrReopenID(channel, nextID string) (bool, error) {
 	return false, nil
 }
 
-func (s *SQLite) CheckPrevCreateOrCloseID(channel, nextID string) (bool, error) {
+func (s *SQLite) CheckPrevCreateOrCloseID(channelPath, nextID string) (bool, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
 	var lastMsg []byte
 	var lastAction string
 
-	err := s.database.QueryRow(selectLastRollCallMessageInList, channel, messagedata.RollCallObject,
-		messagedata.RollCallActionCreate, messagedata.RollCallActionClose).Scan(&lastMsg, &lastAction)
+	err := s.database.QueryRow(selectLastRollCallMessageInList, channelPath, channel.RollCallObject,
+		channel.RollCallActionCreate, channel.RollCallActionClose).Scan(&lastMsg, &lastAction)
 
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
@@ -78,15 +78,15 @@ func (s *SQLite) CheckPrevCreateOrCloseID(channel, nextID string) (bool, error) 
 	}
 
 	switch lastAction {
-	case messagedata.RollCallActionCreate:
-		var rollCallCreate messagedata.RollCallCreate
+	case channel.RollCallActionCreate:
+		var rollCallCreate mlao.RollCallCreate
 		err = json.Unmarshal(lastMsg, &rollCallCreate)
 		if err != nil {
 			return false, poperrors.NewInternalServerError("failed to unmarshal last roll call create message: %v", err)
 		}
 		return rollCallCreate.ID == nextID, nil
-	case messagedata.RollCallActionClose:
-		var rollCallClose messagedata.RollCallClose
+	case channel.RollCallActionClose:
+		var rollCallClose mlao.RollCallClose
 		err = json.Unmarshal(lastMsg, &rollCallClose)
 		if err != nil {
 			return false, poperrors.NewInternalServerError("failed to unmarshal last roll call close message: %v", err)
@@ -102,7 +102,7 @@ func (s *SQLite) GetLaoWitnesses(laoPath string) (map[string]struct{}, error) {
 	defer dbLock.Unlock()
 
 	var witnesses []string
-	err := s.database.QueryRow(selectLaoWitnesses, laoPath, messagedata.LAOObject, messagedata.LAOActionCreate).Scan(&witnesses)
+	err := s.database.QueryRow(selectLaoWitnesses, laoPath, channel.LAOObject, channel.LAOActionCreate).Scan(&witnesses)
 	if err != nil {
 		return nil, poperrors.NewDatabaseSelectErrorMsg("lao witnesses: %v", err)
 	}
@@ -115,7 +115,7 @@ func (s *SQLite) GetLaoWitnesses(laoPath string) (map[string]struct{}, error) {
 	return witnessesMap, nil
 }
 
-func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg message.Message) error {
+func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg mmessage.Message) error {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
@@ -153,7 +153,7 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg messa
 	}
 
 	for _, channelPath := range channels {
-		_, err = tx.Exec(insertChannel, channelPath, channelTypeToID[messageHandler.ChirpType], laoPath)
+		_, err = tx.Exec(insertChannel, channelPath, channelTypeToID[channel.ChirpObject], laoPath)
 		if err != nil {
 			return poperrors.NewDatabaseInsertErrorMsg("channel %s: %v", channelPath, err)
 		}
@@ -172,7 +172,7 @@ func (s *SQLite) storeElectionHelper(
 	laoPath, electionPath string,
 	electionPubKey kyber.Point,
 	electionSecretKey kyber.Scalar,
-	msg message.Message) error {
+	msg mmessage.Message) error {
 
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
@@ -200,7 +200,7 @@ func (s *SQLite) storeElectionHelper(
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("relation election create message and lao channel: %v", err)
 	}
-	_, err = tx.Exec(insertChannel, electionPath, channelTypeToID[messageHandler.ElectionType], laoPath)
+	_, err = tx.Exec(insertChannel, electionPath, channelTypeToID[channel.ElectionObject], laoPath)
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("election channel: %v", err)
 	}
@@ -220,7 +220,7 @@ func (s *SQLite) StoreElection(
 	laoPath, electionPath string,
 	electionPubKey kyber.Point,
 	electionSecretKey kyber.Scalar,
-	msg message.Message) error {
+	msg mmessage.Message) error {
 
 	dbLock.Lock()
 	defer dbLock.Unlock()
@@ -249,7 +249,7 @@ func (s *SQLite) StoreElectionWithElectionKey(
 	laoPath, electionPath string,
 	electionPubKey kyber.Point,
 	electionSecretKey kyber.Scalar,
-	msg, electionKeyMsg message.Message) error {
+	msg, electionKeyMsg mmessage.Message) error {
 
 	dbLock.Lock()
 	defer dbLock.Unlock()

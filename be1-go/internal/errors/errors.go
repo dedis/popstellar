@@ -1,7 +1,9 @@
 package errors
 
 import (
+	"encoding/json"
 	"fmt"
+	"path/filepath"
 	"runtime"
 )
 
@@ -55,7 +57,7 @@ func (p *PopError) Error() string {
 func NewPopError(code int, format string, a ...interface{}) *PopError {
 
 	var pcs [depthStack]uintptr
-	n := runtime.Callers(2, pcs[:])
+	n := runtime.Callers(3, pcs[:])
 	stack := pcs[0:n]
 
 	return &PopError{
@@ -75,12 +77,38 @@ func (p *PopError) StackTraceString() string {
 
 	for {
 		frame, ok := frames.Next()
-		stackTrace += fmt.Sprintf("%s\n\t%s:%d\n", frame.Function, frame.File, frame.Line)
 		if !ok {
 			break
 		}
+		stackTrace += fmt.Sprintf("%s\n\t%s:%d\n", filepath.Base(frame.Function), filepath.Base(frame.File), frame.Line)
 	}
+
 	return stackTrace
+}
+
+type Frame struct {
+	Function string `json:"function"`
+	File     string `json:"file"`
+	Line     int    `json:"line"`
+}
+
+func (p *PopError) GetStackTraceJSON() ([]byte, error) {
+	frames := runtime.CallersFrames(p.stackTrace)
+	var stackTraceArray []Frame
+
+	for {
+		frame, ok := frames.Next()
+		if !ok {
+			break
+		}
+		stackTraceArray = append(stackTraceArray, Frame{
+			Function: filepath.Base(frame.Function),
+			File:     filepath.Base(frame.File),
+			Line:     frame.Line,
+		})
+	}
+
+	return json.Marshal(stackTraceArray)
 }
 
 // NewInvalidActionError returns an error with the code -1 for an invalid action

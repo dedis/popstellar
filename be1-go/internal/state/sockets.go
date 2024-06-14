@@ -2,18 +2,19 @@ package state
 
 import (
 	"fmt"
+	"github.com/rs/zerolog"
 	"math/rand"
-	"popstellar/internal/logger"
 	"popstellar/internal/network/socket"
 	"sync"
 )
 
 // NewSockets returns a new initialized Sockets
-func NewSockets() *Sockets {
+func NewSockets(log zerolog.Logger) *Sockets {
 	return &Sockets{
 		rState:    make(map[string]rumorState),
 		socketIDs: make([]string, 0),
 		store:     make(map[string]socket.Socket),
+		log:       log.With().Str("module", "sockets").Logger(),
 	}
 }
 
@@ -29,6 +30,7 @@ type Sockets struct {
 	rState    map[string]rumorState
 	socketIDs []string
 	store     map[string]socket.Socket
+	log       zerolog.Logger
 }
 
 func (s *Sockets) newRumorState(socket socket.Socket) rumorState {
@@ -83,7 +85,7 @@ func (s *Sockets) SendRumor(socket socket.Socket, senderID string, rumorID int, 
 	}
 
 	if rState.counter >= len(s.store) {
-		logger.Logger.Debug().Msgf("stop sending rumor because completed cycle")
+		s.log.Debug().Msgf("stop sending rumor because completed cycle")
 		return
 	}
 
