@@ -40,13 +40,13 @@ func (b *buffer) insert(rumor mrumor.Rumor) error {
 }
 
 func (b *buffer) deleteWithDelay(ID string) {
-	defer b.Unlock()
-
 	timer := time.NewTimer(bufferEntryLifeTime)
 
 	<-timer.C
 
 	b.Lock()
+	defer b.Unlock()
+
 	delete(b.values, ID)
 }
 
