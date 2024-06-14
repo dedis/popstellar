@@ -3,6 +3,7 @@ package hrumor
 import (
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/handler/method/rumor/mrumor"
+	"popstellar/internal/handler/method/rumor/trumor"
 	"testing"
 	"time"
 )
@@ -41,18 +42,29 @@ func Test_getNextRumor(t *testing.T) {
 
 	// one next rumor
 
+	sender := "sender0"
+
+	timestamp00 := make(map[string]int)
+	timestamp00[sender] = 0
+
 	rumor00 := mrumor.Rumor{
 		Params: mrumor.ParamsRumor{
-			SenderID: "sender0",
-			RumorID:  0,
-			Messages: nil,
+			SenderID:  sender,
+			RumorID:   0,
+			Timestamp: timestamp00,
+			Messages:  nil,
 		},
 	}
+
+	timestamp01 := make(map[string]int)
+	timestamp01[sender] = 1
+
 	rumor01 := mrumor.Rumor{
 		Params: mrumor.ParamsRumor{
-			SenderID: "sender0",
-			RumorID:  1,
-			Messages: nil,
+			SenderID:  sender,
+			RumorID:   1,
+			Timestamp: timestamp01,
+			Messages:  nil,
 		},
 	}
 
@@ -62,22 +74,35 @@ func Test_getNextRumor(t *testing.T) {
 	err = buf.insert(rumor01)
 	require.NoError(t, err)
 
-	_, ok := buf.getNextRumor(rumor00.Params.SenderID, rumor00.Params.RumorID)
+	state := make(trumor.RumorTimestamp)
+
+	_, ok := buf.getNextRumor(state)
+	require.True(t, ok)
+
+	state[sender] = 0
+
+	_, ok = buf.getNextRumor(state)
 	require.True(t, ok)
 
 	// no next rumor
 
+	sender = "sender1"
+
+	timestamp10 := make(map[string]int)
+	timestamp10[sender] = 1
+
 	rumor10 := mrumor.Rumor{
 		Params: mrumor.ParamsRumor{
-			SenderID: "sender1",
-			RumorID:  0,
-			Messages: nil,
+			SenderID:  sender,
+			RumorID:   1,
+			Timestamp: timestamp10,
+			Messages:  nil,
 		},
 	}
 
 	err = buf.insert(rumor10)
 	require.NoError(t, err)
 
-	_, ok = buf.getNextRumor(rumor10.Params.SenderID, rumor10.Params.RumorID)
+	_, ok = buf.getNextRumor(state)
 	require.False(t, ok)
 }

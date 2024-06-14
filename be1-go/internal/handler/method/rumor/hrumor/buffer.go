@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/method/rumor/mrumor"
+	"popstellar/internal/handler/method/rumor/trumor"
 	"sync"
 	"time"
 )
@@ -12,12 +13,14 @@ const bufferEntryLifeTime = 3 * time.Second
 
 type buffer struct {
 	sync.Mutex
-	values map[string]mrumor.Rumor
+	queue     []mrumor.Rumor
+	senderIDs map[string]struct{}
 }
 
 func newBuffer() *buffer {
 	return &buffer{
-		values: make(map[string]mrumor.Rumor),
+		queue:     make([]mrumor.Rumor, 0),
+		senderIDs: make(map[string]struct{}),
 	}
 }
 
@@ -27,12 +30,13 @@ func (b *buffer) insert(rumor mrumor.Rumor) error {
 
 	ID := fmt.Sprintf("%s:%d", rumor.Params.SenderID, rumor.Params.RumorID)
 
-	_, ok := b.values[ID]
+	_, ok := b.senderIDs[ID]
 	if ok {
 		return errors.NewDuplicateResourceError("rumor %s is already inside the buffer", ID)
 	}
 
-	b.values[ID] = rumor
+	b.queue = append(b.queue, rumor)
+	b.senderIDs[ID] = struct{}{}
 
 	go b.deleteWithDelay(ID)
 
@@ -47,20 +51,32 @@ func (b *buffer) deleteWithDelay(ID string) {
 	b.Lock()
 	defer b.Unlock()
 
-	delete(b.values, ID)
+	b.deleteEntry(ID)
 }
 
-func (b *buffer) getNextRumor(senderID string, rumorID int) (mrumor.Rumor, bool) {
+func (b *buffer) getNextRumor(state trumor.RumorTimestamp) (mrumor.Rumor, bool) {
 	b.Lock()
 	defer b.Unlock()
 
-	ID := fmt.Sprintf("%s:%d", senderID, rumorID+1)
-	rumor, ok := b.values[ID]
-	if !ok {
-		return mrumor.Rumor{}, false
+	for _, rumor := range b.queue {
+		if state.IsValid(rumor) {
+			b.deleteEntry(fmt.Sprintf("%s:%d", rumor.Params.SenderID, rumor.Params.RumorID))
+			return rumor, true
+		}
 	}
 
-	delete(b.values, ID)
+	return mrumor.Rumor{}, false
+}
 
-	return rumor, true
+func (b *buffer) deleteEntry(ID string) {
+	for i, rumor := range b.queue {
+		if fmt.Sprintf("%s:%d", rumor.Params.SenderID, rumor.Params.RumorID) == ID {
+			queue := make([]mrumor.Rumor, 0)
+			queue = append(queue, b.queue[:i]...)
+			queue = append(queue, b.queue[i+1:]...)
+			b.queue = queue
+		}
+	}
+
+	delete(b.senderIDs, ID)
 }
