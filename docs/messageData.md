@@ -466,9 +466,9 @@ Last but not least, the greeting message contains a list of peers that tells cli
             "$comment": "Note: the string is encoded in Base64"
         },
         "address": {
-          "description": "Canonical address of the server with a protocol prefix and (optionally) the port number which is by default 80 and 443 for ws and wss respectively",
+            "description": "Canonical address of the server with a protocol prefix and (optionally) the port number which is by default 80 and 443 for ws and wss respectively",
             "type": "string",
-            "pattern": "^(ws|wss):\/\/.*(:\d{0,5})?\/.*$"
+            "pattern": "^(ws|wss):\\/\\/.*(:\\d{0,5})?\\/.*$"
         },
         "peers": {
             "description": "A list of peers the server is connected to (excluding itself). These can be other organizers or witnesses",
@@ -478,9 +478,9 @@ Last but not least, the greeting message contains a list of peers that tells cli
                 "additionalProperties": false,
                 "properties": {
                     "address": {
-                      "description": "Canonical address of the server with a protocol prefix and (optionally) the port number which is by default 80 and 443 for ws and wss respectively",
+                        "description": "Canonical address of the server with a protocol prefix and (optionally) the port number which is by default 80 and 443 for ws and wss respectively",
                         "type": "string",
-                        "pattern": "^(ws|wss):\/\/.*(:\d{0,5})?\/.*$"
+                        "pattern": "^(ws|wss):\\/\\/.*(:\\d{0,5})?\\/.*$"
                     }
                 },
                 "required": ["address"]
@@ -1052,7 +1052,8 @@ the organizer after scanning all attendees’ public key.
             "items": {
                 "type": "string",
                 "contentEncoding": "base64"
-            }
+            },
+            "$comment": "List must be sorted according to byte encoding: -,0...9,A...Z,_,a...z"
         }
     },
     "additionalProperties": false,
@@ -1433,6 +1434,7 @@ The election can be opened by publishing an election/open message on the electio
 
 ```json5
 // ../protocol/examples/messageData/election_open.json
+// error: embedme: file '../protocol/examples/messageData/election_open.json' not found
 {
     "object": "election",
     "action": "open",
@@ -1445,6 +1447,7 @@ The election can be opened by publishing an election/open message on the electio
 
 ```json5
 // ../protocol/query/method/message/data/dataOpenElection.json
+
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataOpenElection.json",
@@ -1482,6 +1485,7 @@ The election can be opened by publishing an election/open message on the electio
         "opened_at"
     ]
 }
+
 ```
 </details>
 
@@ -1544,9 +1548,9 @@ A vote in a secret ballot election
     "created_at": 1633098941,
     "votes": [
         {
-            "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
+            "id": "ad_RtMq73lRS1JF5LY-kHOGHD-yV-JJl7KmJZFOgmqc=",
             "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
-            "vote": "bm90IHJlYWxseSBlbmNyeXB0ZWQgYnV0IGVoaA=="
+            "vote": "ay7_zJTr5wanCpLQXEvICr0BuyI7aELxU0QM8YbGSgD2o-u1bnJqFMjAJYFQVcLe7rZkmhNFUiEOPqIqLj2hQQ=="
         }
     ]
 }
@@ -1662,7 +1666,7 @@ message on the election channel. This message indicates that the organizer will 
     "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
     "created_at": 1633099883,
-    "registered_votes": "tAUYpZDc7lOfrxyviK6V9UsezeubGUZR-TpwF52pzWU="
+    "registered_votes": "GX9slST3yY_Mltkjimp-eNq71mfbSbQ9sruABYN8EoM="
 }
 
 ```
@@ -1853,6 +1857,7 @@ the server’s time +/- a threshold).
     "text": "I love PoP",
     "timestamp": 1634760180
 }
+
 ```
 
 </details>
@@ -1913,6 +1918,7 @@ message and sends it to a universal chirp channel ("/root/lao_id/social/chirps")
     "channel": "/root/<lao_id>/social/<sender>",
     "timestamp": 1634760180
 }
+
 ```
 </details>
 
@@ -1974,6 +1980,7 @@ protocol, the chirp will always exist in historical records of the users’ chan
     "chirp_id": "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=",
     "timestamp": 1634760180
 }
+
 ```
 
 </details>
@@ -2007,6 +2014,7 @@ protocol, the chirp will always exist in historical records of the users’ chan
   "additionalProperties": false,
   "required": ["object", "action", "chirp_id", "timestamp"]
 }
+
 ```
 
 After validating the removal of the chirp, the organizer’s server propagates the above message 
@@ -2028,6 +2036,7 @@ it to a universal chirp channel ("/root/lao_id/social/chirps"):
     "channel": "/root/<lao_id>/social/<sender>",
     "timestamp": 1634760180
 }
+
 ```
 
 </details>
@@ -2067,6 +2076,7 @@ it to a universal chirp channel ("/root/lao_id/social/chirps"):
   "additionalProperties": false,
   "required": ["object", "action", "chirp_id", "channel", "timestamp"]
 }
+
 ```
 
 ## Publishing a reaction (reaction#add)
@@ -2095,6 +2105,7 @@ Each reaction contains the following:
   "chirp_id": "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=",
   "timestamp": 1634760180
 }
+
 ```
 
 </details>
@@ -2134,6 +2145,7 @@ Each reaction contains the following:
   "additionalProperties": false,
   "required": ["object", "action", "reaction_codepoint", "chirp_id", "timestamp"]
 }
+
 ```
 
 ## Removing a reaction (reaction#delete)
@@ -2157,6 +2169,7 @@ protocol, the reaction will always exist in historical records of the reactions�
   "reaction_id": "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=",
   "timestamp": 1634760180
 }
+
 ```
 
 </details>
@@ -2190,6 +2203,7 @@ protocol, the reaction will always exist in historical records of the reactions�
   "additionalProperties": false,
   "required": ["object", "action", "reaction_id", "timestamp"]
 }
+
 ```
 
 ## Consensus (introduction)
@@ -2240,6 +2254,7 @@ and some values linked with the consensus/elect message starting the consensus.
     },
     "value": "started"
 }
+
 ```
 
 </details>
@@ -2308,6 +2323,7 @@ and some values linked with the consensus/elect message starting the consensus.
         "value"
     ]
 }
+
 ```
 
 ## Accepting the start of a Consensus (consensus#elect_accept)
@@ -2331,6 +2347,7 @@ have accepted the start of the consensus, it can start.
     "message_id": "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=",
     "accept": true
 }
+
 ```
 
 </details>
@@ -2372,6 +2389,7 @@ have accepted the start of the consensus, it can start.
         "accept"
     ]
 }
+
 ```
 
 ## Preparing nodes for a Consensus (consensus#prepare)
@@ -2399,6 +2417,7 @@ this proposer in the proposed_try field.
         "proposed_try": 4
     }
 }
+
 ```
 
 </details>
@@ -2455,6 +2474,7 @@ this proposer in the proposed_try field.
         "value"
     ]
 }
+
 ```
 
 ## Promising a value in the Consensus (consensus#promise)
@@ -2486,6 +2506,7 @@ both its accepted_try and accepted value.
         "promised_try": 4
     }
 }
+
 ```
 
 </details>
@@ -2551,6 +2572,7 @@ both its accepted_try and accepted value.
         "value"
     ]
 }
+
 ```
 
 ## Proposing a value during a Consensus (consensus#propose)
@@ -2586,6 +2608,7 @@ the greater received accepted_try and its corresponding accepted_value.
         "LkNLWW1_RXV5Y11XO2xHLypFSlRodzMmJVN0NXlQZCs="
     ]
 }
+
 ```
 
 </details>
@@ -2654,6 +2677,7 @@ the greater received accepted_try and its corresponding accepted_value.
         "acceptor-signatures"
     ]
 }
+
 ```
 
 ## Accepting a value during a Consensus (consensus#accept)
@@ -2682,6 +2706,7 @@ a consensus/accept message containing these values.
         "accepted_value": true
     }
 }
+
 ```
 
 </details>
@@ -2742,6 +2767,7 @@ a consensus/accept message containing these values.
         "value"
     ]
 }
+
 ```
 
 ## Sending the result of a Consensus (consensus#learn)
@@ -2773,6 +2799,7 @@ to all proposers, acceptors, and their clients.
         "OtP_nVgrshTofWYVAcQ-uRz44UD_2tFJUOLLvTbFmzO="
     ]
 }
+
 ```
 
 </details>
@@ -2836,6 +2863,7 @@ to all proposers, acceptors, and their clients.
         "acceptor-signatures"
     ]
 }
+
 ```
 
 ## Sending the failure of a Consensus (consensus#failure)
@@ -2859,6 +2887,7 @@ a consensus/failure message is sent informing the system of the failure.
     "message_id": "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=",
     "created_at": 1634760120
 }
+
 ```
 
 </details>
@@ -2900,4 +2929,5 @@ a consensus/failure message is sent informing the system of the failure.
         "created_at"
     ]
 }
+
 ```
