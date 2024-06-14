@@ -42,8 +42,9 @@ import (
 )
 
 const (
-	heartbeatDelay = time.Second * 30
-	rumorDelay     = time.Second * 5
+	heartbeatDelay  = time.Second * 30
+	rumorDelay      = time.Second * 5
+	rumorStateDelay = time.Second * 10
 )
 
 type Subscribers interface {
@@ -376,7 +377,7 @@ func (h *Hub) sendHeartbeat() error {
 }
 
 func (h *Hub) runRumorState() {
-	ticker := time.NewTicker(rumorDelay)
+	ticker := time.NewTicker(rumorStateDelay)
 	defer ticker.Stop()
 	defer h.wg.Done()
 	defer h.log.Info().Msg("stopping rumor state sender")
