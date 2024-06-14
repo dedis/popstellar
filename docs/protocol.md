@@ -181,10 +181,10 @@ and its arguments (`params`).
             "$ref": "method/catchup.json"
         },
         {
-          "$ref": "method/heartbeat.json"
+            "$ref": "method/heartbeat.json"
         },
         {
-          "$ref": "method/get_messages_by_id.json"
+            "$ref": "method/get_messages_by_id.json"
         },
         {
             "$ref": "method/greet_server.json"
@@ -225,14 +225,15 @@ Notification
 // ../protocol/examples/query/greet_server/greet_server.json
 
 {
-    "jsonrpc": "2.0",
-    "method": "greet_server",
-    "params": {
-        "public_key": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
-        "client_address": "wss://popdemo.dedis.ch:9000/client",
-        "server_address": "wss://popdemo.dedis.ch:9001/server"
-    }
+  "jsonrpc": "2.0",
+  "method": "greet_server",
+  "params": {
+    "public_key": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+    "client_address": "wss://popdemo.dedis.ch:9000/client",
+    "server_address": "wss://popdemo.dedis.ch:9001/server"
+  }
 }
+
 ```
 
 <details>
@@ -1121,9 +1122,9 @@ Please take notice of the error codes that have been defined as part of the spec
         "code": {
             "description": "[Int] error code",
             "type": "integer",
-            "minimum": -5,
+            "minimum": -6,
             "maximum": -1,
-            "$comment": "Note: should be in { -5, -4, ..., -1 }",
+            "$comment": "Note: should be in { -6, -4, ..., -1 }",
             "note": [
                 "0  operation was successful (should never be used)",
                 "-1 invalid action",
