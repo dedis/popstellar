@@ -222,21 +222,21 @@ final case class DbActor(
             chirpScores(reactionObj.chirp_id) += 1
           }
           else {
-            chirpScores(reactionObj.chirp_id) = 0
+            chirpScores(reactionObj.chirp_id) = 1
           }
         else if reactionObj.reaction_codepoint == "👎" then
           if (chirpScores.contains(reactionObj.chirp_id)) {
             chirpScores(reactionObj.chirp_id) -= 1
           }
           else {
-            chirpScores(reactionObj.chirp_id) = 0
+            chirpScores(reactionObj.chirp_id) = -1
           }
         else if reactionObj.reaction_codepoint == "❤️" then
           if (chirpScores.contains(reactionObj.chirp_id)) {
             chirpScores(reactionObj.chirp_id) += 1
           }
           else {
-            chirpScores(reactionObj.chirp_id) = 0
+            chirpScores(reactionObj.chirp_id) = 1
           }
 
     var first = new Hash(Base64Data(""))
