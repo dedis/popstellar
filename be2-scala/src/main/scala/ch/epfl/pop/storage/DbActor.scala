@@ -10,7 +10,7 @@ import ch.epfl.pop.model.network.method.{Rumor, RumorState}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
-import ch.epfl.pop.model.network.method.message.data.socialMedia.AddReaction
+import ch.epfl.pop.model.network.method.message.data.socialMedia.{AddChirp, AddReaction, DeleteChirp}
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.pubsub.graph.AnswerGenerator.timout
@@ -212,31 +212,31 @@ final case class DbActor(
         buildCatchupList(channelData.messages, Nil, reactionsChannel)
     }
 
+    val reactionsListLog = reactionsList.toString
+    log.info(s"Reactions List******************: $reactionsListLog")
+
     val chirpScores = collection.mutable.Map[Hash, Int]()
 
-    for reaction:Message <- reactionsList do
+    for reaction: Message <- reactionsList do
       val reactionObj = AddReaction.buildFromJson(reaction.data.decodeToString())
       if reactionObj.action.toString == "add" then
         if reactionObj.reaction_codepoint == "👍" then
-          if(chirpScores.contains(reactionObj.chirp_id)) {
+          if (chirpScores.contains(reactionObj.chirp_id)) {
             chirpScores(reactionObj.chirp_id) += 1
-          }
-          else {
-            chirpScores(reactionObj.chirp_id) = 0
+          } else {
+            chirpScores(reactionObj.chirp_id) = 1
           }
         else if reactionObj.reaction_codepoint == "👎" then
           if (chirpScores.contains(reactionObj.chirp_id)) {
             chirpScores(reactionObj.chirp_id) -= 1
-          }
-          else {
-            chirpScores(reactionObj.chirp_id) = 0
+          } else {
+            chirpScores(reactionObj.chirp_id) = -1
           }
         else if reactionObj.reaction_codepoint == "❤️" then
           if (chirpScores.contains(reactionObj.chirp_id)) {
             chirpScores(reactionObj.chirp_id) += 1
-          }
-          else {
-            chirpScores(reactionObj.chirp_id) = 0
+          } else {
+            chirpScores(reactionObj.chirp_id) = 1
           }
 
     var first = new Hash(Base64Data(""))
@@ -263,16 +263,101 @@ final case class DbActor(
         third = chirpId
 
     val chirpsChannel = Channel.apply(s"/root/$laoID/social/chirps")
-    val topThreeChirps: List[Hash] = List(first, second, third)
-    val catchupList = readCreateLao(chirpsChannel) match {
-      case Some(msg) =>
-        msg :: buildCatchupList(topThreeChirps, Nil, chirpsChannel)
 
-      case None =>
-        if (chirpsChannel.isMainLaoChannel) {
-          log.error("Critical error encountered: no create_lao message was found in the db")
+    var catchupList: List[Message] = List()
+    if (first.base64Data.toString == "") {
+      var allChirpsList = catchupChannel(chirpsChannel)
+      var count = 0
+      for chirp <- allChirpsList do {
+        try {
+          val chirpObj = DeleteChirp.buildFromJson(chirp.data.decodeToString())
+          if (chirpObj.action.toString == "delete") {
+            allChirpsList = allChirpsList.filter(msg => msg.message_id != chirpObj.chirp_id)
+          }
+        } catch {
+          case ex: spray.json.DeserializationException =>
         }
-        buildCatchupList(topThreeChirps, Nil, chirpsChannel)
+      }
+      for chirp <- allChirpsList do
+        try {
+          val chirpObj = AddChirp.buildFromJson(chirp.data.decodeToString())
+          if (chirpObj.action.toString == "add" && count < 3) {
+            catchupList = catchupList :+ chirp
+            count += 1
+          }
+        } catch {
+          case ex: spray.json.DeserializationException =>
+        }
+
+    } else if (second.base64Data.toString == "") {
+      var allChirpsList = catchupChannel(chirpsChannel)
+      var secondFound = false
+      var done = false
+      for chirp <- allChirpsList do {
+        try {
+          val chirpObj = DeleteChirp.buildFromJson(chirp.data.decodeToString())
+          if (chirpObj.action.toString == "delete") {
+            allChirpsList = allChirpsList.filter(msg => msg.message_id != chirpObj.chirp_id)
+          }
+        } catch {
+          case ex: spray.json.DeserializationException =>
+        }
+      }
+      for chirp <- allChirpsList do
+        try {
+          val chirpObj = AddChirp.buildFromJson(chirp.data.decodeToString())
+          if (chirpObj.action.toString == "add" && !done) {
+            if (chirp.message_id != first) {
+              if (!secondFound) {
+                second = chirp.message_id
+                secondFound = true
+              } else {
+                third = chirp.message_id
+                done = true
+              }
+            }
+          }
+        } catch {
+          case ex: spray.json.DeserializationException =>
+        }
+    } else if (third.base64Data.toString == "") {
+      var allChirpsList = catchupChannel(chirpsChannel)
+      var done = false
+      for chirp <- allChirpsList do {
+        try {
+          val chirpObj = DeleteChirp.buildFromJson(chirp.data.decodeToString())
+          if (chirpObj.action.toString == "delete") {
+            allChirpsList = allChirpsList.filter(msg => msg.message_id != chirpObj.chirp_id)
+          }
+        } catch {
+          case ex: spray.json.DeserializationException =>
+        }
+      }
+      for chirp <- allChirpsList do
+        try {
+          val chirpObj = AddChirp.buildFromJson(chirp.data.decodeToString())
+          if (chirpObj.action.toString == "add" && !done) {
+            if (chirp.message_id != first) {
+              third = chirp.message_id
+              done = true
+            }
+          }
+        } catch {
+          case ex: spray.json.DeserializationException =>
+        }
+    }
+    val topThreeChirps: List[Hash] = List(first, second, third)
+    if (catchupList.isEmpty) {
+      catchupList = readCreateLao(chirpsChannel) match {
+        case Some(msg) =>
+          msg :: buildCatchupList(topThreeChirps, Nil, chirpsChannel)
+
+        case None =>
+          if (chirpsChannel.isMainLaoChannel) {
+            log.error("Critical error encountered: no create_lao message was found in the db")
+          }
+          buildCatchupList(topThreeChirps, Nil, chirpsChannel)
+      }
     }
 
     if (!checkChannelExistence(channel)) {
@@ -280,7 +365,8 @@ final case class DbActor(
     }
 
     this.synchronized {
-      storage.write((storage.CHANNEL_DATA_KEY + channel.toString, ChannelData(ObjectType.chirp, topThreeChirps).toJsonString))
+      for chirp <- catchupList do
+        write(channel, chirp)
     }
 
     readGreetLao(channel) match {
@@ -308,7 +394,7 @@ final case class DbActor(
         val numberOfReactions = storage.read(storage.CHANNEL_DATA_KEY + newReactionsChannel.toString)
         var numberOfNewChirpsReactionsInt = numberOfReactions match {
           case Some(numReactions) => numReactions.toInt
-          case None => 0
+          case None               => 0
         }
         numberOfNewChirpsReactionsInt += 1
         val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfNewChirpsReactionsInt.toString)
@@ -351,7 +437,7 @@ final case class DbActor(
           val numberOfNewChirpsReactions = storage.read(storage.CHANNEL_DATA_KEY + newReactionsChannel.toString)
           numberOfNewChirpsReactionsInt = numberOfNewChirpsReactions match {
             case Some(numReactions) => numReactions.toInt
-            case None => 0
+            case None               => 0
           }
         }
         if (LocalDateTime.now().isAfter(topChirpsTimestamp.plusSeconds(5)) || numberOfNewChirpsReactionsInt >= 5) {
@@ -433,7 +519,7 @@ final case class DbActor(
           var indexOfMessage = -1
           var count = 0
           for msg <- pagedCatchupList do
-            if(msg.message_id.toString == msgID){
+            if (msg.message_id.toString == msgID) {
               indexOfMessage = count
             }
             count = count + 1
