@@ -187,16 +187,6 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
     request
   }
 
-  private def isNextRumor(publicKey: PublicKey, rumorId: Int): Boolean = {
-    rumorMap.get(publicKey) match
-      case None               => rumorId == 0
-      case Some(localRumorId) => localRumorId == rumorId - 1
-  }
-
-  private def incrementMap(publicKey: PublicKey): Unit = {
-    rumorMap = rumorMap.updated(publicKey, rumorMap.getOrElse(publicKey, -1) + 1)
-  }
-
   override def receive: Receive = {
     case GossipManager.HandleRumor(jsonRpcRequest: JsonRpcRequest, clientActorRef: ActorRef) =>
       handleRumor(jsonRpcRequest, clientActorRef)
