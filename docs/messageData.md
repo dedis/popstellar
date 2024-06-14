@@ -1461,8 +1461,7 @@ The election can be opened by publishing an election/open message on the electio
 </summary>
 
 ```json5
-// ../protocol/examples/messageData/election_open.json
-// error: embedme: file '../protocol/examples/messageData/election_open.json' not found
+// ../protocol/examples/messageData/election_open/election_open.json
 {
     "object": "election",
     "action": "open",
