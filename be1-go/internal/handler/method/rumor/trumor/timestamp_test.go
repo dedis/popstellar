@@ -9,7 +9,7 @@ import (
 
 func Test_IsValid(t *testing.T) {
 	ts := make(RumorTimestamp)
-	ts["0"] = 4
+	ts["0"] = 3
 	ts["1"] = 3
 	ts["2"] = 2
 
@@ -31,7 +31,7 @@ func Test_IsValid(t *testing.T) {
 	state["1"] = 3
 	state["2"] = 2
 
-	isValid := state.IsValid(rumor)
+	isValid := state.IsValid(rumor.Params.Timestamp)
 	require.True(t, isValid)
 
 	// invalid rumor because one entry in the timestamp is smaller
@@ -41,7 +41,7 @@ func Test_IsValid(t *testing.T) {
 	state["1"] = 3
 	state["2"] = 1
 
-	isValid = state.IsValid(rumor)
+	isValid = state.IsValid(rumor.Params.Timestamp)
 	require.False(t, isValid)
 
 	// invalid rumor because one entry in the timestamp doesn't exist
@@ -50,7 +50,7 @@ func Test_IsValid(t *testing.T) {
 	state["0"] = 3
 	state["1"] = 3
 
-	isValid = state.IsValid(rumor)
+	isValid = state.IsValid(rumor.Params.Timestamp)
 	require.False(t, isValid)
 
 	// invalid rumor because not + 1
@@ -60,7 +60,7 @@ func Test_IsValid(t *testing.T) {
 	state["1"] = 3
 	state["2"] = 2
 
-	isValid = state.IsValid(rumor)
+	isValid = state.IsValid(rumor.Params.Timestamp)
 	require.False(t, isValid)
 
 	// invalid rumor because no entry inside the timestamp
@@ -68,7 +68,7 @@ func Test_IsValid(t *testing.T) {
 	state["1"] = 3
 	state["2"] = 2
 
-	isValid = state.IsValid(rumor)
+	isValid = state.IsValid(rumor.Params.Timestamp)
 	require.False(t, isValid)
 
 }

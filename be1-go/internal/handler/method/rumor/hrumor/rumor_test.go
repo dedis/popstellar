@@ -29,11 +29,10 @@ func Test_Handle(t *testing.T) {
 	sender := "sender"
 
 	timestamp0 := make(trumor.RumorTimestamp)
-	timestamp0[sender] = 0
 	timestamp1 := make(trumor.RumorTimestamp)
-	timestamp1[sender] = 1
+	timestamp1[sender] = 0
 	timestamp2 := make(trumor.RumorTimestamp)
-	timestamp2[sender] = 2
+	timestamp2[sender] = 1
 
 	rumor0, rumorBuf0 := generator.NewRumorQuery(t, 0, sender, 0, timestamp0, nil)
 	rumor1, rumorBuf1 := generator.NewRumorQuery(t, 1, sender, 1, timestamp1, nil)

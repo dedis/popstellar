@@ -18,3 +18,32 @@ type Rumor struct {
 	ID     int         `json:"id"`
 	Params ParamsRumor `json:"params"`
 }
+
+func (r *Rumor) IsBefore(other Rumor) bool {
+	greater := false
+	smaller := false
+	for senderID, rumorID := range r.Params.Timestamp {
+		otherRumorID, ok := other.Params.Timestamp[senderID]
+		if !ok || otherRumorID < rumorID {
+			smaller = true
+		}
+		if otherRumorID > rumorID {
+			greater = true
+		}
+	}
+
+	for senderID, rumorID := range other.Params.Timestamp {
+		myRumorID, ok := r.Params.Timestamp[senderID]
+		if !ok || myRumorID < rumorID {
+			greater = true
+		}
+		if myRumorID > rumorID {
+			smaller = true
+		}
+	}
+
+	if smaller || !greater {
+		return false
+	}
+	return true
+}

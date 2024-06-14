@@ -5,6 +5,7 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/method/rumor/mrumor"
 	"popstellar/internal/handler/method/rumor/trumor"
+	"sort"
 	"sync"
 	"time"
 )
@@ -36,6 +37,11 @@ func (b *buffer) insert(rumor mrumor.Rumor) error {
 	}
 
 	b.queue = append(b.queue, rumor)
+
+	sort.Slice(b.queue, func(i, j int) bool {
+		return b.queue[i].IsBefore(b.queue[j])
+	})
+
 	b.senderIDs[ID] = struct{}{}
 
 	go b.deleteWithDelay(ID)
@@ -59,7 +65,7 @@ func (b *buffer) getNextRumor(state trumor.RumorTimestamp) (mrumor.Rumor, bool) 
 	defer b.Unlock()
 
 	for _, rumor := range b.queue {
-		if state.IsValid(rumor) {
+		if state.IsValid(rumor.Params.Timestamp) {
 			b.deleteEntry(fmt.Sprintf("%s:%d", rumor.Params.SenderID, rumor.Params.RumorID))
 			return rumor, true
 		}

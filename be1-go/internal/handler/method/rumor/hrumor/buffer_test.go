@@ -45,7 +45,6 @@ func Test_getNextRumor(t *testing.T) {
 	sender := "sender0"
 
 	timestamp00 := make(map[string]int)
-	timestamp00[sender] = 0
 
 	rumor00 := mrumor.Rumor{
 		Params: mrumor.ParamsRumor{
@@ -57,7 +56,7 @@ func Test_getNextRumor(t *testing.T) {
 	}
 
 	timestamp01 := make(map[string]int)
-	timestamp01[sender] = 1
+	timestamp01[sender] = 0
 
 	rumor01 := mrumor.Rumor{
 		Params: mrumor.ParamsRumor{
