@@ -48,6 +48,9 @@ type Sockets interface {
 }
 
 type Repository interface {
+	// HasMessage returns true if the message already exists.
+	HasMessage(messageID string) (bool, error)
+
 	// GetOrganizerPubKey returns the organizer public key of a LAO.
 	GetOrganizerPubKey(laoID string) (kyber.Point, error)
 
@@ -95,6 +98,20 @@ func New(hub Hub, subs Subscribers, sockets Sockets, db Repository,
 
 func (h *Handler) Handle(channelPath string, msg mmessage.Message,
 	socket socket.Socket) error {
+	err := msg.VerifyMessage()
+	if err != nil {
+		return err
+	}
+
+	alreadyExist, err := h.db.HasMessage(msg.MessageID)
+	if err != nil {
+		return err
+	}
+
+	if alreadyExist {
+		return nil
+	}
+
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
@@ -221,9 +238,6 @@ func (h *Handler) handleExpect(msg mmessage.Message, channelPath string) error {
 	if err != nil {
 		return err
 	}
-
-	remoteChannel := fmt.Sprintf(channelPattern, federationExpect.LaoId)
-	_ = h.subs.AddChannel(remoteChannel)
 
 	return h.db.StoreMessageAndData(channelPath, msg)
 }

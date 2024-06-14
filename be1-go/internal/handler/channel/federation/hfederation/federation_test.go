@@ -18,7 +18,6 @@ import (
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/broadcast/mbroadcast"
 	"popstellar/internal/handler/method/publish/mpublish"
-	"popstellar/internal/handler/method/subscribe/msubscribe"
 	"popstellar/internal/handler/query/mquery"
 	mock2 "popstellar/internal/network/socket/mocks"
 	"popstellar/internal/state"
@@ -43,11 +42,14 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	db := mocks.NewRepository(t)
 	subs := state.NewSubscribers(log)
+	sockets := state.NewSockets(log)
 	hub := state.NewHubParams(log)
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := New(hub, subs, db, schema, log)
+	fakeSocket := mock2.FakeSocket{Id: "1"}
+
+	federationHandler := New(hub, subs, sockets, db, schema, log)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, organizer2Sk, _ := generator.GenerateKeyPair(t)
@@ -74,6 +76,7 @@ func Test_handleChannelFederation(t *testing.T) {
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
 
 	db.On("GetOrganizerPubKey", laoPath).Return(organizerPk, nil)
+	db.On("HasMessage", mock.AnythingOfType("string")).Return(false, nil)
 
 	// Test 1 Error when FederationChallengeRequest sender is not the same as
 	// the lao organizer
@@ -314,7 +317,7 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			err = federationHandler.Handle(arg.channelPath, arg.msg)
+			err = federationHandler.Handle(arg.channelPath, arg.msg, &fakeSocket)
 			if arg.isError {
 				require.Error(t, err, arg.contains)
 			} else {
@@ -329,11 +332,12 @@ func Test_handleRequestChallenge(t *testing.T) {
 
 	db := mocks.NewRepository(t)
 	subs := state.NewSubscribers(log)
+	sockets := state.NewSockets(log)
 	hub := state.NewHubParams(log)
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := New(hub, subs, db, schema, log)
+	federationHandler := New(hub, subs, sockets, db, schema, log)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
@@ -382,11 +386,12 @@ func Test_handleFederationExpect(t *testing.T) {
 
 	db := mocks.NewRepository(t)
 	subs := state.NewSubscribers(log)
+	sockets := state.NewSockets(log)
 	hub := state.NewHubParams(log)
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := New(hub, subs, db, schema, log)
+	federationHandler := New(hub, subs, sockets, db, schema, log)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, _, _ := generator.GenerateKeyPair(t)
@@ -440,11 +445,12 @@ func Test_handleFederationInit(t *testing.T) {
 
 	db := mocks.NewRepository(t)
 	subs := state.NewSubscribers(log)
+	sockets := state.NewSockets(log)
 	hub := state.NewHubParams(log)
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := New(hub, subs, db, schema, log)
+	federationHandler := New(hub, subs, sockets, db, schema, log)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, _, _ := generator.GenerateKeyPair(t)
@@ -495,18 +501,6 @@ func Test_handleFederationInit(t *testing.T) {
 	case <-time.After(time.Second):
 		require.Fail(t, "Timed out waiting for expected message")
 	}
-
-	var subMsg msubscribe.Subscribe
-	err = json.Unmarshal(msgBytes, &subMsg)
-	require.NoError(t, err)
-	require.Equal(t, mquery.MethodSubscribe, subMsg.Method)
-	require.Equal(t, msubscribe.SubscribeParams{Channel: channelPath}, subMsg.Params)
-
-	select {
-	case msgBytes = <-msgChan:
-	case <-time.After(time.Second):
-		require.Fail(t, "Timed out waiting for expected message")
-	}
 	var publishMsg mpublish.Publish
 	err = json.Unmarshal(msgBytes, &publishMsg)
 	require.NoError(t, err)
@@ -520,11 +514,12 @@ func Test_handleFederationChallenge(t *testing.T) {
 
 	db := mocks.NewRepository(t)
 	subs := state.NewSubscribers(log)
+	sockets := state.NewSockets(log)
 	hub := state.NewHubParams(log)
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := New(hub, subs, db, schema, log)
+	federationHandler := New(hub, subs, sockets, db, schema, log)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, organizer2Sk, _ := generator.GenerateKeyPair(t)
@@ -590,7 +585,7 @@ func Test_handleFederationChallenge(t *testing.T) {
 	db.On("RemoveChallenge", challenge).Return(nil)
 	db.On("GetServerKeys").Return(serverPk, serverSk, nil)
 
-	err = federationHandler.handleChallenge(challengeMsg2, channelPath)
+	err = federationHandler.handleChallenge(challengeMsg2, channelPath, &fakeSocket2)
 	require.NoError(t, err)
 
 	// The same federation result message should be received by both sockets
@@ -625,11 +620,12 @@ func Test_handleFederationResult(t *testing.T) {
 
 	db := mocks.NewRepository(t)
 	subs := state.NewSubscribers(log)
+	sockets := state.NewSockets(log)
 	hub := state.NewHubParams(log)
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := New(hub, subs, db, schema, log)
+	federationHandler := New(hub, subs, sockets, db, schema, log)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, organizer2Sk, _ := generator.GenerateKeyPair(t)

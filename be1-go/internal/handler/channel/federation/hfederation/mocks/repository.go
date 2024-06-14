@@ -140,6 +140,34 @@ func (_m *Repository) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
 	return r0, r1, r2
 }
 
+// HasMessage provides a mock function with given fields: messageID
+func (_m *Repository) HasMessage(messageID string) (bool, error) {
+	ret := _m.Called(messageID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for HasMessage")
+	}
+
+	var r0 bool
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (bool, error)); ok {
+		return rf(messageID)
+	}
+	if rf, ok := ret.Get(0).(func(string) bool); ok {
+		r0 = rf(messageID)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(messageID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // IsChallengeValid provides a mock function with given fields: senderPk, challenge, channelPath
 func (_m *Repository) IsChallengeValid(senderPk string, challenge mfederation2.FederationChallenge, channelPath string) error {
 	ret := _m.Called(senderPk, challenge, channelPath)
