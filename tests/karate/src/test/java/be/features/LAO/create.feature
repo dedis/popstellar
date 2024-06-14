@@ -8,7 +8,7 @@ Feature: Create a pop LAO
     * call read(serverFeature)
     * call read(mockClientFeature)
     * def organizer = call createMockFrontend
-    * def validLao = organizer.createValidLao()
+    * def validLao = organizer.generateValidLao()
 
   @create1
   Scenario: Create Lao request with empty lao name should fail with an error response
@@ -110,7 +110,7 @@ Feature: Create a pop LAO
 
   @create6
   Scenario: Create Lao request with public key different from the sender public key should fail
-    Given def notOrganizer = call createMockClient
+    Given def notOrganizer = call createMockFrontend
     And def laoCreateRequest =
       """
         {

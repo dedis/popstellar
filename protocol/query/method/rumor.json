@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/rumor.json",
+    "description": "Rumor that should be spread across the network",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "rumor"
+        },
+
+        "params": {
+            "$ref": "object/rumor.json"
+        },
+
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        },
+
+        "id": {
+            "type": "integer"
+        }
+    },
+
+    "required": ["method", "params", "id", "jsonrpc"]
+}

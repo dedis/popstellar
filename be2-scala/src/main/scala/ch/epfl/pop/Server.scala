@@ -2,17 +2,17 @@ package ch.epfl.pop
 
 import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.Behaviors
-import akka.actor.typed.scaladsl.adapter._
+import akka.actor.typed.scaladsl.adapter.*
 import akka.actor.{ActorRef, Props}
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server.Directives.*
 import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import akka.pattern.{AskableActorRef, ask}
 import akka.util.Timeout
 import ch.epfl.pop.authentication.{GetRequestHandler, PopchaWebSocketResponseHandler}
 import ch.epfl.pop.config.RuntimeEnvironment
-import ch.epfl.pop.config.RuntimeEnvironment._
-import ch.epfl.pop.decentralized.{ConnectionMediator, HeartbeatGenerator, Monitor}
+import ch.epfl.pop.config.RuntimeEnvironment.*
+import ch.epfl.pop.decentralized.{ConnectionMediator, GossipManager, Monitor}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.{DbActor, SecurityModuleActor}
 import org.iq80.leveldb.Options
@@ -49,9 +49,9 @@ object Server {
       val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(RuntimeEnvironment.securityPath)))
 
       // Create necessary actors for server-server communications
-      val heartbeatGenRef: ActorRef = system.actorOf(HeartbeatGenerator.props(dbActorRef))
-      val monitorRef: ActorRef = system.actorOf(Monitor.props(heartbeatGenRef))
-      val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
+      val monitorRef: ActorRef = system.actorOf(Monitor.props(dbActorRef))
+      val gossipManagerRef: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef))
+      val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipManagerRef, messageRegistry))
 
       // Setup routes
       def publishSubscribeRoute: RequestContext => Future[RouteResult] = {
@@ -64,6 +64,7 @@ object Server {
               messageRegistry,
               monitorRef,
               connectionMediatorRef,
+              gossipManagerRef,
               isServer = false
             )(system)
           )
@@ -76,6 +77,7 @@ object Server {
               messageRegistry,
               monitorRef,
               connectionMediatorRef,
+              gossipManagerRef,
               isServer = true
             )(system)
           )

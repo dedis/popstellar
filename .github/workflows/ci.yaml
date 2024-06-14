@@ -10,6 +10,7 @@ on:
       - opened
       - synchronize
       - reopened
+  merge_group:
 
 jobs:
   fe1-web:
@@ -167,10 +168,6 @@ jobs:
         if: ${{ matrix.platform == 'windows-latest' }}
         run: |
           make test
-
-      - name: Run go vet
-        run: |
-          make vet
 
       - name: Build
         if: ${{ always() }} # execute even if previous steps failed

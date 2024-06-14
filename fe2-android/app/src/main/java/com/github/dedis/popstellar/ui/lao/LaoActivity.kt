@@ -28,6 +28,8 @@ import com.github.dedis.popstellar.ui.lao.event.election.ElectionViewModel
 import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListFragment
 import com.github.dedis.popstellar.ui.lao.event.meeting.MeetingViewModel
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallViewModel
+import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsFragment
+import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsViewModel
 import com.github.dedis.popstellar.ui.lao.popcha.PoPCHAHomeFragment
 import com.github.dedis.popstellar.ui.lao.popcha.PoPCHAViewModel
 import com.github.dedis.popstellar.ui.lao.socialmedia.SocialMediaHomeFragment
@@ -258,6 +260,10 @@ class LaoActivity : AppCompatActivity() {
         openSocialMediaTab()
         true
       }
+      MainMenuTab.LINKED_ORGANIZATIONS -> {
+        openLinkedOrganizationsTab()
+        true
+      }
       MainMenuTab.DISCONNECT -> {
         startActivity(newIntent(this))
         true
@@ -308,6 +314,12 @@ class LaoActivity : AppCompatActivity() {
   private fun openSocialMediaTab() {
     setCurrentFragment(supportFragmentManager, R.id.fragment_social_media_home) {
       SocialMediaHomeFragment.newInstance()
+    }
+  }
+
+  private fun openLinkedOrganizationsTab() {
+    setCurrentFragment(supportFragmentManager, R.id.fragment_linked_organizations_home) {
+      LinkedOrganizationsFragment.newInstance()
     }
   }
 
@@ -421,6 +433,19 @@ class LaoActivity : AppCompatActivity() {
       val popCHAViewModel = ViewModelProvider(activity)[PoPCHAViewModel::class.java]
       popCHAViewModel.laoId = laoId
       return popCHAViewModel
+    }
+
+    @JvmStatic
+    fun obtainLinkedOrganizationsViewModel(
+        activity: FragmentActivity,
+        laoId: String?
+    ): LinkedOrganizationsViewModel {
+      val linkedOrganizationsViewModel =
+          ViewModelProvider(activity)[LinkedOrganizationsViewModel::class.java]
+      if (laoId != null) {
+        linkedOrganizationsViewModel.setLaoId(laoId)
+      }
+      return linkedOrganizationsViewModel
     }
 
     /**

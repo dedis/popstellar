@@ -71,16 +71,18 @@ const wrapWithOfflineHeader = (Component: React.ComponentType<unknown>) => () =>
   );
 };
 
-const DisconnectIcon = makeIcon('logout');
+const DisconnectIcon = makeIcon('logout', 'menu_drawer_disconnect_button');
 
 const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentComponentProps) => {
   const lao = LaoHooks.useCurrentLao();
 
   return (
-    <View style={styles.drawerWapper}>
+    <View style={styles.drawerWapper} testID="drawer_menu_container">
       <DrawerContentScrollView style={styles.drawerContentWrapper}>
         <View style={styles.drawerHeader}>
-          <Text style={[Typography.base, Typography.important]}>{lao.name}</Text>
+          <Text style={[Typography.base, Typography.important]} testID="lao_name_text">
+            {lao.name}
+          </Text>
         </View>
         <DrawerItemList navigation={navigation} descriptors={descriptors} state={state} />
         <DrawerItem
@@ -117,7 +119,7 @@ const LaoNavigation: React.FC<unknown> = () => {
         ...passedScreens,
         {
           id: STRINGS.navigation_lao_invite,
-          Icon: makeIcon('invite'),
+          Icon: makeIcon('invite', 'drawer_menu_invite'),
           Component: InviteScreen,
           headerShown: true,
           headerRight: ButtonPadding,
@@ -125,7 +127,7 @@ const LaoNavigation: React.FC<unknown> = () => {
         } as LaoFeature.LaoScreen,
         {
           id: STRINGS.navigation_lao_events,
-          Icon: makeIcon('event'),
+          Icon: makeIcon('event', 'drawer_menu_events'),
           Component: EventsNavigation,
           headerShown: false,
           order: 0,

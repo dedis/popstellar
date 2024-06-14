@@ -11,21 +11,20 @@ To create test cases, we handcraft messages with either valid or invalid message
 The mock components then send these messages to the component being tested.
 We then check that the responses the mock components receive are as expected.
 
-## Architecture
-### Features and Scenarios
+## Features and Scenarios
 Karate test cases are called scenarios and they are grouped within different feature files.
-Each feature file tests a different message type (i.e. electionOpen, createRollCall etc.). 
+Each feature file tests a different message type (i.e. electionOpen, createRollCall etc.).
 
 Scenarios are written in the Gerkhin syntax using the following keywords:
 
-- **Given**: Prepare the JSON payload to be sent to the component being tested. 
+- **Given**: Prepare the JSON payload to be sent to the component being tested.
 - **When**: Defines the action that is to be performed with the payload.
-For instance, `publish` creates a message of type publish that contains some high-level message data, or `send` to send raw JSON data. 
+For instance, `publish` creates a message of type publish that contains some high-level message data, or `send` to send raw JSON data.
 - **Then**: Asserts that the action taken in the 'When' step has the expected outcome.
 - **And**: Connector that can be used after any of the other keywords.
 
-### Background section
-Code defined in the background section of a feature file runs before each scenario. This is especially useful for: 
+## Background section
+Code defined in the background section of a feature file runs before each scenario. This is especially useful for:
 
 - **Sharing scopes with other features**: The call to `read(classpath: "path/to/feature")` is used to make the current feature share the same scope as the feature that is called.
 This means they share definitions (def variables) and configurations.
@@ -35,20 +34,33 @@ For instance, reading `mockClient.feature` exposes functions like `createMockFro
 - **Setting up previous steps necessary for a test**: For instance, before roll call messages can be tested, a LAO needs to be created first.
 `simpleScenarios.feature` contains many such useful setup steps.
 
+## Backend tests architecture
 ### Data model
-To generate valid message data for JSON payloads dynamically, a simplified version of the model is implemented in Java code. 
+To generate valid message data for JSON payloads dynamically, a simplified version of the model is implemented in Java code.
 Mock components can create valid objects (for instance LAO, RollCall, Elections etc.), that can be used to handcraft messages.
-These objects also provide functions to override their own data to some invalid values, to craft invalid messages. 
+These objects also provide functions to override their own data to some invalid values, to craft invalid messages.
 
 Some care needs to be taken if more of these functions to override valid data are implemented in the future.
 For example, when setting an invalid LAO name to test if the server rejects this, the LAO id also needs to be recomputed.
 The LAO id depends on the LAO name, and if the id is not recomputed the test might fail due to invalid LAO id, and not because the name was invalid.
 As of February 2024, there is no way to distinguish this as only the error code is asserted and not the error message.
-This is a possible improvement that could be done in the future. 
+This is a possible improvement that could be done in the future.
 
 <div align="center">
   <img src="images/architecture_diagram.png" alt="Architecture"/>
 </div>
+
+### Launch a single server
+The feature `tests/karate/src/test/java/be/features/utils/server.feature` is a utility that can be used to test a single server for the current `env` (i.e go or scala). When the feature is called, it starts the server. Then, when the scenario is done it automatically stops the server and cleans up the database.
+
+### Launch multiple servers
+If you need to launch multiple servers, you can use the classes `GoServer` and `ScalaServer`.
+The classes offer a few methods:
+- `start`: Launches the server. If the database path specified in the constructor is `null`, it will automatically create a temporary database.
+- `stop`: Stops the server
+- `pairWith`: Pairs two servers. Must be called before starting the server.
+- `unpairWith`: Unpairs two servers. Must be called before starting the server.
+- `deleteDatabaseDir`: Removes the database directory.
 
 ### Example: Create a valid roll call scenario
 - The first `read` of the background section uses the full path description of the `constants.feature`.
@@ -59,7 +71,7 @@ This class provides the functions to create model data for LAOs, roll calls, ele
 For instance, here the created organizer and LAO are passed to the `createLaoScenario`.
 - The name tag `@createRollCall1` is used to call individual scenarios on the command line, see [Running the Tests](#running-the-tests)
 
-```
+```gherkin
 Feature: Create a Roll Call
 
   Background:
@@ -68,8 +80,8 @@ Feature: Create a Roll Call
     * call read(serverFeature)
     * call read(mockClientFeature)
     * def organizer = call createMockFrontend
-    * def lao = organizer.createValidLao()
-    * def validRollCall = organizer.createValidRollCall(lao)
+    * def lao = organizer.generateValidLao()
+    * def validRollCall = organizer.generateValidRollCall(lao)
     * call read(createLaoScenario) { organizer: '#(organizer)', lao: '#(lao)' }
 
   @createRollCall1
@@ -94,6 +106,37 @@ Feature: Create a Roll Call
     And match organizer.receiveNoMoreResponses() == true
 ```
 
+## Frontend tests architecture
+### Files
+* `utils`
+  * `constants.feature`: Contains all the necessary constants. Usually called at the beginning of any feature.
+  * `android.feature` and `web.feature`: Contain platform specific scenarios that will be used by the actual tests. Both files should implement the same scenarios.
+  * `platform.feature`: A simple wrapper around `android.feature` and `web.feature` that allows you to call the right scenario depending on the current env you are testing for. (i.e. if you set `karate.env=web`, it will call scenarios from `web.feature`)
+  * `mock_client.feature`: Allows you to create a mock client via `createMockClient`. Automatically stops all clients after each scenario.
+* `features`: The actual tests
+
+### Example: Lao join
+```gherkin
+Feature: LAO
+  Background:
+    # Get the needed utils
+    * call read('classpath:fe/utils/constants.feature')
+    * call read(MOCK_CLIENT_FEATURE)
+
+  @name=lao_join
+  Scenario: Manually connect to an existing LAO
+    # Use a mock client to create a random lao
+    Given def organizer = createMockClient()
+    And def lao = organizer.createLao()
+    # Call platform specific code with some parameters
+    # i.e. if karate.env=web, equals to call('classpath:fe/utils/web.feature@name=lao_join') { params: { lao: "#(lao)" } }
+    When call read(PLATFORM_FEATURE) { name: "#(JOIN_LAO)", params: { lao: "#(lao)" } }
+    # Actual test: The user should not have access to the button
+    Then assert !exists(event_create_button)
+    And screenshot()
+```
+
+
 ## First Setup
 
 ### All
@@ -105,31 +148,56 @@ The Karate plugin for IntelliJ is also recommended.
 To test a backend, you don't need more setup that what is needed to build that backend.
 Use the resources provided by those projects.
 
-### Android Front-end
+### Frontend
 
-To test the Android Frontend, you need to have an Android emulator installed.
-The easiest way to achieve it is to install it through [Android Studio](https://developer.android.com/studio) :
-Go to `Tools -> AVD Manager` and create an emulator.
+#### Appium
+Appium provides the API that will allow us to test both frontends on multiple platforms. You can install the CLI version with the command `npm install -g appium` or install the [Desktop App](https://github.com/appium/appium-desktop/releases/) instead.
 
-Then you need to install Appium.
-You can install either the command line app with `npm install -g appium`, or the [Desktop App](https://github.com/appium/appium-desktop/releases/).
+#### Android
+You need to add the Android driver to Appium with the following command.
+```shell
+appium driver install uiautomator2
+```
+
+Then, you need to create an Android emulator in Android studio if you don't have one yet. The easiest way to achieve it is to install it through [Android Studio](https://developer.android.com/studio): Go to `Tools -> Device Manager` and create a virtual device.
 
 Finally, you need to set the environment variable `ANDROID_HOME` (The previous name was`ANDROID_SDK_ROOT` and it still works) to your Android SDK installation.
 Find it by opening Android Studio and going to `Tools -> SDK Manager`.
 It stands next to `Android SDK Location`.
 
-If your Computer runs on Windows : we strongly advise that you do not use a VM or WSL.
-You will encounter problems you would not have otherwise, some of which might even be technically impossible to solve.
+If your Computer runs on Windows: we strongly advise that you do not use a VM or WSL. You will encounter problems you would not have otherwise, some of which might even be technically impossible to solve.
 
-### Web Front-end
+### Google Chrome & Microsoft Edge
+Make sure you have Google Chrome and/or Microsoft Edge installed.
 
-Make sure you have [Google Chrome](https://www.google.com/intl/en/chrome/) and [npm](https://nodejs.org/en/download/) installed.
+Then, install the Appium driver.
+```
+appium driver install chromium
+```
+### Firefox
+Make sure you have Firefox installed. Then download the latest release of [geckodriver](https://github.com/mozilla/geckodriver/releases) and add it to your path.
+
+Then, install the Appium driver.
+```
+appium driver install gecko
+```
+
+### Safari
+Install the Appium driver.
+```
+appium driver install safari
+```
+
+Then, allow remote automation of Safari.
+```
+safaridriver --enable
+```
 
 ## Running the Tests
 
 ### Backend
 
-Build the backend you want to test. 
+Build the backend you want to test.
 Follow the steps described in the corresponding subproject.
 Keep the executables in their default build location, Karate will find them there.
 
@@ -148,53 +216,49 @@ mvn test -Dkarate.options="--tags @scenarioTagName"
 
 With the Karate plugin for IntelliJ, the full tests can also be run directly from inside IDE in the `BackEndTest` class.
 
-
-### Android Front-end
-
-Build the application by running `./gradlew assembleDebug` in the corresponding directory.
-
-Start the Android Emulator.
-Start Appium : if you use the GUI, delete the text in Host and Port and click on the start server button.
-If you use the terminal, run `appium`.
-
-With Android Hedgehog the emulator can either run in a tool window or a standalone window.
-(To have it in a standalone window, go to `File -> Settings -> Tools -> Emulator` and unselect `Launch in a tool window`).
-- Standalone window : \
-The emulator window name should match : `Android Emulator - avd:id` \
-Ex: `Android Emulator - Pixel_4_API_30:5554`
-- Tool window : open the `Extended Controls` (the 3 points above the emulator)
-  - The Extended Controls window name is the `avd` but with ' ' instead of '_' \
-    Ex: `Pixel 4 API 30` for an `avd` of `Pixel_4_API_30`
-  - Go to `Help`, under `Emulator ADB serial number` it should match `emulator-id`\
-    Ex: `emulator-5554`
-
-<img src="images/emulator_extended_controls.png" alt="Emulator" width="50%">
-<em>Emulator standalone window with Extended Controls.</em><br><br>
-
-
-Make sure the [karate-config](src/test/java/karate-config.js) is correct.
-More precisely :
-
-- `deviceName` is set to `emulator-<id>`, here it would be `emulator-5554`.
-- `avd` is set to the avd name indicated on the emulator window, here it would be `Pixel_4_API_30`.
-
-Run the test with :
-`mvn test -DargLine="-Dkarate.env=android"`
-
 ### Web Front-end
-
 Build the app with `npm run build-web` in the corresponding directory.
 
-If your Chrome installation is not one of these :
+Launch the Appium server (with `appium`).
 
-- mac: `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`
-- win: `C:/Program Files (x86)/Google/Chrome/Application/chrome.exe` \
-  (You should check, it is also common for Chrome to installed in `/Programm Files/` rather than `/Program Files (x86)/`)
+Finally run the tests:
+* All tests: `mvn test -Dkarate.env=web -Dtest=FrontEndTest#fullTest`
+* One feature: `mvn test -Dkarate.env=web -Dtest=FrontEndTest#fullTest -Dkarate.options="classpath:fe/features/<file_name>.feature"`
+* One scenario: `mvn test -Dkarate.env=web -Dtest=FrontEndTest#fullTest -Dkarate.options="classpath:fe/features/<file_name>.feature --tags=@name=<scenario_name>"`
 
-You need to set the executable manually in the driver definition in the [Web page object](src/test/java/fe/utils/web.feature) (line 6).
+The following options are available (option names must be prefixed by `-D`).
+| Name         | Description                                    | Default                                   |
+|--------------|------------------------------------------------|-------------------------------------------|
+| browser      | One of 'chrome', 'safari', 'edge' or 'firefox' | 'chrome'                                  |
+| url          | URL of the web app                             | 'file:../../fe1-web/web-build/index.html' |
+| screenWidth  | Width of the browser                           | 1920                                      |
+| screenHeight | Height of the browser                          | 1080                                      |
+| serverURL    | Client URL of the backend server from the test host perspective               | 'ws://localhost:9000/client' |
+| platformServerURL    | Client URL of the backend server from the tested platform perspective              | 'ws://localhost:9000/client' |
 
-Change the line from `* configure driver = { type: 'chrome' }`to `* configure driver = { type: 'chrome', executable: 'PATH' }`\
-where PATH is the path to your Chrome installation.\
+### Android Front-end
+Build the application by running `./gradlew assembleDebug` in the corresponding directory.
 
-Run the test with :
-`mvn test -DargLine="-Dkarate.env=web"`
+Launch the Appium server (with `appium`).
+
+Finally run the tests:
+* All tests: `mvn test -Dkarate.env=android -Dtest=FrontEndTest#fullTest`
+* One feature: `mvn test -Dkarate.env=android -Dtest=FrontEndTest#fullTest -Dkarate.options="classpath:fe/features/<file_name>.feature"`
+* One scenario: `mvn test -Dkarate.env=android -Dtest=FrontEndTest#fullTest -Dkarate.options="classpath:fe/features/<file_name>.feature --tags=@name=<scenario_name>"`
+
+In case you have multiple emulators running, you may specify one by avd id. To find the avd id of some emulator, go to the Device Manager (`Tools -> Device Manager`) and follow the steps in the image below.
+
+![Find avd id Android Studio](./images/android_studio_find_avd_id.png)
+
+Once you have the avd id of your emulator, you can use the command below to run the tests on this specific emulator.
+```shell
+mvn test -Dkarate.env=android -Davd=<avd_id> -Dtest=FrontEndTest#fullTest
+#e.g. mvn test -Dkarate.env=android -Davd=Galaxy_Note_9_API_29 -Dtest=FrontEndTest#fullTest
+```
+
+The following options are available (option names must be prefixed by `-D`).
+| Name         | Description                                    | Default                                   |
+|--------------|------------------------------------------------|-------------------------------------------|
+| avd          | Name of the android emulator                   | Choosen automatically by appium           |
+| serverURL    | Client URL of the backend server from the test host perspective               | 'ws://localhost:9000/client' |
+| platformServerURL    | Client URL of the backend server from the tested platform perspective              | 'ws://10.0.2.2:9000/client' |

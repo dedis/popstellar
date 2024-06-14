@@ -25,3 +25,8 @@ enum ActionType(val action: String):
   case post_transaction extends ActionType("post_transaction")
   // popcha
   case authenticate extends ActionType("authenticate")
+  // federation actions
+  case init extends ActionType("init")
+  case expect extends ActionType("expect")
+  case challenge_request extends ActionType("challenge_request")
+  case challenge extends ActionType("challenge")

@@ -8,8 +8,8 @@ Feature: Roll Call Open
     * call read(serverFeature)
     * call read(mockClientFeature)
     * def organizer = call createMockFrontend
-    * def lao = organizer.createValidLao()
-    * def rollCall = organizer.createValidRollCall(lao)
+    * def lao = organizer.generateValidLao()
+    * def rollCall = organizer.generateValidRollCall(lao)
 
     # This call executes all the steps to create a valid roll call on the server before every scenario
     # (lao creation, subscribe, catchup, roll call creation)
@@ -38,7 +38,7 @@ Feature: Roll Call Open
 
   @openRollCall2
   Scenario: Opening a Roll Call with non-organizer as sender should fail
-    Given def notOrganizer = call createMockClient
+    Given def notOrganizer = call createMockFrontend
     And def validOpenRollCall =
       """
         {
@@ -56,7 +56,7 @@ Feature: Roll Call Open
 
   @openRollCall3
   Scenario: Opening a Roll Call that was not created on the server returns an error
-    Given def newRollCall = organizer.createValidRollCall(lao)
+    Given def newRollCall = organizer.generateValidRollCall(lao)
     And def openNewRollCall = newRollCall.open()
     And def validOpenRollCall =
       """

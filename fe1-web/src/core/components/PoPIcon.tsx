@@ -63,6 +63,10 @@ const iconNameMap = {
      * combination of name and family
      */
   } as IonIcon,
+  business: {
+    iconName: 'business',
+    IconFamily: Ionicons,
+  } as IonIcon,
   cameraReverse: {
     iconName: 'ios-camera-reverse',
     IconFamily: Ionicons,
@@ -121,6 +125,10 @@ const iconNameMap = {
   } as IonIcon,
   invite: {
     iconName: 'adduser',
+    IconFamily: AntDesign,
+  } as AntDesignIcon,
+  link: {
+    iconName: 'link',
     IconFamily: AntDesign,
   } as AntDesignIcon,
   list: {
@@ -199,6 +207,10 @@ const iconNameMap = {
     iconName: 'vpn-key',
     IconFamily: MaterialIcons,
   } as MaterialIcon,
+  addLinkedOrg: {
+    iconName: 'ios-add-circle',
+    IconFamily: Ionicons,
+  } as IonIcon,
 };
 
 export type PopIconName = keyof typeof iconNameMap;
@@ -246,12 +258,13 @@ type IconPropTypes = ExtendType<
     name: PopIconName;
     color: string;
     size: number;
+    testID?: string;
   }
 >;
 
 export default PoPIcon;
 
-export const makeIcon = (name: PopIconName) => {
+export const makeIcon = (name: PopIconName, defaultTestID?: string) => {
   // we need to cast it here to a more generic type due to limitations
   // in the static type checking
   const Entry = iconNameMap[name] as {
@@ -263,8 +276,8 @@ export const makeIcon = (name: PopIconName) => {
     throw new Error(`Unkown icon name ${name}`);
   }
 
-  return ({ color, size, focused }: Omit<IconPropTypes, 'name'>) => (
-    <View style={focused ? styles.focused : undefined}>
+  return ({ color, size, focused, testID }: Omit<IconPropTypes, 'name'>) => (
+    <View style={focused ? styles.focused : undefined} testID={testID || defaultTestID}>
       <Entry.IconFamily name={Entry.iconName} size={size} color={color} />
     </View>
   );

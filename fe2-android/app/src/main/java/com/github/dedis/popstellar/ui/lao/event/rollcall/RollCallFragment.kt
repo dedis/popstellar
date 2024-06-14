@@ -1,15 +1,16 @@
 package com.github.dedis.popstellar.ui.lao.event.rollcall
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.lifecycle.MutableLiveData
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.RollCallFragmentBinding
 import com.github.dedis.popstellar.model.objects.RollCall
@@ -51,6 +52,8 @@ class RollCallFragment : AbstractEventFragment {
 
   private val managementTextMap = buildManagementTextMap()
   private val managementIconMap = buildManagementIconMap()
+
+  private val deAnonymizationWarned = MutableLiveData(false)
 
   constructor()
 
@@ -254,6 +257,7 @@ class RollCallFragment : AbstractEventFragment {
               .getAttendees()
               .stream()
               .map(PublicKey::encoded)
+              .sorted(compareBy(String::toString))
               .collect(Collectors.toList())
 
       binding.rollCallAttendeesText.text =
@@ -261,8 +265,8 @@ class RollCallFragment : AbstractEventFragment {
               resources.getString(R.string.roll_call_scanned),
               rollCallViewModel.getAttendees().size)
     } else if (rollCall.isClosed) {
-      attendeesList =
-          rollCall.attendees.stream().map(PublicKey::encoded).collect(Collectors.toList())
+      val orderedAttendees: MutableSet<PublicKey> = LinkedHashSet(rollCall.attendees)
+      attendeesList = orderedAttendees.stream().map(PublicKey::encoded).collect(Collectors.toList())
 
       // Show the list of attendees if the roll call has ended
       binding.rollCallAttendeesText.text =
@@ -271,7 +275,8 @@ class RollCallFragment : AbstractEventFragment {
 
     if (attendeesList != null) {
       binding.listViewAttendees.adapter =
-          ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, attendeesList)
+          RollCallArrayAdapter(
+              requireContext(), android.R.layout.simple_list_item_1, attendeesList, popToken, this)
     }
   }
 
@@ -293,7 +298,14 @@ class RollCallFragment : AbstractEventFragment {
     Timber.tag(TAG).d("key displayed is %s", pk)
 
     // Set the QR visible only if the rollcall is opened and the user isn't the organizer
-    binding.rollCallPkQrCode.visibility = if (rollCall.isOpen) View.VISIBLE else View.INVISIBLE
+    if (rollCall.isOpen) {
+      binding.rollCallPopTokenText.text = pk
+      binding.rollCallPkQrCode.visibility = View.VISIBLE
+      binding.rollCallPopTokenText.visibility = View.VISIBLE
+    } else {
+      binding.rollCallPkQrCode.visibility = View.INVISIBLE
+      binding.rollCallPopTokenText.visibility = View.INVISIBLE
+    }
 
     // Don't lose time generating the QR code if it's not visible
     if (laoViewModel.isOrganizer || rollCall.isClosed) {
@@ -324,6 +336,17 @@ class RollCallFragment : AbstractEventFragment {
     return map
   }
 
+  fun isAttendeeListSorted(attendeesList: List<String>, context: Context): Boolean {
+    if (attendeesList.isNotEmpty() &&
+        attendeesList != attendeesList.sorted() &&
+        deAnonymizationWarned.value == false) {
+      deAnonymizationWarned.value = true
+      logAndShow(context, TAG, R.string.roll_call_attendees_list_not_sorted)
+      return false
+    }
+    return true
+  }
+
   @VisibleForTesting(otherwise = VisibleForTesting.NONE)
   constructor(rollCall: RollCall) {
     this.rollCall = rollCall
@@ -338,7 +361,6 @@ class RollCallFragment : AbstractEventFragment {
       val bundle = Bundle(1)
       bundle.putString(ROLL_CALL_ID, persistentId)
       fragment.arguments = bundle
-
       return fragment
     }
 

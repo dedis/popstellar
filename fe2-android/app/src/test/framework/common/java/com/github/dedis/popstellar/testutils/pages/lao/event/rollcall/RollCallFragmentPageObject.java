@@ -17,7 +17,6 @@ public class RollCallFragmentPageObject {
   public static ViewInteraction rollCallTitle() {
     return onView(withId(R.id.roll_call_fragment_title));
   }
-
   public static ViewInteraction rollCallStatusText() {
     return onView(withId(R.id.roll_call_status));
   }
@@ -48,6 +47,10 @@ public class RollCallFragmentPageObject {
 
   public static ViewInteraction rollCallQRCode() {
     return onView(withId(R.id.roll_call_pk_qr_code));
+  }
+
+  public static ViewInteraction rollCallPopTokenText() {
+    return onView(withId(R.id.roll_call_pop_token_text));
   }
 
   public static ViewInteraction rollCallLocationCard() {

@@ -41,6 +41,15 @@
         },
         {
             "$ref": "method/greet_server.json"
+        },
+        {
+            "$ref": "method/rumor.json"
+        },
+        {
+            "$ref": "method/rumor_state.json"
+        },
+        {
+            "$ref": "method/paged_catchup.json"
         }
     ],
 

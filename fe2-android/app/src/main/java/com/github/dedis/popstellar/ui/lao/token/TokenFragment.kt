@@ -1,14 +1,10 @@
 package com.github.dedis.popstellar.ui.lao.token
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.TokenFragmentBinding
@@ -22,6 +18,7 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel
 import com.github.dedis.popstellar.utility.ActivityUtils.buildBackButtonCallback
 import com.github.dedis.popstellar.utility.ActivityUtils.getQRCodeColor
 import com.github.dedis.popstellar.utility.Constants
+import com.github.dedis.popstellar.utility.UIUtils
 import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException
 import com.github.dedis.popstellar.utility.error.keys.KeyException
@@ -42,6 +39,8 @@ class TokenFragment : Fragment() {
 
   private lateinit var laoViewModel: LaoViewModel
 
+  private lateinit var clipboardManager: UIUtils.ClipboardUtil
+
   override fun onResume() {
     super.onResume()
     laoViewModel.setPageTitle(R.string.token)
@@ -55,6 +54,7 @@ class TokenFragment : Fragment() {
   ): View? {
     val binding = TokenFragmentBinding.inflate(inflater, container, false)
     laoViewModel = obtainViewModel(requireActivity())
+    clipboardManager = UIUtils.ClipboardUtil(requireActivity())
 
     try {
       val laoId = laoViewModel.laoId!!
@@ -74,10 +74,7 @@ class TokenFragment : Fragment() {
 
       binding.tokenQrCode.setImageBitmap(bitmap)
       binding.tokenTextView.text = poPToken.publicKey.encoded
-      binding.tokenCopyButton.setOnClickListener {
-        copyTextToClipboard(poPToken.publicKey.encoded)
-        Toast.makeText(requireContext(), R.string.successful_copy, Toast.LENGTH_SHORT).show()
-      }
+      clipboardManager.setupCopyButton(binding.tokenCopyButton, binding.tokenTextView, "Token")
     } catch (e: Exception) {
       when (e) {
         is UnknownRollCallException,
@@ -95,13 +92,6 @@ class TokenFragment : Fragment() {
     handleBackNav()
 
     return binding.root
-  }
-
-  private fun copyTextToClipboard(token: String) {
-    val clipboard =
-        requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    val clip = ClipData.newPlainText(token, token)
-    clipboard.setPrimaryClip(clip)
   }
 
   private fun handleBackNav() {

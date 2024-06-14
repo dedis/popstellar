@@ -69,6 +69,15 @@ constructor(
                   }))
     }
 
+    laoRepo.addDisposable(
+        context.messageSender
+            .subscribe(channel.subChannel("federation"))
+            .subscribe(
+                { Timber.tag(TAG).d("subscription to the federation channel was a success") },
+                { error: Throwable ->
+                  Timber.tag(TAG).d(error, "error while trying  to subscribe to federation channel")
+                }))
+
     /* Creation channel coin*/
     laoRepo.addDisposable(
         context.messageSender

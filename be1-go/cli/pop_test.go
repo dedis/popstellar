@@ -11,7 +11,6 @@ import (
 const waitUp = time.Second * 2
 
 func TestConnectMultipleServers(t *testing.T) {
-
 	ctx, cancel := context.WithCancel(context.Background())
 	wait := sync.WaitGroup{}
 
@@ -63,7 +62,6 @@ func TestConnectMultipleServers(t *testing.T) {
 }
 
 func TestConnectMultipleServersWithoutPK(t *testing.T) {
-
 	ctx, cancel := context.WithCancel(context.Background())
 	wait := sync.WaitGroup{}
 

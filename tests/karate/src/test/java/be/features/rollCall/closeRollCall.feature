@@ -8,8 +8,8 @@ Feature: Close a Roll Call
     * call read(serverFeature)
     * call read(mockClientFeature)
     * def organizer = call createMockFrontend
-    * def lao = organizer.createValidLao()
-    * def rollCall = organizer.createValidRollCall(lao)
+    * def lao = organizer.generateValidLao()
+    * def rollCall = organizer.generateValidRollCall(lao)
 
     # This call executes all the steps to open a valid roll call on the server before every scenario
     # (lao creation, subscribe, catchup, roll call creation, roll call open)
@@ -39,7 +39,7 @@ Feature: Close a Roll Call
 
   @closeRollCall2
   Scenario: Non-organizer closing a roll call should fail
-    Given def notOrganizer = call createMockClient
+    Given def notOrganizer = call createMockFrontend
     And def validCloseRollCall =
       """
         {
@@ -78,7 +78,7 @@ Feature: Close a Roll Call
 
   @closeRollCall4
   Scenario: Closing a Roll Call that was not opened on the server returns an error
-    Given def newRollCall = organizer.createValidRollCall(lao)
+    Given def newRollCall = organizer.generateValidRollCall(lao)
     # This call creates the new roll call on the server without opening it
     And call read(createRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(newRollCall)' }
     And def closeNewRollCall = newRollCall.close()

@@ -37,8 +37,6 @@ import com.github.dedis.popstellar.utility.security.KeyManager
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import java.time.Instant
-import javax.inject.Inject
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
@@ -49,6 +47,8 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoTestRule
+import java.time.Instant
+import javax.inject.Inject
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -62,9 +62,9 @@ class ChirpListAdapterTest {
       TIMESTAMP_1,
       TIMESTAMP_2,
       EventState.CLOSED,
-      HashSet(),
+      LinkedHashSet(),
       "",
-      ""
+      "",
     )
   private val REACTION_ID = Base64DataUtils.generateMessageID()
   private val REACTION =
@@ -75,7 +75,7 @@ class ChirpListAdapterTest {
       SENDER_1,
       Reaction.ReactionEmoji.DOWNVOTE.code,
       CHIRP_1.id,
-      TIMESTAMP
+      TIMESTAMP,
     )
   private val REACTION3 =
     Reaction(
@@ -83,7 +83,7 @@ class ChirpListAdapterTest {
       SENDER_1,
       Reaction.ReactionEmoji.HEART.code,
       CHIRP_1.id,
-      TIMESTAMP
+      TIMESTAMP,
     )
 
   @Inject lateinit var socialMediaRepository: SocialMediaRepository
@@ -131,7 +131,7 @@ class ChirpListAdapterTest {
       LaoActivity::class.java,
       BundleBuilder().putString(Constants.LAO_ID_EXTRA, LAO_ID).build(),
       LaoActivityPageObject.containerId(),
-      ChirpListFragment::class.java
+      ChirpListFragment::class.java,
     ) {
       ChirpListFragment()
     }
@@ -226,7 +226,7 @@ class ChirpListAdapterTest {
       Assert.assertNotNull(time)
       Assert.assertEquals(
         DateUtils.getRelativeTimeSpanString(TIMESTAMP_1 * 1000),
-        time.text.toString()
+        time.text.toString(),
       )
 
       // Ensure that the buttons are visible
@@ -248,7 +248,7 @@ class ChirpListAdapterTest {
       Assert.assertNotNull(textView2)
       Assert.assertEquals(
         activity.applicationContext.getString(R.string.deleted_chirp_2),
-        textView2.text.toString()
+        textView2.text.toString(),
       )
 
       // Assert that the bin is not visible
@@ -304,7 +304,7 @@ class ChirpListAdapterTest {
   companion object {
     private const val CREATION_TIME: Long = 1631280815
     private const val LAO_NAME = "laoName"
-    private val SENDER_KEY_1: KeyPair = Base64DataUtils.generatePoPToken()
+    private var SENDER_KEY_1: KeyPair = Base64DataUtils.generatePoPToken()
     private val SENDER_KEY_2: KeyPair = Base64DataUtils.generatePoPToken()
     private val SENDER_1 = SENDER_KEY_1.publicKey
     private val SENDER_2 = SENDER_KEY_2.publicKey
@@ -328,7 +328,7 @@ class ChirpListAdapterTest {
       activity: FragmentActivity,
       viewModel: LaoViewModel,
       socialMediaViewModel: SocialMediaViewModel,
-      chirps: List<Chirp>?
+      chirps: List<Chirp>?,
     ): ChirpListAdapter {
       val adapter = ChirpListAdapter(activity, socialMediaViewModel, viewModel)
       adapter.replaceList(chirps)

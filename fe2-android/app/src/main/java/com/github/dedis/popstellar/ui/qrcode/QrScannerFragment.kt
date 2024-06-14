@@ -13,13 +13,20 @@ import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.QrScannerFragmentBinding
 import com.github.dedis.popstellar.ui.PopViewModel
+import com.github.dedis.popstellar.ui.lao.LaoActivity
+import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsFragment
+import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsInviteFragment
+import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsViewModel
+import com.github.dedis.popstellar.utility.UIUtils
+import com.github.dedis.popstellar.utility.UIUtils.hideKeyboard
+import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
-import java.util.Objects
 import timber.log.Timber
 
 class QrScannerFragment : Fragment() {
@@ -27,11 +34,12 @@ class QrScannerFragment : Fragment() {
   private var barcodeScanner: BarcodeScanner? = null
   private lateinit var scanningViewModel: QRCodeScanningViewModel
   private lateinit var popViewModel: PopViewModel
+  private lateinit var clipboardManager: UIUtils.ClipboardUtil
 
   override fun onCreateView(
       inflater: LayoutInflater,
       container: ViewGroup?,
-      savedInstanceState: Bundle?
+      savedInstanceState: Bundle?,
   ): View {
     binding = QrScannerFragmentBinding.inflate(inflater, container, false)
 
@@ -41,10 +49,16 @@ class QrScannerFragment : Fragment() {
     if (scanningAction.displayCounter) {
       displayCounter()
     }
+    clipboardManager = UIUtils.ClipboardUtil(requireActivity())
+
+    UIUtils.setupInputFields(
+        recyclerView = binding.dynamicInputsContainer,
+        inputFields = scanningAction.getInputFields().toList(),
+        context = requireContext(),
+        clipboardManager = clipboardManager)
 
     binding.scannedTitle.setText(scanningAction.scanTitle)
     binding.addManualTitle.setText(scanningAction.manualAddTitle)
-    binding.manualAddEditText.setHint(scanningAction.hint)
     binding.scannerInstructionText.setText(scanningAction.instruction)
 
     setupNbScanned()
@@ -102,9 +116,10 @@ class QrScannerFragment : Fragment() {
     val requestPermissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission(),
-            requireActivity().activityResultRegistry) { _: Boolean? ->
-              applyPermissionToView()
-            } // This is the callback of the permission granter
+            requireActivity().activityResultRegistry,
+        ) { _: Boolean? ->
+          applyPermissionToView()
+        } // This is the callback of the permission granter
 
     // The button launch the build launcher when is it clicked
     binding.allowCameraButton.setOnClickListener { _: View? ->
@@ -140,29 +155,16 @@ class QrScannerFragment : Fragment() {
         MlKitAnalyzer(
             barcodeScanner?.let { listOf(it) } ?: emptyList(),
             CameraController.COORDINATE_SYSTEM_VIEW_REFERENCED,
-            executor) { result: MlKitAnalyzer.Result ->
-              val barcodes = barcodeScanner?.let { result.getValue(it) }
-              if (!barcodes.isNullOrEmpty()) {
-                Timber.tag(TAG).d("barcode raw value : %s", barcodes[0].rawValue)
-                onResult(barcodes[0])
-              }
-            })
+            executor,
+        ) { result: MlKitAnalyzer.Result ->
+          val barcodes = barcodeScanner?.let { result.getValue(it) }
+          if (!barcodes.isNullOrEmpty()) {
+            Timber.tag(TAG).d("barcode raw value : %s", barcodes[0].rawValue)
+            onResult(barcodes[0])
+          }
+        },
+    )
     binding.scannerCamera.controller = cameraController
-  }
-
-  private fun setupManualAdd() {
-    binding.scannerEnterManually.setOnClickListener { _: View? ->
-      binding.scannerBottomTexts.visibility = View.GONE
-      binding.enterManuallyCard.visibility = View.VISIBLE
-    }
-    binding.addManualClose.setOnClickListener { _: View? ->
-      binding.scannerBottomTexts.visibility = View.VISIBLE
-      binding.enterManuallyCard.visibility = View.GONE
-    }
-    binding.manualAddButton.setOnClickListener { _: View? ->
-      val input = Objects.requireNonNull(binding.manualAddEditText.text).toString()
-      onResult(input)
-    }
   }
 
   private fun displayCounter() {
@@ -176,6 +178,60 @@ class QrScannerFragment : Fragment() {
 
   private fun onResult(data: String?) {
     scanningViewModel.handleData(data)
+
+    // Special case for federation
+    /*
+     * WARNING : this code is not ideal as it should be treated by the LinkedOrganizationFragment
+     * and by the LinkedOrganizationInviteFragment instead of the QrScannerFragment
+     */
+    val linkedOrganisationsViewModel = scanningViewModel
+    if (linkedOrganisationsViewModel is LinkedOrganizationsViewModel) {
+      if (scanningAction == ScanningAction.FEDERATION_INVITE) {
+        LaoActivity.setCurrentFragment(
+            linkedOrganisationsViewModel.manager!!,
+            R.id.fragment_linked_organizations_home,
+        ) {
+          LinkedOrganizationsFragment.newInstance()
+        }
+      } else if (scanningAction == ScanningAction.FEDERATION_JOIN) {
+        LaoActivity.setCurrentFragment(
+            linkedOrganisationsViewModel.manager!!,
+            R.id.fragment_linked_organizations_invite,
+        ) {
+          LinkedOrganizationsInviteFragment.newInstance(false)
+        }
+      }
+    }
+  }
+
+  private fun setupManualAdd() {
+    binding.scannerEnterManually.setOnClickListener {
+      binding.scannerBottomTexts.visibility = View.GONE
+      binding.enterManuallyCard.visibility = View.VISIBLE
+    }
+
+    binding.addManualClose.setOnClickListener {
+      hideKeyboard(requireContext(), binding.root)
+      binding.scannerBottomTexts.visibility = View.VISIBLE
+      binding.enterManuallyCard.visibility = View.GONE
+    }
+
+    binding.manualAddButton.setOnClickListener {
+      val adapter = binding.dynamicInputsContainer.adapter as UIUtils.InputFieldsAdapter
+      val inputs = adapter.getCurrentInputData()
+
+      val json = scanningAction.formatJson(inputs)
+      Timber.tag(TAG).d("Manual add json: %s", json)
+      if (json.isNotBlank()) {
+        onResult(json)
+      } else {
+        logAndShow(
+            requireContext(),
+            TAG,
+            IllegalArgumentException("Required fields are empty"),
+            R.string.qrcode_scanning_manual_entry_error)
+      }
+    }
   }
 
   companion object {

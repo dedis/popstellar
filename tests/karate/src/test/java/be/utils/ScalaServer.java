@@ -12,27 +12,49 @@ import java.util.Comparator;
 import java.util.stream.Stream;
 
 public class ScalaServer extends Server implements Configurable {
+  private String dbPath;
 
-  @Override
-  public boolean start() throws IOException {
-    return super.start(getCmd(), getDir(), getLogPath());
+  public ScalaServer(String host, int port, String dbPath, String logPath) {
+    super(host, port, port, port, logPath);
+    this.dbPath = dbPath;
   }
 
-  @Override
-  public void stop() {
-    super.stop();
+  public ScalaServer() {
+    this("127.0.0.1", 8000, null, null);
   }
 
   @Override
   public String[] getCmd() throws IOException {
-    String configPath = Paths.get("src", "main", "scala", "ch", "epfl", "pop", "config").toString();
+    Path workingDirectory = Paths.get("").toAbsolutePath();
+    Path tempDir = Files.createTempDirectory("scala-server");
+
+    // Create a temporary config file
+    Path configTemplate = workingDirectory.resolve("src/test/java/data/scala.template.conf");
+    String config = new String(Files.readAllBytes(configTemplate));
+    config = config.replace("{{host}}", host);
+    config = config.replace("{{port}}", String.valueOf(serverPort));
+    File configFile = new File(tempDir.toFile(), "application.conf");
+    Files.write(configFile.toPath(), config.getBytes());
+
+    // Create a temporary peer file
+    File peerFile = File.createTempFile("scala-peers", ".conf");
+    for (String peer : peers) {
+      Files.write(peerFile.toPath(), ("ws://" + peer + "/server\n").getBytes());
+    }
+
+    if (this.dbPath == null) {
+      dbPath = Files.createTempDirectory("scala-db").toString();
+    }
+
     String securityDirPath = Paths.get("src", "security").toString();
     File targetJar = getTargetJar();
 
     return new String[] {
       "java",
-      "-Dscala.config=" + configPath,
+      "-Dscala.config=" + tempDir.toString(),
+      "-Dscala.peerlist=" + peerFile.getCanonicalPath(),
       "-Dscala.security=" + securityDirPath,
+      "-Dscala.db=" + dbPath,
       "-jar", targetJar.getCanonicalPath()
     };
   }
@@ -68,14 +90,13 @@ public class ScalaServer extends Server implements Configurable {
   }
 
   @Override
-  public String getLogPath() {
-    return Paths.get("scala.log").toString();
-  }
-
-  @Override
   public void deleteDatabaseDir() {
-    System.out.println("Deleting database...");
-    Path path = Paths.get("..", "..", "be2-scala", "database");
+    if (dbPath == null) {
+      System.out.println("No database to delete");
+      return;
+    }
+
+    Path path = Paths.get(dbPath);
     try (Stream<Path> walk = Files.walk(path)) {
       walk.sorted(Comparator.reverseOrder())
           .map(Path::toFile)

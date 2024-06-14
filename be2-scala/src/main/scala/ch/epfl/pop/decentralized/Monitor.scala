@@ -1,29 +1,37 @@
 package ch.epfl.pop.decentralized
 
 import akka.NotUsed
-import akka.actor.{Actor, ActorLogging, ActorRef, Props, Timers}
+import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, Timers}
 import akka.event.LoggingReceive
+import akka.pattern.{AskableActorRef, ask}
 import akka.stream.scaladsl.Sink
 import ch.epfl.pop.config.RuntimeEnvironment.{readServerPeers, serverPeersListPath}
 import ch.epfl.pop.decentralized.Monitor.TriggerHeartbeat
-import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.method.ParamsWithMap
+import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
+import ch.epfl.pop.model.network.method.{Heartbeat, Params, ParamsWithMap}
+import ch.epfl.pop.model.objects.{Channel, Hash}
+import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.storage.DbActor
 
+import java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY
 import java.nio.file.{Path, WatchService}
-import java.nio.file.StandardWatchEventKinds.{ENTRY_CREATE, ENTRY_MODIFY}
+import java.util.concurrent.atomic.AtomicBoolean
+import scala.collection.immutable.HashMap
+import scala.concurrent.Await
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 import scala.jdk.CollectionConverters.CollectionHasAsScala
+import scala.util.Success
 
 //This actor is tasked with scheduling heartbeats.
-// To that end it sees every messages the system receives.
+// To that end it sees every message the system receives.
 // When a message is seen it schedule a heartbeat in the next heartbeatRate seconds.
 // Periodic heartbeats are sent with a period of messageDelay seconds.
 final case class Monitor(
-    heartbeatGenRef: ActorRef,
+    dbActorRef: AskableActorRef,
     heartbeatRate: FiniteDuration,
     messageDelay: FiniteDuration
-) extends Actor with ActorLogging with Timers {
+) extends Actor with ActorLogging with Timers with AskPatternConstants() {
 
   // These keys are used to keep track of the timers states
   private val periodicHbKey = 0
@@ -35,6 +43,8 @@ final case class Monitor(
   // Monitor is self-contained,
   // To that end it doesn't know the ref of the connectionMediator
   private var connectionMediatorRef = ActorRef.noSender
+
+  private var fileMonitor: FileMonitor = _
 
   override def receive: Receive = LoggingReceive {
 
@@ -51,12 +61,21 @@ final case class Monitor(
     case Monitor.TriggerHeartbeat =>
       log.info("triggering a heartbeat")
       timers.cancel(singleHbKey)
-      heartbeatGenRef ! Monitor.GenerateAndSendHeartbeat(connectionMediatorRef)
+
+      val askForHeartbeat = dbActorRef ? DbActor.GenerateHeartbeat()
+      val heartbeat: HashMap[Channel, Set[Hash]] =
+        Await.ready(askForHeartbeat, duration).value.get match
+          case Success(DbActor.DbActorGenerateHeartbeatAck(map)) => map
+          case _                                                 => HashMap.empty[Channel, Set[Hash]] // Handle anything else
+
+      if (heartbeat.nonEmpty)
+        connectionMediatorRef ! Heartbeat(heartbeat)
 
     case Right(jsonRpcMessage: JsonRpcRequest) =>
       jsonRpcMessage.getParams match {
         case _: ParamsWithMap => /* Actively ignoring this specific message */
         // For any other message, we schedule a single heartbeat to reduce messages propagation delay
+
         case _ =>
           if (someServerConnected && !timers.isTimerActive(singleHbKey)) {
             log.info(s"Scheduling single heartbeat")
@@ -67,15 +86,27 @@ final case class Monitor(
     case ConnectionMediator.Ping() =>
       log.info("Received ConnectionMediator ping")
       connectionMediatorRef = sender()
-      new Thread(new FileMonitor(connectionMediatorRef)).start()
+      fileMonitor = new FileMonitor(this.self)
+      new Thread(fileMonitor).start()
 
-    case _ => /* DO NOTHING */
+    case msg: ConnectionMediator.ConnectTo =>
+      connectionMediatorRef ! msg
+    /* ConnectTo message is sent by FileMonitor thread, which is not an actor, we thus forward it with a real actor to
+    avoid sending with dead letters */
+  }
+
+  override def postStop(): Unit = {
+    if (fileMonitor != null) {
+      if (!fileMonitor.running.compareAndSet(true, false)) {
+        log.error("Couldn't stop file monitor")
+      }
+    }
   }
 }
 
 object Monitor {
-  def props(heartbeatGenRef: ActorRef, heartbeatRate: FiniteDuration = 15.seconds, messageDelay: FiniteDuration = 1.seconds): Props =
-    Props(new Monitor(heartbeatGenRef, heartbeatRate, messageDelay))
+  def props(dbActorRef: AskableActorRef, heartbeatRate: FiniteDuration = 15.seconds, messageDelay: FiniteDuration = 1.seconds): Props =
+    Props(new Monitor(dbActorRef, heartbeatRate, messageDelay))
 
   def sink(monitorRef: ActorRef): Sink[GraphMessage, NotUsed] = {
     Sink.actorRef(
@@ -90,7 +121,6 @@ object Monitor {
   sealed trait Event
   final case class AtLeastOneServerConnected() extends Event
   final case class NoServerConnected() extends Event
-  final case class GenerateAndSendHeartbeat(connectionMediatorRef: ActorRef) extends Event
   final case class TriggerHeartbeat() extends Event
   private final case class DoNothing() extends Event
 }
@@ -103,28 +133,34 @@ private class FileMonitor(mediatorRef: ActorRef) extends Runnable {
   private val directory: Path = Path.of(serverPeersListPath).getParent
   private val watchService: WatchService = directory.getFileSystem.newWatchService()
   directory.register(watchService, ENTRY_MODIFY)
+  var sendConnectToMessage = false
+  var running: AtomicBoolean = AtomicBoolean(true)
+  private var serverPeers: List[String] = _
 
   override def run(): Unit = {
-    // Upon start, we connect to the servers
-    mediatorRef ! ConnectionMediator.ConnectTo(readServerPeers())
-    try {
-      while (!Thread.currentThread().isInterrupted) {
-        // Blocks until an event happen
-        val watchKey = watchService.take()
 
-        // For any event, read the file and send it
-        for (event <- watchKey.pollEvents().asScala.toList) {
-          if (serverPeersListPath.endsWith(event.context().toString)) {
-            mediatorRef ! ConnectionMediator.ConnectTo(readServerPeers())
-          }
-        }
-        watchKey.reset()
+    var sendConnectToMessage = false
+    // Upon start, we connect to the servers
+    serverPeers = readServerPeers()
+    mediatorRef ! ConnectionMediator.ConnectTo(serverPeers) // forwarded to Monitor as explained above
+    while (running.get()) {
+      // Blocks until an event happen
+      val watchKey = watchService.take()
+      sendConnectToMessage = false
+
+      val newPeers = readServerPeers()
+      sendConnectToMessage = newPeers != serverPeers // only send if the list has changed
+      if (sendConnectToMessage) serverPeers = newPeers
+
+      if (running.get() && sendConnectToMessage) {
+        mediatorRef ! ConnectionMediator.ConnectTo(serverPeers)
       }
-    } catch {
-      case _: InterruptedException =>
-        println("File watch service interrupted")
-    } finally {
-      watchService.close()
+
+      watchKey.reset()
+      if (!watchKey.isValid) {
+        return
+      }
     }
+    watchService.close()
   }
 }

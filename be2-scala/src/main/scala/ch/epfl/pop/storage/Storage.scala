@@ -4,12 +4,14 @@ trait Storage {
 
   /* List of prefix to the keys */
   final val CHANNEL_DATA_KEY = "ChannelData:"
+  final val RUMOR_DATA_KEY = "RumorData:"
   final val DATA_KEY = "Data:"
   final val AUTHENTICATED_KEY = "AuthPopTokenClientUser:"
   final val CREATE_LAO_KEY = "CreateLaoId:"
   final val SETUP_ELECTION_KEY = "SetupElectionMessageId:"
   final val SERVER_PUBLIC_KEY = "ServerPublicKey:"
   final val SERVER_PRIVATE_KEY = "ServerPrivateKey:"
+  final val RUMOR_KEY = "Rumor:"
   final val DEFAULT = "Default:"
 
   /** Optionally returns the value associated with a key

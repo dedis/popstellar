@@ -7,13 +7,18 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import com.github.dedis.popstellar.R
+import com.github.dedis.popstellar.model.objects.Lao
+import com.github.dedis.popstellar.testutils.Base64DataUtils
+import com.github.dedis.popstellar.testutils.UITestUtils
 import com.github.dedis.popstellar.testutils.UITestUtils.dialogNegativeButton
 import com.github.dedis.popstellar.testutils.UITestUtils.dialogNeutralButton
 import com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton
 import com.github.dedis.popstellar.testutils.pages.home.HomePageObject
 import com.github.dedis.popstellar.testutils.pages.home.LaoCreatePageObject
 import com.github.dedis.popstellar.testutils.pages.home.WalletPageObject
+import com.github.dedis.popstellar.testutils.pages.scanning.QrScanningPageObject
 import com.github.dedis.popstellar.ui.home.HomeActivity.Companion.obtainViewModel
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -24,6 +29,7 @@ import org.junit.Test
 import org.junit.rules.RuleChain
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnit
+import java.time.Instant
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -97,6 +103,108 @@ class HomeActivityTest {
   }
 
   @Test
+  fun addManuallyInvalidLAOId() {
+    initializeWallet(activityScenarioRule)
+
+    HomePageObject.joinButton().perform(ViewActions.click())
+    QrScanningPageObject.openManualButton().perform(ViewActions.click())
+
+    val inputLao = QrScanningPageObject.manualInputWithHintRes(R.string.manual_add_lao_id_hint)
+    Assert.assertNotNull(inputLao)
+    inputLao.perform(UITestUtils.forceTypeText(INVALID_LAO_ID))
+
+    val inputSever = QrScanningPageObject.manualInputWithHintRes(R.string.manual_add_server_url_hint)
+    Assert.assertNotNull(inputSever)
+    inputSever.perform(UITestUtils.forceTypeText(VALID_SERVER_URL))
+
+    QrScanningPageObject.manualAddConfirm().perform(ViewActions.click())
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+    UITestUtils.assertToastIsDisplayedWithText(R.string.invalid_qrcode_lao_data)
+  }
+
+  @Test
+  fun addManuallyInvalidServerUrl() {
+    initializeWallet(activityScenarioRule)
+
+    HomePageObject.joinButton().perform(ViewActions.click())
+    QrScanningPageObject.openManualButton().perform(ViewActions.click())
+
+    val inputLao = QrScanningPageObject.manualInputWithHintRes(R.string.manual_add_lao_id_hint)
+    Assert.assertNotNull(inputLao)
+    inputLao.perform(UITestUtils.forceTypeText(VALID_LAO_ID))
+
+    val inputSever = QrScanningPageObject.manualInputWithHintRes(R.string.manual_add_server_url_hint)
+    Assert.assertNotNull(inputSever)
+    inputSever.perform(UITestUtils.forceTypeText(INVALID_SERVER_URL))
+
+    QrScanningPageObject.manualAddConfirm().perform(ViewActions.click())
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+    UITestUtils.assertToastIsDisplayedWithText(R.string.invalid_qrcode_lao_data)
+  }
+
+  @Test
+  fun addManuallyEmptyServerURL() {
+    initializeWallet(activityScenarioRule)
+
+    HomePageObject.joinButton().perform(ViewActions.click())
+    QrScanningPageObject.openManualButton().perform(ViewActions.click())
+
+    val inputLao = QrScanningPageObject.manualInputWithHintRes(R.string.manual_add_lao_id_hint)
+    Assert.assertNotNull(inputLao)
+    inputLao.perform(UITestUtils.forceTypeText(VALID_LAO_ID))
+
+    val inputSever = QrScanningPageObject.manualInputWithHintRes(R.string.manual_add_server_url_hint)
+    Assert.assertNotNull(inputSever)
+    inputSever.perform(UITestUtils.forceTypeText(EMPTY_SERVER_URL))
+
+    QrScanningPageObject.manualAddConfirm().perform(ViewActions.click())
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+    UITestUtils.assertToastIsDisplayedWithText(R.string.qrcode_scanning_manual_entry_error)
+  }
+
+  @Test
+  fun addManuallyEmptyLAOId() {
+    initializeWallet(activityScenarioRule)
+
+    HomePageObject.joinButton().perform(ViewActions.click())
+    QrScanningPageObject.openManualButton().perform(ViewActions.click())
+
+    val inputLao = QrScanningPageObject.manualInputWithHintRes(R.string.manual_add_lao_id_hint)
+    Assert.assertNotNull(inputLao)
+    inputLao.perform(UITestUtils.forceTypeText(EMPTY_LAO_ID))
+
+    val inputSever = QrScanningPageObject.manualInputWithHintRes(R.string.manual_add_server_url_hint)
+    Assert.assertNotNull(inputSever)
+    inputSever.perform(UITestUtils.forceTypeText(VALID_SERVER_URL))
+
+    QrScanningPageObject.manualAddConfirm().perform(ViewActions.click())
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+    UITestUtils.assertToastIsDisplayedWithText(R.string.qrcode_scanning_manual_entry_error)
+  }
+
+  @Test
+  fun addManualEmptyAllInputs() {
+    initializeWallet(activityScenarioRule)
+
+    HomePageObject.joinButton().perform(ViewActions.click())
+    QrScanningPageObject.openManualButton().perform(ViewActions.click())
+
+    val inputLao = QrScanningPageObject.manualInputWithHintRes(R.string.manual_add_lao_id_hint)
+    Assert.assertNotNull(inputLao)
+    inputLao.perform(UITestUtils.forceTypeText(EMPTY_LAO_ID))
+
+    val inputSever = QrScanningPageObject.manualInputWithHintRes(R.string.manual_add_server_url_hint)
+    Assert.assertNotNull(inputSever)
+    inputSever.perform(UITestUtils.forceTypeText(EMPTY_SERVER_URL))
+
+    QrScanningPageObject.manualAddConfirm().perform(ViewActions.click())
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+    UITestUtils.assertToastIsDisplayedWithText(R.string.qrcode_scanning_manual_entry_error)
+  }
+
+
+
+  @Test
   fun handleRotationTest() {
     activityScenarioRule.scenario.onActivity { activity: HomeActivity ->
       val before = activity.supportFragmentManager.findFragmentById(R.id.fragment_container_home)
@@ -121,5 +229,17 @@ class HomeActivityTest {
         }
       }
     }
+
+    private const val LAO_NAME = "lao"
+    private val SENDER_KEY = Base64DataUtils.generateKeyPair()
+    private val SENDER = SENDER_KEY.publicKey
+    private val CREATION = Instant.now().epochSecond
+    private val LAO = Lao(LAO_NAME, SENDER, CREATION)
+    private val VALID_LAO_ID = LAO.id
+    private val VALID_SERVER_URL = "localhost"
+    private val INVALID_LAO_ID = "invalid"
+    private val INVALID_SERVER_URL = "invalid"
+    private val EMPTY_LAO_ID = ""
+    private val EMPTY_SERVER_URL = ""
   }
 }

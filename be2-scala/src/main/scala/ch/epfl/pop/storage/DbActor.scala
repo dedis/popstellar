@@ -6,18 +6,21 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
+import ch.epfl.pop.model.network.method.{Rumor, RumorState}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
+import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL_PREFIX}
-import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.AnswerGenerator.timout
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
-import ch.epfl.pop.storage.DbActor._
+import ch.epfl.pop.storage.DbActor.*
 import com.google.crypto.tink.subtle.Ed25519Sign
 
 import java.util.concurrent.TimeUnit
+import scala.collection.immutable.HashMap
+import scala.collection.mutable.ListBuffer
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.util.{Failure, Success, Try}
@@ -130,7 +133,7 @@ final case class DbActor(
 
   @throws[DbActorNAckException]
   private def readElectionData(laoId: Hash, electionId: Hash): ElectionData = {
-    Try(storage.read(storage.DATA_KEY + s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/private/${electionId.toString}")) match {
+    Try(storage.read(storage.DATA_KEY + s"$ROOT_CHANNEL_PREFIX${laoId.toString}/private/${electionId.toString}")) match {
       case Success(Some(json)) => ElectionData.buildFromJson(json)
       case Success(None)       => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ElectionData for election $electionId not in the database")
       case Failure(ex)         => throw ex
@@ -243,7 +246,7 @@ final case class DbActor(
 
   @throws[DbActorNAckException]
   private def createElectionData(laoId: Hash, electionId: Hash, keyPair: KeyPair): Unit = {
-    val channel = Channel(s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/private/${electionId.toString}")
+    val channel = Channel(s"$ROOT_CHANNEL_PREFIX${laoId.toString}/private/${electionId.toString}")
     if (!checkChannelExistence(channel)) {
       val pair = (storage.DATA_KEY + channel.toString) -> ElectionData(electionId, keyPair).toJsonString
       storage.write(pair)
@@ -299,7 +302,7 @@ final case class DbActor(
   @throws[DbActorNAckException]
   private def generateLaoDataKey(channel: Channel): String = {
     channel.decodeChannelLaoId match {
-      case Some(data) => storage.DATA_KEY + s"${Channel.ROOT_CHANNEL_PREFIX}$data${LAO_DATA_LOCATION}"
+      case Some(data) => storage.DATA_KEY + s"${Channel.ROOT_CHANNEL_PREFIX}$data$LAO_DATA_LOCATION"
       case None =>
         log.error(s"Actor $self (db) encountered a problem while decoding LAO channel from '$channel'")
         throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Could not extract the LAO id for channel $channel")
@@ -308,7 +311,7 @@ final case class DbActor(
 
   // generates the key of the RollCallData to store in the database
   private def generateRollCallDataKey(laoId: Hash): String = {
-    storage.DATA_KEY + s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/rollcall"
+    storage.DATA_KEY + s"$ROOT_CHANNEL_PREFIX${laoId.toString}/rollcall"
   }
 
   @throws[DbActorNAckException]
@@ -367,6 +370,80 @@ final case class DbActor(
     storage.write((storage.SERVER_PUBLIC_KEY + storage.DEFAULT, publicKey.base64Data.data))
     storage.write((storage.SERVER_PRIVATE_KEY + storage.DEFAULT, privateKey.base64Data.data))
     (publicKey, privateKey)
+  }
+
+  @throws[DbActorNAckException]
+  private def generateHeartbeat(): HashMap[Channel, Set[Hash]] = {
+    val setOfChannels = getAllChannels
+    if (setOfChannels.isEmpty) return HashMap()
+    val heartbeatMap: HashMap[Channel, Set[Hash]] = setOfChannels.foldLeft(HashMap.empty[Channel, Set[Hash]]) {
+      (acc, channel) =>
+        readChannelData(channel).messages.toSet match {
+          case setOfIds if setOfIds.nonEmpty => acc + (channel -> setOfIds)
+          case _                             => acc
+        }
+    }
+    heartbeatMap
+  }
+
+  private def generateRumorKey(senderPk: PublicKey, rumorId: Int): String = {
+    s"${storage.RUMOR_KEY}${senderPk.base64Data.data}${Channel.DATA_SEPARATOR}$rumorId"
+  }
+
+  private def generateRumorDataKey(senderPk: PublicKey): String = {
+    s"${storage.RUMOR_DATA_KEY}${senderPk.base64Data.data}"
+  }
+
+  @throws[DbActorNAckException]
+  private def readRumorData(senderPk: PublicKey): RumorData = {
+    Try(storage.read(generateRumorDataKey(senderPk))) match {
+      case Success(Some(json)) => RumorData.buildFromJson(json)
+      case Success(None)       => RumorData(List.empty)
+      case Failure(ex)         => throw ex
+    }
+  }
+
+  @throws[DbActorNAckException]
+  private def readRumor(desiredRumor: (PublicKey, Int)): Option[Rumor] = {
+    val rumorKey = generateRumorKey(desiredRumor._1, desiredRumor._2)
+    Try(storage.read(rumorKey)) match {
+      case Success(Some(json)) => Some(Rumor.buildFromJson(json))
+      case Success(None)       => None
+      case Failure(ex)         => throw ex
+    }
+  }
+
+  @throws[DbActorNAckException]
+  private def writeRumor(rumor: Rumor): Unit = {
+    this.synchronized {
+      val rumorData: RumorData = Try(readRumorData(rumor.senderPk)) match {
+        case Success(data) => data
+        case Failure(_)    => RumorData(List.empty)
+      }
+      storage.write(generateRumorDataKey(rumor.senderPk) -> rumorData.updateWith(rumor.rumorId).toJsonString)
+      storage.write(generateRumorKey(rumor.senderPk, rumor.rumorId) -> rumor.toJsonString)
+    }
+  }
+
+  private def getRumorState: RumorState = {
+    val allPublicKeys = storage.filterKeysByPrefix(storage.RUMOR_DATA_KEY).map(key => PublicKey(Base64Data(key.replaceFirst(storage.RUMOR_DATA_KEY, ""))))
+    val allRumorData = allPublicKeys.flatMap {
+      publicKey =>
+        Try(readRumorData(publicKey)) match
+          case Success(rumorData: RumorData) => Some(publicKey -> rumorData.lastRumorId())
+          case Failure(ex)                   => None
+    }.toMap
+    RumorState(allRumorData)
+  }
+
+  private def generateRumorStateAns(rumorState: RumorState): List[Rumor] = {
+    val localRumorState = getRumorState
+    val missingRumors = rumorState.isMissingRumorsFrom(localRumorState)
+    missingRumors.flatMap { (publicKey, rumorIdList) =>
+      rumorIdList.map { id =>
+        readRumor((publicKey, id)).get
+      }
+    }.toList
   }
 
   override def receive: Receive = LoggingReceive {
@@ -542,6 +619,47 @@ final case class DbActor(
         case Success(privateKey) => sender() ! DbActorReadServerPrivateKeyAck(privateKey)
         case failure             => sender() ! failure.recover(Status.Failure(_))
       }
+
+    case GenerateHeartbeat() =>
+      log.info(s"Actor $self (db) received a GenerateHeartbeat request")
+      Try(generateHeartbeat()) match {
+        case Success(heartbeat) => sender() ! DbActorGenerateHeartbeatAck(heartbeat)
+        case failure            => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case WriteRumor(rumor) =>
+      log.info(s"Actor $self (db) received a WriteRumor request")
+      Try(writeRumor(rumor)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case failure    => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case ReadRumor(desiredRumor) =>
+      log.info(s"Actor $self (db) received a ReadRumor request")
+      Try(readRumor(desiredRumor)) match {
+        case Success(foundRumor) => sender() ! DbActorReadRumor(foundRumor)
+        case failure             => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case ReadRumorData(senderPk) =>
+      log.info(s"Actor $self (db) received a ReadRumorData request")
+      Try(readRumorData(senderPk)) match {
+        case Success(foundRumorIds) => sender() ! DbActorReadRumorData(foundRumorIds)
+        case failure                => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case GenerateRumorStateAns(rumorState: RumorState) =>
+      log.info(s"Actor $self (db) received a GenerateRumorStateAns request")
+      Try(generateRumorStateAns(rumorState)) match {
+        case Success(rumorList) => sender() ! DbActorGenerateRumorStateAns(rumorList)
+        case failure            => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case GetRumorState() =>
+      log.info(s"Actor $self (db) received a GetRumorState request")
+      Try(getRumorState) match
+        case Success(rumorState) => sender() ! DbActorGetRumorStateAck(rumorState)
+        case failure             => sender() ! failure.recover(Status.Failure(_))
 
     case m =>
       log.info(s"Actor $self (db) received an unknown message")
@@ -758,6 +876,38 @@ object DbActor {
     */
   final case class ReadServerPrivateKey() extends Event
 
+  /** Request to generate a local heartbeat */
+  final case class GenerateHeartbeat() extends Event
+
+  /** Writes the given rumor in Db and updates RumorData accordingly
+    * @param rumor
+    *   rumor to write in memory
+    */
+  final case class WriteRumor(rumor: Rumor) extends Event
+
+  /** Requests the Db for rumors corresponding to keys {server public key:rumor id}
+    * @param desiredRumor
+    *   Map of server public keys and list of desired rumor id for each
+    */
+  final case class ReadRumor(desiredRumor: (PublicKey, Int)) extends Event
+
+  /** Requests the Db for the list of rumorId received for a senderPk
+    * @param senderPk
+    *   Public key that we want to request
+    */
+  final case class ReadRumorData(senderPk: PublicKey) extends Event
+
+  /** Requests the db to build a list of rumors that we have that are missing to the rumorState
+    * @param rumorState
+    *   Map of last seen rumorId per Publickey that we want to complete
+    */
+
+  final case class GenerateRumorStateAns(rumorState: RumorState) extends Event
+
+  /** Requests the db to build out rumorState +
+    */
+  final case class GetRumorState() extends Event
+
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
@@ -831,6 +981,29 @@ object DbActor {
   /** Response for a [[ReadServerPrivateKey]] db request
     */
   final case class DbActorReadServerPrivateKeyAck(privateKey: PrivateKey) extends DbActorMessage
+
+  /** Response for a [[GenerateHeartbeat]] db request Receiving [[DbActorGenerateHeartbeatAck]] works as an acknowledgement that the request was successful
+    *
+    * @param heartbeatMap
+    *   requested heartbeat as a map from the channels to message ids
+    */
+  final case class DbActorGenerateHeartbeatAck(heartbeatMap: HashMap[Channel, Set[Hash]]) extends DbActorMessage
+
+  /** Response for a [[ReadRumor]]
+    */
+  final case class DbActorReadRumor(foundRumor: Option[Rumor]) extends DbActorMessage
+
+  /** Response for a [[ReadRumorData]]
+    */
+  final case class DbActorReadRumorData(rumorIds: RumorData) extends DbActorMessage
+
+  /** Response for a [[GenerateRumorStateAns]]
+    */
+  final case class DbActorGenerateRumorStateAns(rumorList: List[Rumor]) extends DbActorMessage
+
+  /** Response for a [[GetRumorState]] +
+    */
+  final case class DbActorGetRumorStateAck(rumorState: RumorState) extends DbActorMessage
 
   /** Response for a general db actor ACK
     */

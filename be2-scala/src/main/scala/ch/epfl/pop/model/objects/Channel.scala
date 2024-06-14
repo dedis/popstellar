@@ -89,6 +89,8 @@ object Channel {
 
   final val POPCHA_CHANNEL_PREFIX: String = s"${CHANNEL_SEPARATOR}authentication"
 
+  final val FEDERATION_CHANNEL_PREFIX: String = s"${CHANNEL_SEPARATOR}federation"
+
   def apply(channel: String): Channel = {
     if (channel.trim.isEmpty || !channel.matches(channelRegex)) {
       throw new IllegalArgumentException("The channel name is invalid")

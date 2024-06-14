@@ -17,7 +17,7 @@ const DrawerMenuButton = ({ padding }: IPropTypes) => {
 
   return (
     <>
-      <PoPTouchableOpacity onPress={navigation.toggleDrawer}>
+      <PoPTouchableOpacity onPress={navigation.toggleDrawer} testID="drawer_menu_button">
         <PoPIcon name="drawerMenu" color={Color.inactive} size={Icon.size} />
       </PoPTouchableOpacity>
       <ButtonPadding paddingAmount={padding || 0} nextToIcon />

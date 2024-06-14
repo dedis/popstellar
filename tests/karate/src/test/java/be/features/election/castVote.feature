@@ -6,9 +6,9 @@ Feature: Cast a vote
     * call read(serverFeature)
     * call read(mockClientFeature)
     * def organizer = call createMockFrontend
-    * def lao = organizer.createValidLao()
-    * def rollCall = organizer.createValidRollCall(lao)
-    * def election = organizer.createValidElection(lao)
+    * def lao = organizer.generateValidLao()
+    * def rollCall = organizer.generateValidRollCall(lao)
+    * def election = organizer.generateValidElection(lao)
     * def question = election.createQuestion()
 
     # This call executes all the steps to set up a lao, complete a roll call and open an election with one question
@@ -71,7 +71,7 @@ Feature: Cast a vote
   # upon casting a vote
   @castVote3
   Scenario: Casting a valid vote on non existent election should return an error
-    Given def newElection = organizer.createValidElection(lao)
+    Given def newElection = organizer.generateValidElection(lao)
     And def newQuestion = newElection.createQuestion()
     And def newVote = newQuestion.createVote(0)
     And def newCastVote = newElection.castVote(newVote)
@@ -153,7 +153,7 @@ Feature: Cast a vote
   # upon a non-attendee casting a valid vote.
   @castVote6
   Scenario: Non attendee casting a vote should return an error
-    Given def nonAttendee = call createMockClient
+    Given def nonAttendee = call createMockFrontend
     And def validCastVote =
       """
         {

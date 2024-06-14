@@ -33,6 +33,8 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.time.Instant
+import java.util.ArrayList
+import java.util.TreeSet
 import java.util.stream.Collectors
 import javax.inject.Inject
 import timber.log.Timber
@@ -52,7 +54,7 @@ constructor(
 ) : AndroidViewModel(application), QRCodeScanningViewModel {
   private lateinit var laoId: String
 
-  private val attendees: MutableSet<PublicKey> = HashSet()
+  private val attendees: TreeSet<PublicKey> = TreeSet(compareBy { it.toString() })
   override val nbScanned = MutableLiveData<Int>()
   lateinit var attendedRollCalls: Observable<List<RollCall>>
     private set
@@ -261,6 +263,7 @@ constructor(
     nbScanned.postValue(attendees.size)
   }
 
+  @Inject
   fun getAttendees(): Set<PublicKey> {
     return attendees
   }

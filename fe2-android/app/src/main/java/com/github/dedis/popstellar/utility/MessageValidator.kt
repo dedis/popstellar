@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.utility
 
 import android.net.Uri
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral
 import com.github.dedis.popstellar.model.network.method.message.data.election.Vote
 import com.github.dedis.popstellar.model.objects.Lao
 import com.github.dedis.popstellar.model.objects.Meeting
@@ -148,6 +149,18 @@ object MessageValidator {
       return stringNotEmpty(input, field).isBase64(input, field)
     }
 
+    /**
+     * Helper method to ensure all provided strings are valid, not-empty URL-safe base64 encodings.
+     *
+     * @param inputs the strings to check
+     * @param field the name of the field (to print in case of error)
+     * @throws IllegalArgumentException if any string is empty or not a URL-safe base64 encoding
+     */
+    fun areNotEmptyBase64(vararg inputs: String?, field: String): MessageValidatorBuilder {
+      inputs.forEach { input -> isNotEmptyBase64(input, field) }
+      return this
+    }
+
     fun isNotNull(input: Any?, field: String): MessageValidatorBuilder {
       requireNotNull(input) { "$field cannot be null" }
       return this
@@ -164,6 +177,17 @@ object MessageValidator {
       require(Reaction.ReactionEmoji.isSupported(input)) {
         "$field is not a supported unicode emoji"
       }
+      return this
+    }
+
+    /**
+     * Helper method to check that an int is not negative.
+     *
+     * @param input the int to check
+     * @param field name of the field (to print in case of error)
+     */
+    fun isNotNegative(input: Int, field: String): MessageValidatorBuilder {
+      require(input >= 0) { "$field cannot be negative" }
       return this
     }
 
@@ -187,7 +211,7 @@ object MessageValidator {
      * @param value the value to compare to
      * @throws IllegalArgumentException if the value is not greater or equal than the given value
      */
-    fun greaterOrEqualThan(input: Int, value: Int, field: String): MessageValidatorBuilder {
+    fun greaterOrEqualThan(input: Long, value: Long, field: String): MessageValidatorBuilder {
       require(input >= value) { "$field must be greater or equal than $value" }
       return this
     }
@@ -232,6 +256,35 @@ object MessageValidator {
     }
 
     /**
+     * Helper method to check that a message has a valid structure.
+     *
+     * @param message the message to check, expected to be a map with string keys and optional
+     *   string values
+     */
+    fun validMessage(message: MessageGeneral): MessageValidatorBuilder {
+
+      val data = message.dataEncoded
+      val sender = message.sender
+      val signature = message.signature
+      val messageId = message.messageId
+
+      verify()
+          .areNotEmptyBase64(
+              data.encoded,
+              sender.encoded,
+              signature.encoded,
+              messageId.encoded,
+              field = "Message Fields")
+
+      val witnessSignatures = message.witnessSignatures
+      witnessSignatures.forEach {
+        verify().isNotEmptyBase64(it.signature.encoded, "Witness Signature")
+      }
+
+      return this
+    }
+
+    /**
      * Helper method to check a single question for validity.
      *
      * @param title the title of the question
@@ -249,6 +302,12 @@ object MessageValidator {
         "Unsupported voting method in question: ${title}. Must be one of $validVotingMethods."
       }
       validBallotOptions(ballotOptions)
+      return this
+    }
+
+    /** Helper method to check that a string list is sorted */
+    fun stringListIsSorted(list: List<*>, field: String): MessageValidatorBuilder {
+      require(list == list.sortedBy { it.toString() }) { "$field must be sorted" }
       return this
     }
 

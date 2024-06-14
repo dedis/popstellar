@@ -22,7 +22,9 @@ enum class Objects
   CHIRP("chirp"),
   REACTION("reaction"),
   COIN("coin"),
-  POPCHA("popcha");
+  POPCHA("popcha"),
+  FEDERATION("federation"),
+  GOSSIP("gossip");
 
   /**
    * Function that tells whether the given object type has to be persisted.
@@ -40,7 +42,7 @@ enum class Objects
       COIN.`object`,
       MESSAGE.`object` -> true
 
-      // Consensus and Popcha are for now the ones excluded from persistence
+      // Consensus, Popcha and Federation are for now the ones excluded from persistence
       else -> false
     }
   }
