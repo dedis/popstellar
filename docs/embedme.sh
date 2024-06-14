@@ -34,7 +34,7 @@ BEGIN {
 {
     # if this is a closing block line, unsets the del variable to stop deleting
     # lines if it was the case
-    if ($0 ~ /^\`\`\`$/) {
+    if ($0 ~ /^```$/) {
         del=0;
         print $0;
     
@@ -44,7 +44,7 @@ BEGIN {
 
     # if this is the start of an opening block, we indicate that with the
     # last_line variable
-    } else if ($0 ~ /\`\`\`json5/) {
+    } else if ($0 ~ /```json5/) {
         last_line=1;
         print $0;
 
