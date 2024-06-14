@@ -2,14 +2,13 @@ package mrumor
 
 import (
 	"popstellar/internal/handler/message/mmessage"
-	"popstellar/internal/handler/method/rumor/trumor"
 	"popstellar/internal/handler/query/mquery"
 )
 
 type ParamsRumor struct {
 	SenderID  string                        `json:"sender_id"`
 	RumorID   int                           `json:"rumor_id"`
-	Timestamp trumor.RumorTimestamp         `json:"timestamp"`
+	Timestamp map[string]int                `json:"timestamp"`
 	Messages  map[string][]mmessage.Message `json:"messages"`
 }
 
