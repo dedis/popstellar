@@ -15,7 +15,7 @@
       "description": "[Integer] ID of the rumor",
       "type": "integer"
     },
-    "clock" : {
+    "timestamp" : {
       "description": "Rumor state in which this message has been sent",
       "$ref": "./rumor_state.json"
     },
@@ -29,6 +29,6 @@
     "sender_id",
     "rumor_id",
     "messages",
-    "clock"
+    "timestamp"
   ]
 }

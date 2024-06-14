@@ -5,7 +5,7 @@
     {
       "sender_id": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
       "rumor_id": 1,
-      "clock" : {
+      "timestamp" : {
         "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=": 3,
         "RZOPi59Iy5gkpS2mkpfQJNl44HKc2jVbF0iTGm0RvfU=": 5,
         "CfG2ByLhtLJH--T2BL9hZ6eGm11tpkE-5KuvysSCY0I=": 1,
@@ -26,7 +26,7 @@
     {
       "sender_id": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
       "rumor_id": 2,
-      "clock" : {
+      "timestamp" : {
         "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=": 3,
         "RZOPi59Iy5gkpS2mkpfQJNl44HKc2jVbF0iTGm0RvfU=": 5,
         "CfG2ByLhtLJH--T2BL9hZ6eGm11tpkE-5KuvysSCY0I=": 1,

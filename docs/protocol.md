@@ -985,7 +985,7 @@ RPC
     "params": {
         "sender_id": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
         "rumor_id": 1,
-        "clock" : {
+        "timestamp" : {
             "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=": 3,
             "RZOPi59Iy5gkpS2mkpfQJNl44HKc2jVbF0iTGm0RvfU=": 5,
             "CfG2ByLhtLJH--T2BL9hZ6eGm11tpkE-5KuvysSCY0I=": 1,
@@ -1081,7 +1081,7 @@ RPC
       "description": "[Integer] ID of the rumor",
       "type": "integer"
     },
-    "clock" : {
+    "timestamp" : {
       "description": "Rumor state in which this message has been sent",
       "$ref": "./rumor_state.json"
     },
@@ -1095,7 +1095,7 @@ RPC
     "sender_id",
     "rumor_id",
     "messages",
-    "clock"
+    "timestamp"
   ]
 }
 
@@ -1141,7 +1141,7 @@ Response in case of success
     {
       "sender_id": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
       "rumor_id": 1,
-      "clock" : {
+      "timestamp" : {
         "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=": 3,
         "RZOPi59Iy5gkpS2mkpfQJNl44HKc2jVbF0iTGm0RvfU=": 5,
         "CfG2ByLhtLJH--T2BL9hZ6eGm11tpkE-5KuvysSCY0I=": 1,
@@ -1162,7 +1162,7 @@ Response in case of success
     {
       "sender_id": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
       "rumor_id": 2,
-      "clock" : {
+      "timestamp" : {
         "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=": 3,
         "RZOPi59Iy5gkpS2mkpfQJNl44HKc2jVbF0iTGm0RvfU=": 5,
         "CfG2ByLhtLJH--T2BL9hZ6eGm11tpkE-5KuvysSCY0I=": 1,
