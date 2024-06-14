@@ -5,14 +5,19 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
+	"io"
 	"os"
 	"path/filepath"
 	"popstellar/internal/crypto"
-	"popstellar/internal/message/messagedata"
-	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/mock/generator"
-	"popstellar/internal/types"
+	"popstellar/internal/handler/channel"
+	"popstellar/internal/handler/channel/election/melection"
+	"popstellar/internal/handler/channel/election/telection"
+	"popstellar/internal/handler/channel/federation/mfederation"
+	"popstellar/internal/handler/channel/lao/mlao"
+	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/test/generator"
 	"sort"
 	"testing"
 	"time"
@@ -35,7 +40,7 @@ func Test_SQLite_GetMessageByID(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	expected := []message.Message{testMessages[0].msg,
+	expected := []mmessage.Message{testMessages[0].msg,
 		testMessages[1].msg,
 		testMessages[2].msg,
 		testMessages[3].msg}
@@ -60,7 +65,7 @@ func Test_SQLite_GetMessagesByID(t *testing.T) {
 	}
 
 	IDs := []string{"ID1", "ID2", "ID3", "ID4"}
-	expected := map[string]message.Message{"ID1": testMessages[0].msg,
+	expected := map[string]mmessage.Message{"ID1": testMessages[0].msg,
 		"ID2": testMessages[1].msg,
 		"ID3": testMessages[2].msg,
 		"ID4": testMessages[3].msg}
@@ -79,37 +84,37 @@ func newFakeSQLite(t *testing.T) (SQLite, string, error) {
 	require.NoError(t, err)
 
 	fn := filepath.Join(dir, "test.DB")
-	lite, err := NewSQLite(fn, false)
+	lite, err := NewSQLite(fn, false, zerolog.New(io.Discard))
 	require.NoError(t, err)
 
 	return lite, dir, nil
 }
 
 type testMessage struct {
-	msg     message.Message
+	msg     mmessage.Message
 	channel string
 }
 
 func newTestMessages() []testMessage {
-	message1 := message.Message{Data: base64.URLEncoding.EncodeToString([]byte("data1")),
+	message1 := mmessage.Message{Data: base64.URLEncoding.EncodeToString([]byte("data1")),
 		Sender:            "sender1",
 		Signature:         "sig1",
 		MessageID:         "ID1",
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	message2 := message.Message{Data: base64.URLEncoding.EncodeToString([]byte("data2")),
+	message2 := mmessage.Message{Data: base64.URLEncoding.EncodeToString([]byte("data2")),
 		Sender:            "sender2",
 		Signature:         "sig2",
 		MessageID:         "ID2",
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
-	message3 := message.Message{Data: base64.URLEncoding.EncodeToString([]byte("data3")),
+	message3 := mmessage.Message{Data: base64.URLEncoding.EncodeToString([]byte("data3")),
 		Sender:            "sender3",
 		Signature:         "sig3",
 		MessageID:         "ID3",
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 	message4 := message3
 	message4.MessageID = "ID4"
@@ -133,7 +138,7 @@ func Test_SQLite_GetAllMessagesFromChannel(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	expected := []message.Message{testMessages[3].msg, testMessages[0].msg}
+	expected := []mmessage.Message{testMessages[3].msg, testMessages[0].msg}
 	messages, err := lite.GetAllMessagesFromChannel("channel1")
 	require.NoError(t, err)
 	require.Equal(t, expected, messages)
@@ -165,7 +170,7 @@ func Test_SQLite_GetResultForGetMessagesByID(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	expected := map[string][]message.Message{
+	expected := map[string][]mmessage.Message{
 		"channel1":             {testMessages[0].msg, testMessages[3].msg},
 		"channel2":             {testMessages[1].msg},
 		"channel1/subChannel1": {testMessages[2].msg}}
@@ -232,11 +237,11 @@ func TestSQLite_HasMessage(t *testing.T) {
 	defer lite.Close()
 	defer os.RemoveAll(dir)
 
-	message5 := message.Message{Data: base64.URLEncoding.EncodeToString([]byte("data5")),
+	message5 := mmessage.Message{Data: base64.URLEncoding.EncodeToString([]byte("data5")),
 		Sender:            "sender5",
 		Signature:         "sig5",
 		MessageID:         "ID5",
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	err = lite.StoreMessageAndData("channel1", message5)
@@ -261,7 +266,7 @@ func Test_SQLite_StoreLaoWithLaoGreet(t *testing.T) {
 		"laoPath":  "lao",
 		"channel1": "chirp",
 		"channel2": "coin",
-		"channel3": "auth",
+		"channel3": "popcha",
 		"channel4": "consensus",
 		"channel5": "reaction"}
 
@@ -278,27 +283,27 @@ func Test_SQLite_StoreLaoWithLaoGreet(t *testing.T) {
 	laoCreateMsg := generator.NewLaoCreateMsg(t, "sender1", laoID, "laoName", 123456789,
 		organizerPubBuf64, nil)
 
-	laoGreet := messagedata.LaoGreet{
+	laoGreet := mlao.LaoGreet{
 		Object:   "lao",
 		Action:   "greet",
 		LaoID:    laoID,
 		Frontend: "frontend",
 		Address:  "address",
-		Peers:    []messagedata.Peer{{Address: "peer1"}, {Address: "peer2"}},
+		Peers:    []mlao.Peer{{Address: "peer1"}, {Address: "peer2"}},
 	}
 	laoGreetBytes, err := json.Marshal(laoGreet)
 	require.NoError(t, err)
 
-	laoGreetMsg := message.Message{Data: base64.URLEncoding.EncodeToString(laoGreetBytes),
+	laoGreetMsg := mmessage.Message{Data: base64.URLEncoding.EncodeToString(laoGreetBytes),
 		Sender:            "sender2",
 		Signature:         "sig2",
 		MessageID:         "ID2",
-		WitnessSignatures: []message.WitnessSignature{}}
+		WitnessSignatures: []mmessage.WitnessSignature{}}
 
 	err = lite.StoreLaoWithLaoGreet(channels, laoID, organizerPubBuf, laoCreateMsg, laoGreetMsg)
 	require.NoError(t, err)
 
-	expected := []message.Message{laoGreetMsg, laoCreateMsg}
+	expected := []mmessage.Message{laoGreetMsg, laoCreateMsg}
 
 	sort.Slice(expected, func(i, j int) bool {
 		return expected[i].MessageID < expected[j].MessageID
@@ -311,16 +316,16 @@ func Test_SQLite_StoreLaoWithLaoGreet(t *testing.T) {
 	})
 	require.Equal(t, expected, messages)
 
-	expected = []message.Message{laoCreateMsg}
+	expected = []mmessage.Message{laoCreateMsg}
 	messages, err = lite.GetAllMessagesFromChannel("/root")
 	require.NoError(t, err)
 	require.Equal(t, expected, messages)
 
-	for channel, expectedType := range channels {
-		ok, err := lite.HasChannel(channel)
+	for channelPath, expectedType := range channels {
+		ok, err := lite.HasChannel(channelPath)
 		require.NoError(t, err)
 		require.True(t, ok)
-		channelType, err := lite.GetChannelType(channel)
+		channelType, err := lite.GetChannelType(channelPath)
 		require.NoError(t, err)
 		require.Equal(t, expectedType, channelType)
 	}
@@ -350,7 +355,7 @@ func Test_SQLite_GetRollCallState(t *testing.T) {
 	rollCallOpen := generator.NewRollCallOpenMsg(t, "sender1", "openID", "createID", 4, nil)
 	rollCallClose := generator.NewRollCallCloseMsg(t, "sender1", "closeID", "openID", 8, nil, nil)
 	states := []string{"create", "open", "close"}
-	messages := []message.Message{rollCallCreate, rollCallOpen, rollCallClose}
+	messages := []mmessage.Message{rollCallCreate, rollCallOpen, rollCallClose}
 
 	for i, msg := range messages {
 		err = lite.StoreMessageAndData("channel1", msg)
@@ -423,13 +428,13 @@ func Test_SQLite_StoreRollCallClose(t *testing.T) {
 	err = lite.StoreRollCallClose(channels, laoID, rollCallClose)
 	require.NoError(t, err)
 
-	expected := []message.Message{rollCallClose}
+	expected := []mmessage.Message{rollCallClose}
 	messages, err := lite.GetAllMessagesFromChannel(laoID)
 	require.NoError(t, err)
 	require.Equal(t, expected, messages)
 
-	for _, channel := range channels {
-		ok, err := lite.HasChannel(channel)
+	for _, channelPath := range channels {
+		ok, err := lite.HasChannel(channelPath)
 		require.NoError(t, err)
 		require.True(t, ok)
 	}
@@ -452,7 +457,7 @@ func Test_SQLite_StoreElectionWithElectionKey(t *testing.T) {
 	electionSetupMsg := generator.NewElectionSetupMsg(t, "sender1", "ID1", laoID, "electionName",
 		"version", 1, 2, 3, nil, nil)
 
-	electionKey := messagedata.ElectionKey{
+	electionKey := melection.ElectionKey{
 		Object:   "election",
 		Action:   "key",
 		Election: electionID,
@@ -462,23 +467,23 @@ func Test_SQLite_StoreElectionWithElectionKey(t *testing.T) {
 	electionKeyBytes, err := json.Marshal(electionKey)
 	require.NoError(t, err)
 
-	electionKeyMsg := message.Message{
+	electionKeyMsg := mmessage.Message{
 		Data:              base64.URLEncoding.EncodeToString(electionKeyBytes),
 		Sender:            "sender1",
 		Signature:         "sig1",
 		MessageID:         "ID2",
-		WitnessSignatures: []message.WitnessSignature{},
+		WitnessSignatures: []mmessage.WitnessSignature{},
 	}
 
 	err = lite.StoreElectionWithElectionKey(laoID, electionID, point, secret, electionSetupMsg, electionKeyMsg)
 	require.NoError(t, err)
 
-	expected := []message.Message{electionSetupMsg}
+	expected := []mmessage.Message{electionSetupMsg}
 	messages, err := lite.GetAllMessagesFromChannel(laoID)
 	require.NoError(t, err)
 	require.Equal(t, expected, messages)
 
-	expected = []message.Message{electionKeyMsg, electionSetupMsg}
+	expected = []mmessage.Message{electionKeyMsg, electionSetupMsg}
 	messages, err = lite.GetAllMessagesFromChannel(electionID)
 	require.NoError(t, err)
 	require.Equal(t, expected, messages)
@@ -505,12 +510,12 @@ func Test_SQLite_StoreElection(t *testing.T) {
 	err = lite.StoreElection(laoID, electionID, point, secret, electionSetupMsg)
 	require.NoError(t, err)
 
-	expected := []message.Message{electionSetupMsg}
+	expected := []mmessage.Message{electionSetupMsg}
 	messages, err := lite.GetAllMessagesFromChannel(laoID)
 	require.NoError(t, err)
 	require.Equal(t, expected, messages)
 
-	expected = []message.Message{electionSetupMsg}
+	expected = []mmessage.Message{electionSetupMsg}
 	messages, err = lite.GetAllMessagesFromChannel(electionID)
 	require.NoError(t, err)
 	require.Equal(t, expected, messages)
@@ -577,7 +582,7 @@ func Test_SQLite_GetElectionCreationTimeAndType(t *testing.T) {
 	creationTime := int64(123456789)
 
 	electionSetupMsg := generator.NewElectionSetupMsg(t, "sender1", "ID1", laoPath, "electionName",
-		messagedata.OpenBallot, creationTime, 2, 3, nil, nil)
+		mlao.OpenBallot, creationTime, 2, 3, nil, nil)
 
 	err = lite.StoreMessageAndData(electionPath, electionSetupMsg)
 	require.NoError(t, err)
@@ -588,7 +593,7 @@ func Test_SQLite_GetElectionCreationTimeAndType(t *testing.T) {
 
 	electionType, err := lite.GetElectionType(electionPath)
 	require.NoError(t, err)
-	require.Equal(t, messagedata.OpenBallot, electionType)
+	require.Equal(t, mlao.OpenBallot, electionType)
 }
 
 func Test_SQLite_GetElectionAttendees(t *testing.T) {
@@ -625,7 +630,7 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 	laoPath := "laoPath"
 	laoID := "laoID"
 	electionID := "electionID"
-	questions := []messagedata.ElectionSetupQuestion{
+	questions := []mlao.ElectionSetupQuestion{
 		{
 			ID:            "questionID1",
 			Question:      "question1",
@@ -635,7 +640,7 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 	}
 
 	electionSetupMsg := generator.NewElectionSetupMsg(t, "sender1", "ID1", laoPath, "electionName",
-		messagedata.OpenBallot, 1, 2, 3, questions, nil)
+		mlao.OpenBallot, 1, 2, 3, questions, nil)
 
 	err = lite.StoreMessageAndData(electionPath, electionSetupMsg)
 	require.NoError(t, err)
@@ -643,7 +648,7 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 	data64, err := base64.URLEncoding.DecodeString(electionSetupMsg.Data)
 	require.NoError(t, err)
 
-	var electionSetup messagedata.ElectionSetup
+	var electionSetup mlao.ElectionSetup
 	err = json.Unmarshal(data64, &electionSetup)
 	require.NoError(t, err)
 
@@ -660,7 +665,7 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 	require.NoError(t, err)
 
 	question1 := expected["questionID1"]
-	question1.ValidVotes = map[string]types.ValidVote{
+	question1.ValidVotes = map[string]telection.ValidVote{
 		"sender1": {MsgID: castVoteMsg.MessageID, ID: "voteID1", VoteTime: 1, Index: "Option1"},
 	}
 	expected["questionID1"] = question1
@@ -679,7 +684,7 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 	require.NoError(t, err)
 
 	question1 = expected["questionID1"]
-	question1.ValidVotes = map[string]types.ValidVote{
+	question1.ValidVotes = map[string]telection.ValidVote{
 		"sender1": {MsgID: castVoteMsg.MessageID, ID: "voteID2", VoteTime: 2, Index: "Option2"},
 	}
 	expected["questionID1"] = question1
@@ -705,7 +710,7 @@ func Test_SQLite_StoreElectionEndWithResult(t *testing.T) {
 	err = lite.StoreElectionEndWithResult(electionPath, electionEndMsg, electionResultMsg)
 	require.NoError(t, err)
 
-	expected := []message.Message{electionEndMsg, electionResultMsg}
+	expected := []mmessage.Message{electionEndMsg, electionResultMsg}
 	messages, err := lite.GetAllMessagesFromChannel(electionPath)
 	require.NoError(t, err)
 	require.Equal(t, expected, messages)
@@ -721,7 +726,7 @@ func Test_SQLite_StoreChirpMessages(t *testing.T) {
 	generalChirpPath := "generalChirpID"
 
 	chirpMsg := generator.NewChirpAddMsg(t, "sender1", nil, 1)
-	generalChirpMsg := message.Message{
+	generalChirpMsg := mmessage.Message{
 		Data:      base64.URLEncoding.EncodeToString([]byte("data")),
 		Sender:    "sender1",
 		Signature: "sig2",
@@ -731,12 +736,12 @@ func Test_SQLite_StoreChirpMessages(t *testing.T) {
 	err = lite.StoreChirpMessages(chirpPath, generalChirpPath, chirpMsg, generalChirpMsg)
 	require.NoError(t, err)
 
-	expected := []message.Message{chirpMsg}
+	expected := []mmessage.Message{chirpMsg}
 	messages, err := lite.GetAllMessagesFromChannel(chirpPath)
 	require.NoError(t, err)
 	require.Equal(t, expected, messages)
 
-	expected = []message.Message{generalChirpMsg}
+	expected = []mmessage.Message{generalChirpMsg}
 	messages, err = lite.GetAllMessagesFromChannel(generalChirpPath)
 	require.NoError(t, err)
 	require.Equal(t, expected, messages)
@@ -799,9 +804,9 @@ func Test_SQLite_IsChallengeValid(t *testing.T) {
 	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
 
-	challenge := messagedata.FederationChallenge{
-		Object:     messagedata.FederationObject,
-		Action:     messagedata.FederationActionChallenge,
+	challenge := mfederation.FederationChallenge{
+		Object:     channel.FederationObject,
+		Action:     channel.FederationActionChallenge,
 		Value:      value,
 		ValidUntil: validUntil,
 	}
@@ -844,9 +849,9 @@ func Test_SQLite_GetFederationExpect(t *testing.T) {
 	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
 
-	challenge := messagedata.FederationChallenge{
-		Object:     messagedata.FederationObject,
-		Action:     messagedata.FederationActionChallenge,
+	challenge := mfederation.FederationChallenge{
+		Object:     channel.FederationObject,
+		Action:     channel.FederationActionChallenge,
 		Value:      value,
 		ValidUntil: validUntil,
 	}
@@ -890,9 +895,9 @@ func Test_SQLite_GetFederationInit(t *testing.T) {
 	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
 
-	challenge := messagedata.FederationChallenge{
-		Object:     messagedata.FederationObject,
-		Action:     messagedata.FederationActionChallenge,
+	challenge := mfederation.FederationChallenge{
+		Object:     channel.FederationObject,
+		Action:     channel.FederationActionChallenge,
 		Value:      value,
 		ValidUntil: validUntil,
 	}

@@ -1,11 +1,11 @@
 package state
 
 import (
-	"popstellar/internal/errors"
-	"popstellar/internal/message/query/method"
-	"sync"
-
 	"github.com/rs/zerolog"
+	"popstellar/internal/errors"
+	"popstellar/internal/handler/method/getmessagesbyid/mgetmessagesbyid"
+	"popstellar/internal/handler/method/rumor/mrumor"
+	"sync"
 )
 
 // Queries let the hub remember all queries that it sent to other servers
@@ -15,22 +15,23 @@ type Queries struct {
 	// query not yet answered, else true.
 	state map[int]bool
 	// getMessagesByIdQueries stores the server's getMessagesByIds queries by their ID.
-	getMessagesByIdQueries map[int]method.GetMessagesById
-	getRumorQueries        map[int]method.Rumor
+	getMessagesByIdQueries map[int]mgetmessagesbyid.GetMessagesById
+	getRumorQueries        map[int]mrumor.Rumor
 
 	// nextID store the ID of the next query
 	nextID int
+
 	// zerolog
-	log *zerolog.Logger
+	log zerolog.Logger
 }
 
 // NewQueries creates a new queries struct
-func NewQueries(log *zerolog.Logger) *Queries {
+func NewQueries(log zerolog.Logger) *Queries {
 	return &Queries{
 		state:                  make(map[int]bool),
-		getMessagesByIdQueries: make(map[int]method.GetMessagesById),
-		getRumorQueries:        make(map[int]method.Rumor),
-		log:                    log,
+		getMessagesByIdQueries: make(map[int]mgetmessagesbyid.GetMessagesById),
+		getRumorQueries:        make(map[int]mrumor.Rumor),
+		log:                    log.With().Str("module", "queries").Logger(),
 	}
 }
 
@@ -68,8 +69,7 @@ func (q *Queries) SetQueryReceived(id int) error {
 	}
 
 	if currentState {
-		q.log.Info().Msgf("query with id %d already answered", id)
-		return nil
+		return errors.NewDuplicateResourceError("query with id %d already answered", id)
 	}
 
 	q.state[id] = true
@@ -77,7 +77,7 @@ func (q *Queries) SetQueryReceived(id int) error {
 }
 
 // AddQuery adds the given query to the table
-func (q *Queries) AddQuery(id int, query method.GetMessagesById) {
+func (q *Queries) AddQuery(id int, query mgetmessagesbyid.GetMessagesById) {
 	q.Lock()
 	defer q.Unlock()
 
@@ -85,7 +85,7 @@ func (q *Queries) AddQuery(id int, query method.GetMessagesById) {
 	q.state[id] = false
 }
 
-func (q *Queries) AddRumorQuery(id int, query method.Rumor) {
+func (q *Queries) AddRumorQuery(id int, query mrumor.Rumor) {
 	q.Lock()
 	defer q.Unlock()
 
@@ -102,13 +102,13 @@ func (q *Queries) IsRumorQuery(queryID int) bool {
 	return ok
 }
 
-func (q *Queries) GetRumorFromPastQuery(queryID int) (method.Rumor, bool) {
+func (q *Queries) GetRumorFromPastQuery(queryID int) (mrumor.Rumor, bool) {
 	q.Lock()
 	defer q.Unlock()
 
 	rumor, ok := q.getRumorQueries[queryID]
 	if !ok {
-		return method.Rumor{}, false
+		return mrumor.Rumor{}, false
 	}
 
 	return rumor, true

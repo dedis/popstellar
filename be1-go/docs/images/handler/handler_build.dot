@@ -1,0 +1,88 @@
+strict digraph {
+//labelloc="t";
+label = <Implemented Message-Handling Flow <font point-size='10'><br/>11.06.2024</font>>;
+//graph [fontname = "helvetica"];
+//graph [fontname = "helvetica"];
+//node [fontname = "helvetica"];
+//edge [fontname = "helvetica"];
+node [shape=box,style=rounded];
+start=0;
+ratio = fill;
+rankdir="LR";
+
+"Missing some messages"[ fillcolor=orange, style=filled];
+"Need to be refactored"[ fillcolor=tomato, style=filled];
+
+"Incoming Message"[ shape=plaintext];
+
+"Incoming Message"  -> "Hub";
+
+"Hub" -> "jsonrpc";
+
+subgraph cluster_jsonrpc{
+node [shape=box,style=rounded];
+label = "jsonRPC-level";
+"jsonrpc";
+"query";
+"answer";
+}
+
+subgraph cluster_method{
+node [shape=box,style=rounded];
+label = "method-level";
+"unsubscribe";
+"subscribe";
+"rumor";
+"publish";
+"heartbeat";
+"greetserver";
+"getmessagesbyid";
+"catchup";
+}
+
+subgraph cluster_message{
+node [shape=box,style=rounded];
+label = "message-level";
+"message";
+}
+
+subgraph cluster_channel{
+node [shape=box,style=rounded];
+label = "channel-level";
+"root";
+"reaction";
+"popcha"[ fillcolor=tomato, style=filled];
+"lao"[ fillcolor=orange, style=filled];
+"federation";
+"election";
+"consensus"[ fillcolor="tomato" style=filled];
+"coin";
+"chirp";
+}
+
+"jsonrpc" -> "query";
+"jsonrpc" -> "answer";
+
+"query" -> "catchup";
+"query" -> "getmessagesbyid";
+"query" -> "greetserver";
+"query" -> "heartbeat";
+"query" -> "publish";
+"query" -> "rumor";
+"query" -> "subscribe";
+"query" -> "unsubscribe";
+
+"publish" -> "message";
+"rumor" -> "message";
+"answer" -> "message";
+
+"message" -> "chirp";
+"message" -> "coin";
+"message" -> "election";
+"message" -> "federation";
+"message" -> "lao";
+"message" -> "reaction";
+"message" -> "root";
+
+
+}

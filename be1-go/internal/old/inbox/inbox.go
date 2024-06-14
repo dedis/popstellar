@@ -5,12 +5,12 @@ import (
 	"sync"
 	"time"
 
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/handler/message/mmessage"
 )
 
 // messageInfo wraps a message with a stored time for sorting.
 type messageInfo struct {
-	message    message.Message
+	message    mmessage.Message
 	storedTime int64
 }
 
@@ -20,7 +20,7 @@ type Inbox struct {
 	msgsMap           map[string]*messageInfo
 	msgsArray         []*messageInfo
 	channelID         string
-	pendingSignatures map[string][]message.WitnessSignature
+	pendingSignatures map[string][]mmessage.WitnessSignature
 }
 
 // NewInbox returns a new initialized inbox
@@ -30,7 +30,7 @@ func NewInbox(channelID string) *Inbox {
 		msgsMap:           make(map[string]*messageInfo),
 		msgsArray:         make([]*messageInfo, 0),
 		channelID:         channelID,
-		pendingSignatures: make(map[string][]message.WitnessSignature),
+		pendingSignatures: make(map[string][]mmessage.WitnessSignature),
 	}
 }
 
@@ -43,12 +43,12 @@ func (i *Inbox) AddWitnessSignature(messageID string, public string, signature s
 	msg, ok := i.msgsMap[messageID]
 	if !ok {
 		// Add the signature to the pending signatures
-		i.pendingSignatures[messageID] = append(i.pendingSignatures[messageID], message.WitnessSignature{
+		i.pendingSignatures[messageID] = append(i.pendingSignatures[messageID], mmessage.WitnessSignature{
 			Witness:   public,
 			Signature: signature,
 		})
 	} else {
-		msg.message.WitnessSignatures = append(msg.message.WitnessSignatures, message.WitnessSignature{
+		msg.message.WitnessSignatures = append(msg.message.WitnessSignatures, mmessage.WitnessSignature{
 			Witness:   public,
 			Signature: signature,
 		})
@@ -56,7 +56,7 @@ func (i *Inbox) AddWitnessSignature(messageID string, public string, signature s
 }
 
 // StoreMessage stores a message inside the inbox
-func (i *Inbox) StoreMessage(msg message.Message) {
+func (i *Inbox) StoreMessage(msg mmessage.Message) {
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
 
@@ -78,7 +78,7 @@ func (i *Inbox) StoreMessage(msg message.Message) {
 }
 
 // GetSortedMessages returns all messages stored sorted by stored time.
-func (i *Inbox) GetSortedMessages() []message.Message {
+func (i *Inbox) GetSortedMessages() []mmessage.Message {
 	i.mutex.RLock()
 	defer i.mutex.RUnlock()
 
@@ -87,7 +87,7 @@ func (i *Inbox) GetSortedMessages() []message.Message {
 		return i.msgsArray[k].storedTime < i.msgsArray[l].storedTime
 	})
 
-	result := make([]message.Message, len(i.msgsArray))
+	result := make([]mmessage.Message, len(i.msgsArray))
 
 	// iterate and extract the messages[i].message field and
 	// append it to the result slice
@@ -100,7 +100,7 @@ func (i *Inbox) GetSortedMessages() []message.Message {
 
 // GetMessage returns the message of messageID if it exists. We need a pointer
 // on message to add witness signatures.
-func (i *Inbox) GetMessage(messageID string) (*message.Message, bool) {
+func (i *Inbox) GetMessage(messageID string) (*mmessage.Message, bool) {
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
 

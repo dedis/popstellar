@@ -30,49 +30,6 @@ other text editors since it works out of the box and EPFL/ETHZ students may
 avail a [free education license](https://www.jetbrains.com/community/education/#students)
 for their use.
 
-#### Project Structure
-
-The project is organized into different modules as follows
-
-```
-├── cli                         # command line interface
-├── docs
-└── internal
-    ├── crypto                  # defines the cryptographic suite
-    ├── docsutils               # utils use for the documentation
-    ├── handler                 # handle the incoming messages
-    │   ├── answer              # handler for the answers
-    │   ├── channel             # handler for the channel
-    │   └── query               # handler for the queries
-    ├── hub                     # entry point of the messages received by the sockets
-    ├── logger                  # logger use inside the implementation
-    ├── message                 # message types and marshaling/unmarshaling logic
-    ├── mocks                   # mocks and utils use inside tests
-    │   └── generator           # query and message generators only use for the tests
-    ├── network                 # module to set up Websocket connections
-    │   └── socket              # module to send/receive data over the wire
-    ├── old                     # old implementation NEED TO BE DELETE
-    ├── popcha                  # HTTP server and back-end logic for PoPCHA NEED TO BE REFACTOR
-    ├── repository              # repository for the database
-    ├── singleton               # NEED TO BE REMOVE AND REPLACE BY REF INJECTION
-    │   ├── config              # server config informations and server keys
-    │   ├── database            # database
-    │   ├── state               # temporary states of the server (peers, queries, and subscriptions)
-    │   └── utils               # singleton with the log instance and the schema validator
-    ├── sqlite                  # sqlite implementation of the repository
-    ├── types                   # types use inside the implementation
-    └── validation              # module to validate incoming/outgoing messages
-```
-
-The entry point is the `cli` with bulk of the implementation logic in the `popserver` package.
-
-The following diagram represents the relations between the packages in the
-application.
-
-<div align="center">
-  <img alt="Global architecture" src="images/dependencies/dependencies.png" width="600" />
-</div>
-
 #### Architecture
 
 The PoP Go backend expects actors (depending on the context these may be
@@ -103,7 +60,30 @@ the [schemas](https://github.com/dedis/popstellar/tree/master/protocol) in
 this repository are **always** the source of truth and are more up to date than
 the Google Doc.
 
-##### Getting messages over the wire
+#### Project Structure
+
+The project is organized into different packages/directories as follow:
+
+```
+├── cli                         # command line interface
+├── docs
+└── internal
+    ├── crypto                  # defines the cryptographic suite
+    ├── database                # directory with the database implementation packages
+    ├── docsutils               # directory with the utils for the documentation
+    ├── errors                  # error type used inside all the project
+    ├── handler                 # directory with all the logic (handlers, message structures, types)
+    ├── hub                     # builder of the logic flow + entry point of the messages received by the sockets
+    ├── logger                  # global logger used inside all the project
+    ├── network                 # Websocket connection + socket to receive/send over the Websocket
+    ├── old                     # directory with the old backend implementation NEED TO BE DELETED AFTER TOTAL REFACTORING
+    ├── popcha                  # HTTP server and back-end logic for PoPCHA NEED TO BE REFACTOR
+    ├── state                   # in memory state implementations
+    ├── test                    # test utils + future integration tests
+    └── validation              # validate incoming/outgoing messages
+```
+
+##### Getting messages over the wire (*Need to be updated*)
 
 The `Socket` interface (refer `network/socket/mod.go`) describes the methods
 used for reading or sending data/error messages from/to the end user.
@@ -127,32 +107,122 @@ Refer to the channel returned by `Receiver()` in the `Hub` interface.
 We use [github.com/gorilla/websocket](github.com/gorilla/websocket) to manage
 websocket connections.
 
-##### Processing messages in the application layer
 
-The incoming messages received by the `ReadPump` are propagated up the stack to the `Hub`. The `Hub`, on receiving a message,
-processes it by invoking the `HandleIncomingMessage` method from the package `handler` and in case of `Error`, while processing the message, it will log it.
-In parallel, the `Hub` will send a `Heartbeat` every 30 seconds to all the connected servers.
+##### Handler Structure
 
-The flowchart below describes all the possible way for a message inside the handlers from package `handler`.
+The `handler` directory contains all the modules of the backend logic for PoP as follows:
+
+```plaintext
+handler
+├── answer                      # Logic for the JSON-RPC answer (getMessagesById and rumor answers)
+│
+├── channel                     # Directory with all the channel modules
+│   ├── authentication          # For popcha#authenticate
+│   ├── chirp                   # For chirp#add|delete
+│   ├── coin                    # For coin#post_transaction
+│   ├── consensus               # For consensus#elect|elect_accept|prepare|promise|propose|accept|learn|failure
+│   ├── election                # For election#key|open|cast_vote|end|result
+│   ├── federation              # For federation#challenge_request|challenge|expect|init|result
+│   ├── lao                     # For lao#update_properties|state|greet
+│   │                                roll_call#create|open|close|reopen
+│   │                                message#witness
+│   │                                meeting#create|state
+│   ├── reaction                # For reaction#add|delete
+│   └── root                    # For lao#create
+│
+├── jsonrpc                     # Logic to validate the incoming message
+│                                   and switch between the query and answer modules
+│
+├── message                     # Logic to validate the signature of a message
+│                                   and switch between the channel modules
+│
+├── method                      # Directory with all the method modules
+│   ├── broadcast
+│   ├── catchup      
+│   ├── getMessagesById
+│   ├── greetServer
+│   ├── heartbeat
+│   ├── publish
+│   ├── rumor
+│   ├── subscribe
+│   └── unsubscribe
+│
+└── query                       # Logic to switch between the methods
+                                    and respond with an error to the sender in case of an error deeper in the flow 
+```
+
+##### Module Structure
+
+Each module can have up to three packages using the following convention:
+1. A package starting with the letter **h for Handler** contains all the logic to handle the messages of the module.
+2. A package starting with the letter **m for Message** defines the structure of all the messages of the module.
+3. A package starting with the letter **t for Type** contains all the types used inside the module that could also be used outside (e.g., with the database).
+
+For example, the implementation of the `election` channel is divided as follows:
+
+```plaintext
+election                    
+├── helection                   # All the logic for the messages: election#key|open|cast_vote|end|result
+├── melection                   # All the structures for the messages: election#key|open|cast_vote|end|result
+└── telection                   # The type Question used to simplify interactions with the database
+```
+
+### Types of Modules
+
+As the PoP protocol has different levels, the modules can have different types. Currently, we have four different kinds of modules:
+
+1. **JSON-RPC Level** with the modules `jsonrpc`, `query`, and `answer`
+
+```go
+type Module interface {
+    Handle(socket Socket, message []byte) error
+}
+```
+
+2. **Method Level** with all the modules inside the `method` directory
+
+```go
+type Module interface {
+    Handle(socket Socket, message []byte) (*int, error)
+}
+```
+
+3. **Message Level** with the `message` module (to be merged with the channel-level by removing the last argument)
+
+```go
+type Module interface {
+    Handle(channelPath string, message Message, isRumor bool) error
+}
+```
+
+4. **Channel Level** with all the modules inside the `channel` directory
+
+```go
+type Module interface {
+    Handle(channelPath string, message Message) error
+}
+```
+
+##### Building the Message-Handling Flow
+
+The **Message-Handling Flow** is created during the `Hub` creation. It is built once using a **Top-Down** construction by **injecting dependencies** (`States`, `Database access`) into each module before assembling them together.
 
 <div align="center">
-  <img src="images/handler/handler.png" alt="Flowchart"/>
+  <img width="600" src="images/handler/handler_build.png" alt="Message-Handling Flow"/>
 </div>
 
-<p align="center"><i>
-  Flowchart last updated on 11.05.2024 and everything in red is still missing in the refactoring
-</i></p>
+##### Processing Messages in the Application Layer
 
-We use `Socket.SendError` to send an `Error` back to the client. We use this function only in two places, inside `HandleIncomingMessage` 
-in case the format of message is wrong or inside `handleQuery` because we should never answer an error to an answer to avoid loops.
+The `Hub` has three primary responsibilities:
 
-We use `Socket.SendResult` to send a `Result` back to the client when there is no error after processing its query. We use it only inside `query.go` at the end of each method.
+1. Handling the **Incoming Messages** received from all sockets using the **Message-Handling Flow** and logging any returned **errors**.
+2. Sending a **Heartbeat** to every known neighboring server every X seconds.
+3. Sending a **Rumor** to a random neighboring server every Y seconds if needed.
 
-We check the Mid-level communication inside `channel.go`.
+##### Database (*Need to be updated*)
 
-##### Database
 <div align="center">
-  <img src="images/database.png" alt="Flowchart"/>
+  <img width="600"  src="images/database.png" alt="Flowchart"/>
 </div>
 
 <p align="center"><i>
@@ -163,13 +233,6 @@ The database is used to store the state of the server. It is implemented in the 
 We use the Repository pattern to interact with the database. 
 The current implementation uses a SQLite database.
 For testing we use [github.com/vektra/mockery](https://github.com/vektra/mockery)  to mock the database.
-
-
-##### Message definitions
-
-All messages are defined in the `message` package. Please note that the JSON-RPC
-definitions in the root of the repository are to be considered a source of truth
-since the validation library checks the messages against it.
 
 ##### Validation
 
