@@ -6,8 +6,8 @@ import (
 
 type RumorTimestamp map[string]int
 
-func (r *RumorTimestamp) IsValid(rumor mrumor.Rumor) bool {
-	myRumorID, ok := (*r)[rumor.Params.SenderID]
+func (r RumorTimestamp) IsValid(rumor mrumor.Rumor) bool {
+	myRumorID, ok := r[rumor.Params.SenderID]
 	if !ok && rumor.Params.RumorID != 0 {
 		return false
 	}
@@ -20,7 +20,7 @@ func (r *RumorTimestamp) IsValid(rumor mrumor.Rumor) bool {
 			continue
 		}
 
-		myRumorID, ok := (*r)[senderID]
+		myRumorID, ok := r[senderID]
 		if !ok {
 			return false
 		}
