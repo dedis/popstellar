@@ -3315,7 +3315,7 @@ This message is sent by Bob's server. The purpose of this message is to provide 
 ## Exchanging tokens to share data between LAOs (federation#tokens_exchange)
 For now, data exchange is only implemented for social media channel.
 
-This message is sent by both organizers to their servers to be broadcast. The message include the pop tokens of the other LAO. Upon receiving this message, participants will be able to subscribe to each channel /root/lao_id/social/token.
+This message is sent by both organizers to their servers to be broadcast. The message sent from Alice's server to Bob's server contains the pop tokens of Alice's LAO and vice versa. Upon receiving this message, participants will be able to subscribe to each channel /root/lao_id/social/token.
 <details>
 <summary>
 💡 See an example
