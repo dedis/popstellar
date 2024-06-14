@@ -28,6 +28,8 @@ import (
 	"popstellar/internal/handler/method/publish/hpublish"
 	"popstellar/internal/handler/method/rumor/hrumor"
 	"popstellar/internal/handler/method/rumor/mrumor"
+	"popstellar/internal/handler/method/rumor/trumor"
+	"popstellar/internal/handler/method/rumorstate/mrumorstate"
 	"popstellar/internal/handler/method/subscribe/hsubscribe"
 	"popstellar/internal/handler/method/unsubscribe/hunsubscribe"
 	"popstellar/internal/handler/query/hquery"
@@ -53,6 +55,7 @@ type Subscribers interface {
 type Sockets interface {
 	Upsert(socket socket.Socket)
 	SendToAll(buf []byte)
+	SendToRandom(buf []byte)
 }
 
 type Repository interface {
@@ -60,6 +63,8 @@ type Repository interface {
 	GetAndIncrementMyRumor() (bool, mrumor.Rumor, error)
 
 	GetParamsHeartbeat() (map[string][]string, error)
+
+	GetRumorTimestamp() (trumor.RumorTimestamp, error)
 }
 
 type JsonRpcHandler interface {
@@ -366,6 +371,53 @@ func (h *Hub) sendHeartbeat() error {
 	}
 
 	h.sockets.SendToAll(buf)
+
+	return nil
+}
+
+func (h *Hub) runRumorState() {
+	ticker := time.NewTicker(rumorDelay)
+	defer ticker.Stop()
+	defer h.wg.Done()
+	defer h.log.Info().Msg("stopping rumor state sender")
+
+	h.log.Info().Msg("starting rumor state sender")
+
+	for {
+		select {
+		case <-ticker.C:
+			err := h.sendRumorState()
+			if err != nil {
+				h.log.Error().Err(err)
+			}
+		case <-h.stop:
+			return
+		}
+	}
+}
+
+func (h *Hub) sendRumorState() error {
+	timestamp, err := h.db.GetRumorTimestamp()
+	if err != nil {
+		return err
+	}
+
+	rumorStateMessage := mrumorstate.RumorState{
+		Base: mquery.Base{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "rumorstate",
+		},
+		Params: timestamp,
+	}
+
+	buf, err := json.Marshal(rumorStateMessage)
+	if err != nil {
+		return poperrors.NewJsonMarshalError(err.Error())
+	}
+
+	h.sockets.SendToRandom(buf)
 
 	return nil
 }

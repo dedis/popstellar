@@ -6,6 +6,7 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/rumor/mrumor"
+	"popstellar/internal/handler/method/rumor/trumor"
 	"popstellar/internal/network/socket"
 	"sort"
 )
@@ -23,7 +24,7 @@ type Sockets interface {
 
 type Repository interface {
 	// CheckRumor returns true if the rumor already exists
-	CheckRumor(senderID string, rumorID int, timestamp map[string]int) (valid, alreadyHas bool, err error)
+	CheckRumor(senderID string, rumorID int, timestamp trumor.RumorTimestamp) (valid, alreadyHas bool, err error)
 
 	// StoreRumor stores the new rumor with its processed and unprocessed messages
 	StoreRumor(rumorID int, sender string, unprocessed map[string][]mmessage.Message, processed []string) error
