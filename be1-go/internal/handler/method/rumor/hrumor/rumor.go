@@ -24,13 +24,16 @@ type Sockets interface {
 
 type Repository interface {
 	// CheckRumor returns true if the rumor already exists
-	CheckRumor(senderID string, rumorID int, timestamp trumor.RumorTimestamp) (valid, alreadyHas bool, err error)
+	CheckRumor(senderID string, rumorID int, timestamp map[string]int) (valid, alreadyHas bool, err error)
 
 	// StoreRumor stores the new rumor with its processed and unprocessed messages
 	StoreRumor(rumorID int, sender string, unprocessed map[string][]mmessage.Message, processed []string) error
 
 	// GetUnprocessedMessagesByChannel returns all the unprocessed messages by channel
 	GetUnprocessedMessagesByChannel() (map[string][]mmessage.Message, error)
+
+	// GetRumorTimestamp returns the rumor state
+	GetRumorTimestamp() (trumor.RumorTimestamp, error)
 }
 
 type MessageHandler interface {
@@ -108,7 +111,12 @@ func (h *Handler) handleAndPropagate(socket socket.Socket, rumor mrumor.Rumor) e
 
 	_ = h.tryHandlingMessagesByChannel(messages)
 
-	nextRumor, ok := h.buf.getNextRumor(rumor.Params.SenderID, rumor.Params.RumorID)
+	state, err := h.db.GetRumorTimestamp()
+	if err != nil {
+		return err
+	}
+
+	nextRumor, ok := h.buf.getNextRumor(state)
 	if !ok {
 		return nil
 	}
