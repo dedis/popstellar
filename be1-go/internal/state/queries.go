@@ -56,9 +56,6 @@ func (q *Queries) Remove(id int) {
 }
 
 func (q *Queries) addQuery(id, queryType int) error {
-	q.Lock()
-	defer q.Unlock()
-
 	_, ok := q.state[id]
 	if ok {
 		return errors.NewDuplicateResourceError("cannot have two queries with the same id %d", id)

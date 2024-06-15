@@ -323,6 +323,12 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, mrumor.Rumor, error) {
 		return false, mrumor.Rumor{}, err
 	}
 
+	if rumorID == 0 {
+		delete(timestamp, sender)
+	} else {
+		timestamp[sender] = timestamp[sender] - 1
+	}
+
 	rumor := newRumor(rumorID, sender, messages, timestamp)
 
 	_, err = tx.Exec(insertRumor, rumorID+1, sender)
@@ -370,7 +376,7 @@ func (s *SQLite) GetRumorTimestampHelper(tx *sql.Tx) (mrumor.RumorTimestamp, err
 	for rows.Next() {
 		var sender string
 		var rumorID int
-		if err = rows.Scan(&sender, &rumorID); err != nil {
+		if err = rows.Scan(&rumorID, &sender); err != nil {
 			return nil, poperrors.NewDatabaseScanErrorMsg(err.Error())
 		}
 		timestamp[sender] = rumorID

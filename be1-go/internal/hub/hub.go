@@ -302,14 +302,14 @@ func (h *Hub) runRumorSender() {
 			h.log.Debug().Msgf("sender rumor trigerred")
 			err := h.tryToSendRumor()
 			if err != nil {
-				h.log.Error().Err(err)
+				h.log.Error().Err(err).Msg("")
 			}
 		case <-h.resetRumorSender:
 			h.log.Debug().Msgf("sender rumor reset")
 			ticker.Reset(rumorDelay)
 			err := h.tryToSendRumor()
 			if err != nil {
-				h.log.Error().Err(err)
+				h.log.Error().Err(err).Msg("")
 			}
 		case <-h.stop:
 			return
@@ -320,6 +320,7 @@ func (h *Hub) runRumorSender() {
 func (h *Hub) tryToSendRumor() error {
 	ok, r, err := h.db.GetAndIncrementMyRumor()
 	if err != nil {
+		h.log.Err(err).Msg("")
 		return err
 	}
 	if !ok {
@@ -345,7 +346,7 @@ func (h *Hub) runHeartbeat() {
 		case <-ticker.C:
 			err := h.sendHeartbeat()
 			if err != nil {
-				h.log.Error().Err(err)
+				h.log.Error().Err(err).Msg("")
 			}
 		case <-h.stop:
 			return
@@ -388,7 +389,7 @@ func (h *Hub) runRumorState() {
 		case <-ticker.C:
 			err := h.sendRumorState()
 			if err != nil {
-				h.log.Error().Err(err)
+				h.log.Error().Err(err).Msg("")
 			}
 		case <-h.stop:
 			return
