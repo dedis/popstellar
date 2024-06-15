@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.lao.event.rollcall
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.os.Bundle
@@ -9,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.lifecycle.MutableLiveData
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.RollCallFragmentBinding
 import com.github.dedis.popstellar.model.objects.RollCall
@@ -50,6 +52,8 @@ class RollCallFragment : AbstractEventFragment {
 
   private val managementTextMap = buildManagementTextMap()
   private val managementIconMap = buildManagementIconMap()
+
+  private val deAnonymizationWarned = MutableLiveData(false)
 
   constructor()
 
@@ -253,6 +257,7 @@ class RollCallFragment : AbstractEventFragment {
               .getAttendees()
               .stream()
               .map(PublicKey::encoded)
+              .sorted(compareBy(String::toString))
               .collect(Collectors.toList())
 
       binding.rollCallAttendeesText.text =
@@ -260,8 +265,8 @@ class RollCallFragment : AbstractEventFragment {
               resources.getString(R.string.roll_call_scanned),
               rollCallViewModel.getAttendees().size)
     } else if (rollCall.isClosed) {
-      attendeesList =
-          rollCall.attendees.stream().map(PublicKey::encoded).collect(Collectors.toList())
+      val orderedAttendees: MutableSet<PublicKey> = LinkedHashSet(rollCall.attendees)
+      attendeesList = orderedAttendees.stream().map(PublicKey::encoded).collect(Collectors.toList())
 
       // Show the list of attendees if the roll call has ended
       binding.rollCallAttendeesText.text =
@@ -271,11 +276,7 @@ class RollCallFragment : AbstractEventFragment {
     if (attendeesList != null) {
       binding.listViewAttendees.adapter =
           RollCallArrayAdapter(
-              requireContext(),
-              android.R.layout.simple_list_item_1,
-              attendeesList,
-              popToken,
-          )
+              requireContext(), android.R.layout.simple_list_item_1, attendeesList, popToken, this)
     }
   }
 
@@ -335,6 +336,17 @@ class RollCallFragment : AbstractEventFragment {
     return map
   }
 
+  fun isAttendeeListSorted(attendeesList: List<String>, context: Context): Boolean {
+    if (attendeesList.isNotEmpty() &&
+        attendeesList != attendeesList.sorted() &&
+        deAnonymizationWarned.value == false) {
+      deAnonymizationWarned.value = true
+      logAndShow(context, TAG, R.string.roll_call_attendees_list_not_sorted)
+      return false
+    }
+    return true
+  }
+
   @VisibleForTesting(otherwise = VisibleForTesting.NONE)
   constructor(rollCall: RollCall) {
     this.rollCall = rollCall
@@ -349,7 +361,6 @@ class RollCallFragment : AbstractEventFragment {
       val bundle = Bundle(1)
       bundle.putString(ROLL_CALL_ID, persistentId)
       fragment.arguments = bundle
-
       return fragment
     }
 

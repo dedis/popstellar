@@ -11,6 +11,7 @@ import com.github.dedis.popstellar.ui.home.HomeFragment
 import com.github.dedis.popstellar.ui.home.LaoCreateFragment
 import com.github.dedis.popstellar.ui.lao.LaoActivity
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallFragment
+import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsFragment
 import com.github.dedis.popstellar.utility.UIUtils.InputFieldConfig
 import java.util.function.BiConsumer
 import java.util.function.Function
@@ -116,6 +117,51 @@ enum class ScanningAction(
       { manager, _ ->
         LaoActivity.setCurrentFragment(manager, R.id.fragment_popcha_home) {
           com.github.dedis.popstellar.ui.lao.popcha.PoPCHAHomeFragment()
+        }
+      },
+      false),
+  FEDERATION_INVITE(
+      R.string.qrcode_scanning_federation,
+      R.string.scanned_organizer,
+      R.string.invite_other_organization,
+      R.string.manual_add_organization_title,
+      arrayOf(
+          InputFieldConfig(R.string.manual_add_organization_lao_id_hint, true),
+          InputFieldConfig(R.string.manual_add_organization_server_url_hint, true),
+          InputFieldConfig(R.string.manual_add_organization_organizer_public_key_hint, true)),
+      { inputs ->
+        "{\"lao_id\":\"${inputs[R.string.manual_add_organization_lao_id_hint]}\",\"server_address\":\"${inputs[R.string.manual_add_organization_server_url_hint]}\",\"public_key\":\"${inputs[R.string.manual_add_organization_organizer_public_key_hint]}}"
+      },
+      { activity: FragmentActivity, laoId: String? ->
+        LaoActivity.obtainLinkedOrganizationsViewModel(activity, laoId)
+      },
+      { activity: FragmentActivity -> LaoActivity.obtainViewModel(activity) },
+      { manager: FragmentManager, _: Array<String> ->
+        LaoActivity.setCurrentFragment(manager, R.id.fragment_linked_organizations_home) {
+          LinkedOrganizationsFragment.newInstance()
+        }
+      },
+      false),
+  FEDERATION_JOIN(
+      R.string.qrcode_scanning_federation,
+      R.string.scanned_organizer,
+      R.string.join_other_organization_invitation,
+      R.string.manual_add_organization_title,
+      arrayOf(
+          InputFieldConfig(R.string.manual_add_organization_lao_id_hint, true),
+          InputFieldConfig(R.string.manual_add_organization_server_url_hint, true),
+          InputFieldConfig(R.string.manual_add_organization_organizer_public_key_hint, true),
+          InputFieldConfig(R.string.manual_add_organization_challenge_hint, true)),
+      { inputs ->
+        "{\"lao_id\":\"${inputs[R.string.manual_add_organization_lao_id_hint]}\",\"server_address\":\"${inputs[R.string.manual_add_organization_server_url_hint]}\",\"public_key\":\"${inputs[R.string.manual_add_organization_organizer_public_key_hint]}\",\"challenge\":${inputs[R.string.manual_add_organization_challenge_hint]}}"
+      },
+      { activity: FragmentActivity, laoId: String? ->
+        LaoActivity.obtainLinkedOrganizationsViewModel(activity, laoId)
+      },
+      { activity: FragmentActivity -> LaoActivity.obtainViewModel(activity) },
+      { manager: FragmentManager, _: Array<String> ->
+        LaoActivity.setCurrentFragment(manager, R.id.fragment_linked_organizations_home) {
+          LinkedOrganizationsFragment.newInstance()
         }
       },
       false);

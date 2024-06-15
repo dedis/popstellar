@@ -62,7 +62,7 @@ class ChirpListAdapterTest {
       TIMESTAMP_1,
       TIMESTAMP_2,
       EventState.CLOSED,
-      HashSet(),
+      LinkedHashSet(),
       "",
       "",
     )

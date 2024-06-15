@@ -15,28 +15,6 @@ import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
 
 object SocialMediaHandler extends MessageHandler {
-  final lazy val handlerInstance = new SocialMediaHandler(super.dbActor, super.mediator)
-
-  def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleAddChirp(rpcMessage)
-
-  def handleDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleDeleteChirp(rpcMessage)
-
-  def handleNotifyAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleNotifyAddChirp(rpcMessage)
-
-  def handleNotifyDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleNotifyDeleteChirp(rpcMessage)
-
-  def handleAddReaction(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleAddReaction(rpcMessage)
-
-  def handleDeleteReaction(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleDeleteReaction(rpcMessage)
-}
-
-class SocialMediaHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorRef) extends MessageHandler {
-
-  /** Overrides default DbActor with provided parameter
-    */
-  override final val dbActor: AskableActorRef = dbRef
-  override final val mediator: AskableActorRef = mediatorRef
-
   private final val unknownAnswerDatabase: String = "Database actor returned an unknown answer"
 
   private def generateSocialChannel(laoId: Hash): Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + laoId + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)

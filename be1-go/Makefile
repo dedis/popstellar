@@ -8,7 +8,7 @@ shaFlag="popstellar.ShortSHA=$(shortsha)"
 .PHONY: test
 
 build: export CGO_ENABLED=0
-build: protocol
+build: protocol test-data
 	go build -ldflags="-X $(versionFlag) -X $(timeFlag) -X $(shaFlag)" -o pop ./cli
 	GOOS=linux GOARCH=amd64 go build -ldflags="-X $(versionFlag) -X $(timeFlag) -X $(shaFlag)" -o pop-linux-amd64-$(versionFile) ./cli
 	GOOS=darwin GOARCH=amd64 go build -ldflags="-X $(versionFlag) -X $(timeFlag) -X $(shaFlag)" -o pop-darwin-amd64-$(versionFile) ./cli
@@ -20,25 +20,140 @@ lint:
 	@go mod tidy
 	staticcheck ./...
 
-test: protocol
+test: protocol test-data
 	go test -v -race ./...
 
-test-no-cache: protocol
+test-no-cache: protocol test-data
 	go test -v -race ./... -count=1
 
-test-cov: protocol
-	go test -v -coverpkg=./... -coverprofile=coverage.out ./... -json > report.json
+test-cov: protocol test-data
+	go test -v ./... -coverprofile=coverage.out -json > report.json
 
-vet: protocol
+vet: protocol test-data
 	go vet ./...
 
 check: test test-cov lint vet
 
 protocol:
-	cp -r ../protocol ./validation 
+	cp -r ../protocol ./internal/validation
+
+test-data:
+	# Answer
+	cp -r ../protocol/examples/answer/. ./internal/handler/answer/manswer/testdata
+
+	# Methods
+	cp -r ../protocol/examples/query/broadcast/. ./internal/handler/method/broadcast/mbroadcast/testdata
+	cp -r ../protocol/examples/query/catchup/. ./internal/handler/method/catchup/mcatchup/testdata
+	cp -r ../protocol/examples/query/get_messages_by_id/. ./internal/handler/method/getmessagesbyid/mgetmessagesbyid/testdata
+	cp -r ../protocol/examples/query/greet_server/. ./internal/handler/method/greetserver/mgreetserver/testdata
+	cp -r ../protocol/examples/query/heartbeat/. ./internal/handler/method/heartbeat/mheartbeat/testdata
+	cp -r ../protocol/examples/query/publish/. ./internal/handler/method/publish/mpublish/testdata
+	cp -r ../protocol/examples/query/subscribe/. ./internal/handler/method/subscribe/msubscribe/testdata
+	cp -r ../protocol/examples/query/unsubscribe/. ./internal/handler/method/unsubscribe/munsubscribe/testdata
+
+	# Message
+	cp -r ../protocol/examples/messageData/lao_create/. ./internal/handler/message/mmessage/testdata
+
+	# Channel
+	cp -r ../protocol/examples/messageData/test_messages/. ./internal/handler/channel/testdata
+
+	# Authentification
+	cp -r ../protocol/examples/messageData/popcha_authenticate/. ./internal/handler/channel/authentication/mauthentication/testdata
+
+	# Chirp
+	cp -r ../protocol/examples/messageData/chirp_add_publish/. ./internal/handler/channel/chirp/mchirp/testdata
+	cp -r ../protocol/examples/messageData/chirp_delete_publish/. ./internal/handler/channel/chirp/mchirp/testdata
+	cp -r ../protocol/examples/messageData/chirp_notify_add/. ./internal/handler/channel/chirp/mchirp/testdata
+	cp -r ../protocol/examples/messageData/chirp_notify_delete/. ./internal/handler/channel/chirp/mchirp/testdata
+
+	# Coin
+	cp -r ../protocol/examples/messageData/coin/. ./internal/handler/channel/coin/hcoin/testdata
+	cp -r ../protocol/examples/messageData/coin/. ./internal/handler/channel/coin/mcoin/testdata
+
+	# Consensus
+	cp -r ../protocol/examples/messageData/consensus_accept/. ./internal/handler/channel/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_elect/. ./internal/handler/channel/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_elect_accept/. ./internal/handler/channel/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_failure/. ./internal/handler/channel/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_learn/. ./internal/handler/channel/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_prepare/. ./internal/handler/channel/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_promise/. ./internal/handler/channel/consensus/mconsensus/testdata
+	cp -r ../protocol/examples/messageData/consensus_propose/. ./internal/handler/channel/consensus/mconsensus/testdata
+
+	# Election
+	cp -r ../protocol/examples/messageData/election_end/. ./internal/handler/channel/election/melection/testdata
+	cp -r ../protocol/examples/messageData/election_key/. ./internal/handler/channel/election/melection/testdata
+	cp -r ../protocol/examples/messageData/election_open/. ./internal/handler/channel/election/melection/testdata
+	cp -r ../protocol/examples/messageData/election_result.json ./internal/handler/channel/election/melection/testdata
+	cp -r ../protocol/examples/messageData/vote_cast_vote/. ./internal/handler/channel/election/melection/testdata
+
+	# Lao
+	cp -r ../protocol/examples/messageData/election_setup/. ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/lao_greet/. ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/lao_state/. ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/lao_update/. ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/meeting_create.json ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/meeting_state.json ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/message_witness.json ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/roll_call_close.json ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/roll_call_create.json ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/roll_call_open.json ./internal/handler/channel/lao/mlao/testdata
+	cp -r ../protocol/examples/messageData/roll_call_reopen.json ./internal/handler/channel/lao/mlao/testdata
+
+	# Reaction
+	cp -r ../protocol/examples/messageData/reaction_add/. ./internal/handler/channel/reaction/mreaction/testdata
+	cp -r ../protocol/examples/messageData/reaction_delete/. ./internal/handler/channel/reaction/mreaction/testdata
+
+	# Root
+	cp -r ../protocol/examples/messageData/lao_create/. ./internal/handler/channel/root/mroot/testdata
+
 
 clean:
-	rm -rf validation/protocol
+	rm -rf ./internal/validation/protocol
+
+	# Answer
+	rm -rf ./internal/handler/answer/manswer/testdata
+
+	# Methods
+	rm -rf ./internal/handler/method/broadcast/mbroadcast/testdata
+	rm -rf ./internal/handler/method/catchup/mcatchup/testdata
+	rm -rf ./internal/handler/method/getmessagesbyid/mgetmessagesbyid/testdata
+	rm -rf ./internal/handler/method/greetserver/mgreetserver/testdata
+	rm -rf ./internal/handler/method/heartbeat/mheartbeat/testdata
+	rm -rf ./internal/handler/method/publish/mpublish/testdata
+	rm -rf ./internal/handler/method/subscribe/msubscribe/testdata
+	rm -rf ./internal/handler/method/unsubscribe/munsubscribe/testdata
+
+	# Message
+	rm -rf ./internal/handler/message/mmessage/testdata
+
+	# Channel
+	rm -rf ./internal/handler/channel/testdata
+
+	# Authentication
+	rm -rf ./internal/handler/channel/authentication/mauthentication/testdata
+
+	# Chirp
+	rm -rf ./internal/handler/channel/chirp/mchirp/testdata
+
+	# Coin
+	rm -rf ./internal/handler/channel/coin/hcoin/testdata
+	rm -rf ./internal/handler/channel/coin/mcoin/testdata
+
+	# Consensus
+	rm -rf ./internal/handler/channel/consensus/mconsensus/testdata
+
+	# Election
+	rm -rf ./internal/handler/channel/election/melection/testdata
+
+	# Lao
+	rm -rf ./internal/handler/channel/lao/mlao/testdata
+
+	# Reaction
+	rm -rf ./internal/handler/channel/reaction/mreaction/testdata
+
+	# Root
+	rm -rf ./internal/handler/channel/root/mroot/testdata
 
 fmt:
 	gofmt -s -w ./

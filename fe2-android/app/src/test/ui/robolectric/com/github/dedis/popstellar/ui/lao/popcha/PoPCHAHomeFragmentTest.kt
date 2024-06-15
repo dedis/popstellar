@@ -95,7 +95,7 @@ class PoPCHAHomeFragmentTest {
             1632204910,
             1632204900,
             EventState.CLOSED,
-            attendees,
+            LinkedHashSet(attendees),
             "bc",
             ""
           )

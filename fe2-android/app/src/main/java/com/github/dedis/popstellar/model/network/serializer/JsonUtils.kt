@@ -30,6 +30,7 @@ object JsonUtils {
   const val CONNECT_TO_LAO_SCHEMA = "protocol/qrcode/connect_to_lao.json"
   const val POP_TOKEN_SCHEME = "protocol/qrcode/pop_token.json"
   const val MAIN_PK_SCHEME = "protocol/qrcode/main_public_key.json"
+  const val FEDERATION_DETAILS = "protocol/qrcode/federation_exchange.json"
 
   private val schemas: MutableMap<String, JsonSchema> = ConcurrentHashMap()
 
