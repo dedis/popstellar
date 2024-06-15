@@ -7,7 +7,6 @@ import (
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/rumor/mrumor"
-	"popstellar/internal/handler/method/rumor/trumor"
 	"popstellar/internal/handler/query/mquery"
 	"strings"
 )
@@ -141,7 +140,7 @@ func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[str
 	return missingIDs, nil
 }
 
-func (s *SQLite) CheckRumor(senderID string, rumorID int, timestamp trumor.RumorTimestamp) (bool, bool, error) {
+func (s *SQLite) CheckRumor(senderID string, rumorID int, timestamp mrumor.RumorTimestamp) (bool, bool, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
@@ -339,7 +338,7 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, mrumor.Rumor, error) {
 	return true, rumor, nil
 }
 
-func newRumor(rumorID int, sender string, messages map[string][]mmessage.Message, timestamp trumor.RumorTimestamp) mrumor.Rumor {
+func newRumor(rumorID int, sender string, messages map[string][]mmessage.Message, timestamp mrumor.RumorTimestamp) mrumor.Rumor {
 	params := mrumor.ParamsRumor{
 		RumorID:   rumorID,
 		SenderID:  sender,
@@ -358,7 +357,7 @@ func newRumor(rumorID int, sender string, messages map[string][]mmessage.Message
 	}
 }
 
-func (s *SQLite) GetRumorTimestampHelper(tx *sql.Tx) (trumor.RumorTimestamp, error) {
+func (s *SQLite) GetRumorTimestampHelper(tx *sql.Tx) (mrumor.RumorTimestamp, error) {
 
 	rows, err := tx.Query(selectRumorState)
 	if err != nil {
@@ -366,7 +365,7 @@ func (s *SQLite) GetRumorTimestampHelper(tx *sql.Tx) (trumor.RumorTimestamp, err
 	}
 	defer rows.Close()
 
-	timestamp := make(trumor.RumorTimestamp)
+	timestamp := make(mrumor.RumorTimestamp)
 
 	for rows.Next() {
 		var sender string
@@ -380,7 +379,7 @@ func (s *SQLite) GetRumorTimestampHelper(tx *sql.Tx) (trumor.RumorTimestamp, err
 	return timestamp, nil
 }
 
-func (s *SQLite) GetRumorTimestamp() (trumor.RumorTimestamp, error) {
+func (s *SQLite) GetRumorTimestamp() (mrumor.RumorTimestamp, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 

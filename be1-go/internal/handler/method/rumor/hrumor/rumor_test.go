@@ -7,7 +7,7 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/rumor/hrumor/mocks"
-	"popstellar/internal/handler/method/rumor/trumor"
+	"popstellar/internal/handler/method/rumor/mrumor"
 	"popstellar/internal/logger"
 	mocks2 "popstellar/internal/network/socket/mocks"
 	"popstellar/internal/test/generator"
@@ -28,10 +28,10 @@ func Test_Handle(t *testing.T) {
 
 	sender := "sender"
 
-	timestamp0 := make(trumor.RumorTimestamp)
-	timestamp1 := make(trumor.RumorTimestamp)
+	timestamp0 := make(mrumor.RumorTimestamp)
+	timestamp1 := make(mrumor.RumorTimestamp)
 	timestamp1[sender] = 0
-	timestamp2 := make(trumor.RumorTimestamp)
+	timestamp2 := make(mrumor.RumorTimestamp)
 	timestamp2[sender] = 1
 
 	rumor0, rumorBuf0 := generator.NewRumorQuery(t, 0, sender, 0, timestamp0, nil)
@@ -70,39 +70,39 @@ func Test_Handle(t *testing.T) {
 	db.On("CheckRumor", rumor0.Params.SenderID, rumor0.Params.RumorID, rumor0.Params.Timestamp).
 		Return(true, false, nil).Once()
 	queries.On("GetNextID").Return(rumor0.ID).Once()
-	queries.On("AddRumorQuery", rumor0.ID, rumor0).Once()
+	queries.On("AddRumor", rumor0.ID, rumor0).Return(nil).Once()
 	sockets.On("SendRumor", fakeSocket, rumor0.Params.SenderID, rumor0.Params.RumorID, rumorBuf0).Once()
 	db.On("StoreRumor", rumor0.Params.RumorID, rumor0.Params.SenderID,
 		mock.AnythingOfType("map[string][]mmessage.Message"), []string{}).Return(nil).Once()
 	db.On("GetUnprocessedMessagesByChannel").Return(nil, nil).Once()
 
-	state0 := make(trumor.RumorTimestamp)
+	state0 := make(mrumor.RumorTimestamp)
 	state0[sender] = rumor0.Params.RumorID
 	db.On("GetRumorTimestamp").Return(state0, nil).Once()
 
 	db.On("CheckRumor", rumor1.Params.SenderID, rumor1.Params.RumorID, rumor1.Params.Timestamp).
 		Return(true, false, nil).Once()
 	queries.On("GetNextID").Return(rumor1.ID).Once()
-	queries.On("AddRumorQuery", rumor1.ID, rumor1).Once()
+	queries.On("AddRumor", rumor1.ID, rumor1).Return(nil).Once()
 	sockets.On("SendRumor", nil, rumor1.Params.SenderID, rumor1.Params.RumorID, rumorBuf1).Once()
 	db.On("StoreRumor", rumor1.Params.RumorID, rumor1.Params.SenderID,
 		mock.AnythingOfType("map[string][]mmessage.Message"), []string{}).Return(nil).Once()
 	db.On("GetUnprocessedMessagesByChannel").Return(nil, nil).Once()
 
-	state1 := make(trumor.RumorTimestamp)
+	state1 := make(mrumor.RumorTimestamp)
 	state1[sender] = rumor1.Params.RumorID
 	db.On("GetRumorTimestamp").Return(state1, nil).Once()
 
 	db.On("CheckRumor", rumor2.Params.SenderID, rumor2.Params.RumorID, rumor2.Params.Timestamp).
 		Return(true, false, nil).Once()
 	queries.On("GetNextID").Return(rumor2.ID).Once()
-	queries.On("AddRumorQuery", rumor2.ID, rumor2).Once()
+	queries.On("AddRumor", rumor2.ID, rumor2).Return(nil).Once()
 	sockets.On("SendRumor", nil, rumor2.Params.SenderID, rumor2.Params.RumorID, rumorBuf2).Once()
 	db.On("StoreRumor", rumor2.Params.RumorID, rumor2.Params.SenderID,
 		mock.AnythingOfType("map[string][]mmessage.Message"), []string{}).Return(nil).Once()
 	db.On("GetUnprocessedMessagesByChannel").Return(nil, nil).Once()
 
-	state2 := make(trumor.RumorTimestamp)
+	state2 := make(mrumor.RumorTimestamp)
 	state2[sender] = rumor2.Params.RumorID
 	db.On("GetRumorTimestamp").Return(state2, nil).Once()
 

@@ -43,6 +43,10 @@ type nullRumorSender struct{}
 func (n *nullRumorSender) SendRumor(socket socket.Socket, rumor mrumor.Rumor) {
 }
 
+func (n *nullRumorSender) Handle(socket socket.Socket, msg []byte) (*int, error) {
+	return nil, nil
+}
+
 func Test_handleMessagesByChannel(t *testing.T) {
 
 	log := zerolog.New(io.Discard)
@@ -135,7 +139,6 @@ func Test_handleMessagesByChannel(t *testing.T) {
 
 			for k0, v0 := range i.expected {
 				for k1 := range v0 {
-					fmt.Println(i.messages[k0][k1])
 					require.Equal(t, i.expected[k0][k1], i.messages[k0][k1])
 				}
 			}

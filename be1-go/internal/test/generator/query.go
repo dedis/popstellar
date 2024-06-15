@@ -11,7 +11,6 @@ import (
 	"popstellar/internal/handler/method/heartbeat/mheartbeat"
 	"popstellar/internal/handler/method/publish/mpublish"
 	"popstellar/internal/handler/method/rumor/mrumor"
-	"popstellar/internal/handler/method/rumor/trumor"
 	"popstellar/internal/handler/method/subscribe/msubscribe"
 	"popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
@@ -158,7 +157,7 @@ func NewGetMessagesByIDQuery(t *testing.T, queryID int, msgIDsByChannel map[stri
 	return getMessagesByIDBuf
 }
 
-func NewRumorQuery(t *testing.T, queryID int, senderID string, rumorID int, timestamp trumor.RumorTimestamp, messages map[string][]mmessage.Message) (mrumor.Rumor, []byte) {
+func NewRumorQuery(t *testing.T, queryID int, senderID string, rumorID int, timestamp mrumor.RumorTimestamp, messages map[string][]mmessage.Message) (mrumor.Rumor, []byte) {
 	rumor := mrumor.Rumor{
 		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{

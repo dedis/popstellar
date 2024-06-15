@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/method/rumor/mrumor"
-	"popstellar/internal/handler/method/rumor/trumor"
 	"sort"
 	"sync"
 	"time"
@@ -60,7 +59,7 @@ func (b *buffer) deleteWithDelay(ID string) {
 	b.deleteEntry(ID)
 }
 
-func (b *buffer) getNextRumor(state trumor.RumorTimestamp) (mrumor.Rumor, bool) {
+func (b *buffer) getNextRumor(state mrumor.RumorTimestamp) (mrumor.Rumor, bool) {
 	b.Lock()
 	defer b.Unlock()
 

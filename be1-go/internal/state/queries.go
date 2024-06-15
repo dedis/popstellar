@@ -3,20 +3,23 @@ package state
 import (
 	"github.com/rs/zerolog"
 	"popstellar/internal/errors"
-	"popstellar/internal/handler/method/getmessagesbyid/mgetmessagesbyid"
 	"popstellar/internal/handler/method/rumor/mrumor"
 	"sync"
+)
+
+const (
+	GetMessagesByIDQuery = iota
+	RumorQuery
+	RumorStateQuery
 )
 
 // Queries let the hub remember all queries that it sent to other servers
 type Queries struct {
 	sync.Mutex
-	// state stores the ID of the server's queries and their state. False for a
-	// query not yet answered, else true.
-	state map[int]bool
-	// getMessagesByIdQueries stores the server's getMessagesByIds queries by their ID.
-	getMessagesByIdQueries map[int]mgetmessagesbyid.GetMessagesById
-	getRumorQueries        map[int]mrumor.Rumor
+
+	state map[int]int
+
+	rumorQueries map[int]mrumor.Rumor
 
 	// nextID store the ID of the next query
 	nextID int
@@ -28,23 +31,10 @@ type Queries struct {
 // NewQueries creates a new queries struct
 func NewQueries(log zerolog.Logger) *Queries {
 	return &Queries{
-		state:                  make(map[int]bool),
-		getMessagesByIdQueries: make(map[int]mgetmessagesbyid.GetMessagesById),
-		getRumorQueries:        make(map[int]mrumor.Rumor),
-		log:                    log.With().Str("module", "queries").Logger(),
+		state:        make(map[int]int),
+		rumorQueries: make(map[int]mrumor.Rumor),
+		log:          log.With().Str("module", "queries").Logger(),
 	}
-}
-
-// GetQueryState returns a given query's state
-func (q *Queries) GetQueryState(id int) (bool, error) {
-	q.Lock()
-	defer q.Unlock()
-
-	state, ok := q.state[id]
-	if !ok {
-		return false, errors.NewInvalidResourceError("query with id %d not found", id)
-	}
-	return state, nil
 }
 
 // GetNextID returns the next query ID
@@ -57,59 +47,100 @@ func (q *Queries) GetNextID() int {
 	return id
 }
 
-// SetQueryReceived sets the state of the query with the given ID as received
-func (q *Queries) SetQueryReceived(id int) error {
+func (q *Queries) Remove(id int) {
 	q.Lock()
 	defer q.Unlock()
 
-	currentState, ok := q.state[id]
+	delete(q.state, id)
+	delete(q.rumorQueries, id)
+}
 
-	if !ok {
-		return errors.NewInvalidResourceError("query with id %d not found", id)
+func (q *Queries) addQuery(id, queryType int) error {
+	q.Lock()
+	defer q.Unlock()
+
+	_, ok := q.state[id]
+	if ok {
+		return errors.NewDuplicateResourceError("cannot have two queries with the same id %d", id)
 	}
 
-	if currentState {
-		return errors.NewDuplicateResourceError("query with id %d already answered", id)
-	}
+	q.state[id] = queryType
 
-	q.state[id] = true
 	return nil
 }
 
-// AddQuery adds the given query to the table
-func (q *Queries) AddQuery(id int, query mgetmessagesbyid.GetMessagesById) {
+func (q *Queries) AddGetMessagesByID(id int) error {
 	q.Lock()
 	defer q.Unlock()
 
-	q.getMessagesByIdQueries[id] = query
-	q.state[id] = false
+	return q.addQuery(id, GetMessagesByIDQuery)
 }
 
-func (q *Queries) AddRumorQuery(id int, query mrumor.Rumor) {
+func (q *Queries) AddRumor(id int, query mrumor.Rumor) error {
 	q.Lock()
 	defer q.Unlock()
 
-	q.getRumorQueries[id] = query
-	q.state[id] = false
+	err := q.addQuery(id, RumorQuery)
+	if err != nil {
+		return err
+	}
+
+	q.rumorQueries[id] = query
+
+	return nil
 }
 
-func (q *Queries) IsRumorQuery(queryID int) bool {
+func (q *Queries) AddRumorState(id int) error {
 	q.Lock()
 	defer q.Unlock()
 
-	_, ok := q.getRumorQueries[queryID]
-
-	return ok
+	return q.addQuery(id, RumorStateQuery)
 }
 
-func (q *Queries) GetRumorFromPastQuery(queryID int) (mrumor.Rumor, bool) {
+func (q *Queries) GetRumor(queryID int) (mrumor.Rumor, bool) {
 	q.Lock()
 	defer q.Unlock()
 
-	rumor, ok := q.getRumorQueries[queryID]
+	rumor, ok := q.rumorQueries[queryID]
 	if !ok {
 		return mrumor.Rumor{}, false
 	}
 
 	return rumor, true
+}
+
+func (q *Queries) IsGetMessagesByID(id int) bool {
+	q.Lock()
+	defer q.Unlock()
+
+	queryType, ok := q.state[id]
+	if !ok {
+		return false
+	}
+
+	return queryType == GetMessagesByIDQuery
+}
+
+func (q *Queries) IsRumor(id int) bool {
+	q.Lock()
+	defer q.Unlock()
+
+	queryType, ok := q.state[id]
+	if !ok {
+		return false
+	}
+
+	return queryType == RumorQuery
+}
+
+func (q *Queries) IsRumorState(id int) bool {
+	q.Lock()
+	defer q.Unlock()
+
+	queryType, ok := q.state[id]
+	if !ok {
+		return false
+	}
+
+	return queryType == RumorStateQuery
 }

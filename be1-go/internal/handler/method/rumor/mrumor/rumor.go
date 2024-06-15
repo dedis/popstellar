@@ -5,10 +5,12 @@ import (
 	"popstellar/internal/handler/query/mquery"
 )
 
+type RumorTimestamp map[string]int
+
 type ParamsRumor struct {
 	SenderID  string                        `json:"sender_id"`
 	RumorID   int                           `json:"rumor_id"`
-	Timestamp map[string]int                `json:"timestamp"`
+	Timestamp RumorTimestamp                `json:"timestamp"`
 	Messages  map[string][]mmessage.Message `json:"messages"`
 }
 
@@ -45,5 +47,19 @@ func (r *Rumor) IsBefore(other Rumor) bool {
 	if smaller || !greater {
 		return false
 	}
+	return true
+}
+
+func (r RumorTimestamp) IsValid(timestamp map[string]int) bool {
+	for senderID, rumorID := range timestamp {
+		myRumorID, ok := r[senderID]
+		if !ok && rumorID != 0 {
+			return false
+		}
+		if myRumorID < rumorID {
+			return false
+		}
+	}
+
 	return true
 }

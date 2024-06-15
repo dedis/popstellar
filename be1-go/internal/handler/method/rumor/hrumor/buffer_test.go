@@ -3,7 +3,6 @@ package hrumor
 import (
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/handler/method/rumor/mrumor"
-	"popstellar/internal/handler/method/rumor/trumor"
 	"testing"
 	"time"
 )
@@ -73,7 +72,7 @@ func Test_getNextRumor(t *testing.T) {
 	err = buf.insert(rumor01)
 	require.NoError(t, err)
 
-	state := make(trumor.RumorTimestamp)
+	state := make(mrumor.RumorTimestamp)
 
 	_, ok := buf.getNextRumor(state)
 	require.True(t, ok)

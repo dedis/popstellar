@@ -13,7 +13,7 @@ import (
 
 type Queries interface {
 	GetNextID() int
-	AddQuery(ID int, query mgetmessagesbyid.GetMessagesById)
+	AddGetMessagesByID(ID int) error
 }
 
 type Repository interface {
@@ -71,7 +71,5 @@ func (h *Handler) Handle(socket socket.Socket, byteMessage []byte) (*int, error)
 
 	socket.Send(buf)
 
-	h.queries.AddQuery(queryId, getMessagesById)
-
-	return nil, nil
+	return nil, h.queries.AddGetMessagesByID(queryId)
 }

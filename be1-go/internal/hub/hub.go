@@ -28,7 +28,6 @@ import (
 	"popstellar/internal/handler/method/publish/hpublish"
 	"popstellar/internal/handler/method/rumor/hrumor"
 	"popstellar/internal/handler/method/rumor/mrumor"
-	"popstellar/internal/handler/method/rumor/trumor"
 	"popstellar/internal/handler/method/rumorstate/mrumorstate"
 	"popstellar/internal/handler/method/subscribe/hsubscribe"
 	"popstellar/internal/handler/method/unsubscribe/hunsubscribe"
@@ -65,7 +64,7 @@ type Repository interface {
 
 	GetParamsHeartbeat() (map[string][]string, error)
 
-	GetRumorTimestamp() (trumor.RumorTimestamp, error)
+	GetRumorTimestamp() (mrumor.RumorTimestamp, error)
 }
 
 type JsonRpcHandler interface {

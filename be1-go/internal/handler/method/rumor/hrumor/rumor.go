@@ -6,7 +6,6 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/rumor/mrumor"
-	"popstellar/internal/handler/method/rumor/trumor"
 	"popstellar/internal/network/socket"
 	"sort"
 )
@@ -15,7 +14,7 @@ const maxRetry = 10
 
 type Queries interface {
 	GetNextID() int
-	AddRumorQuery(id int, query mrumor.Rumor)
+	AddRumor(id int, query mrumor.Rumor) error
 }
 
 type Sockets interface {
@@ -24,7 +23,7 @@ type Sockets interface {
 
 type Repository interface {
 	// CheckRumor returns true if the rumor already exists
-	CheckRumor(senderID string, rumorID int, timestamp map[string]int) (valid, alreadyHas bool, err error)
+	CheckRumor(senderID string, rumorID int, timestamp mrumor.RumorTimestamp) (valid, alreadyHas bool, err error)
 
 	// StoreRumor stores the new rumor with its processed and unprocessed messages
 	StoreRumor(rumorID int, sender string, unprocessed map[string][]mmessage.Message, processed []string) error
@@ -33,7 +32,7 @@ type Repository interface {
 	GetUnprocessedMessagesByChannel() (map[string][]mmessage.Message, error)
 
 	// GetRumorTimestamp returns the rumor state
-	GetRumorTimestamp() (trumor.RumorTimestamp, error)
+	GetRumorTimestamp() (mrumor.RumorTimestamp, error)
 }
 
 type MessageHandler interface {
@@ -71,6 +70,7 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 
 	ok, alreadyHas, err := h.db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID, rumor.Params.Timestamp)
 	if err != nil {
+		h.log.Error().Err(err)
 		return &rumor.ID, err
 	}
 	if alreadyHas {
@@ -192,7 +192,11 @@ func (h *Handler) SendRumor(socket socket.Socket, rumor mrumor.Rumor) {
 	id := h.queries.GetNextID()
 	rumor.ID = id
 
-	h.queries.AddRumorQuery(id, rumor)
+	err := h.queries.AddRumor(id, rumor)
+	if err != nil {
+		h.log.Error().Err(err)
+		return
+	}
 
 	buf, err := json.Marshal(rumor)
 	if err != nil {
