@@ -30,13 +30,13 @@ type MessageHandler interface {
 }
 
 type RumorHandler interface {
-	Handle(socket socket.Socket, msg []byte) (*int, error)
+	HandleRumorStateAnswer(rumor mrumor.Rumor) error
 	SendRumor(socket socket.Socket, rumor mrumor.Rumor)
 }
 
 type Handlers struct {
 	MessageHandler MessageHandler
-	RumorSender    RumorHandler
+	RumorHandler   RumorHandler
 }
 
 type Handler struct {
@@ -196,12 +196,47 @@ func (h *Handler) handleRumorAnswer(msg manswer.Answer) error {
 		return errors.NewInternalServerError("rumor query %d doesn't exist", *msg.ID)
 	}
 
-	h.handlers.RumorSender.SendRumor(nil, rumor)
+	h.handlers.RumorHandler.SendRumor(nil, rumor)
 
 	return nil
 }
 
 func (h *Handler) handleRumorStateAnswer(msg manswer.Answer) error {
+	defer h.queries.Remove(*msg.ID)
+
+	if msg.Result == nil {
+		return nil
+	}
+
+	if msg.Result.IsEmpty() {
+		return nil
+	}
+
+	rumors := make([]mrumor.Rumor, 0)
+
+	result := msg.Result.GetData()
+	for _, rawRumor := range result {
+		var rumor mrumor.Rumor
+		err := json.Unmarshal(rawRumor, &rumor)
+		if err == nil {
+			rumors = append(rumors, rumor)
+			continue
+		}
+
+		err = errors.NewJsonUnmarshalError(err.Error())
+		h.log.Error().Err(err)
+	}
+
+	sort.Slice(rumors, func(i, j int) bool {
+		return rumors[i].IsBefore(rumors[j])
+	})
+
+	for _, rumor := range rumors {
+		err := h.handlers.RumorHandler.HandleRumorStateAnswer(rumor)
+		if err != nil {
+			h.log.Error().Err(err).Msg("")
+		}
+	}
 
 	return nil
 }

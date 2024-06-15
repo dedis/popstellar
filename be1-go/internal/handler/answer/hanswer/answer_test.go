@@ -43,8 +43,8 @@ type nullRumorSender struct{}
 func (n *nullRumorSender) SendRumor(socket socket.Socket, rumor mrumor.Rumor) {
 }
 
-func (n *nullRumorSender) Handle(socket socket.Socket, msg []byte) (*int, error) {
-	return nil, nil
+func (n *nullRumorSender) HandleRumorStateAnswer(rumor mrumor.Rumor) error {
+	return nil
 }
 
 func Test_handleMessagesByChannel(t *testing.T) {
@@ -55,7 +55,7 @@ func Test_handleMessagesByChannel(t *testing.T) {
 
 	answerHandlers := Handlers{
 		MessageHandler: &nullMessageHandler{},
-		RumorSender:    &nullRumorSender{},
+		RumorHandler:   &nullRumorSender{},
 	}
 
 	handler := New(queries, answerHandlers, log)

@@ -197,7 +197,7 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	// Create the answer handler
 	aHandler := hanswer.New(queries, hanswer.Handlers{
 		MessageHandler: msgHandler,
-		RumorSender:    rumorHandler,
+		RumorHandler:   rumorHandler,
 	}, log)
 
 	// Create the json rpc handler

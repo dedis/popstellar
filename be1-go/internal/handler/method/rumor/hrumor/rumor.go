@@ -219,3 +219,23 @@ func (h *Handler) handleNextRumor(rumor mrumor.Rumor) error {
 
 	return h.handleAndPropagate(nil, rumor)
 }
+
+func (h *Handler) HandleRumorStateAnswer(rumor mrumor.Rumor) error {
+	ok, alreadyHas, err := h.db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID, rumor.Params.Timestamp)
+	if err != nil {
+		return err
+	}
+	if alreadyHas {
+		return errors.NewDuplicateResourceError("rumor %s:%d already exists", rumor.Params.SenderID, rumor.Params.RumorID)
+	}
+	if !ok {
+		err = h.buf.insert(rumor)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	return h.handleAndPropagate(nil, rumor)
+}
