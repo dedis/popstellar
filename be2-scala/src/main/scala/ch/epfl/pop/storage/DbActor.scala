@@ -392,12 +392,12 @@ final case class DbActor(
         storage.write(pair)
       } else {
         val numberOfReactions = storage.read(storage.CHANNEL_DATA_KEY + newReactionsChannel.toString)
-        var numberOfNewChirpsReactions = numberOfReactions match {
-          case Some(numReactions) => NumberOfChirpsReactionsData.buildFromJson(numReactions)
-          case None               => NumberOfChirpsReactionsData(0)
+        val numberOfNewChirpsReactionsInt = numberOfReactions match {
+          case Some(numReactions) => NumberOfChirpsReactionsData.buildFromJson(numReactions).numberOfChirpsReactions
+          case None               => 0
         }
-        numberOfNewChirpsReactions.numberOfChirpsReactions += 1
-        val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfNewChirpsReactions.toJsonString)
+        val updatedNumberOfChirpsReactions = NumberOfChirpsReactionsData(numberOfNewChirpsReactionsInt + 1)
+        val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, updatedNumberOfChirpsReactions.toJsonString)
         storage.write(pair)
       }
     }

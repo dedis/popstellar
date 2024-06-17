@@ -12,8 +12,7 @@ final case class NumberOfChirpsReactionsData(numberOfChirpsReactions: Int) {
 }
 
 object NumberOfChirpsReactionsData extends Parsable {
-  def apply(numberOfChirpsReactions: Int
-  ): NumberOfChirpsReactionsData =
+  def apply(numberOfChirpsReactions: Int): NumberOfChirpsReactionsData =
     new NumberOfChirpsReactionsData(numberOfChirpsReactions)
 
   override def buildFromJson(payload: String): NumberOfChirpsReactionsData = payload.parseJson.asJsObject.convertTo[NumberOfChirpsReactionsData]
