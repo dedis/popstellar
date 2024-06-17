@@ -164,6 +164,7 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
               ))
             )
             jsonId += 1
+          case _ => log.info(s"Actor $self failed on creating rumor state")
       case _ =>
         log.info(s"Actor $self received an unexpected message waiting for a random peer")
     }

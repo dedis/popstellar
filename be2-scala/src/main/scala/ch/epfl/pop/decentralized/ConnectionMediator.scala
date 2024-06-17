@@ -59,7 +59,7 @@ final case class ConnectionMediator(
       // Tell monitor to stop scheduling heartbeats since there is no one to receive them
       if (serverMap.isEmpty)
         monitorRef ! Monitor.NoServerConnected
-        gossipManagerRef ? Monitor.NoServerConnected
+        gossipManagerRef ! Monitor.NoServerConnected
 
     case ConnectionMediator.ReadPeersClientAddress() =>
       if (serverMap.isEmpty)
@@ -70,7 +70,7 @@ final case class ConnectionMediator(
     case ConnectionMediator.NewServerConnected(serverRef, greetServer) =>
       if (serverMap.isEmpty) {
         monitorRef ! Monitor.AtLeastOneServerConnected
-        gossipManagerRef ? Monitor.AtLeastOneServerConnected
+        gossipManagerRef ! Monitor.AtLeastOneServerConnected
       }
       serverMap += ((serverRef, greetServer))
 
