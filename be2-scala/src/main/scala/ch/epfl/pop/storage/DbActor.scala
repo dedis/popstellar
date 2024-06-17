@@ -382,22 +382,22 @@ final case class DbActor(
     }
     val newReactionsChannel = Channel.apply(s"/root/$laoID/social/top_chirps/number_of_new_reactions")
     if (!checkChannelExistence(newReactionsChannel)) {
-      val numberOfReactions: JsonString = "0"
-      val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfReactions)
+      val numberOfReactions = NumberOfChirpsReactionsData(0)
+      val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfReactions.toJsonString)
       storage.write(pair)
     } else {
       if (resetToZero) {
-        val numberOfReactionsInt = 0
-        val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfReactionsInt.toString)
+        val numberOfReactions = NumberOfChirpsReactionsData(0)
+        val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfReactions.toJsonString)
         storage.write(pair)
       } else {
         val numberOfReactions = storage.read(storage.CHANNEL_DATA_KEY + newReactionsChannel.toString)
-        var numberOfNewChirpsReactionsInt = numberOfReactions match {
-          case Some(numReactions) => numReactions.toInt
-          case None               => 0
+        var numberOfNewChirpsReactions = numberOfReactions match {
+          case Some(numReactions) => NumberOfChirpsReactionsData.buildFromJson(numReactions)
+          case None               => NumberOfChirpsReactionsData(0)
         }
-        numberOfNewChirpsReactionsInt += 1
-        val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfNewChirpsReactionsInt.toString)
+        numberOfNewChirpsReactions.numberOfChirpsReactions += 1
+        val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfNewChirpsReactions.toJsonString)
         storage.write(pair)
       }
     }
@@ -436,7 +436,7 @@ final case class DbActor(
         if (checkChannelExistence(newReactionsChannel)) {
           val numberOfNewChirpsReactions = storage.read(storage.CHANNEL_DATA_KEY + newReactionsChannel.toString)
           numberOfNewChirpsReactionsInt = numberOfNewChirpsReactions match {
-            case Some(numReactions) => numReactions.toInt
+            case Some(numReactions) => NumberOfChirpsReactionsData.buildFromJson(numReactions).numberOfChirpsReactions
             case None               => 0
           }
         }
