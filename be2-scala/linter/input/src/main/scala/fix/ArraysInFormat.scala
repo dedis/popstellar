@@ -9,10 +9,15 @@ object ArraysInFormat {
     val str = f"Here are my cool elements ${array}" // assert: ArraysInFormat
     val str2 = s"Here are my cool elements ${array}" // assert: ArraysInFormat
     String.format("Here are my cool elements %d", array) // assert: ArraysInFormat
+    "Here are my cool elements %d".format(array) // assert: ArraysInFormat
+    val str3 = "Here are my cool elements %d"
+    str3.format(array) // assert: ArraysInFormat
     String.format("Here are my cool elements %d", array) /* assert: ArraysInFormat
                                                   ^^^^^
     Array passed to format / interpolate string
      */
+
+    "Here are my cool elements %d".format(13) // scalafix: ok;
   }
 
 }

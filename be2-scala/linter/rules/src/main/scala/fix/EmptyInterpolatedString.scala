@@ -21,7 +21,7 @@ case class EmptyInterpolatedStringDiag(string: Tree) extends Diagnostic {
 class EmptyInterpolatedString extends SemanticRule("EmptyInterpolatedString") {
   override def fix(implicit doc: SemanticDocument): Patch = {
     doc.tree.collect {
-      case t @ Term.Apply.After_4_6_0(Term.Select(_, Term.Name("format")), Term.ArgClause(List(Lit.String(_)), _)) => Patch.lint(EmptyInterpolatedStringDiag(t))
+      case t @ Term.Apply.After_4_6_0(Term.Select(_, Term.Name("format")), Term.ArgClause(List(Lit.String(_)), _) | Term.ArgClause(Nil, _)) => Patch.lint(EmptyInterpolatedStringDiag(t))
       case t @ Term.Interpolate(_, _, Nil)                                                                         => Patch.lint(EmptyInterpolatedStringDiag(t))
     }.asPatch
   }
