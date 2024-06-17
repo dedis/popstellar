@@ -611,7 +611,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     final private val PARAM_NUMBER_OF_CHIRPS_REACTIONS: String = "numberOfChirpsReactions"
 
     override def read(json: JsValue): NumberOfChirpsReactionsData = json.asJsObject().getFields(PARAM_NUMBER_OF_CHIRPS_REACTIONS) match {
-      case Seq(numberOfChirpsReactions @ JsString(_)) => NumberOfChirpsReactionsData(
+      case Seq(numberOfChirpsReactions @ JsNumber(_)) => NumberOfChirpsReactionsData(
           numberOfChirpsReactions.convertTo[Int]
         )
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a NumberOfChirpsReactionsData object")

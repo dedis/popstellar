@@ -10,7 +10,7 @@ import ch.epfl.pop.model.network.method.{Rumor, RumorState}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
-import ch.epfl.pop.model.network.method.message.data.socialMedia.{AddChirp, AddReaction, DeleteChirp}
+import ch.epfl.pop.model.network.method.message.data.socialMedia.{AddChirp, AddReaction, DeleteChirp, DeleteReaction}
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.pubsub.graph.AnswerGenerator.timout
@@ -201,7 +201,7 @@ final case class DbActor(
 
     val channelData: ChannelData = readChannelData(reactionsChannel)
 
-    val reactionsList = readCreateLao(reactionsChannel) match {
+    var reactionsList = readCreateLao(reactionsChannel) match {
       case Some(msg) =>
         msg :: buildCatchupList(channelData.messages, Nil, reactionsChannel)
 
@@ -212,32 +212,70 @@ final case class DbActor(
         buildCatchupList(channelData.messages, Nil, reactionsChannel)
     }
 
+    val chirpsChannel = Channel.apply(s"/root/$laoID/social/chirps")
+
+    var allChirpsList = catchupChannel(chirpsChannel)
+    var count = 0
+    for chirp <- allChirpsList do {
+      try {
+        val chirpObj = DeleteChirp.buildFromJson(chirp.data.decodeToString())
+        if (chirpObj.action.toString == "delete") {
+          allChirpsList = allChirpsList.filter(msg => msg.message_id != chirpObj.chirp_id)
+          reactionsList = reactionsList.filter(reaction =>
+            try {
+              AddReaction.buildFromJson(reaction.data.decodeToString()).chirp_id != chirpObj.chirp_id
+            } catch {
+              case ex: spray.json.DeserializationException => reaction == reaction // do not filter
+            })
+        }
+      } catch {
+        case ex: spray.json.DeserializationException =>
+      }
+    }
+
     val reactionsListLog = reactionsList.toString
     log.info(s"Reactions List******************: $reactionsListLog")
 
     val chirpScores = collection.mutable.Map[Hash, Int]()
 
     for reaction: Message <- reactionsList do
-      val reactionObj = AddReaction.buildFromJson(reaction.data.decodeToString())
-      if reactionObj.action.toString == "add" then
-        if reactionObj.reaction_codepoint == "👍" then
-          if (chirpScores.contains(reactionObj.chirp_id)) {
-            chirpScores(reactionObj.chirp_id) += 1
-          } else {
-            chirpScores(reactionObj.chirp_id) = 1
-          }
-        else if reactionObj.reaction_codepoint == "👎" then
-          if (chirpScores.contains(reactionObj.chirp_id)) {
-            chirpScores(reactionObj.chirp_id) -= 1
-          } else {
-            chirpScores(reactionObj.chirp_id) = -1
-          }
-        else if reactionObj.reaction_codepoint == "❤️" then
-          if (chirpScores.contains(reactionObj.chirp_id)) {
-            chirpScores(reactionObj.chirp_id) += 1
-          } else {
-            chirpScores(reactionObj.chirp_id) = 1
-          }
+      try {
+        val reactionObj = DeleteReaction.buildFromJson(reaction.data.decodeToString())
+        reactionsList = reactionsList.filter(reaction => try {
+          AddReaction.buildFromJson(reaction.data.decodeToString()).chirp_id != reactionObj.reaction_id // TODO: Fix this
+        } catch {
+          case ex: spray.json.DeserializationException => reaction == reaction // do not filter
+        })
+      } catch {
+        case ex: spray.json.DeserializationException =>
+      }
+
+    for reaction: Message <- reactionsList do
+      try {
+        val reactionObj = AddReaction.buildFromJson(reaction.data.decodeToString())
+        if reactionObj.action.toString == "add" then
+          if reactionObj.reaction_codepoint == "👍" then
+            if (chirpScores.contains(reactionObj.chirp_id)) {
+              chirpScores(reactionObj.chirp_id) += 1
+            } else {
+              chirpScores(reactionObj.chirp_id) = 1
+            }
+          else if reactionObj.reaction_codepoint == "👎" then
+            if (chirpScores.contains(reactionObj.chirp_id)) {
+              chirpScores(reactionObj.chirp_id) -= 1
+            } else {
+              chirpScores(reactionObj.chirp_id) = -1
+            }
+          else if reactionObj.reaction_codepoint == "❤️" then
+            if (chirpScores.contains(reactionObj.chirp_id)) {
+              chirpScores(reactionObj.chirp_id) += 1
+            } else {
+              chirpScores(reactionObj.chirp_id) = 1
+            }
+      } catch {
+        case ex: spray.json.DeserializationException => 
+      }
+
 
     var first = new Hash(Base64Data(""))
     var second = new Hash(Base64Data(""))
@@ -262,22 +300,9 @@ final case class DbActor(
       else if score > chirpScores(third) then
         third = chirpId
 
-    val chirpsChannel = Channel.apply(s"/root/$laoID/social/chirps")
-
     var catchupList: List[Message] = List()
     if (first.base64Data.toString == "") {
-      var allChirpsList = catchupChannel(chirpsChannel)
       var count = 0
-      for chirp <- allChirpsList do {
-        try {
-          val chirpObj = DeleteChirp.buildFromJson(chirp.data.decodeToString())
-          if (chirpObj.action.toString == "delete") {
-            allChirpsList = allChirpsList.filter(msg => msg.message_id != chirpObj.chirp_id)
-          }
-        } catch {
-          case ex: spray.json.DeserializationException =>
-        }
-      }
       for chirp <- allChirpsList do
         try {
           val chirpObj = AddChirp.buildFromJson(chirp.data.decodeToString())
@@ -290,19 +315,8 @@ final case class DbActor(
         }
 
     } else if (second.base64Data.toString == "") {
-      var allChirpsList = catchupChannel(chirpsChannel)
       var secondFound = false
       var done = false
-      for chirp <- allChirpsList do {
-        try {
-          val chirpObj = DeleteChirp.buildFromJson(chirp.data.decodeToString())
-          if (chirpObj.action.toString == "delete") {
-            allChirpsList = allChirpsList.filter(msg => msg.message_id != chirpObj.chirp_id)
-          }
-        } catch {
-          case ex: spray.json.DeserializationException =>
-        }
-      }
       for chirp <- allChirpsList do
         try {
           val chirpObj = AddChirp.buildFromJson(chirp.data.decodeToString())
@@ -321,18 +335,7 @@ final case class DbActor(
           case ex: spray.json.DeserializationException =>
         }
     } else if (third.base64Data.toString == "") {
-      var allChirpsList = catchupChannel(chirpsChannel)
       var done = false
-      for chirp <- allChirpsList do {
-        try {
-          val chirpObj = DeleteChirp.buildFromJson(chirp.data.decodeToString())
-          if (chirpObj.action.toString == "delete") {
-            allChirpsList = allChirpsList.filter(msg => msg.message_id != chirpObj.chirp_id)
-          }
-        } catch {
-          case ex: spray.json.DeserializationException =>
-        }
-      }
       for chirp <- allChirpsList do
         try {
           val chirpObj = AddChirp.buildFromJson(chirp.data.decodeToString())
