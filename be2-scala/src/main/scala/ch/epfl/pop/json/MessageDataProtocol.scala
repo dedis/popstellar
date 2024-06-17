@@ -607,4 +607,34 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     }
   }
 
+  implicit object FederationTokensExchangeFormat extends JsonFormat[FederationTokensExchange] {
+    final private val PARAM_LAO_ID = "lao_id"
+    final private val PARAM_ROLL_CALL_ID = "roll_call_id"
+    final private val PARAM_TOKENS = "tokens"
+    final private val PARAM_TIMESTAMP = "timestamp"
+
+    override def read(json: JsValue): FederationTokensExchange = json.asJsObject().getFields(PARAM_LAO_ID, PARAM_ROLL_CALL_ID, PARAM_TOKENS, PARAM_TIMESTAMP) match {
+      case Seq(laoId @ JsString(_), rollCallId @ JsString(_), JsArray(tokens), timestamp @ JsNumber(_)) =>
+        FederationTokensExchange(
+          laoId.convertTo[Hash],
+          rollCallId.convertTo[Hash],
+          tokens.map(_.convertTo[PublicKey]).toList,
+          timestamp.convertTo[Timestamp]
+        )
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a FederationTokensExchange object")
+    }
+
+    override def write(obj: FederationTokensExchange): JsValue = {
+      var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
+        PARAM_OBJECT -> JsString(obj._object.toString),
+        PARAM_ACTION -> JsString(obj.action.toString),
+        PARAM_LAO_ID -> obj.laoId.toJson,
+        PARAM_ROLL_CALL_ID -> obj.rollCallId.toJson,
+        PARAM_TOKENS -> obj.tokens.toJson,
+        PARAM_TIMESTAMP -> obj.timestamp.toJson
+      )
+      JsObject(jsObjectContent)
+    }
+  }
+
 }

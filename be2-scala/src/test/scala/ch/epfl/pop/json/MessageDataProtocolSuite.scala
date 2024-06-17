@@ -9,7 +9,7 @@ import org.scalatest.matchers.should.Matchers
 import scala.io.{BufferedSource, Source}
 import ch.epfl.pop.model.network.method.message.data.coin.PostTransaction
 import ch.epfl.pop.model.network.method.message.data.election.VersionType.*
-import ch.epfl.pop.model.network.method.message.data.federation.{FederationChallenge, FederationChallengeRequest, FederationExpect, FederationInit, FederationResult}
+import ch.epfl.pop.model.network.method.message.data.federation.{FederationChallenge, FederationChallengeRequest, FederationExpect, FederationInit, FederationResult, FederationTokensExchange}
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import spray.json.*
 import util.examples.Federation.FederationChallengeExample.{CHALLENGE, CHALLENGE_1}
@@ -17,6 +17,7 @@ import util.examples.Federation.FederationChallengeRequestExample.CHALLENGE_REQU
 import util.examples.Federation.FederationExpectExample.{EXPECT, EXPECT_1}
 import util.examples.Federation.FederationInitExample.{INIT, INIT_1}
 import util.examples.Federation.FederationResultExample.{RESULT_1, RESULT_1_1, RESULT_2, RESULT_2_2}
+import util.examples.Federation.FederationTokensExchangeExample.TOKENS_EXCHANGE
 
 class MessageDataProtocolSuite extends FunSuite with Matchers {
 
@@ -320,6 +321,20 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     federationResultFromExample_2 shouldBe a[FederationResult]
     federationResultFromExample_2 should equal(expectedFederationResult_2)
     federationResultFromBuiltJson_2 should equal(expectedFederationResult_2)
+  }
+
+  test("Parser correctly encodes and decodes FederationTokensExchange") {
+    val example = getExampleMessage("messageData/federation_tokens_exchange/federation_tokens_exchange.json")
+    val expectedFederationTokensExchange = TOKENS_EXCHANGE
+
+    val federationTokensExchangeFromExample = FederationTokensExchange.buildFromJson(example)
+    val buildTokensExchangeJson = MessageDataProtocol.FederationTokensExchangeFormat.write(expectedFederationTokensExchange)
+    val federationTokensExchangeFromBuiltJson = MessageDataProtocol.FederationTokensExchangeFormat.read(buildTokensExchangeJson)
+
+    federationTokensExchangeFromBuiltJson shouldBe a[FederationTokensExchange]
+    federationTokensExchangeFromExample shouldBe a[FederationTokensExchange]
+    federationTokensExchangeFromExample should equal(expectedFederationTokensExchange)
+    federationTokensExchangeFromBuiltJson should equal(expectedFederationTokensExchange)
   }
 
   test("Parser correctly encodes and decodes ObjectType") {

@@ -239,4 +239,33 @@ sealed class FederationValidator(dbActorRef: => AskableActorRef) extends Message
     }
   }
 
+  def validateFederationTokensExchange(rpcMessage: JsonRpcRequest): GraphMessage = {
+    def validationError(reason: String): PipelineError = super.validationError(reason, "FederationTokensExchange", rpcMessage.id)
+
+    rpcMessage.getParamsMessage match {
+      case Some(message: Message) =>
+        val (federationTokensExchange, laoId, senderPk, channel) = extractData[FederationTokensExchange](rpcMessage)
+
+        runChecks(
+          checkChannelType(
+            rpcMessage,
+            ObjectType.federation,
+            channel,
+            dbActorRef,
+            validationError(s"trying to send a federationTokensExchange message on a wrong type of channel $channel")
+          ),
+          checkOwner(
+            rpcMessage,
+            senderPk,
+            channel,
+            dbActorRef,
+            validationError(s"Sender $senderPk of the federationTokensExchange is not the organizer")
+          )
+        )
+
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
+
+    }
+
+  }
 }

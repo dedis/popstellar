@@ -9,7 +9,7 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.MethodType.publish
 import ch.epfl.pop.model.network.method.ParamsWithMessage
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.federation.{FederationChallenge, FederationExpect, FederationInit, FederationResult}
+import ch.epfl.pop.model.network.method.message.data.federation.{FederationChallenge, FederationExpect, FederationInit, FederationResult, FederationTokensExchange}
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.PubSubMediator
@@ -116,13 +116,14 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
 
     Await.ready(ask, duration).value match {
       case Some(Success(message, data)) =>
-        val challengeMessage: Message = data.challenge // already signed by Alice
+        val challengeMessage: Message = data.challenge
         val serverAddress = data.serverAddress
         val remoteFederationChannel = generateFederationChannel(data.laoId)
 
         val askWrite = dbActor ? DbActor.WriteFederationMessage(keys._2, message)
         Await.ready(askWrite, duration).value match {
           case Some(Success(_)) =>
+            // get the other lao's server ref to send him the challenge
             val getServer = connectionMediator ? GetFederationServer(serverAddress)
             Await.result(getServer, duration) match {
               case ConnectionMediator.GetFederationServerAck(federationServerRef) =>
@@ -158,6 +159,7 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
     Await.ready(ask, duration).value match {
       case Some(Success(DbActor.DbActorReadFederationMessageAck(Some(message)))) =>
         val expect: FederationExpect = FederationExpect.buildFromJson(message.data.decodeToString())
+        // extract the challenge message from the FederationExpect message
         val challengeMessage: Message = expect.challenge
         val expectedChallenge: FederationChallenge = FederationChallenge.buildFromJson(challengeMessage.data.decodeToString())
         val serverAddress = expect.serverAddress
@@ -169,6 +171,7 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
 
         Await.ready(ask, duration).value match {
           case Some(Success(data)) =>
+            // check if the challenge received matches the challenge extracted from FederationExpect message
             if (data.value.equals(expectedChallenge.value) && data.validUntil == expectedChallenge.validUntil)
               federationResult = FederationResult(status._1, expect.publicKey, challengeMessage)
             else
@@ -200,7 +203,6 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
 
     Await.ready(ask, duration).value match {
       case Some(Success(message, data)) =>
-        // do we store the result in the db ?
         val combined = for {
           _ <- mediator ? PubSubMediator.Propagate(rpcMessage.getParamsChannel, message)
           _ <- dbActor ? DbActor.DeleteFederationMessage(keys._2)
@@ -208,11 +210,38 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
 
         Await.ready(combined, duration).value match {
           case Some(Success(_)) => Right(rpcMessage)
-          case _                => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleChallengeResult unknown error", rpcMessage.getId))
+          case _                => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleFederationResult unknown error", rpcMessage.getId))
         }
       case _ => Left(PipelineError(
           ErrorCodes.SERVER_ERROR.id,
           s"Couldn't extract federationResult parameters",
+          rpcMessage.getId
+        ))
+
+    }
+  }
+
+  def handleFederationTokensExchange(rpcMessage: JsonRpcRequest): GraphMessage = {
+
+    val ask = for {
+      case (_, message, Some(data)) <- extractParameters[FederationTokensExchange](rpcMessage, serverUnexpectedAnswer)
+    } yield (message, data)
+
+    Await.ready(ask, duration).value match {
+      case Some(Success(message, data)) =>
+        val combined = for {
+          _ <- mediator ? PubSubMediator.Propagate(rpcMessage.getParamsChannel, message)
+          // store the message in the db
+          _ <- dbActor ? DbActor.WriteFederationMessage("tokensExchange", message)
+        } yield ()
+
+        Await.ready(combined, duration).value match {
+          case Some(Success(_)) => Right(rpcMessage)
+          case _                => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleTokensExchange unknown error", rpcMessage.getId))
+        }
+      case _ => Left(PipelineError(
+          ErrorCodes.SERVER_ERROR.id,
+          s"Couldn't extract federationTokensExchange parameters",
           rpcMessage.getId
         ))
 
@@ -273,7 +302,6 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
           case ConnectionMediator.GetFederationServerAck(federationServerRef) =>
             constructAndSendRpc(remoteFederationChannel, resultMessage, federationServerRef)
 
-            // after sending the result, we delete both the challenge and expect messages from the db
             val combined = for {
               _ <- dbActor ? DbActor.DeleteFederationMessage(keys._3)
               _ <- dbActor ? DbActor.DeleteFederationMessage(keys._1)
