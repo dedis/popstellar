@@ -14,21 +14,18 @@ import (
 	"time"
 )
 
+func Test_New(t *testing.T) {
+
+}
+
 func Test_handleChannel(t *testing.T) {
 	db := mocks.NewRepository(t)
-	dataHandler := mocks.NewDataHandler(t)
+	channelHandler := mocks.NewChannelHandler(t)
 
-	subHandlers := DataHandlers{
-		Root:       dataHandler,
-		Lao:        dataHandler,
-		Election:   dataHandler,
-		Chirp:      dataHandler,
-		Reaction:   dataHandler,
-		Coin:       dataHandler,
-		Federation: dataHandler,
-	}
+	channelHandlers := make(ChannelHandlers)
+	channelHandlers[channel.Root] = channelHandler
 
-	msgHandler := New(db, subHandlers, zerolog.New(io.Discard))
+	msgHandler := New(db, channelHandlers, zerolog.New(io.Discard))
 
 	_, publicBuf, private, _ := generator.GenerateKeyPair(t)
 	sender := base64.URLEncoding.EncodeToString(publicBuf)
@@ -189,111 +186,15 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 12: success to handled message for channel root
 
-	channelPath = "rootMsg"
-	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
+	channelPath = "/root"
+	msg = generator.NewLaoCreateMsg(t, sender, "laoID", "laoName", time.Now().Unix(), sender, private)
 
 	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(channel.RootObject, nil)
-	dataHandler.On("Handle", channelPath, msg).Return(nil)
+	db.On("GetChannelType", channelPath).Return(channel.Root, nil).Once()
+	channelHandler.On("Handle", channelPath, msg).Return(nil)
 
 	args = append(args, input{
 		name:        "Test 12",
-		channelPath: channelPath,
-		message:     msg,
-		isError:     false,
-	})
-
-	// Test 13: success to handled message for channel lao
-
-	channelPath = "laoMsg"
-	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
-
-	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(channel.LAOObject, nil)
-	dataHandler.On("Handle", channelPath, msg).Return(nil)
-
-	args = append(args, input{
-		name:        "Test 13",
-		channelPath: channelPath,
-		message:     msg,
-		isError:     false,
-	})
-
-	// Test 14: success to handled message for channel election
-
-	channelPath = "electionMsg"
-	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
-
-	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(channel.ElectionObject, nil)
-	dataHandler.On("Handle", channelPath, msg).Return(nil)
-
-	args = append(args, input{
-		name:        "Test 14",
-		channelPath: channelPath,
-		message:     msg,
-		isError:     false,
-	})
-
-	// Test 15: success to handled message for channel chirp
-
-	channelPath = "chirpMsg"
-	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
-
-	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(channel.ChirpObject, nil)
-	dataHandler.On("Handle", channelPath, msg).Return(nil)
-
-	args = append(args, input{
-		name:        "Test 15",
-		channelPath: channelPath,
-		message:     msg,
-		isError:     false,
-	})
-
-	// Test 16: success to handled message for channel reaction
-
-	channelPath = "reaction"
-	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
-
-	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(channel.ReactionObject, nil)
-	dataHandler.On("Handle", channelPath, msg).Return(nil)
-
-	args = append(args, input{
-		name:        "Test 16",
-		channelPath: channelPath,
-		message:     msg,
-		isError:     false,
-	})
-
-	// Test 17: success to handled message for channel coin
-
-	channelPath = "coinMsg"
-	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
-
-	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(channel.CoinObject, nil)
-	dataHandler.On("Handle", channelPath, msg).Return(nil)
-
-	args = append(args, input{
-		name:        "Test 17",
-		channelPath: channelPath,
-		message:     msg,
-		isError:     false,
-	})
-
-	// Test 18: success to handled message for channel coin
-
-	channelPath = "coinMsg"
-	msg = generator.NewChirpAddMsg(t, sender, private, time.Now().Unix())
-
-	db.On("HasMessage", msg.MessageID).Return(false, nil)
-	db.On("GetChannelType", channelPath).Return(channel.FederationObject, nil)
-	dataHandler.On("Handle", channelPath, msg).Return(nil)
-
-	args = append(args, input{
-		name:        "Test 18",
 		channelPath: channelPath,
 		message:     msg,
 		isError:     false,

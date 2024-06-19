@@ -22,20 +22,10 @@ class ImpossibleOptionSizeCondition extends SemanticRule("ImpossibleOptionSizeCo
 
   override def fix(implicit doc: SemanticDocument): Patch = {
 
-    def getType(term: Term): Symbol = {
-      term.symbol.info match {
-        case Some(symInfo) => symInfo.signature match {
-          case ValueSignature(TypeRef(_, symbol, _)) => symbol
-          case _ => null
-        }
-        case _ => null
-      }
-    }
-
     doc.tree.collect {
       case t @ Term.ApplyInfix.After_4_6_0(Term.Select(qual, Term.Name("size")), Term.Name(">") | Term.Name(">="),
       _, Term.ArgClause(List(comparedValue), _))
-        if SymbolMatcher.exact("scala/Option#", "scala/Some#").matches(getType(qual)) =>
+        if Util.matchType(qual, "scala/Option", "scala/Some") =>
         comparedValue match {
           case Lit.Int(actualValue) if actualValue >= 1 => Patch.lint(ImpossibleOptionSizeConditionDiag(t))
           case _          => Patch.empty

@@ -43,6 +43,11 @@ func (f *FakeSocket) SendError(_ *int, err error) {
 	f.Err = err
 }
 
+// SendPopError implements socket.Socket
+func (f *FakeSocket) SendPopError(_ *int, err error) {
+	f.Err = err
+}
+
 func (f *FakeSocket) ID() string {
 	return f.Id
 }

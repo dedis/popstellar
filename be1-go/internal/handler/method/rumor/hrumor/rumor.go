@@ -6,7 +6,6 @@ import (
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/rumor/mrumor"
-	"popstellar/internal/logger"
 	"popstellar/internal/network/socket"
 	"sort"
 )
@@ -24,7 +23,7 @@ type Sockets interface {
 
 type Repository interface {
 	// CheckRumor returns true if the rumor already exists
-	CheckRumor(senderID string, rumorID int) (bool, error)
+	CheckRumor(senderID string, rumorID int) (valid, alreadyHas bool, err error)
 
 	// StoreRumor stores the new rumor with its processed and unprocessed messages
 	StoreRumor(rumorID int, sender string, unprocessed map[string][]mmessage.Message, processed []string) error
@@ -42,6 +41,7 @@ type Handler struct {
 	sockets        Sockets
 	db             Repository
 	messageHandler MessageHandler
+	buf            *buffer
 	log            zerolog.Logger
 }
 
@@ -51,6 +51,7 @@ func New(queries Queries, sockets Sockets, db Repository, messageHandler Message
 		sockets:        sockets,
 		db:             db,
 		messageHandler: messageHandler,
+		buf:            newBuffer(),
 		log:            log.With().Str("module", "rumor").Logger(),
 	}
 }
@@ -62,37 +63,56 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 		return nil, errors.NewJsonUnmarshalError(err.Error())
 	}
 
-	logger.Logger.Debug().Msgf("received rumor %s-%d from query %d",
-		rumor.Params.SenderID, rumor.Params.RumorID, rumor.ID)
+	h.log.Debug().Msgf("received rumor %s-%d from query %d", rumor.Params.SenderID, rumor.Params.RumorID, rumor.ID)
 
-	ok, err := h.db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID)
+	ok, alreadyHas, err := h.db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID)
 	if err != nil {
 		return &rumor.ID, err
 	}
-	if !ok {
-		return &rumor.ID, errors.NewDuplicateResourceError("rumor [%s|%v] is not valid",
+	if alreadyHas {
+		return &rumor.ID, errors.NewDuplicateResourceError("rumor %s:%d already exists",
 			rumor.Params.SenderID, rumor.Params.RumorID)
+	}
+	if !ok {
+		h.log.Debug().Msgf("Trying to insert into buffer rumor %s:%d", rumor.Params.SenderID, rumor.Params.RumorID)
+		err = h.buf.insert(rumor)
+		if err != nil {
+			return &rumor.ID, err
+		}
+
+		socket.SendResult(rumor.ID, nil, nil)
+
+		return nil, nil
 	}
 
 	socket.SendResult(rumor.ID, nil, nil)
 
+	return nil, h.handleAndPropagate(socket, rumor)
+}
+
+func (h *Handler) handleAndPropagate(socket socket.Socket, rumor mrumor.Rumor) error {
 	h.SendRumor(socket, rumor)
 
 	processedMsgs := h.tryHandlingMessagesByChannel(rumor.Params.Messages)
 
-	err = h.db.StoreRumor(rumor.Params.RumorID, rumor.Params.SenderID, rumor.Params.Messages, processedMsgs)
+	err := h.db.StoreRumor(rumor.Params.RumorID, rumor.Params.SenderID, rumor.Params.Messages, processedMsgs)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	messages, err := h.db.GetUnprocessedMessagesByChannel()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	_ = h.tryHandlingMessagesByChannel(messages)
 
-	return nil, nil
+	nextRumor, ok := h.buf.getNextRumor(rumor.Params.SenderID, rumor.Params.RumorID)
+	if !ok {
+		return nil
+	}
+
+	return h.handleNextRumor(nextRumor)
 }
 
 func (h *Handler) tryHandlingMessagesByChannel(unprocessedMsgsByChannel map[string][]mmessage.Message) []string {
@@ -131,7 +151,7 @@ func (h *Handler) tryHandlingMessages(channelPath string, unprocessedMsgs []mmes
 				continue
 			}
 
-			logger.Logger.Error().Err(err)
+			h.log.Error().Err(err)
 		}
 
 		if len(unprocessedMsgs) == 0 {
@@ -167,10 +187,22 @@ func (h *Handler) SendRumor(socket socket.Socket, rumor mrumor.Rumor) {
 
 	buf, err := json.Marshal(rumor)
 	if err != nil {
-		logger.Logger.Error().Err(err)
+		h.log.Error().Err(err)
 		return
 	}
 
-	logger.Logger.Debug().Msgf("sending rumor %s-%d query %d", rumor.Params.SenderID, rumor.Params.RumorID, rumor.ID)
+	h.log.Debug().Msgf("sending rumor %s-%d query %d", rumor.Params.SenderID, rumor.Params.RumorID, rumor.ID)
 	h.sockets.SendRumor(socket, rumor.Params.SenderID, rumor.Params.RumorID, buf)
+}
+
+func (h *Handler) handleNextRumor(rumor mrumor.Rumor) error {
+	ok, _, err := h.db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID)
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return nil
+	}
+
+	return h.handleAndPropagate(nil, rumor)
 }

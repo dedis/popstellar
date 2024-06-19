@@ -5,6 +5,9 @@
   "params": {
     "sender_id": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
     "rumor_id": 0,
+    "timestamp" : {
+      "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=" : 0
+    },
     "messages": {
       "/root": [
         {
