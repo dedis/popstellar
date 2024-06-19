@@ -257,7 +257,7 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
 
     val rpcId: Option[Int] = Some(1)
 
-    val rumorJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.rumor, new Rumor(serverPk, rumorId, messages), rpcId))
+    val rumorJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.rumor, Rumor(serverPk, rumorId, messages), rpcId))
     val rumorFromJson = JsonRpcRequest.buildFromJson(rumorJsValue.prettyPrint)
 
     // Test
