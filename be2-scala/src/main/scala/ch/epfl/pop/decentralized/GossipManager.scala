@@ -27,7 +27,7 @@ import scala.util.Random
   * @param stopProbability
   *   probability with which we stop the gossipping in case of error response
   */
-final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Double = 0.5, pullRate: FiniteDuration = 15.seconds) extends Actor with AskPatternConstants with ActorLogging with Timers {
+final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Double = 0.5, pullRate: FiniteDuration = 5.seconds) extends Actor with AskPatternConstants with ActorLogging with Timers {
 
   private var activeGossipProtocol: Map[JsonRpcRequest, Set[ActorRef]] = Map.empty
   private var rumorMap: Map[PublicKey, Int] = Map.empty
@@ -75,9 +75,9 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
         val alreadySent: Set[ActorRef] = activeGossip + serverRef
         activeGossipProtocol += (rumorRpc -> alreadySent)
         log.info(s"rumorSent > dest : ${greetServer.clientAddress}, rumor : $rumorRpc")
-        serverRef ! ClientAnswer(
+      /*serverRef ! ClientAnswer(
           Right(rumorRpc)
-        )
+        )*/
       // else remove entry
       case ConnectionMediator.NoPeer() =>
         activeGossipProtocol = activeGossipProtocol.removed(rumorRpc)
