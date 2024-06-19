@@ -67,16 +67,6 @@ object Util {
   }
 
   /**
-   * Finds multiple definitions in one tree traversal, returning a map of the definitions
-   * @param tree The tree to search in
-   * @param nameSet The set of names to search for
-   * @return A map of the definitions
-   */
-  def findDefinitionsMap(tree: Tree, nameSet: Set[Term]): Map[Term, Any] = {
-    findDefinitions(tree, nameSet).toMap
-  }
-
-  /**
    * Finds multiple definitions in one tree traversal, ordered with the order in the list
    * @param tree The tree to search in
    * @param nameSet The set of names to search for
