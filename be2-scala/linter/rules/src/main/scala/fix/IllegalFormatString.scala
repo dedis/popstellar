@@ -11,29 +11,23 @@ import scalafix.v1._
 
 import java.util.{IllegalFormatException, MissingFormatArgumentException, UnknownFormatConversionException}
 
-case class IllegalFormatStringDiag(string: Tree) extends Diagnostic {
-  override def message: String = "Illegal format string"
-
-  override def severity: LintSeverity = LintSeverity.Error
-
-  override def explanation: String = "An unchecked exception will be thrown when a format string contains an illegal syntax or a format specifier that is incompatible with the given arguments"
-
-  override def position: Position = string.pos
-}
-
 class IllegalFormatString extends SemanticRule("IllegalFormatString") {
 
+  private def diag(pos: Position) = Diagnostic("", "Illegal format string", pos, "An unchecked exception will be thrown when a format string contains an illegal syntax or a format specifier that is incompatible with the given arguments", LintSeverity.Error)
+
+  // Rule tries to format the string to check if it ends in an exception, and if so lints
   //Term parameter is simply used to display the rule at the correct place
-  private def rule(term: Term, value: String, args: List[Any]): Patch = {
+  private def rule(t: Term, value: String, args: List[Any]): Patch = {
     try value.format(args: _*)
     catch {
-      case _: IllegalFormatException | _: MissingFormatArgumentException | _: UnknownFormatConversionException => return Patch.lint(IllegalFormatStringDiag(term))
+      case _: IllegalFormatException | _: MissingFormatArgumentException | _: UnknownFormatConversionException => return Patch.lint(diag(t.pos))
     }
     Patch.empty
   }
 
   override def fix(implicit doc: SemanticDocument): Patch = {
 
+    // Method to get the args with their corresponding definitions
     def getMappedArgs(args: List[Term]): List[Any] = {
       (findDefinitionsOrdered(doc.tree, args) ++ args).collect { case Lit(value) => value }
     }
