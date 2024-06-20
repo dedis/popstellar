@@ -378,19 +378,19 @@ final case class DbActor(
     if (!checkChannelExistence(newReactionsChannel)) {
       val numberOfReactions = NumberOfChirpsReactionsData(0)
       val channelData = ChannelData(ObjectType.chirp, List())
-      val messageID = Hash.fromStrings("numberOfReactions")
+      val messageID = Hash(Base64Data("numberOfReactions"))
       storage.write(
-        (storage.CHANNEL_DATA_KEY + channel.toString, channelData.addMessage(messageID).toJsonString),
-        (storage.DATA_KEY + s"$channel${Channel.DATA_SEPARATOR}$messageID", numberOfReactions.toJsonString)
+        (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, channelData.addMessage(messageID).toJsonString),
+        (storage.DATA_KEY + s"$newReactionsChannel${Channel.DATA_SEPARATOR}$messageID", numberOfReactions.toJsonString)
       )
     } else {
       if (resetToZero) {
         val numberOfReactions = NumberOfChirpsReactionsData(0)
         val channelData = ChannelData(ObjectType.chirp, List())
-        val messageID = Hash.fromStrings("numberOfReactions")
+        val messageID = Hash(Base64Data("numberOfReactions"))
         storage.write(
-          (storage.CHANNEL_DATA_KEY + channel.toString, channelData.addMessage(messageID).toJsonString),
-          (storage.DATA_KEY + s"$channel${Channel.DATA_SEPARATOR}$messageID", numberOfReactions.toJsonString)
+          (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, channelData.addMessage(messageID).toJsonString),
+          (storage.DATA_KEY + s"$newReactionsChannel${Channel.DATA_SEPARATOR}$messageID", numberOfReactions.toJsonString)
         )
       } else {
         val numberOfReactions = catchupChannel(channel).head.toJsonString
@@ -400,8 +400,8 @@ final case class DbActor(
         val channelData = ChannelData(ObjectType.chirp, List())
         val messageID = Hash.fromStrings("numberOfReactions")
         storage.write(
-          (storage.CHANNEL_DATA_KEY + channel.toString, channelData.addMessage(messageID).toJsonString),
-          (storage.DATA_KEY + s"$channel${Channel.DATA_SEPARATOR}$messageID", updatedNumberOfChirpsReactions.toJsonString)
+          (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, channelData.addMessage(messageID).toJsonString),
+          (storage.DATA_KEY + s"$newReactionsChannel${Channel.DATA_SEPARATOR}$messageID", updatedNumberOfChirpsReactions.toJsonString)
         )
       }
     }
