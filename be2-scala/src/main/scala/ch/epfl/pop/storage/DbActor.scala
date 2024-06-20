@@ -331,56 +331,15 @@ final case class DbActor(
       else if score > chirpScores(third) || (score == chirpScores(third) && compareChirpsTimestamps(chirpId, third, allChirpsList)) then
         third = chirpId
 
-//    var catchupList: List[Message] = List()
-//    if (first.base64Data.toString == "") {
-//      var count = 0
-//      for chirp <- allChirpsList do
-//        try {
-//          val chirpObj = AddChirp.buildFromJson(chirp.data.decodeToString())
-//          if (chirpObj.action.toString == "add" && count < 3) {
-//            catchupList = catchupList :+ chirp
-//            count += 1
-//          }
-//        } catch {
-//          case ex: spray.json.DeserializationException =>
-//        }
-//
-//    } else if (second.base64Data.toString == "") {
-//      var secondFound = false
-//      var done = false
-//      for chirp <- allChirpsList do
-//        try {
-//          val chirpObj = AddChirp.buildFromJson(chirp.data.decodeToString())
-//          if (chirpObj.action.toString == "add" && !done) {
-//            if (chirp.message_id != first) {
-//              if (!secondFound) {
-//                second = chirp.message_id
-//                secondFound = true
-//              } else {
-//                third = chirp.message_id
-//                done = true
-//              }
-//            }
-//          }
-//        } catch {
-//          case ex: spray.json.DeserializationException =>
-//        }
-//    } else if (third.base64Data.toString == "") {
-//      var done = false
-//      for chirp <- allChirpsList do
-//        try {
-//          val chirpObj = AddChirp.buildFromJson(chirp.data.decodeToString())
-//          if (chirpObj.action.toString == "add" && !done) {
-//            if (chirp.message_id != first) {
-//              third = chirp.message_id
-//              done = true
-//            }
-//          }
-//        } catch {
-//          case ex: spray.json.DeserializationException =>
-//        }
-//    }
-    val topThreeChirps: List[Hash] = List(third, second, first)
+    var topThreeChirps: List[Hash] = List(third, second, first)
+    if (first.base64Data.toString == "") {
+      topThreeChirps = List()
+    } else if (second.base64Data.toString == "") {
+      topThreeChirps = List(first)
+    } else if (third.base64Data.toString == "") {
+      topThreeChirps = List(second, first)
+    }
+
 //    if (catchupList.isEmpty) {
       val catchupList = readCreateLao(chirpsChannel) match {
         case Some(msg) =>
