@@ -267,7 +267,7 @@ final case class DbActor(
             try {
               AddReaction.buildFromJson(reaction.data.decodeToString()).chirp_id != chirpObj.chirp_id
             } catch {
-              case ex: spray.json.DeserializationException => reaction == reaction // do not filter
+              case ex: spray.json.DeserializationException => true // do not filter
             }
           )
         }
