@@ -195,7 +195,7 @@ final case class DbActor(
   private def getTopChirps(channel: Channel, buildCatchupList: (msgIds: List[Hash], acc: List[Message], fromChannel: Channel) => List[Message]): List[Message] = {
 
     // returns true if chirp one is newer than chirp two by timestamp and false otherwise
-    def compareChirpsTimestamps(chirpOneId: Hash, chirpTwoId: Hash, allChirpsList: List[Message]) : Boolean = {
+    def compareChirpsTimestamps(chirpOneId: Hash, chirpTwoId: Hash, allChirpsList: List[Message]): Boolean = {
       try {
         val chirpOne = allChirpsList.find(msg => msg.message_id == chirpOneId).get
         val chirpOneObj = AddChirp.buildFromJson(chirpOne.data.decodeToString())
@@ -205,8 +205,7 @@ final case class DbActor(
 
         if (chirpOneObj.timestamp.time > chirpTwoObj.timestamp.time) {
           false
-        }
-        else {
+        } else {
           true
         }
       } catch {
@@ -269,7 +268,8 @@ final case class DbActor(
               AddReaction.buildFromJson(reaction.data.decodeToString()).chirp_id != chirpObj.chirp_id
             } catch {
               case ex: spray.json.DeserializationException => reaction == reaction // do not filter
-            })
+            }
+          )
         }
       } catch {
         case ex: spray.json.DeserializationException =>
@@ -307,7 +307,6 @@ final case class DbActor(
         case ex: spray.json.DeserializationException =>
       }
 
-
     var first = new Hash(Base64Data(""))
     var second = new Hash(Base64Data(""))
     var third = new Hash(Base64Data(""))
@@ -340,16 +339,16 @@ final case class DbActor(
       topThreeChirps = List(second, first)
     }
 
-      val catchupList = readCreateLao(chirpsChannel) match {
-        case Some(msg) =>
-          msg :: buildCatchupList(topThreeChirps, Nil, chirpsChannel)
+    val catchupList = readCreateLao(chirpsChannel) match {
+      case Some(msg) =>
+        msg :: buildCatchupList(topThreeChirps, Nil, chirpsChannel)
 
-        case None =>
-          if (chirpsChannel.isMainLaoChannel) {
-            log.error("Critical error encountered: no create_lao message was found in the db")
-          }
-          buildCatchupList(topThreeChirps, Nil, chirpsChannel)
-      }
+      case None =>
+        if (chirpsChannel.isMainLaoChannel) {
+          log.error("Critical error encountered: no create_lao message was found in the db")
+        }
+        buildCatchupList(topThreeChirps, Nil, chirpsChannel)
+    }
 
     if (!checkChannelExistence(channel)) {
       createChannel(channel, ObjectType.chirp)
@@ -357,7 +356,7 @@ final case class DbActor(
 
     this.synchronized {
       val channelData = ChannelData(ObjectType.chirp, List())
-      for message : Message <- catchupList do
+      for message: Message <- catchupList do
         storage.write(
           (storage.CHANNEL_DATA_KEY + channel.toString, channelData.addMessage(message.message_id).toJsonString),
           (storage.DATA_KEY + s"$channel${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString)
@@ -439,12 +438,12 @@ final case class DbActor(
         val newReactionsChannel = Channel.apply(s"/root/$laoID/social/top_chirps/number_of_new_reactions")
         var numberOfNewChirpsReactionsInt = 0
         if (checkChannelExistence(newReactionsChannel)) {
-          val numberOfNewChirpsReactions = catchupChannel(channel).head.toJsonString
+          val numberOfNewChirpsReactions = catchupChannel(newReactionsChannel).head.toJsonString
           numberOfNewChirpsReactionsInt = NumberOfChirpsReactionsData.buildFromJson(numberOfNewChirpsReactions).numberOfChirpsReactions
         }
         if (LocalDateTime.now().isAfter(topChirpsTimestamp.plusSeconds(5)) || numberOfNewChirpsReactionsInt >= 5) {
           if (numberOfNewChirpsReactionsInt >= 5) {
-            updateNumberOfNewChirpsReactions(channel, true)
+            updateNumberOfNewChirpsReactions(newReactionsChannel, true)
           }
           this.topChirpsTimestamp = LocalDateTime.now()
           getTopChirps(channel, buildCatchupList)
