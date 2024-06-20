@@ -356,8 +356,12 @@ final case class DbActor(
     }
 
     this.synchronized {
-      for chirp <- catchupList do
-        write(channel, chirp)
+      val channelData = ChannelData(ObjectType.chirp, List())
+      for message : Message <- catchupList do
+        storage.write(
+          (storage.CHANNEL_DATA_KEY + channel.toString, channelData.addMessage(message.message_id).toJsonString),
+          (storage.DATA_KEY + s"$channel${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString)
+        )
     }
 
     readGreetLao(channel) match {
@@ -374,22 +378,32 @@ final case class DbActor(
     val newReactionsChannel = Channel.apply(s"/root/$laoID/social/top_chirps/number_of_new_reactions")
     if (!checkChannelExistence(newReactionsChannel)) {
       val numberOfReactions = NumberOfChirpsReactionsData(0)
-      val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfReactions.toJsonString)
-      storage.write(pair)
+      val channelData = ChannelData(ObjectType.chirp, List())
+      val messageID = Hash.fromStrings("numberOfReactions")
+      storage.write(
+        (storage.CHANNEL_DATA_KEY + channel.toString, channelData.addMessage(messageID).toJsonString),
+        (storage.DATA_KEY + s"$channel${Channel.DATA_SEPARATOR}$messageID", numberOfReactions.toJsonString)
+      )
     } else {
       if (resetToZero) {
         val numberOfReactions = NumberOfChirpsReactionsData(0)
-        val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, numberOfReactions.toJsonString)
-        storage.write(pair)
+        val channelData = ChannelData(ObjectType.chirp, List())
+        val messageID = Hash.fromStrings("numberOfReactions")
+        storage.write(
+          (storage.CHANNEL_DATA_KEY + channel.toString, channelData.addMessage(messageID).toJsonString),
+          (storage.DATA_KEY + s"$channel${Channel.DATA_SEPARATOR}$messageID", numberOfReactions.toJsonString)
+        )
       } else {
-        val numberOfReactions = storage.read(storage.CHANNEL_DATA_KEY + newReactionsChannel.toString)
-        val numberOfNewChirpsReactionsInt = numberOfReactions match {
-          case Some(numReactions) => NumberOfChirpsReactionsData.buildFromJson(numReactions).numberOfChirpsReactions
-          case None               => 0
-        }
+        val numberOfReactions = catchupChannel(channel).head.toJsonString
+        val numberOfNewChirpsReactionsInt = NumberOfChirpsReactionsData.buildFromJson(numberOfReactions).numberOfChirpsReactions
+
         val updatedNumberOfChirpsReactions = NumberOfChirpsReactionsData(numberOfNewChirpsReactionsInt + 1)
-        val pair = (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, updatedNumberOfChirpsReactions.toJsonString)
-        storage.write(pair)
+        val channelData = ChannelData(ObjectType.chirp, List())
+        val messageID = Hash.fromStrings("numberOfReactions")
+        storage.write(
+          (storage.CHANNEL_DATA_KEY + channel.toString, channelData.addMessage(messageID).toJsonString),
+          (storage.DATA_KEY + s"$channel${Channel.DATA_SEPARATOR}$messageID", updatedNumberOfChirpsReactions.toJsonString)
+        )
       }
     }
   }
@@ -425,11 +439,8 @@ final case class DbActor(
         val newReactionsChannel = Channel.apply(s"/root/$laoID/social/top_chirps/number_of_new_reactions")
         var numberOfNewChirpsReactionsInt = 0
         if (checkChannelExistence(newReactionsChannel)) {
-          val numberOfNewChirpsReactions = storage.read(storage.CHANNEL_DATA_KEY + newReactionsChannel.toString)
-          numberOfNewChirpsReactionsInt = numberOfNewChirpsReactions match {
-            case Some(numReactions) => NumberOfChirpsReactionsData.buildFromJson(numReactions).numberOfChirpsReactions
-            case None               => 0
-          }
+          val numberOfNewChirpsReactions = catchupChannel(channel).head.toJsonString
+          numberOfNewChirpsReactionsInt = NumberOfChirpsReactionsData.buildFromJson(numberOfNewChirpsReactions).numberOfChirpsReactions
         }
         if (LocalDateTime.now().isAfter(topChirpsTimestamp.plusSeconds(5)) || numberOfNewChirpsReactionsInt >= 5) {
           if (numberOfNewChirpsReactionsInt >= 5) {
