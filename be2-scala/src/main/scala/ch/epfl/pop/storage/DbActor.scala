@@ -340,7 +340,6 @@ final case class DbActor(
       topThreeChirps = List(second, first)
     }
 
-//    if (catchupList.isEmpty) {
       val catchupList = readCreateLao(chirpsChannel) match {
         case Some(msg) =>
           msg :: buildCatchupList(topThreeChirps, Nil, chirpsChannel)
@@ -351,7 +350,6 @@ final case class DbActor(
           }
           buildCatchupList(topThreeChirps, Nil, chirpsChannel)
       }
-//    }
 
     if (!checkChannelExistence(channel)) {
       createChannel(channel, ObjectType.chirp)
