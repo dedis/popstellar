@@ -214,6 +214,8 @@ final case class DbActor(
 
     }
 
+    val noCreateLAOMessageError = "Critical error encountered: no create_lao message was found in the db"
+
     val laoID = channel.decodeChannelLaoId match {
       case Some(id) => id
       case None     => Hash(Base64Data(""))
@@ -228,7 +230,7 @@ final case class DbActor(
 
       case None =>
         if (reactionsChannel.isMainLaoChannel) {
-          log.error("Critical error encountered: no create_lao message was found in the db")
+          log.error(noCreateLAOMessageError)
         }
         buildCatchupList(reactionsChannelData.messages, Nil, reactionsChannel)
     }
@@ -248,7 +250,7 @@ final case class DbActor(
 
       case None =>
         if (reactionsChannel.isMainLaoChannel) {
-          log.error("Critical error encountered: no create_lao message was found in the db")
+          log.error(noCreateLAOMessageError)
         }
         buildCatchupList(reactionsChannelDataIDs, Nil, reactionsChannel)
     }
@@ -345,7 +347,7 @@ final case class DbActor(
 
       case None =>
         if (chirpsChannel.isMainLaoChannel) {
-          log.error("Critical error encountered: no create_lao message was found in the db")
+          log.error(noCreateLAOMessageError)
         }
         buildCatchupList(topThreeChirps, Nil, chirpsChannel)
     }
@@ -499,6 +501,8 @@ final case class DbActor(
       case None     => Hash(Base64Data(""))
     }
 
+    val noCreateLAOMessageError = "Critical error encountered: no create_lao message was found in the db"
+
     if (chirpsPattern.findFirstMatchIn(channel.toString).isDefined) {
       val chirpsChannel = Channel.apply(s"/root/$laoID/social/chirps")
 
@@ -510,7 +514,7 @@ final case class DbActor(
 
         case None =>
           if (chirpsChannel.isMainLaoChannel) {
-            log.error("Critical error encountered: no create_lao message was found in the db")
+            log.error(noCreateLAOMessageError)
           }
           buildPagedCatchupList(channelData.messages, Nil, chirpsChannel)
       }
@@ -563,7 +567,7 @@ final case class DbActor(
 
         case None =>
           if (profileChannel.isMainLaoChannel) {
-            log.error("Critical error encountered: no create_lao message was found in the db")
+            log.error(noCreateLAOMessageError)
           }
           buildPagedCatchupList(channelData.messages, Nil, profileChannel)
       }
