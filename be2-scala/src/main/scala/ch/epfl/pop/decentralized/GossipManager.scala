@@ -75,9 +75,9 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
         val alreadySent: Set[ActorRef] = activeGossip + serverRef
         activeGossipProtocol += (rumorRpc -> alreadySent)
         log.info(s"rumorSent > dest : ${greetServer.clientAddress}, rumor : $rumorRpc")
-      /*serverRef ! ClientAnswer(
+        serverRef ! ClientAnswer(
           Right(rumorRpc)
-        )*/
+        )
       // else remove entry
       case ConnectionMediator.NoPeer() =>
         activeGossipProtocol = activeGossipProtocol.removed(rumorRpc)
