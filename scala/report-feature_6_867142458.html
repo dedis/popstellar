@@ -41,7 +41,7 @@ $(document).ready(function() {
 
 
 
-<title>Cucumber Reports  - Feature: be/features/election/castVote.feature</title>
+<title>Cucumber Reports  - Feature: be/features/election/electionOpen.feature</title>
 
 </head>
 <body>
@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala</td>
-      <td>19 Jun 2024, 04:17</td>
+      <td>20 Jun 2024, 04:17</td>
     </tr>
   </tbody>
 </table>
@@ -126,19 +126,19 @@ $(document).ready(function() {
 
         <tbody>
         <tr>
-          <td class="tagname">be/features/election/castVote.feature</td>
-          <td      class="passed"    >127</td>
-          <td      class="failed"    >6</td>
-          <td     class="skipped"   >12</td>
+          <td class="tagname">be/features/election/electionOpen.feature</td>
+          <td      class="passed"    >102</td>
+          <td      class="failed"    >5</td>
+          <td     class="skipped"   >10</td>
           <td >0</td>
           <td >0</td>
-          <td class="total">145</td>
+          <td class="total">117</td>
 
           <td  class="passed"    >1</td>
-          <td  class="failed"    >6</td>
-          <td class="total">7</td>
+          <td  class="failed"    >5</td>
+          <td class="total">6</td>
 
-          <td class="duration" data-value="58849630039">58.849</td>
+          <td class="duration" data-value="51559915498">51.559</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -175,12 +175,12 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Feature</span>
-  <span class="name">be/features/election/castVote.feature</span>
+  <span class="name">be/features/election/electionOpen.feature</span>
 
 
 </div>
 
-        <div class="description indention">Cast a vote</div>
+        <div class="description indention">Open an Election</div>
 
         <div class="elements inner-level">
 
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">7.735</span>
+  <span class="lead-duration duration">7.474</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">6.764</span>
+  <span class="lead-duration duration">6.761</span>
 
 </div>
 
@@ -396,7 +396,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.163</span>
+  <span class="lead-duration duration">0.142</span>
 
 </div>
 
@@ -504,7 +504,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def question = election.createQuestion()</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -529,9 +529,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read(openElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
+  <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.794</span>
+  <span class="lead-duration duration">0.562</span>
 
 </div>
 
@@ -577,11 +577,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-3" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@5552d10&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@3b3190fd&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@219dd935&quot;,
-  &quot;election&quot;: &quot;common.model.Election@66859ea9&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@4a9412c4&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@3a70acd5&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@475fb7&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@41db6e4b&quot;,
+  &quot;election&quot;: &quot;common.model.Election@5367d46f&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@6c4eccd2&quot;
 }
 </pre>
       </div>
@@ -600,34 +600,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">def vote = question.createVote(0)</span>
-
-  <span class="lead-duration duration">0.001</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def castVote = election.castVote(vote)</span>
+  <span class="name">def electionOpen = election.open()</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -665,19 +638,19 @@ $(document).ready(function() {
 
 <div class="tags indention">
     <b>Tags:</b>
+       <a href="report-tag_19607117.html">@electionOpen1</a>
        <a href="report-tag_524961969.html">@env=go,scala</a>
-       <a href="report-tag_3547600455.html">@castVote1</a>
 </div>
 
 
-  <span class="lead-duration duration">5.032</span>
+  <span class="lead-duration duration">5.018</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-4">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Casting a valid vote on a started election</span>
+  <span class="name">Opening a valid election</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -711,7 +684,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">def validCastVote =</span>
+  <span class="name">def validElectionOpen =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -732,18 +705,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-6" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;cast_vote&quot;,
-  &quot;lao&quot;: '#(lao.id)',
-  &quot;election&quot;: '#(election.id)',
-  &quot;created_at&quot;: '#(castVote.createdAt)',
-  &quot;votes&quot;: [
-    {
-      &quot;id&quot;: '#(vote.id)',
-      &quot;question&quot;: '#(question.id)',
-      &quot;vote&quot;: '#(vote.index)'
-    }
-  ]
+    &quot;object&quot;: &quot;election&quot;,
+    &quot;action&quot;: &quot;open&quot;,
+    &quot;lao&quot;: '#(lao.id)',
+    &quot;election&quot;: '#(election.id)',
+    &quot;opened_at&quot;: '#(electionOpen.openedAt)'
 }</pre>
       </div>
     </div>
@@ -761,9 +727,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(validCastVote, election.channel)</span>
+  <span class="name">organizer.publish(validElectionOpen, election.channel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -788,9 +754,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(validCastVote)</span>
+  <span class="name">json answer = organizer.getBackendResponse(validElectionOpen)</span>
 
-  <span class="lead-duration duration">0.029</span>
+  <span class="lead-duration duration">0.016</span>
 
 </div>
 
@@ -882,7 +848,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">7.737</span>
+  <span class="lead-duration duration">7.476</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-7">
@@ -925,7 +891,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -979,7 +945,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">6.762</span>
+  <span class="lead-duration duration">6.760</span>
 
 </div>
 
@@ -1033,7 +999,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -1087,7 +1053,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.160</span>
+  <span class="lead-duration duration">0.143</span>
 
 </div>
 
@@ -1220,9 +1186,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read(openElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
+  <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.804</span>
+  <span class="lead-duration duration">0.566</span>
 
 </div>
 
@@ -1268,11 +1234,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-9" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@7d15c513&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@320efff5&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@78b44fcb&quot;,
-  &quot;election&quot;: &quot;common.model.Election@12dc702b&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@41b2123e&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@564e9c0b&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@4c7d19bf&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@21d478f3&quot;,
+  &quot;election&quot;: &quot;common.model.Election@3be60847&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@19ea65f4&quot;
 }
 </pre>
       </div>
@@ -1291,34 +1257,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">def vote = question.createVote(0)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def castVote = election.castVote(vote)</span>
+  <span class="name">def electionOpen = election.open()</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1356,19 +1295,19 @@ $(document).ready(function() {
 
 <div class="tags indention">
     <b>Tags:</b>
+       <a href="report-tag_19607118.html">@electionOpen2</a>
        <a href="report-tag_524961969.html">@env=go,scala</a>
-       <a href="report-tag_3547600456.html">@castVote2</a>
 </div>
 
 
-  <span class="lead-duration duration">0.023</span>
+  <span class="lead-duration duration">0.031</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-10">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Casting a vote on a lao channel should return an error</span>
+  <span class="name">Opening the election without a setup should result in an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1402,9 +1341,63 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">def validCastVote =</span>
+  <span class="name">def newElection = organizer.generateValidElection(lao)</span>
 
   <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def newElectionOpen = newElection.open()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def validElectionOpen =</span>
+
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1423,18 +1416,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-12" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;cast_vote&quot;,
-  &quot;lao&quot;: '#(lao.id)',
-  &quot;election&quot;: '#(election.id)',
-  &quot;created_at&quot;: '#(castVote.createdAt)',
-  &quot;votes&quot;: [
-    {
-      &quot;id&quot;: '#(vote.id)',
-      &quot;question&quot;: '#(question.id)',
-      &quot;vote&quot;: '#(vote.index)'
-    }
-  ]
+    &quot;object&quot;: &quot;election&quot;,
+    &quot;action&quot;: &quot;open&quot;,
+    &quot;lao&quot;: '#(lao.id)',
+    &quot;election&quot;: '#(newElection.id)',
+    &quot;opened_at&quot;: '#(newElectionOpen.createdAt)'
 }</pre>
       </div>
     </div>
@@ -1452,7 +1438,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(validCastVote, lao.channel)</span>
+  <span class="name">organizer.publish(validElectionOpen, newElection.channel)</span>
 
   <span class="lead-duration duration">0.003</span>
 
@@ -1479,9 +1465,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(validCastVote)</span>
+  <span class="name">json answer = organizer.getBackendResponse(validElectionOpen)</span>
 
-  <span class="lead-duration duration">0.019</span>
+  <span class="lead-duration duration">0.026</span>
 
 </div>
 
@@ -1498,13 +1484,13 @@ $(document).ready(function() {
       <div id="msg-13" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(validCastVote)
+01: organizer.getBackendResponse(validElectionOpen)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/castVote.feature:66</pre>
+classpath:be/features/election/electionOpen.feature:54</pre>
       </div>
     </div>
   </div>
@@ -1518,17 +1504,17 @@ classpath:be/features/election/castVote.feature:66</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-14" class="collapse collapsable-details">
-        <pre>04:11:49.799 classpath:be/features/election/castVote.feature:66
-And json answer = organizer.getBackendResponse(validCastVote)
+        <pre>04:13:32.439 classpath:be/features/election/electionOpen.feature:54
+And json answer = organizer.getBackendResponse(validElectionOpen)
 js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(validCastVote)
+01: organizer.getBackendResponse(validElectionOpen)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/castVote.feature:66
+classpath:be/features/election/electionOpen.feature:54
 </pre>
       </div>
     </div>
@@ -1613,7 +1599,7 @@ classpath:be/features/election/castVote.feature:66
 </div>
 
 
-  <span class="lead-duration duration">7.597</span>
+  <span class="lead-duration duration">7.668</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-15">
@@ -1656,7 +1642,7 @@ classpath:be/features/election/castVote.feature:66
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1818,7 +1804,7 @@ classpath:be/features/election/castVote.feature:66
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.162</span>
+  <span class="lead-duration duration">0.147</span>
 
 </div>
 
@@ -1951,9 +1937,9 @@ classpath:be/features/election/castVote.feature:66
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read(openElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
+  <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.667</span>
+  <span class="lead-duration duration">0.754</span>
 
 </div>
 
@@ -1999,11 +1985,11 @@ classpath:be/features/election/castVote.feature:66
       </div>
       <div id="msg-17" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@486bcaa&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@5e9671e6&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@2f3a0f37&quot;,
-  &quot;election&quot;: &quot;common.model.Election@7ec8db0c&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@4f1a5b93&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@3dfe2797&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@3f6fd33b&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@34c050a1&quot;,
+  &quot;election&quot;: &quot;common.model.Election@7ecf4608&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@32c114d9&quot;
 }
 </pre>
       </div>
@@ -2022,34 +2008,7 @@ classpath:be/features/election/castVote.feature:66
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">def vote = question.createVote(0)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def castVote = election.castVote(vote)</span>
+  <span class="name">def electionOpen = election.open()</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2087,19 +2046,19 @@ classpath:be/features/election/castVote.feature:66
 
 <div class="tags indention">
     <b>Tags:</b>
+       <a href="report-tag_19607119.html">@electionOpen3</a>
        <a href="report-tag_524961969.html">@env=go,scala</a>
-       <a href="report-tag_3547600457.html">@castVote3</a>
 </div>
 
 
-  <span class="lead-duration duration">0.018</span>
+  <span class="lead-duration duration">0.012</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-18">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Casting a valid vote on non existent election should return an error</span>
+  <span class="name">Opening the election too early results in an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -2133,115 +2092,7 @@ classpath:be/features/election/castVote.feature:66
 
 <div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">def newElection = organizer.generateValidElection(lao)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def newQuestion = newElection.createQuestion()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def newVote = newQuestion.createVote(0)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def newCastVote = newElection.castVote(newVote)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def validCastVote =</span>
+  <span class="name">def invalidElectionOpen =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2262,18 +2113,11 @@ classpath:be/features/election/castVote.feature:66
       </div>
       <div id="msg-20" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;cast_vote&quot;,
-  &quot;lao&quot;: '#(lao.id)',
-  &quot;election&quot;: '#(newElection.id)',
-  &quot;created_at&quot;: '#(newCastVote.createdAt)',
-  &quot;votes&quot;: [
-    {
-      &quot;id&quot;: '#(newVote.id)',
-      &quot;question&quot;: '#(newQuestion.id)',
-      &quot;vote&quot;: '#(newVote.index)'
-    }
-  ]
+    &quot;object&quot;: &quot;election&quot;,
+    &quot;action&quot;: &quot;open&quot;,
+    &quot;lao&quot;: '#(lao.id)',
+    &quot;election&quot;: '#(election.id)',
+    &quot;opened_at&quot;: '#(election.creation - 1)'
 }</pre>
       </div>
     </div>
@@ -2291,9 +2135,9 @@ classpath:be/features/election/castVote.feature:66
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(validCastVote, newElection.channel)</span>
+  <span class="name">organizer.publish(invalidElectionOpen, election.channel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -2318,9 +2162,9 @@ classpath:be/features/election/castVote.feature:66
 
 <div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(validCastVote)</span>
+  <span class="name">json answer = organizer.getBackendResponse(invalidElectionOpen)</span>
 
-  <span class="lead-duration duration">0.015</span>
+  <span class="lead-duration duration">0.011</span>
 
 </div>
 
@@ -2337,13 +2181,13 @@ classpath:be/features/election/castVote.feature:66
       <div id="msg-21" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(validCastVote)
+01: organizer.getBackendResponse(invalidElectionOpen)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/castVote.feature:96</pre>
+classpath:be/features/election/electionOpen.feature:73</pre>
       </div>
     </div>
   </div>
@@ -2357,17 +2201,17 @@ classpath:be/features/election/castVote.feature:96</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-22" class="collapse collapsable-details">
-        <pre>04:11:57.763 classpath:be/features/election/castVote.feature:96
-And json answer = organizer.getBackendResponse(validCastVote)
+        <pre>04:13:40.464 classpath:be/features/election/electionOpen.feature:73
+And json answer = organizer.getBackendResponse(invalidElectionOpen)
 js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(validCastVote)
+01: organizer.getBackendResponse(invalidElectionOpen)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/castVote.feature:96
+classpath:be/features/election/electionOpen.feature:73
 </pre>
       </div>
     </div>
@@ -2452,7 +2296,7 @@ classpath:be/features/election/castVote.feature:96
 </div>
 
 
-  <span class="lead-duration duration">7.629</span>
+  <span class="lead-duration duration">7.841</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-23">
@@ -2549,7 +2393,7 @@ classpath:be/features/election/castVote.feature:96
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">6.761</span>
+  <span class="lead-duration duration">7.014</span>
 
 </div>
 
@@ -2603,7 +2447,7 @@ classpath:be/features/election/castVote.feature:96
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -2657,7 +2501,7 @@ classpath:be/features/election/castVote.feature:96
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.139</span>
+  <span class="lead-duration duration">0.192</span>
 
 </div>
 
@@ -2790,9 +2634,9 @@ classpath:be/features/election/castVote.feature:96
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read(openElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
+  <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.723</span>
+  <span class="lead-duration duration">0.627</span>
 
 </div>
 
@@ -2838,11 +2682,11 @@ classpath:be/features/election/castVote.feature:96
       </div>
       <div id="msg-25" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@22ee1ad7&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@5dd2ea0a&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@65fa4a07&quot;,
-  &quot;election&quot;: &quot;common.model.Election@782143e8&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@2a4bd699&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@73f6ffb1&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@4505ec36&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@41fe0d98&quot;,
+  &quot;election&quot;: &quot;common.model.Election@7b23aea2&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@3fecdd00&quot;
 }
 </pre>
       </div>
@@ -2861,34 +2705,7 @@ classpath:be/features/election/castVote.feature:96
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">def vote = question.createVote(0)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def castVote = election.castVote(vote)</span>
+  <span class="name">def electionOpen = election.open()</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2926,19 +2743,19 @@ classpath:be/features/election/castVote.feature:96
 
 <div class="tags indention">
     <b>Tags:</b>
+       <a href="report-tag_19607120.html">@electionOpen4</a>
        <a href="report-tag_524961969.html">@env=go,scala</a>
-       <a href="report-tag_3547600458.html">@castVote4</a>
 </div>
 
 
-  <span class="lead-duration duration">0.038</span>
+  <span class="lead-duration duration">0.033</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-26">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Casting a vote with wrong vote id should return an error</span>
+  <span class="name">Non organizer opening the election should result in an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -2972,9 +2789,36 @@ classpath:be/features/election/castVote.feature:96
 
 <div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">def invalidCastVote =</span>
+  <span class="name">def notOrganizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.019</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def validElectionOpen =</span>
+
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -2993,18 +2837,11 @@ classpath:be/features/election/castVote.feature:96
       </div>
       <div id="msg-28" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;cast_vote&quot;,
-  &quot;lao&quot;: '#(lao.id)',
-  &quot;election&quot;: '#(election.id)',
-  &quot;created_at&quot;: '#(castVote.createdAt)',
-  &quot;votes&quot;: [
-    {
-      &quot;id&quot;: '#(random.generateElectionVoteId())',
-      &quot;question&quot;: '#(question.id)',
-      &quot;vote&quot;: '#(vote.index)'
-    }
-  ]
+    &quot;object&quot;: &quot;election&quot;,
+    &quot;action&quot;: &quot;open&quot;,
+    &quot;lao&quot;: '#(lao.id)',
+    &quot;election&quot;: '#(election.id)',
+    &quot;opened_at&quot;: '#(electionOpen.openedAt)'
 }</pre>
       </div>
     </div>
@@ -3022,9 +2859,9 @@ classpath:be/features/election/castVote.feature:96
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(invalidCastVote, election.channel)</span>
+  <span class="name">notOrganizer.publish(validElectionOpen, election.channel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -3049,9 +2886,9 @@ classpath:be/features/election/castVote.feature:96
 
 <div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(invalidCastVote)</span>
+  <span class="name">json answer = notOrganizer.getBackendResponse(validElectionOpen)</span>
 
-  <span class="lead-duration duration">0.032</span>
+  <span class="lead-duration duration">0.013</span>
 
 </div>
 
@@ -3068,13 +2905,13 @@ classpath:be/features/election/castVote.feature:96
       <div id="msg-29" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(invalidCastVote)
+01: notOrganizer.getBackendResponse(validElectionOpen)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/castVote.feature:122</pre>
+classpath:be/features/election/electionOpen.feature:93</pre>
       </div>
     </div>
   </div>
@@ -3088,17 +2925,17 @@ classpath:be/features/election/castVote.feature:122</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-30" class="collapse collapsable-details">
-        <pre>04:12:05.769 classpath:be/features/election/castVote.feature:122
-And json answer = organizer.getBackendResponse(invalidCastVote)
+        <pre>04:13:48.688 classpath:be/features/election/electionOpen.feature:93
+And json answer = notOrganizer.getBackendResponse(validElectionOpen)
 js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(invalidCastVote)
+01: notOrganizer.getBackendResponse(validElectionOpen)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/castVote.feature:122
+classpath:be/features/election/electionOpen.feature:93
 </pre>
       </div>
     </div>
@@ -3143,7 +2980,7 @@ classpath:be/features/election/castVote.feature:122
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
+  <span class="name">match notOrganizer.receiveNoMoreResponses() == true</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -3183,7 +3020,7 @@ classpath:be/features/election/castVote.feature:122
 </div>
 
 
-  <span class="lead-duration duration">7.622</span>
+  <span class="lead-duration duration">7.966</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-31">
@@ -3226,7 +3063,7 @@ classpath:be/features/election/castVote.feature:122
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -3280,7 +3117,7 @@ classpath:be/features/election/castVote.feature:122
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">6.763</span>
+  <span class="lead-duration duration">7.012</span>
 
 </div>
 
@@ -3334,7 +3171,7 @@ classpath:be/features/election/castVote.feature:122
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -3388,7 +3225,7 @@ classpath:be/features/election/castVote.feature:122
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.150</span>
+  <span class="lead-duration duration">0.199</span>
 
 </div>
 
@@ -3521,9 +3358,9 @@ classpath:be/features/election/castVote.feature:122
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read(openElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
+  <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.699</span>
+  <span class="lead-duration duration">0.747</span>
 
 </div>
 
@@ -3569,11 +3406,11 @@ classpath:be/features/election/castVote.feature:122
       </div>
       <div id="msg-33" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@6003eb60&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@571e2f15&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@2552181d&quot;,
-  &quot;election&quot;: &quot;common.model.Election@51d9fd30&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@2e7e4480&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@5562f297&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@64c1a76e&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@2f143ea&quot;,
+  &quot;election&quot;: &quot;common.model.Election@5b2c9a69&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@19983dd1&quot;
 }
 </pre>
       </div>
@@ -3592,34 +3429,7 @@ classpath:be/features/election/castVote.feature:122
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">def vote = question.createVote(0)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def castVote = election.castVote(vote)</span>
+  <span class="name">def electionOpen = election.open()</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -3658,18 +3468,18 @@ classpath:be/features/election/castVote.feature:122
 <div class="tags indention">
     <b>Tags:</b>
        <a href="report-tag_524961969.html">@env=go,scala</a>
-       <a href="report-tag_3547600459.html">@castVote5</a>
+       <a href="report-tag_19607121.html">@electionOpen5</a>
 </div>
 
 
-  <span class="lead-duration duration">0.048</span>
+  <span class="lead-duration duration">0.025</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-34">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Casting a vote with lao id as vote id should return an error</span>
+  <span class="name">Opening the election with wrong lao id should result in an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -3703,7 +3513,7 @@ classpath:be/features/election/castVote.feature:122
 
 <div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">def invalidCastVote =</span>
+  <span class="name">def invalidElectionOpen =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -3724,18 +3534,11 @@ classpath:be/features/election/castVote.feature:122
       </div>
       <div id="msg-36" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;cast_vote&quot;,
-  &quot;lao&quot;: '#(lao.id)',
-  &quot;election&quot;: '#(election.id)',
-  &quot;created_at&quot;: '#(castVote.createdAt)',
-  &quot;votes&quot;: [
-    {
-      &quot;id&quot;: '#(lao.id)',
-      &quot;question&quot;: '#(question.id)',
-      &quot;vote&quot;: '#(vote.index)'
-    }
-  ]
+    &quot;object&quot;: &quot;election&quot;,
+    &quot;action&quot;: &quot;open&quot;,
+    &quot;lao&quot;: '#(random.generateLaoId())',
+    &quot;election&quot;: '#(election.id)',
+    &quot;opened_at&quot;: '#(electionOpen.openedAt)'
 }</pre>
       </div>
     </div>
@@ -3753,9 +3556,9 @@ classpath:be/features/election/castVote.feature:122
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(invalidCastVote, election.channel)</span>
+  <span class="name">organizer.publish(invalidElectionOpen, election.channel)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -3780,9 +3583,9 @@ classpath:be/features/election/castVote.feature:122
 
 <div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(invalidCastVote)</span>
+  <span class="name">json answer = organizer.getBackendResponse(invalidElectionOpen)</span>
 
-  <span class="lead-duration duration">0.044</span>
+  <span class="lead-duration duration">0.024</span>
 
 </div>
 
@@ -3799,13 +3602,13 @@ classpath:be/features/election/castVote.feature:122
       <div id="msg-37" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(invalidCastVote)
+01: organizer.getBackendResponse(invalidElectionOpen)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/castVote.feature:148</pre>
+classpath:be/features/election/electionOpen.feature:112</pre>
       </div>
     </div>
   </div>
@@ -3819,17 +3622,17 @@ classpath:be/features/election/castVote.feature:148</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-38" class="collapse collapsable-details">
-        <pre>04:12:13.801 classpath:be/features/election/castVote.feature:148
-And json answer = organizer.getBackendResponse(invalidCastVote)
+        <pre>04:13:57.040 classpath:be/features/election/electionOpen.feature:112
+And json answer = organizer.getBackendResponse(invalidElectionOpen)
 js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(invalidCastVote)
+01: organizer.getBackendResponse(invalidElectionOpen)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/castVote.feature:148
+classpath:be/features/election/electionOpen.feature:112
 </pre>
       </div>
     </div>
@@ -3914,7 +3717,7 @@ classpath:be/features/election/castVote.feature:148
 </div>
 
 
-  <span class="lead-duration duration">7.576</span>
+  <span class="lead-duration duration">7.993</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-39">
@@ -3957,7 +3760,7 @@ classpath:be/features/election/castVote.feature:148
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -4011,7 +3814,7 @@ classpath:be/features/election/castVote.feature:148
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">6.762</span>
+  <span class="lead-duration duration">7.011</span>
 
 </div>
 
@@ -4065,7 +3868,7 @@ classpath:be/features/election/castVote.feature:148
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -4119,7 +3922,7 @@ classpath:be/features/election/castVote.feature:148
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.140</span>
+  <span class="lead-duration duration">0.196</span>
 
 </div>
 
@@ -4252,9 +4055,9 @@ classpath:be/features/election/castVote.feature:148
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read(openElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
+  <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.667</span>
+  <span class="lead-duration duration">0.780</span>
 
 </div>
 
@@ -4300,11 +4103,11 @@ classpath:be/features/election/castVote.feature:148
       </div>
       <div id="msg-41" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@8beb0dd&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@3d99d327&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@233789d9&quot;,
-  &quot;election&quot;: &quot;common.model.Election@7f31937b&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@2f4fc18&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@700b035b&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@786de0a3&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@472dc215&quot;,
+  &quot;election&quot;: &quot;common.model.Election@1f031994&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@37bac0f4&quot;
 }
 </pre>
       </div>
@@ -4323,34 +4126,7 @@ classpath:be/features/election/castVote.feature:148
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">def vote = question.createVote(0)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def castVote = election.castVote(vote)</span>
+  <span class="name">def electionOpen = election.open()</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -4389,18 +4165,18 @@ classpath:be/features/election/castVote.feature:148
 <div class="tags indention">
     <b>Tags:</b>
        <a href="report-tag_524961969.html">@env=go,scala</a>
-       <a href="report-tag_3547600460.html">@castVote6</a>
+       <a href="report-tag_19607122.html">@electionOpen6</a>
 </div>
 
 
-  <span class="lead-duration duration">0.046</span>
+  <span class="lead-duration duration">0.017</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-42">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Non attendee casting a vote should return an error</span>
+  <span class="name">Opening the election with wrong election id should result in an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -4434,34 +4210,7 @@ classpath:be/features/election/castVote.feature:148
 
 <div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">def nonAttendee = call createMockFrontend</span>
-
-  <span class="lead-duration duration">0.016</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def validCastVote =</span>
+  <span class="name">def invalidElectionOpen =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -4482,18 +4231,11 @@ classpath:be/features/election/castVote.feature:148
       </div>
       <div id="msg-44" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;cast_vote&quot;,
-  &quot;lao&quot;: '#(lao.id)',
-  &quot;election&quot;: '#(election.id)',
-  &quot;created_at&quot;: '#(castVote.createdAt)',
-  &quot;votes&quot;: [
-    {
-      &quot;id&quot;: '#(vote.id)',
-      &quot;question&quot;: '#(question.id)',
-      &quot;vote&quot;: '#(vote.index)'
-    }
-  ]
+    &quot;object&quot;: &quot;election&quot;,
+    &quot;action&quot;: &quot;open&quot;,
+    &quot;lao&quot;: '#(lao.id)',
+    &quot;election&quot;: '#(random.generateElectionId())',
+    &quot;opened_at&quot;: '#(electionOpen.openedAt)'
 }</pre>
       </div>
     </div>
@@ -4511,317 +4253,7 @@ classpath:be/features/election/castVote.feature:148
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">nonAttendee.publish(validCastVote, election.channel)</span>
-
-  <span class="lead-duration duration">0.001</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And failed">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = nonAttendee.getBackendResponse(validCastVote)</span>
-
-  <span class="lead-duration duration">0.028</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-45">
-          <a>js</a>
-      </div>
-      <div id="msg-45" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: nonAttendee.getBackendResponse(validCastVote)
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/features/election/castVote.feature:175</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-46">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-46" class="collapse collapsable-details">
-        <pre>04:12:21.765 classpath:be/features/election/castVote.feature:175
-And json answer = nonAttendee.getBackendResponse(validCastVote)
-js failed:
-&gt;&gt;&gt;&gt;
-01: nonAttendee.getBackendResponse(validCastVote)
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/features/election/castVote.feature:175
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match nonAttendee.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-</div>
-
-
-  <span class="lead-duration duration">7.711</span>
-
-
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-47">
-
-<div class="brief passed">
-  <span class="keyword indention">Background</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-47" class="collapse collapsable-details ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-48">
-
-<div class="brief passed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-48" class="inner-level collapse collapsable-details ">
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
-
-  <span class="lead-duration duration">0.003</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/features/utils/constants.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read(serverFeature)</span>
-
-  <span class="lead-duration duration">6.761</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/features/utils/server.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read(mockClientFeature)</span>
+  <span class="name">organizer.publish(invalidElectionOpen, election.channel)</span>
 
   <span class="lead-duration duration">0.002</span>
 
@@ -4846,432 +4278,11 @@ classpath:be/features/election/castVote.feature:175
       <div class="step">
 
 
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/features/utils/mockClient.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def organizer = call createMockFrontend</span>
-
-  <span class="lead-duration duration">0.152</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def lao = organizer.generateValidLao()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def rollCall = organizer.generateValidRollCall(lao)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def election = organizer.generateValidElection(lao)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def question = election.createQuestion()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read(openElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
-
-  <span class="lead-duration duration">0.790</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/features/utils/simpleScenarios.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-49">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-49" class="collapse collapsable-details">
-        <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@7187078a&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@6e612122&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@1d38cdde&quot;,
-  &quot;election&quot;: &quot;common.model.Election@3809f65d&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@717b0d81&quot;
-}
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def vote = question.createVote(0)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def castVote = election.castVote(vote)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_3547600461.html">@castVote7</a>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.031</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-50">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Casting a valid vote before creation time should fail</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-50" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-51">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-51" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given passed">
-  <span class="keyword indention">Given</span>
-  <span class="name">def invalidCastVote =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-52">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-52" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;cast_vote&quot;,
-  &quot;lao&quot;: '#(lao.id)',
-  &quot;election&quot;: '#(election.id)',
-  &quot;created_at&quot;: '#(election.creation - 1)',
-  &quot;votes&quot;: [
-    {
-      &quot;id&quot;: '#(vote.id)',
-      &quot;question&quot;: '#(question.id)',
-      &quot;vote&quot;: '#(vote.index)'
-    }
-  ]
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When passed">
-  <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(invalidCastVote, election.channel)</span>
-
-  <span class="lead-duration duration">0.001</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
 <div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(invalidCastVote)</span>
+  <span class="name">json answer = organizer.getBackendResponse(invalidElectionOpen)</span>
 
-  <span class="lead-duration duration">0.029</span>
+  <span class="lead-duration duration">0.013</span>
 
 </div>
 
@@ -5282,19 +4293,19 @@ classpath:be/features/election/castVote.feature:175
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-53">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-45">
           <a>js</a>
       </div>
-      <div id="msg-53" class="collapse collapsable-details  in ">
+      <div id="msg-45" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(invalidCastVote)
+01: organizer.getBackendResponse(invalidElectionOpen)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/castVote.feature:200</pre>
+classpath:be/features/election/electionOpen.feature:131</pre>
       </div>
     </div>
   </div>
@@ -5304,21 +4315,21 @@ classpath:be/features/election/castVote.feature:200</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-54">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-46">
           <a>Doc string</a>
       </div>
-      <div id="msg-54" class="collapse collapsable-details">
-        <pre>04:12:29.856 classpath:be/features/election/castVote.feature:200
-And json answer = organizer.getBackendResponse(invalidCastVote)
+      <div id="msg-46" class="collapse collapsable-details">
+        <pre>04:14:05.402 classpath:be/features/election/electionOpen.feature:131
+And json answer = organizer.getBackendResponse(invalidElectionOpen)
 js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(invalidCastVote)
+01: organizer.getBackendResponse(invalidElectionOpen)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/castVote.feature:200
+classpath:be/features/election/electionOpen.feature:131
 </pre>
       </div>
     </div>
