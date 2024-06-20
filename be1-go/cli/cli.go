@@ -5,34 +5,23 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/fsnotify/fsnotify"
+	"github.com/gorilla/websocket"
+	"github.com/rs/zerolog"
+	"github.com/urfave/cli/v2"
+	"go.dedis.ch/kyber/v3"
+	"golang.org/x/exp/slices"
+	"golang.org/x/xerrors"
 	"net/url"
 	"os"
 	"popstellar/internal/crypto"
-	hub2 "popstellar/internal/hub"
+	"popstellar/internal/hub"
 	"popstellar/internal/logger"
 	"popstellar/internal/network"
 	"popstellar/internal/network/socket"
-	"popstellar/internal/old/hub"
-	"popstellar/internal/singleton/config"
-	"popstellar/internal/singleton/database"
-	"popstellar/internal/singleton/state"
-	"popstellar/internal/singleton/utils"
-	"popstellar/internal/sqlite"
-	"popstellar/internal/validation"
+	oldHub "popstellar/internal/old/hub"
 	"sync"
 	"time"
-
-	"github.com/rs/zerolog"
-	"golang.org/x/exp/slices"
-
-	"github.com/rs/zerolog/log"
-	"go.dedis.ch/kyber/v3"
-
-	"github.com/gorilla/websocket"
-
-	"github.com/fsnotify/fsnotify"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
 )
 
 const (
@@ -61,83 +50,10 @@ type ServerConfig struct {
 	DatabasePath   string   `json:"database-path"`
 }
 
-func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
-	// compute the client server address if it wasn't provided
-	if s.ClientAddress == "" {
-		s.ClientAddress = fmt.Sprintf("ws://%s:%d/client", s.PublicAddress, s.ClientPort)
-	}
-	// compute the server server address if it wasn't provided
-	if s.ServerAddress == "" {
-		s.ServerAddress = fmt.Sprintf("ws://%s:%d/server", s.PublicAddress, s.ServerPort)
-	}
-
-	var point kyber.Point = nil
-	err := ownerKey(s.PublicKey, &point)
-	if err != nil {
-		return nil, err
-	}
-
-	schemaValidator, err := validation.NewSchemaValidator()
-	if err != nil {
-		return nil, err
-	}
-
-	db, err := sqlite.NewSQLite(s.DatabasePath, true)
-	if err != nil {
-		return nil, err
-	}
-
-	database.InitDatabase(&db)
-
-	serverPublicKey, serverSecretKey, err := db.GetServerKeys()
-	if err != nil {
-		serverSecretKey = crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-		serverPublicKey = crypto.Suite.Point().Mul(serverSecretKey, nil)
-
-		err := db.StoreServerKeys(serverPublicKey, serverSecretKey)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	err = db.StoreFirstRumor()
-	if err != nil {
-		return nil, err
-	}
-
-	utils.InitUtils(schemaValidator)
-
-	state.InitState(l)
-
-	config.InitConfig(point, serverPublicKey, serverSecretKey, s.ClientAddress, s.ServerAddress)
-
-	channels, err := db.GetAllChannels()
-	if err != nil {
-		return nil, err
-	}
-
-	for _, channel := range channels {
-		alreadyExist, errAnswer := state.HasChannel(channel)
-		if errAnswer != nil {
-			return nil, errAnswer
-		}
-		if alreadyExist {
-			continue
-		}
-
-		errAnswer = state.AddChannel(channel)
-		if errAnswer != nil {
-			return nil, errAnswer
-		}
-	}
-
-	return hub2.NewHub(), nil
-}
-
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
 // the server
 func Serve(cliCtx *cli.Context) error {
-	poplog := logger.Logger
+	log := logger.Logger
 
 	configFilePath := cliCtx.String("config-file")
 	var serverConfig ServerConfig
@@ -160,7 +76,7 @@ func Serve(cliCtx *cli.Context) error {
 		}
 	}
 
-	h, err := serverConfig.newHub(&poplog)
+	h, err := serverConfig.newHub(log)
 	if err != nil {
 		return err
 	}
@@ -169,13 +85,11 @@ func Serve(cliCtx *cli.Context) error {
 	h.Start()
 
 	// Start websocket server for clients
-	clientSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ClientPort, socket.ClientSocketType,
-		poplog.With().Str("role", "client websocket").Logger())
+	clientSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ClientPort, socket.ClientSocketType, log)
 	clientSrv.Start()
 
 	// Start a websocket server for remote servers
-	serverSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ServerPort, socket.ServerSocketType,
-		poplog.With().Str("role", "server websocket").Logger())
+	serverSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ServerPort, socket.ServerSocketType, log)
 	serverSrv.Start()
 
 	// create wait group which waits for goroutines to finish
@@ -199,7 +113,7 @@ func Serve(cliCtx *cli.Context) error {
 		}
 
 		// start watching goroutine
-		go watchConfigFile(watcher, configFilePath, &serverConfig.OtherServers, updatedServersChan)
+		go watchConfigFile(watcher, configFilePath, &serverConfig.OtherServers, updatedServersChan, log)
 	}
 
 	// map to keep track of the connection status of the servers
@@ -210,7 +124,7 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	wg.Add(1)
-	go serverConnectionLoop(h, wg, done, serverConfig.OtherServers, updatedServersChan, &connectedServers)
+	go serverConnectionLoop(h, wg, done, serverConfig.OtherServers, updatedServersChan, &connectedServers, log)
 
 	// Wait for a Ctrl-C
 	err = network.WaitAndShutdownServers(cliCtx.Context, nil, clientSrv, serverSrv)
@@ -235,18 +149,38 @@ func Serve(cliCtx *cli.Context) error {
 	select {
 	case <-channsClosed:
 	case <-time.After(time.Second * 10):
-		poplog.Error().Msg("channs didn't close after timeout, exiting")
+		log.Error().Msg("channs didn't close after timeout, exiting")
 	}
 
 	return nil
 }
 
+func (s *ServerConfig) newHub(log zerolog.Logger) (oldHub.Hub, error) {
+	// compute the client server address if it wasn't provided
+	if s.ClientAddress == "" {
+		s.ClientAddress = fmt.Sprintf("ws://%s:%d/client", s.PublicAddress, s.ClientPort)
+	}
+	// compute the server server address if it wasn't provided
+	if s.ServerAddress == "" {
+		s.ServerAddress = fmt.Sprintf("ws://%s:%d/server", s.PublicAddress, s.ServerPort)
+	}
+
+	var ownerPubKey kyber.Point = nil
+	err := ownerKey(s.PublicKey, &ownerPubKey, log)
+	if err != nil {
+		return nil, err
+	}
+
+	return hub.New(s.DatabasePath, ownerPubKey, s.ClientAddress, s.ServerAddress, log)
+}
+
 // serverConnectionLoop tries to connect to the remote servers following an exponential backoff strategy
 // it also listens for updates in the other-servers field and tries to connect to the new servers
-func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, otherServers []string, updatedServersChan chan []string, connectedServers *map[string]bool) {
+func serverConnectionLoop(h oldHub.Hub, wg *sync.WaitGroup, done chan struct{}, otherServers []string,
+	updatedServersChan chan []string, connectedServers *map[string]bool, log zerolog.Logger) {
 	// first connection to the servers
 	serversToConnect := otherServers
-	_ = connectToServers(h, wg, done, serversToConnect, connectedServers)
+	_ = connectToServers(h, wg, done, serversToConnect, connectedServers, log)
 
 	// define the delay between connection retries
 	delay := connectionRetryInitialDelay
@@ -259,7 +193,7 @@ func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, oth
 		case <-ticker.C:
 			// try to connect to servers
 			log.Info().Msgf("Trying to connect to servers: %v", serversToConnect)
-			err := connectToServers(h, wg, done, serversToConnect, connectedServers)
+			err := connectToServers(h, wg, done, serversToConnect, connectedServers, log)
 			if err != nil {
 				increaseDelay(&delay)
 				ticker.Reset(delay)
@@ -270,7 +204,7 @@ func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, oth
 			delay = connectionRetryInitialDelay
 			ticker.Reset(delay)
 			serversToConnect = newServersList
-			_ = connectToServers(h, wg, done, serversToConnect, connectedServers)
+			_ = connectToServers(h, wg, done, serversToConnect, connectedServers, log)
 		case <-done:
 			log.Info().Msg("Stopping the server connection loop")
 			wg.Done()
@@ -281,12 +215,13 @@ func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, oth
 
 // connectToServers updates the connection status of the servers and tries to connect to the ones that are not connected
 // it returns an error if at least one connection fails
-func connectToServers(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, servers []string, connectedServers *map[string]bool) error {
+func connectToServers(h oldHub.Hub, wg *sync.WaitGroup, done chan struct{}, servers []string,
+	connectedServers *map[string]bool, log zerolog.Logger) error {
 	updateServersState(servers, connectedServers)
 	var returnErr error
 	for serverAddress, connected := range *connectedServers {
 		if !connected {
-			err := connectToSocket(serverAddress, h, wg, done)
+			err := connectToSocket(serverAddress, h, wg, done, log)
 			if err == nil {
 				(*connectedServers)[serverAddress] = true
 			} else {
@@ -300,11 +235,7 @@ func connectToServers(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, servers
 
 // connectToSocket establishes a connection to another server's server
 // endpoint.
-func connectToSocket(address string, h hub.Hub,
-	wg *sync.WaitGroup, done chan struct{}) error {
-
-	poplog := logger.Logger
-
+func connectToSocket(address string, h oldHub.Hub, wg *sync.WaitGroup, done chan struct{}, log zerolog.Logger) error {
 	urlString := fmt.Sprintf("ws://%s/server", address)
 	u, err := url.Parse(urlString)
 	if err != nil {
@@ -316,10 +247,10 @@ func connectToSocket(address string, h hub.Hub,
 		return xerrors.Errorf("failed to dial to %s: %v", u.String(), err)
 	}
 
-	poplog.Info().Msgf("connected to server at %s", urlString)
+	log.Info().Msgf("connected to server at %s", urlString)
 
 	remoteSocket := socket.NewServerSocket(h.Receiver(),
-		h.OnSocketClose(), ws, wg, done, poplog)
+		h.OnSocketClose(), ws, wg, done, log)
 	wg.Add(2)
 
 	go remoteSocket.WritePump()
@@ -335,7 +266,7 @@ func connectToSocket(address string, h hub.Hub,
 	return nil
 }
 
-func ownerKey(pk string, point *kyber.Point) error {
+func ownerKey(pk string, point *kyber.Point, log zerolog.Logger) error {
 	if pk != "" {
 		*point = crypto.Suite.Point()
 		// decode public key and unmarshal public key
@@ -415,7 +346,8 @@ func startWithFlags(cliCtx *cli.Context) (ServerConfig, error) {
 // watchConfigFile watches the config file for changes, updates the other servers list in the config if necessary
 // and sends the updated other servers list to the updatedServersChan so that the connection to servers loop can
 // connect to them and update their connection status
-func watchConfigFile(watcher *fsnotify.Watcher, configFilePath string, otherServersField *[]string, updatedServersChan chan []string) {
+func watchConfigFile(watcher *fsnotify.Watcher, configFilePath string, otherServersField *[]string,
+	updatedServersChan chan []string, log zerolog.Logger) {
 	for event := range watcher.Events {
 		if event.Op&fsnotify.Write == fsnotify.Write {
 			updatedConfig, err := loadConfig(configFilePath)

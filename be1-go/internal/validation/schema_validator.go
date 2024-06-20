@@ -4,14 +4,13 @@ import (
 	"bytes"
 	"embed"
 	"encoding/base64"
+	"github.com/santhosh-tekuri/jsonschema/v3"
+	"golang.org/x/xerrors"
 	"io"
 	"io/fs"
 	"path/filepath"
 	"popstellar/internal/errors"
 	"strings"
-
-	"github.com/santhosh-tekuri/jsonschema/v3"
-	"golang.org/x/xerrors"
 )
 
 // SchemaValidator is used to validate JSON-RPC schemas.

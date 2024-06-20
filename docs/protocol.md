@@ -197,6 +197,9 @@ and its arguments (`params`).
         },
         {
             "$ref": "method/rumor_state.json"
+        },
+        {
+            "$ref": "method/paged_catchup.json"
         }
     ],
 
@@ -982,6 +985,12 @@ RPC
     "params": {
         "sender_id": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
         "rumor_id": 1,
+        "timestamp" : {
+            "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=": 1,
+            "RZOPi59Iy5gkpS2mkpfQJNl44HKc2jVbF0iTGm0RvfU=": 5,
+            "CfG2ByLhtLJH--T2BL9hZ6eGm11tpkE-5KuvysSCY0I=": 1,
+            "r8cG9HyJ1FGBke_5IblCdH19mvy39MvLFSArVmY3FpY=": 10
+        },
         "messages": {
             "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=": [
                 {
@@ -1072,6 +1081,10 @@ RPC
       "description": "[Integer] ID of the rumor",
       "type": "integer"
     },
+    "timestamp" : {
+      "description": "Rumor state in which this message has been sent",
+      "$ref": "./rumor_state.json"
+    },
     "messages": {
       "description": "Key-value of channels and messages per channel",
       "type": "object",
@@ -1081,7 +1094,8 @@ RPC
   "required": [
     "sender_id",
     "rumor_id",
-    "messages"
+    "messages",
+    "timestamp"
   ]
 }
 
@@ -1127,6 +1141,12 @@ Response in case of success
     {
       "sender_id": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
       "rumor_id": 1,
+      "timestamp" : {
+        "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=": 1,
+        "RZOPi59Iy5gkpS2mkpfQJNl44HKc2jVbF0iTGm0RvfU=": 5,
+        "CfG2ByLhtLJH--T2BL9hZ6eGm11tpkE-5KuvysSCY0I=": 1,
+        "r8cG9HyJ1FGBke_5IblCdH19mvy39MvLFSArVmY3FpY=": 9
+      },
       "messages": {
         "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=": [
           {
@@ -1142,6 +1162,12 @@ Response in case of success
     {
       "sender_id": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
       "rumor_id": 2,
+      "timestamp" : {
+        "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=": 2,
+        "RZOPi59Iy5gkpS2mkpfQJNl44HKc2jVbF0iTGm0RvfU=": 5,
+        "CfG2ByLhtLJH--T2BL9hZ6eGm11tpkE-5KuvysSCY0I=": 1,
+        "r8cG9HyJ1FGBke_5IblCdH19mvy39MvLFSArVmY3FpY=": 10
+      },
       "messages": {
         "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=": [
           {
@@ -1273,8 +1299,7 @@ Response (in case of success)
             "signature": "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==",
             "message_id": "2mAAevx61TZJi4groVGqqkeLEQq0e-qM6PGmTWuShyY=",
             "witness_signatures": []
-        },
-        // ...9 other messages
+        }
     ]
 }
 

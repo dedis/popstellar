@@ -7,7 +7,7 @@
 package socket
 
 import (
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/handler/message/mmessage"
 	"time"
 )
 
@@ -61,7 +61,7 @@ type Socket interface {
 	// MissingMessagesByChannel can be nil or filled if the result is a map
 	// associating a channel to a slice of messages. In case both are nil
 	// it sends the "0" return value. You can either send res or missingMessagesByChannel, not both.
-	SendResult(id int, res []message.Message, missingMessagesByChannel map[string][]message.Message)
+	SendResult(id int, res []mmessage.Message, missingMessagesByChannel map[string][]mmessage.Message)
 }
 
 // IncomingMessage wraps the raw message from the websocket connection and pairs
