@@ -533,6 +533,35 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     list should contain(message2)
   }
 
+  test("PagedCatchup() reads correctly from /root/lao_id/social/chirps channels with beforeMessageID") {
+    // arrange
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    val message = MessageExample.MESSAGE_ADDCHIRP
+    val message2 = message.copy(message_id = Hash(Base64Data("RmFrZSBtZXNzYWdlX2lkIDopIE5vIGVhc3RlciBlZ2cgcmlnaHQgdGhlcmUhIC0tIE5pY29sYXMgUmF1bGlu")))
+    val listIds: List[Hash] = message.message_id :: message2.message_id :: Nil
+    val channelData: ChannelData = ChannelData(ObjectType.chirp, listIds)
+    var channelName = "/root/89zterjThplXCrimBjyNfxvXKNS4QdW5QN-bEtHL00Y=/social/chirps"
+    initialStorage.write(
+      (initialStorage.CHANNEL_DATA_KEY + channelName, channelData.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName${Channel.DATA_SEPARATOR}${message2.message_id}", message2.toJsonString)
+    )
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    // act
+    channelName = "/root/89zterjThplXCrimBjyNfxvXKNS4QdW5QN-bEtHL00Y=/social/chirps/hYzX2BeT1juKnxymB0aK3VlTA8r7JSrGThc7Mby45aA="
+    val ask = dbActor ? DbActor.PagedCatchup(Channel(channelName), 1, Some(message.message_id.toString))
+    val answer = Await.result(ask, duration)
+
+    // assert
+    answer shouldBe a[DbActor.DbActorCatchupAck]
+
+    val list: List[Message] = answer.asInstanceOf[DbActor.DbActorCatchupAck].messages
+
+    list.size should equal(1)
+    list should contain(message2)
+  }
+
   test("PagedCatchup() reads correctly from /root/lao_id/social/profile channels") {
     // arrange
     val initialStorage: InMemoryStorage = InMemoryStorage()
@@ -560,6 +589,35 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     list.size should equal(2)
     list should contain(message)
+    list should contain(message2)
+  }
+
+  test("PagedCatchup() reads correctly from /root/lao_id/social/profile channels with beforeMessageID") {
+    // arrange
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    val message = MessageExample.MESSAGE_ADDCHIRP
+    val message2 = message.copy(message_id = Hash(Base64Data("RmFrZSBtZXNzYWdlX2lkIDopIE5vIGVhc3RlciBlZ2cgcmlnaHQgdGhlcmUhIC0tIE5pY29sYXMgUmF1bGlu")))
+    val listIds: List[Hash] = message.message_id :: message2.message_id :: Nil
+    val channelData: ChannelData = ChannelData(ObjectType.chirp, listIds)
+    var channelName = "/root/89zterjThplXCrimBjyNfxvXKNS4QdW5QN-bEtHL00Y=/social/q3aTm5LBfvnZDIeReNjL9pxDhem894qbJMGVY8ZC3fw="
+    initialStorage.write(
+      (initialStorage.CHANNEL_DATA_KEY + channelName, channelData.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName${Channel.DATA_SEPARATOR}${message2.message_id}", message2.toJsonString)
+    )
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    // act
+    channelName = "/root/89zterjThplXCrimBjyNfxvXKNS4QdW5QN-bEtHL00Y=/social/profile/q3aTm5LBfvnZDIeReNjL9pxDhem894qbJMGVY8ZC3fw=/hYzX2BeT1juKnxymB0aK3VlTA8r7JSrGThc7Mby45aA="
+    val ask = dbActor ? DbActor.PagedCatchup(Channel(channelName), 1, Some(message.message_id.toString))
+    val answer = Await.result(ask, duration)
+
+    // assert
+    answer shouldBe a[DbActor.DbActorCatchupAck]
+
+    val list: List[Message] = answer.asInstanceOf[DbActor.DbActorCatchupAck].messages
+
+    list.size should equal(1)
     list should contain(message2)
   }
 
