@@ -141,6 +141,10 @@ constructor(
     return linkedOrgRepo.getChallenge()
   }
 
+  fun getLinkedLaosMap(): Map<String, Array<String>> {
+    return linkedOrgRepo.linkedLaos
+  }
+
   fun isRepositoryValid(): Boolean {
     return linkedOrgRepo.otherLaoId != null &&
         linkedOrgRepo.otherServerAddr != null &&

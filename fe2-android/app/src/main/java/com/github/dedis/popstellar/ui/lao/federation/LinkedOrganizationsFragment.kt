@@ -59,6 +59,17 @@ class LinkedOrganizationsFragment : Fragment() {
     binding.inviteOtherOrganization.setOnClickListener(invitationPage)
     binding.joinOtherOrganizationInvitation.setOnClickListener(joinButton)
 
+    // Displaying the linked organizations
+    val laos = linkedOrganizationsViewModel.getLinkedLaosMap().keys
+    if (laos.isNotEmpty()) {
+      val laosText = laos.joinToString(separator = "\n - ")
+      val textToDisplay = context?.getString(R.string.list_organizations, laosText)
+      binding.noOrganizationsText.visibility = View.GONE
+      binding.listOrganizationsText.text = textToDisplay
+    } else {
+      binding.listOrganizationsText.visibility = View.GONE
+    }
+
     handleBackNav()
 
     return binding.root

@@ -334,6 +334,7 @@
   <string name="loading_text">Loading…</string>
   <string name="expect_sent">Federation expect sent successfully</string>
   <string name="init_sent">Federation init sent successfully</string>
+  <string name="list_organizations">List of linked organizations :\n - %s</string>
 
   <!--  Storage-->
   <string name="nothing_stored">No stored data found</string>

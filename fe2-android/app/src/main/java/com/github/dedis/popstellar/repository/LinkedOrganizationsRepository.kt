@@ -16,6 +16,7 @@ class LinkedOrganizationsRepository @Inject constructor() {
   var otherLaoId: String? = null
   var otherServerAddr: String? = null
   var otherPublicKey: String? = null
+  var linkedLaos: MutableMap<String, Array<String>> = mutableMapOf()
 
   /**
    * Updates the challenge
@@ -33,6 +34,10 @@ class LinkedOrganizationsRepository @Inject constructor() {
 
   fun getChallenge(): Challenge? {
     return challenge
+  }
+
+  fun addLinkedLao(lao_id: String, tokens: Array<String>) {
+    linkedLaos[lao_id] = tokens
   }
 
   fun flush() {

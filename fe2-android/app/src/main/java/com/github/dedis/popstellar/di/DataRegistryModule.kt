@@ -19,6 +19,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup
 import com.github.dedis.popstellar.model.network.method.message.data.federation.Challenge
+import com.github.dedis.popstellar.model.network.method.message.data.federation.FederationResult
+import com.github.dedis.popstellar.model.network.method.message.data.federation.TokensExchange
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao
 import com.github.dedis.popstellar.model.network.method.message.data.lao.GreetLao
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao
@@ -259,6 +261,18 @@ object DataRegistryModule {
       linkedOrganizationsHandler.handleChallenge(context, challenge)
     }
 
+    builder.add(Objects.FEDERATION, Action.RESULT, FederationResult::class.java) {
+        context: HandlerContext,
+        result: FederationResult ->
+      linkedOrganizationsHandler.handleResult(context, result)
+    }
+
+    builder.add(Objects.FEDERATION, Action.TOKENS_EXCHANGE, TokensExchange::class.java) {
+        context: HandlerContext,
+        tokenExchange: TokensExchange ->
+      linkedOrganizationsHandler.handleTokensExchange(context, tokenExchange)
+    }
+
     return builder.build()
   }
 
@@ -327,6 +341,8 @@ object DataRegistryModule {
 
     // Federation
     builder.add(Objects.FEDERATION, Action.CHALLENGE, Challenge::class.java, null)
+    builder.add(Objects.FEDERATION, Action.RESULT, FederationResult::class.java, null)
+    builder.add(Objects.FEDERATION, Action.TOKENS_EXCHANGE, TokensExchange::class.java, null)
 
     return builder.build()
   }
