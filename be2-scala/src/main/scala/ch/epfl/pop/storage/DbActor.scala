@@ -194,7 +194,7 @@ final case class DbActor(
 
   private def getTopChirps(channel: Channel, buildCatchupList: (msgIds: List[Hash], acc: List[Message], fromChannel: Channel) => List[Message]): List[Message] = {
 
-    // returns true if chirp one is newer than chirp two by timestamp and false otherwise
+    // returns true if chirp one is older than chirp two by timestamp and false otherwise
     def compareChirpsTimestamps(chirpOneId: Hash, chirpTwoId: Hash, allChirpsList: List[Message]): Boolean = {
       try {
         val chirpOne = allChirpsList.find(msg => msg.message_id == chirpOneId).get
@@ -357,10 +357,12 @@ final case class DbActor(
     }
 
     this.synchronized {
-      val channelData = ChannelData(ObjectType.chirp, List())
+      val channelData = ChannelData(ObjectType.chirp, topThreeChirps)
+      storage.write(
+        (storage.CHANNEL_DATA_KEY + channel.toString, channelData.toJsonString)
+      )
       for message: Message <- catchupList do
         storage.write(
-          (storage.CHANNEL_DATA_KEY + channel.toString, channelData.addMessage(message.message_id).toJsonString),
           (storage.DATA_KEY + s"$channel${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString)
         )
     }
@@ -376,36 +378,19 @@ final case class DbActor(
       case Some(id) => id
       case None     => Hash(Base64Data(""))
     }
-    val newReactionsChannel = Channel.apply(s"/root/$laoID/social/top_chirps/number_of_new_reactions")
-    if (!checkChannelExistence(newReactionsChannel)) {
-      val numberOfReactions = NumberOfChirpsReactionsData(0)
-      val channelData = ChannelData(ObjectType.chirp, List())
-      val messageID = Hash(Base64Data("numberOfReactions"))
-      storage.write(
-        (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, channelData.addMessage(messageID).toJsonString),
-        (storage.DATA_KEY + s"$newReactionsChannel${Channel.DATA_SEPARATOR}$messageID", numberOfReactions.toJsonString)
-      )
-    } else {
-      if (resetToZero) {
-        val numberOfReactions = NumberOfChirpsReactionsData(0)
-        val channelData = ChannelData(ObjectType.chirp, List())
-        val messageID = Hash(Base64Data("numberOfReactions"))
-        storage.write(
-          (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, channelData.addMessage(messageID).toJsonString),
-          (storage.DATA_KEY + s"$newReactionsChannel${Channel.DATA_SEPARATOR}$messageID", numberOfReactions.toJsonString)
-        )
-      } else {
-        val numberOfReactions = catchupChannel(channel).head.toJsonString
-        val numberOfNewChirpsReactionsInt = NumberOfChirpsReactionsData.buildFromJson(numberOfReactions).numberOfChirpsReactions
-
-        val updatedNumberOfChirpsReactions = NumberOfChirpsReactionsData(numberOfNewChirpsReactionsInt + 1)
-        val channelData = ChannelData(ObjectType.chirp, List())
-        val messageID = Hash.fromStrings("numberOfReactions")
-        storage.write(
-          (storage.CHANNEL_DATA_KEY + newReactionsChannel.toString, channelData.addMessage(messageID).toJsonString),
-          (storage.DATA_KEY + s"$newReactionsChannel${Channel.DATA_SEPARATOR}$messageID", updatedNumberOfChirpsReactions.toJsonString)
-        )
-      }
+    readNumberOfReactions(laoID) match {
+      case Some(numberOfReactionsFromDb : NumberOfChirpsReactionsData) =>
+        if (resetToZero) {
+          val numberOfReactions = NumberOfChirpsReactionsData(0)
+          writeNumberOfReactions(numberOfReactions, laoID)
+        } else {
+          val numberOfNewChirpsReactionsInt = numberOfReactionsFromDb.numberOfChirpsReactions
+          val updatedNumberOfChirpsReactions = NumberOfChirpsReactionsData(numberOfNewChirpsReactionsInt + 1)
+          writeNumberOfReactions(updatedNumberOfChirpsReactions, laoID)
+        }
+      case None =>
+        val numberOfReactions = NumberOfChirpsReactionsData(1)
+        writeNumberOfReactions(numberOfReactions, laoID)
     }
   }
 
@@ -437,15 +422,13 @@ final case class DbActor(
       if (!checkChannelExistence(channel) || readChannelData(channel).messages.isEmpty) {
         getTopChirps(channel, buildCatchupList)
       } else {
-        val newReactionsChannel = Channel.apply(s"/root/$laoID/social/top_chirps/number_of_new_reactions")
-        var numberOfNewChirpsReactionsInt = 0
-        if (checkChannelExistence(newReactionsChannel)) {
-          val numberOfNewChirpsReactions = catchupChannel(newReactionsChannel).head.toJsonString
-          numberOfNewChirpsReactionsInt = NumberOfChirpsReactionsData.buildFromJson(numberOfNewChirpsReactions).numberOfChirpsReactions
+        val numberOfNewChirpsReactionsInt = readNumberOfReactions(laoID) match {
+          case Some(numberOfReactions) => numberOfReactions.numberOfChirpsReactions
+          case None => 0
         }
         if (LocalDateTime.now().isAfter(topChirpsTimestamp.plusSeconds(5)) || numberOfNewChirpsReactionsInt >= 5) {
           if (numberOfNewChirpsReactionsInt >= 5) {
-            updateNumberOfNewChirpsReactions(newReactionsChannel, true)
+            updateNumberOfNewChirpsReactions(channel, true)
           }
           this.topChirpsTimestamp = LocalDateTime.now()
           getTopChirps(channel, buildCatchupList)
@@ -833,6 +816,27 @@ final case class DbActor(
         readRumor((publicKey, id)).get
       }
     }.toList
+  }
+
+  private def generateNumberOfReactionsKey(laoID: Hash): String = {
+    s"${storage.NUMBER_OF_REACTIONS_KEY}$laoID"
+  }
+
+  @throws[DbActorNAckException]
+  private def readNumberOfReactions(laoID: Hash): Option[NumberOfChirpsReactionsData] = {
+    val numberOfReactionsKey = generateNumberOfReactionsKey(laoID)
+    Try(storage.read(numberOfReactionsKey)) match {
+      case Success(Some(json)) => Some(NumberOfChirpsReactionsData.buildFromJson(json))
+      case Success(None) => None
+      case Failure(ex) => throw ex
+    }
+  }
+
+  @throws[DbActorNAckException]
+  private def writeNumberOfReactions(numberOfReactions: NumberOfChirpsReactionsData, laoID: Hash): Unit = {
+    this.synchronized {
+      storage.write(generateNumberOfReactionsKey(laoID) -> numberOfReactions.toJsonString)
+    }
   }
 
   override def receive: Receive = LoggingReceive {
