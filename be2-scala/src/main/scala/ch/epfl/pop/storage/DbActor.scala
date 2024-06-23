@@ -379,7 +379,7 @@ final case class DbActor(
       case None     => Hash(Base64Data(""))
     }
     readNumberOfReactions(laoID) match {
-      case Some(numberOfReactionsFromDb : NumberOfChirpsReactionsData) =>
+      case Some(numberOfReactionsFromDb: NumberOfChirpsReactionsData) =>
         if (resetToZero) {
           val numberOfReactions = NumberOfChirpsReactionsData(0)
           writeNumberOfReactions(numberOfReactions, laoID)
@@ -424,7 +424,7 @@ final case class DbActor(
       } else {
         val numberOfNewChirpsReactionsInt = readNumberOfReactions(laoID) match {
           case Some(numberOfReactions) => numberOfReactions.numberOfChirpsReactions
-          case None => 0
+          case None                    => 0
         }
         if (LocalDateTime.now().isAfter(topChirpsTimestamp.plusSeconds(5)) || numberOfNewChirpsReactionsInt >= 5) {
           if (numberOfNewChirpsReactionsInt >= 5) {
@@ -827,8 +827,8 @@ final case class DbActor(
     val numberOfReactionsKey = generateNumberOfReactionsKey(laoID)
     Try(storage.read(numberOfReactionsKey)) match {
       case Success(Some(json)) => Some(NumberOfChirpsReactionsData.buildFromJson(json))
-      case Success(None) => None
-      case Failure(ex) => throw ex
+      case Success(None)       => None
+      case Failure(ex)         => throw ex
     }
   }
 
