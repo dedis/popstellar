@@ -299,7 +299,8 @@ class RollCallFragment : AbstractEventFragment {
 
     // Set the QR visible only if the rollcall is opened and the user isn't the organizer
     if (rollCall.isOpen) {
-      binding.rollCallPopTokenText.text = pkUsername
+      binding.rollCallPopTokenUsername.text = pkUsername
+      binding.rollCallPopTokenText.text = pk
       binding.rollCallPkQrCode.visibility = View.VISIBLE
       binding.rollCallPopTokenText.visibility = View.VISIBLE
     } else {
