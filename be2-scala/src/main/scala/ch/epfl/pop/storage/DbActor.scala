@@ -258,6 +258,7 @@ final case class DbActor(
     val chirpsChannel = Channel.apply(s"/root/$laoID/social/chirps")
 
     var allChirpsList = catchupChannel(chirpsChannel)
+    allChirpsList = allChirpsList.slice(1, allChirpsList.length)
     var count = 0
     for chirp <- allChirpsList do {
       try {
@@ -341,16 +342,9 @@ final case class DbActor(
       topThreeChirps = List(second, first)
     }
 
-    val catchupList = readCreateLao(chirpsChannel) match {
-      case Some(msg) =>
-        msg :: buildCatchupList(topThreeChirps, Nil, chirpsChannel)
-
-      case None =>
-        if (chirpsChannel.isMainLaoChannel) {
-          log.error(noCreateLAOMessageError)
-        }
-        buildCatchupList(topThreeChirps, Nil, chirpsChannel)
-    }
+    var catchupList : List[Message] = List.empty
+    for id <- topThreeChirps do
+      catchupList = catchupList :+ allChirpsList.find(msg => msg.message_id == id).get
 
     if (!checkChannelExistence(channel)) {
       createChannel(channel, ObjectType.chirp)
@@ -433,7 +427,8 @@ final case class DbActor(
           this.topChirpsTimestamp = LocalDateTime.now()
           getTopChirps(channel, buildCatchupList)
         } else {
-          buildCatchupList(readChannelData(channel).messages, Nil, channel)
+          val msgIDs = readChannelData(channel).messages
+          buildCatchupList(msgIDs, Nil, channel)
         }
       }
     } else {
@@ -1318,7 +1313,7 @@ object DbActor {
     */
   final case class GetRumorState() extends Event
 
-  /** Requests the Db for the update the number of chirps reaction events since last top chirps request
+  /** Requests the Db to update the number of chirps reaction events since last top chirps request
     *
     * @param channel
     *   Channel containing the number of chirps reaction events since last top chirps request
