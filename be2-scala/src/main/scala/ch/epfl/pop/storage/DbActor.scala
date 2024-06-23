@@ -342,7 +342,7 @@ final case class DbActor(
       topThreeChirps = List(second, first)
     }
 
-    var catchupList : List[Message] = List.empty
+    var catchupList: List[Message] = List.empty
     for id <- topThreeChirps do
       catchupList = catchupList :+ allChirpsList.find(msg => msg.message_id == id).get
 
