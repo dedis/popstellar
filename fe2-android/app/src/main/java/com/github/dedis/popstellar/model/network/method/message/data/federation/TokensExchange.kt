@@ -46,7 +46,7 @@ class TokensExchange
   }
 
   override fun toString(): String {
-    return "TokensExchange{lao_id='$laoId', roll_call_id='$rollCallId'," +
+    return "TokensExchange{lao_id='$laoId', roll_call_id='$rollCallId', " +
         "tokens='$tokens', timestamp='$timestamp'}"
   }
 }

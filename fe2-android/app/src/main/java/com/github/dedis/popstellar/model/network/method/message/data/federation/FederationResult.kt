@@ -62,9 +62,9 @@ class FederationResult
 
   override fun toString(): String {
     if (status == "failure") {
-      return "FederationResult{status='$status', reason='$reason'," + "challenge='$challenge'}"
+      return "FederationResult{status='$status', reason='$reason', challenge='$challenge'}"
     } else if (status == "success") {
-      return "FederationResult{status='$status', public_key='$publicKey'," +
+      return "FederationResult{status='$status', public_key='$publicKey', " +
           "challenge='$challenge'}"
     }
     return "FederationResult{ERROR}"
