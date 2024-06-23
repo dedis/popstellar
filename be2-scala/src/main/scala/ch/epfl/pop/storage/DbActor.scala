@@ -427,8 +427,15 @@ final case class DbActor(
           this.topChirpsTimestamp = LocalDateTime.now()
           getTopChirps(channel, buildCatchupList)
         } else {
-          val msgIDs = readChannelData(channel).messages
-          buildCatchupList(msgIDs, Nil, channel)
+          var catchupList: List[Message] = List.empty
+          val chirpsChannel = Channel.apply(s"/root/$laoID/social/chirps")
+          var allChirpsList = catchupChannel(chirpsChannel)
+          allChirpsList = allChirpsList.slice(1, allChirpsList.length)
+
+          for id <- readChannelData(channel).messages do
+            catchupList = catchupList :+ allChirpsList.find(msg => msg.message_id == id).get
+
+          catchupList
         }
       }
     } else {
