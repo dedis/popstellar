@@ -49,11 +49,14 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	fakeSocket := mock2.FakeSocket{Id: "1"}
 
-	federationHandler := New(hub, subs, sockets, db, schema, log)
-
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, organizer2Sk, _ := generator.GenerateKeyPair(t)
 	notOrganizerPk, _, notOrganizerSk, _ := generator.GenerateKeyPair(t)
+
+	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
+
+	conf := state.CreateConfig(organizerPk, serverPk, serverSk, "ws://localhost:9801/client", "ws://localhost:9801/server", log)
+	federationHandler := New(hub, subs, sockets, conf, db, schema, log)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)
@@ -337,10 +340,11 @@ func Test_handleRequestChallenge(t *testing.T) {
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := New(hub, subs, sockets, db, schema, log)
-
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
+
+	conf := state.CreateConfig(organizerPk, serverPk, serverSk, "ws://localhost:9800/client", "ws://localhost:9800/server", log)
+	federationHandler := New(hub, subs, sockets, conf, db, schema, log)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)
@@ -391,11 +395,12 @@ func Test_handleFederationExpect(t *testing.T) {
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := New(hub, subs, sockets, db, schema, log)
-
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, _, _ := generator.GenerateKeyPair(t)
 	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
+
+	conf := state.CreateConfig(organizerPk, serverPk, serverSk, "ws://localhost:9800/client", "ws://localhost:9800/server", log)
+	federationHandler := New(hub, subs, sockets, conf, db, schema, log)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)
@@ -450,10 +455,13 @@ func Test_handleFederationInit(t *testing.T) {
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := New(hub, subs, sockets, db, schema, log)
-
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, _, _ := generator.GenerateKeyPair(t)
+
+	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
+
+	conf := state.CreateConfig(organizerPk, serverPk, serverSk, "ws://localhost:9800/client", "ws://localhost:9800/server", log)
+	federationHandler := New(hub, subs, sockets, conf, db, schema, log)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)
@@ -519,11 +527,12 @@ func Test_handleFederationChallenge(t *testing.T) {
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := New(hub, subs, sockets, db, schema, log)
-
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, organizer2Sk, _ := generator.GenerateKeyPair(t)
 	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
+
+	conf := state.CreateConfig(organizerPk, serverPk, serverSk, "ws://localhost:9800/client", "ws://localhost:9800/server", log)
+	federationHandler := New(hub, subs, sockets, conf, db, schema, log)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)
@@ -625,10 +634,13 @@ func Test_handleFederationResult(t *testing.T) {
 	schema, err := validation.NewSchemaValidator()
 	require.NoError(t, err)
 
-	federationHandler := New(hub, subs, sockets, db, schema, log)
-
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
 	organizer2Pk, _, organizer2Sk, _ := generator.GenerateKeyPair(t)
+
+	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
+
+	conf := state.CreateConfig(organizerPk, serverPk, serverSk, "ws://localhost:9800/client", "ws://localhost:9800/server", log)
+	federationHandler := New(hub, subs, sockets, conf, db, schema, log)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)

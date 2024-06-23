@@ -47,6 +47,10 @@ type Sockets interface {
 	Upsert(socket socket.Socket)
 }
 
+type Config interface {
+	GetServerInfo() (string, string, string, error)
+}
+
 type Repository interface {
 	// HasMessage returns true if the message already exists.
 	HasMessage(messageID string) (bool, error)
@@ -79,17 +83,20 @@ type Handler struct {
 	hub     Hub
 	subs    Subscribers
 	sockets Sockets
+	conf    Config
 	db      Repository
 	schema  *validation.SchemaValidator
 	log     zerolog.Logger
 }
 
-func New(hub Hub, subs Subscribers, sockets Sockets, db Repository,
-	schema *validation.SchemaValidator, log zerolog.Logger) *Handler {
+func New(hub Hub, subs Subscribers, sockets Sockets, conf Config,
+	db Repository, schema *validation.SchemaValidator,
+	log zerolog.Logger) *Handler {
 	return &Handler{
 		hub:     hub,
 		subs:    subs,
 		sockets: sockets,
+		conf:    conf,
 		db:      db,
 		schema:  schema,
 		log:     log.With().Str("module", "federation").Logger(),
@@ -280,12 +287,19 @@ func (h *Handler) handleInit(msg mmessage.Message, channelPath string) error {
 		return err
 	}
 
+	remoteChannel := fmt.Sprintf(channelPattern, federationInit.LaoId)
+	if h.isOnSameServer(federationInit.ServerAddress) {
+		// In the edge case where the two LAOs are on the same server,
+		// there is no need to create a websocket connection to the other
+		// server and message from one "server" to the "other" could be
+		// directly handled.
+		return h.handleChallenge(federationInit.ChallengeMsg, remoteChannel, nil)
+	}
+
 	remote, err := h.connectTo(federationInit.ServerAddress)
 	if err != nil {
 		return err
 	}
-
-	remoteChannel := fmt.Sprintf(channelPattern, federationInit.LaoId)
 
 	// send the challenge to the remote channelPath on the remote socket
 	return h.publishTo(federationInit.ChallengeMsg, remoteChannel, remote)
@@ -337,14 +351,21 @@ func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string,
 		return err
 	}
 
-	// Add the socket to the list of server sockets
-	h.sockets.Upsert(socket)
-
-	// publish the FederationResult to the other server
 	remoteChannel := fmt.Sprintf(channelPattern, federationExpect.LaoId)
-	err = h.publishTo(resultMsg, remoteChannel, socket)
-	if err != nil {
-		return err
+	if h.isOnSameServer(federationExpect.ServerAddress) || socket == nil {
+		// In the edge case where the two LAOs are on the same server, the
+		// result message would already be stored and handleResult will not be
+		// called => broadcast the result to both federation channels directly.
+		_ = h.subs.BroadcastToAllClients(resultMsg, remoteChannel)
+	} else {
+		// publish the FederationResult to the other server
+		err = h.publishTo(resultMsg, remoteChannel, socket)
+		if err != nil {
+			return err
+		}
+
+		// Add the socket to the list of server sockets
+		h.sockets.Upsert(socket)
 	}
 
 	h.log.Info().Msgf("A federation was successfully")
@@ -468,6 +489,17 @@ func (h *Handler) verifyLocalOrganizer(msg mmessage.Message, channelPath string)
 	}
 
 	return nil
+}
+
+func (h *Handler) isOnSameServer(address string) bool {
+	_, clientServerAddress, serverServerAddress, _ := h.conf.GetServerInfo()
+
+	isSameAddress := address == clientServerAddress || address == serverServerAddress
+
+	h.log.Info().Msgf("isOnSameServer=%v, remote=%s, client=%s, server=%s",
+		isSameAddress, address, clientServerAddress, serverServerAddress)
+
+	return isSameAddress
 }
 
 func (h *Handler) connectTo(serverAddress string) (socket.Socket, error) {
