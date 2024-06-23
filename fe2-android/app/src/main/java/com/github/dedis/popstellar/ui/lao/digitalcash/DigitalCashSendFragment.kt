@@ -151,9 +151,10 @@ class DigitalCashSendFragment : Fragment() {
     binding.digitalCashSendSpinnerTv.setAdapter(adapter)
   }
 
-  private fun getPublicKeyFromUsername(username: String): PublicKey {
-    return digitalCashViewModel.attendeesFromTheRollCallList.first { it.getUsername() == username }
-  }
+    private fun getPublicKeyFromUsername(username: String): PublicKey {
+        return digitalCashViewModel.attendeesFromTheRollCallList.firstOrNull { it.getUsername() == username }
+            ?: digitalCashViewModel.validToken.publicKey
+    }
 
   /**
    * Removes from the list of LAO members my pop token
