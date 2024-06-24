@@ -30,7 +30,7 @@ type MessageHandler interface {
 }
 
 type RumorHandler interface {
-	HandleRumorStateAnswer(rumor mrumor.Rumor) error
+	HandleRumorStateAnswer(rumor mrumor.ParamsRumor) error
 	SendRumor(socket socket.Socket, rumor mrumor.Rumor)
 }
 
@@ -212,11 +212,11 @@ func (h *Handler) handleRumorStateAnswer(msg manswer.Answer) error {
 		return nil
 	}
 
-	rumors := make([]mrumor.Rumor, 0)
+	rumors := make([]mrumor.ParamsRumor, 0)
 
 	result := msg.Result.GetData()
 	for _, rawRumor := range result {
-		var rumor mrumor.Rumor
+		var rumor mrumor.ParamsRumor
 		err := json.Unmarshal(rawRumor, &rumor)
 		if err == nil {
 			rumors = append(rumors, rumor)
@@ -228,7 +228,7 @@ func (h *Handler) handleRumorStateAnswer(msg manswer.Answer) error {
 	}
 
 	sort.Slice(rumors, func(i, j int) bool {
-		return rumors[i].Params.Timestamp.IsBefore(rumors[j].Params.Timestamp)
+		return rumors[i].Timestamp.IsBefore(rumors[j].Timestamp)
 	})
 
 	for _, rumor := range rumors {

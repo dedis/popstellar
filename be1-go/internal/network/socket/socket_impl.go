@@ -280,12 +280,17 @@ func (s *baseSocket) SendRumorStateAnswer(id int, rumors []mrumor.Rumor) {
 			"2.0", id, 0,
 		}
 	} else {
+		result := make([]mrumor.ParamsRumor, 0)
+		for _, rumor := range rumors {
+			result = append(result, rumor.Params)
+		}
+
 		answer = struct {
-			JSONRPC string         `json:"jsonrpc"`
-			ID      int            `json:"id"`
-			Result  []mrumor.Rumor `json:"result"`
+			JSONRPC string               `json:"jsonrpc"`
+			ID      int                  `json:"id"`
+			Result  []mrumor.ParamsRumor `json:"result"`
 		}{
-			"2.0", id, rumors,
+			"2.0", id, result,
 		}
 	}
 

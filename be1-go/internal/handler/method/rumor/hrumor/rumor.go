@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"github.com/rs/zerolog"
 	"popstellar/internal/errors"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/rumor/mrumor"
+	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
 	"sort"
 )
@@ -220,14 +222,26 @@ func (h *Handler) handleNextRumor(rumor mrumor.Rumor) error {
 	return h.handleAndPropagate(nil, rumor)
 }
 
-func (h *Handler) HandleRumorStateAnswer(rumor mrumor.Rumor) error {
-	ok, alreadyHas, err := h.db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID, rumor.Params.Timestamp)
+func (h *Handler) HandleRumorStateAnswer(paramsRumor mrumor.ParamsRumor) error {
+	ok, alreadyHas, err := h.db.CheckRumor(paramsRumor.SenderID, paramsRumor.RumorID, paramsRumor.Timestamp)
 	if err != nil {
 		return err
 	}
 	if alreadyHas {
-		return errors.NewDuplicateResourceError("rumor %s:%d already exists", rumor.Params.SenderID, rumor.Params.RumorID)
+		return errors.NewDuplicateResourceError("rumor %s:%d already exists", paramsRumor.SenderID, paramsRumor.RumorID)
 	}
+
+	rumor := mrumor.Rumor{
+		Base: mquery.Base{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "rumor",
+		},
+		ID:     0,
+		Params: paramsRumor,
+	}
+
 	if !ok {
 		err = h.buf.insert(rumor)
 		if err != nil {

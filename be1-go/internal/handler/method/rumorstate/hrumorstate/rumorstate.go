@@ -2,6 +2,7 @@ package hrumorstate
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/rs/zerolog"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/method/rumor/mrumor"
@@ -37,6 +38,8 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 	myRumors, err := h.db.GetAllRumors()
 	rumors := make([]mrumor.Rumor, 0)
 
+	fmt.Println("AAAA")
+
 	for _, rumor := range myRumors {
 		if rumor.Params.Timestamp.IsBefore(rumorState.Params.State) {
 			continue
@@ -49,6 +52,8 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 	})
 
 	socket.SendRumorStateAnswer(rumorState.ID, rumors)
+
+	fmt.Println("BBBB")
 
 	return nil, nil
 }
