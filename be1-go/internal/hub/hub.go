@@ -53,6 +53,11 @@ type Subscribers interface {
 	UnsubscribeFromAll(socketID string)
 }
 
+type Queries interface {
+	GetNextID() int
+	AddRumorState(id int) error
+}
+
 type Sockets interface {
 	Upsert(socket socket.Socket)
 	SendToAll(buf []byte)
@@ -90,6 +95,7 @@ type Hub struct {
 	// in memory states
 	subs    Subscribers
 	sockets Sockets
+	queries Queries
 
 	// database
 	db Repository
@@ -216,6 +222,7 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 		stop:              hubParams.GetStopChan(),
 		resetRumorSender:  hubParams.GetResetRumorSender(),
 		subs:              subs,
+		queries:           queries,
 		sockets:           sockets,
 		db:                &db,
 		jsonRpcHandler:    jsonRpcHandler,
@@ -426,7 +433,12 @@ func (h *Hub) sendRumorState() error {
 		return poperrors.NewJsonMarshalError(err.Error())
 	}
 
-	h.sockets.SendToRandom(buf)
+	id := h.queries.GetNextID()
+	err = h.queries.AddRumorState(id)
+	if err != nil {
+		return err
+	}
 
+	h.sockets.SendToRandom(buf)
 	return nil
 }
