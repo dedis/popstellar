@@ -356,7 +356,7 @@ final case class DbActor(
 
     var catchupList: List[Message] = List.empty
     for id <- topThreeChirps do
-      catchupList = catchupList :+ allChirpsList.find(msg => msg.message_id == id).get
+      catchupList = allChirpsList.find(msg => msg.message_id == id).get :: catchupList
 
     if (!checkChannelExistence(channel)) {
       createChannel(channel, ObjectType.chirp)
@@ -445,7 +445,7 @@ final case class DbActor(
           allChirpsList = allChirpsList.slice(1, allChirpsList.length)
 
           for id <- readChannelData(channel).messages do
-            catchupList = catchupList :+ allChirpsList.find(msg => msg.message_id == id).get
+            catchupList = allChirpsList.find(msg => msg.message_id == id).get :: catchupList
 
           catchupList
         }
