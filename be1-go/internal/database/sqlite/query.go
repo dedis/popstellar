@@ -454,7 +454,7 @@ func (s *SQLite) GetAllRumors() ([]mrumor.Rumor, error) {
 			return nil, poperrors.NewInternalServerError("failed to unmarshal timestamp: %v", err)
 		}
 
-		messages, err := s.GetMessagesFromRumor(rumorID, sender)
+		messages, err := s.GetMessagesFromRumorHelper(rumorID, sender)
 		if err != nil {
 			return nil, err
 		}
@@ -470,9 +470,7 @@ func (s *SQLite) GetAllRumors() ([]mrumor.Rumor, error) {
 	return rumors, nil
 }
 
-func (s *SQLite) GetMessagesFromRumor(rumorID int, sender string) (map[string][]mmessage.Message, error) {
-	dbLock.Lock()
-	defer dbLock.Unlock()
+func (s *SQLite) GetMessagesFromRumorHelper(rumorID int, sender string) (map[string][]mmessage.Message, error) {
 
 	rows, err := s.database.Query(selectRumorMessages, true, sender, rumorID)
 	if err != nil {
