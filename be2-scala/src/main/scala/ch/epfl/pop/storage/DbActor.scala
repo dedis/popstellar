@@ -6,10 +6,10 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
-import ch.epfl.pop.model.network.method.{Rumor, RumorState}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
+import ch.epfl.pop.model.network.method.{Rumor, RumorState}
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.pubsub.graph.AnswerGenerator.timout
@@ -20,7 +20,6 @@ import com.google.crypto.tink.subtle.Ed25519Sign
 
 import java.util.concurrent.TimeUnit
 import scala.collection.immutable.HashMap
-import scala.collection.mutable.ListBuffer
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.util.{Failure, Success, Try}

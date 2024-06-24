@@ -2,6 +2,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
 import akka.actor.{ActorRef, ActorSystem}
+import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import ch.epfl.pop.model.network.method.{Publish, Rumor}
 import ch.epfl.pop.model.network.method.message.Message
@@ -10,6 +11,7 @@ import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError, prettyPrinter}
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PublishSubscribe}
+import ch.epfl.pop.storage.DbActor.{DbActorAck, WriteRumor}
 
 import scala.annotation.tailrec
 import scala.util.Success
@@ -49,7 +51,7 @@ object ProcessMessagesHandler extends AskPatternConstants {
     case value @ _ => value
   }
 
-  def rumorStateAnsHandler(messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+  def rumorStateAnsHandler(dbActorRef: AskableActorRef, messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case msg @ Right(JsonRpcResponse(_, Some(resultObject), None, jsonId)) =>
       resultObject.resultRumor match
         case Some(rumorList) =>
@@ -57,8 +59,10 @@ object ProcessMessagesHandler extends AskPatternConstants {
             .flatMap(_.messages)
             .groupBy(_._1)
             .view.mapValues(_.flatMap(_._2).toSet).toMap
-          processMsgMap(mergedMsg, messageRegistry)
-          msg
+          if (processMsgMap(mergedMsg, messageRegistry) && writeRumorsInDb(dbActorRef, rumorList))
+            msg
+          else
+            Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Rumor state handler was not able to process all rumors from $msg", jsonId))
         case _ => Left(PipelineError(
             ErrorCodes.SERVER_ERROR.id,
             s"Rumor state handler received an unexpected type of result $msg",
@@ -69,6 +73,16 @@ object ProcessMessagesHandler extends AskPatternConstants {
         s"Rumor state handler received an unexpected type of message $graphMessage",
         None
       ))
+  }
+
+  private def writeRumorsInDb(dbActorRef: AskableActorRef, rumors: List[Rumor]): Boolean = {
+    rumors.foreach { rumor =>
+      val writeRumor = dbActorRef ? WriteRumor(rumor)
+      Await.result(writeRumor, duration) match
+        case DbActorAck() => /* DO NOTHING*/
+        case _            => false
+    }
+    true
   }
 
   def rumorHandler(messageRegistry: MessageRegistry, rumor: Rumor)(implicit system: ActorSystem): Boolean = {

@@ -141,7 +141,7 @@ object PublishSubscribe {
 
           val gossipMonitorPartition = builder.add(GossipManager.monitorResponse(gossipManager))
           val getMsgByIdResponsePartition = builder.add(ProcessMessagesHandler.getMsgByIdResponseHandler(messageRegistry))
-          val rumorStateAnsPartition = builder.add(ProcessMessagesHandler.rumorStateAnsHandler(messageRegistry))
+          val rumorStateAnsPartition = builder.add(ProcessMessagesHandler.rumorStateAnsHandler(dbActorRef, messageRegistry))
 
           /* glue the components together */
           input ~> responsePartitioner

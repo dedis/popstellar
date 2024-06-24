@@ -16,8 +16,9 @@ import akka.pattern.ask
 import ch.epfl.pop.model.network.MethodType.publish
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{Publish, Rumor, RumorState}
-import ch.epfl.pop.model.objects.Channel
+import ch.epfl.pop.model.objects.{Channel, RumorData}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
+import ch.epfl.pop.storage.DbActor.{DbActorReadRumorData, ReadRumorData}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.matchers.should.Matchers.{a, equal, should, shouldBe}
 
@@ -37,7 +38,7 @@ class RumorStateAnsHandlerSuite extends TestKit(ActorSystem("RumorStateAnsHandle
     messageRegistry = MessageRegistry()
     pubSubMediatorRef = system.actorOf(PubSubMediator.props, "pubSubRumorState")
     dbActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)), "dbRumorStateAns")
-    rumorStateAnsHandler = ProcessMessagesHandler.rumorStateAnsHandler(messageRegistry)
+    rumorStateAnsHandler = ProcessMessagesHandler.rumorStateAnsHandler(dbActorRef, messageRegistry)
 
     PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, ActorRef.noSender, messageRegistry, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, false)
   }
@@ -82,6 +83,12 @@ class RumorStateAnsHandlerSuite extends TestKit(ActorSystem("RumorStateAnsHandle
     val messagesInRumor = rumor.messages.values.foldLeft(Set.empty: Set[Message])((acc, set) => acc ++ set)
 
     messagesInRumor.diff(messagesInDb) should equal(Set.empty)
+
+    val readRumorData = dbActorRef ? ReadRumorData(rumor.senderPk)
+    Await.result(readRumorData, duration) match
+      case DbActorReadRumorData(rumorData: RumorData) =>
+        rumorData.rumorIds shouldBe rumorList.map(_.rumorId)
+      case _ => 0 shouldBe 1
   }
 
   test("rumor state ans handler fails on wrong type") {
