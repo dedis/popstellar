@@ -50,6 +50,10 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 	}
 
 	myRumors, err := h.db.GetAllRumors()
+	if err != nil {
+		return &rumorState.ID, err
+	}
+
 	rumors := make([]mrumor.Rumor, 0)
 
 	for _, rumor := range myRumors {
