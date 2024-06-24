@@ -38,7 +38,7 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 	rumors := make([]mrumor.Rumor, 0)
 
 	for _, rumor := range myRumors {
-		if rumor.Params.Timestamp.IsBefore(rumorState.Params) {
+		if rumor.Params.Timestamp.IsBefore(rumorState.Params.State) {
 			continue
 		}
 		rumors = append(rumors, rumor)

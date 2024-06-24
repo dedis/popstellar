@@ -416,7 +416,9 @@ func (h *Hub) sendRumorState() error {
 			},
 			Method: "rumor_state",
 		},
-		Params: timestamp,
+		Params: mrumorstate.RumorStateParams{
+			State: timestamp,
+		},
 	}
 
 	buf, err := json.Marshal(rumorStateMessage)
