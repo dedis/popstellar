@@ -38,7 +38,7 @@ func (b *buffer) insert(rumor mrumor.Rumor) error {
 	b.queue = append(b.queue, rumor)
 
 	sort.Slice(b.queue, func(i, j int) bool {
-		return b.queue[i].IsBefore(b.queue[j])
+		return b.queue[i].Params.Timestamp.IsBefore(b.queue[j].Params.Timestamp)
 	})
 
 	b.senderIDs[ID] = struct{}{}

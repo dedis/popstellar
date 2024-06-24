@@ -228,7 +228,7 @@ func (h *Handler) handleRumorStateAnswer(msg manswer.Answer) error {
 	}
 
 	sort.Slice(rumors, func(i, j int) bool {
-		return rumors[i].IsBefore(rumors[j])
+		return rumors[i].Params.Timestamp.IsBefore(rumors[j].Params.Timestamp)
 	})
 
 	for _, rumor := range rumors {

@@ -83,7 +83,8 @@ const (
 	createRumor = `
 	CREATE TABLE IF NOT EXISTS rumor ( 
     			ID INTEGER, 
-    			sender TEXT, 
+    			sender TEXT,
+    			timestamp TEXT,
     			PRIMARY KEY (ID, sender) 
                 )`
 
@@ -124,7 +125,7 @@ const (
 	insertChannelType              = `INSERT INTO channelType (type) VALUES (?)`
 	insertKeys                     = `INSERT INTO key (channelPath, publicKey, secretKey) VALUES (?, ?, ?)`
 	insertPublicKey                = `INSERT INTO key (channelPath, publicKey) VALUES (?, ?)`
-	insertRumor                    = `INSERT INTO rumor (ID, sender) VALUES (?, ?)`
+	insertRumor                    = `INSERT INTO rumor (ID, sender, timestamp) VALUES (?, ?, ?)`
 	insertUnprocessedMessage       = `INSERT INTO unprocessedMessage (messageID, channelPath, message) VALUES (?, ?, ?)`
 	insertUnprocessedMessageRumor  = `INSERT INTO unprocessedMessageRumor (messageID, rumorID, sender) VALUES (?, ?, ?)`
 	insertMessageRumor             = `INSERT INTO messageRumor (messageID, rumorID, sender) VALUES (?, ?, ?)`
@@ -140,7 +141,7 @@ const (
             )
     LIMIT 1`
 
-	insertFirstRumor = `INSERT OR IGNORE INTO rumor (ID, sender) SELECT ?, publicKey FROM key WHERE channelPath = ?`
+	insertFirstRumor = `INSERT OR IGNORE INTO rumor (ID, sender, timestamp) VALUES (?, ?, ?)`
 )
 
 const (
@@ -315,8 +316,6 @@ const (
     FROM message 
     WHERE messageID = ?`
 
-	selectAnyRumor = `SELECT ID FROM rumor WHERE sender = ?`
-
 	selectAllUnprocessedMessages = `SELECT channelPath, message FROM unprocessedMessage`
 
 	selectCountMyRumor = `SELECT count(*) FROM messageRumor WHERE rumorID = (SELECT max(ID) FROM rumor WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?))`
@@ -330,6 +329,17 @@ const (
 		       FROM messageRumor 
 		       WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?) AND rumorID = (SELECT max(ID) FROM rumor 
 		                                       WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?)))`
+
+	selectRumorMessages = `
+	SELECT channelPath, message
+	FROM message JOIN channelMessage ON message.messageID = channelMessage.messageID
+	WHERE isBaseChannel = ? AND message.messageID IN
+	                            		(SELECT messageID
+	                            		 FROM messageRumor
+	                            		 WHERE sender = ?
+	                            		 AND rumorID = ?)`
+
+	selectAllRumors = `SELECT ID, sender, timestamp FROM rumor`
 
 	selectMyRumorInfos = `SELECT max(ID), sender FROM rumor WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?)`
 

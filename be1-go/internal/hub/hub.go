@@ -28,6 +28,7 @@ import (
 	"popstellar/internal/handler/method/publish/hpublish"
 	"popstellar/internal/handler/method/rumor/hrumor"
 	"popstellar/internal/handler/method/rumor/mrumor"
+	"popstellar/internal/handler/method/rumorstate/hrumorstate"
 	"popstellar/internal/handler/method/rumorstate/mrumorstate"
 	"popstellar/internal/handler/method/subscribe/hsubscribe"
 	"popstellar/internal/handler/method/unsubscribe/hunsubscribe"
@@ -181,6 +182,9 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	// Create the rumor handler
 	rumorHandler := hrumor.New(queries, sockets, &db, msgHandler, log)
 
+	// Create the rumor state handler
+	rumorStateHandler := hrumorstate.New(&db, log)
+
 	// Create the query handler
 	methodHandlers := make(hquery.MethodHandlers)
 	methodHandlers[mquery.MethodCatchUp] = hcatchup.New(&db, log)
@@ -191,6 +195,7 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	methodHandlers[mquery.MethodSubscribe] = hsubscribe.New(subs, log)
 	methodHandlers[mquery.MethodUnsubscribe] = hunsubscribe.New(subs, log)
 	methodHandlers[mquery.MethodRumor] = rumorHandler
+	methodHandlers[mquery.MethodRumorState] = rumorStateHandler
 
 	qHandler := hquery.New(methodHandlers, log)
 
@@ -231,6 +236,7 @@ func (h *Hub) Start() {
 	go h.runHeartbeat()
 	go h.runRumorSender()
 	go h.runMessageReceiver()
+	go h.runRumorState()
 }
 
 func (h *Hub) Stop() {
@@ -408,7 +414,7 @@ func (h *Hub) sendRumorState() error {
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: "rumorstate",
+			Method: "rumor_state",
 		},
 		Params: timestamp,
 	}

@@ -72,7 +72,7 @@ func Test_Handle(t *testing.T) {
 	queries.On("GetNextID").Return(rumor0.ID).Once()
 	queries.On("AddRumor", rumor0.ID, rumor0).Return(nil).Once()
 	sockets.On("SendRumor", fakeSocket, rumor0.Params.SenderID, rumor0.Params.RumorID, rumorBuf0).Once()
-	db.On("StoreRumor", rumor0.Params.RumorID, rumor0.Params.SenderID,
+	db.On("StoreRumor", rumor0.Params.RumorID, rumor0.Params.SenderID, timestamp0,
 		mock.AnythingOfType("map[string][]mmessage.Message"), []string{}).Return(nil).Once()
 	db.On("GetUnprocessedMessagesByChannel").Return(nil, nil).Once()
 
@@ -85,7 +85,7 @@ func Test_Handle(t *testing.T) {
 	queries.On("GetNextID").Return(rumor1.ID).Once()
 	queries.On("AddRumor", rumor1.ID, rumor1).Return(nil).Once()
 	sockets.On("SendRumor", nil, rumor1.Params.SenderID, rumor1.Params.RumorID, rumorBuf1).Once()
-	db.On("StoreRumor", rumor1.Params.RumorID, rumor1.Params.SenderID,
+	db.On("StoreRumor", rumor1.Params.RumorID, rumor1.Params.SenderID, timestamp1,
 		mock.AnythingOfType("map[string][]mmessage.Message"), []string{}).Return(nil).Once()
 	db.On("GetUnprocessedMessagesByChannel").Return(nil, nil).Once()
 
@@ -98,7 +98,7 @@ func Test_Handle(t *testing.T) {
 	queries.On("GetNextID").Return(rumor2.ID).Once()
 	queries.On("AddRumor", rumor2.ID, rumor2).Return(nil).Once()
 	sockets.On("SendRumor", nil, rumor2.Params.SenderID, rumor2.Params.RumorID, rumorBuf2).Once()
-	db.On("StoreRumor", rumor2.Params.RumorID, rumor2.Params.SenderID,
+	db.On("StoreRumor", rumor2.Params.RumorID, rumor2.Params.SenderID, timestamp2,
 		mock.AnythingOfType("map[string][]mmessage.Message"), []string{}).Return(nil).Once()
 	db.On("GetUnprocessedMessagesByChannel").Return(nil, nil).Once()
 

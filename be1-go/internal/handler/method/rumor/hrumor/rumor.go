@@ -26,7 +26,7 @@ type Repository interface {
 	CheckRumor(senderID string, rumorID int, timestamp mrumor.RumorTimestamp) (valid, alreadyHas bool, err error)
 
 	// StoreRumor stores the new rumor with its processed and unprocessed messages
-	StoreRumor(rumorID int, sender string, unprocessed map[string][]mmessage.Message, processed []string) error
+	StoreRumor(rumorID int, sender string, timestamp mrumor.RumorTimestamp, unprocessed map[string][]mmessage.Message, processed []string) error
 
 	// GetUnprocessedMessagesByChannel returns all the unprocessed messages by channel
 	GetUnprocessedMessagesByChannel() (map[string][]mmessage.Message, error)
@@ -99,7 +99,7 @@ func (h *Handler) handleAndPropagate(socket socket.Socket, rumor mrumor.Rumor) e
 
 	processedMsgs := h.tryHandlingMessagesByChannel(rumor.Params.Messages)
 
-	err := h.db.StoreRumor(rumor.Params.RumorID, rumor.Params.SenderID, rumor.Params.Messages, processedMsgs)
+	err := h.db.StoreRumor(rumor.Params.RumorID, rumor.Params.SenderID, rumor.Params.Timestamp, rumor.Params.Messages, processedMsgs)
 	if err != nil {
 		return err
 	}

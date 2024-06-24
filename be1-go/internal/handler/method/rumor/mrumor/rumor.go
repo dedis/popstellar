@@ -21,11 +21,11 @@ type Rumor struct {
 	Params ParamsRumor `json:"params"`
 }
 
-func (r *Rumor) IsBefore(other Rumor) bool {
+func (r RumorTimestamp) IsBefore(other RumorTimestamp) bool {
 	greater := false
 	smaller := false
-	for senderID, rumorID := range r.Params.Timestamp {
-		otherRumorID, ok := other.Params.Timestamp[senderID]
+	for senderID, rumorID := range r {
+		otherRumorID, ok := other[senderID]
 		if !ok || otherRumorID < rumorID {
 			smaller = true
 		}
@@ -34,8 +34,8 @@ func (r *Rumor) IsBefore(other Rumor) bool {
 		}
 	}
 
-	for senderID, rumorID := range other.Params.Timestamp {
-		myRumorID, ok := r.Params.Timestamp[senderID]
+	for senderID, rumorID := range other {
+		myRumorID, ok := r[senderID]
 		if !ok || myRumorID < rumorID {
 			greater = true
 		}
@@ -50,8 +50,8 @@ func (r *Rumor) IsBefore(other Rumor) bool {
 	return true
 }
 
-func (r RumorTimestamp) IsValid(timestamp map[string]int) bool {
-	for senderID, rumorID := range timestamp {
+func (r RumorTimestamp) IsValid(other RumorTimestamp) bool {
+	for senderID, rumorID := range other {
 		myRumorID, ok := r[senderID]
 		if !ok && rumorID != 0 {
 			return false

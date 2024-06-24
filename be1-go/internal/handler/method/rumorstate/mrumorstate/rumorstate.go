@@ -1,12 +1,13 @@
 package mrumorstate
 
 import (
+	"popstellar/internal/handler/method/rumor/mrumor"
 	"popstellar/internal/handler/query/mquery"
 )
 
-// Rumor defines a JSON RPC rumor message
+// RumorState defines a JSON RPC rumor state message
 type RumorState struct {
 	mquery.Base
-	ID     int            `json:"id"`
-	Params map[string]int `json:"params"`
+	ID     int                   `json:"id"`
+	Params mrumor.RumorTimestamp `json:"params"`
 }
