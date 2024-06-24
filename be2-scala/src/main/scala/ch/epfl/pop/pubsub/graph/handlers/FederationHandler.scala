@@ -283,14 +283,15 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
 
             val federationChannel: Channel = rpcMessage.getParamsChannel
             val laoId: Hash = rpcMessage.extractLaoId
-            // we store the result in the db and delete the challenge
+            // we store the result in the db, delete the challenge and broadcast the result in the lao
             val combined = for {
               _ <- dbActor ? DbActor.DeleteFederationChallenge(federationChannel, laoId)
               _ <- dbActor ? DbActor.WriteFederationResult(federationChannel, laoId, resultMessage)
+              _ <- mediator ? PubSubMediator.Propagate(rpcMessage.getParamsChannel, resultMessage)
             } yield ()
             Await.ready(combined, duration).value match {
               case Some(Success(_)) => Right(rpcMessage)
-              case _                => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Couldn't delete both federationChallenge and federationExpect messages", rpcMessage.getId))
+              case _                => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Couldn't delete federationChallenge message", rpcMessage.getId))
             }
 
           case ConnectionMediator.NoPeer() => Left(PipelineError(
