@@ -339,7 +339,7 @@ const (
 	                            		 WHERE sender = ?
 	                            		 AND rumorID = ?)`
 
-	selectAllRumors = `SELECT ID, sender, timestamp FROM rumor`
+	selectAllRumors = `SELECT ID, sender, timestamp FROM rumor `
 
 	selectMyRumorInfos = `SELECT max(ID), sender FROM rumor WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?)`
 

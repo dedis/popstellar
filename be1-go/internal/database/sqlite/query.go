@@ -3,6 +3,7 @@ package sqlite
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
@@ -467,18 +468,18 @@ func (s *SQLite) GetAllRumors() ([]mrumor.Rumor, error) {
 		if err = rows.Scan(&rumorID, &sender, &timestampByte); err != nil {
 			return nil, poperrors.NewDatabaseScanErrorMsg(err.Error())
 		}
+		if rumorID == myRumorID && sender == mySender {
+			continue
+		}
 		var timestamp mrumor.RumorTimestamp
 		if err = json.Unmarshal(timestampByte, &timestamp); err != nil {
+			fmt.Println("timestampByte")
 			return nil, poperrors.NewInternalServerError("failed to unmarshal timestamp: %v", err)
 		}
 
 		messages, err := s.GetMessagesFromRumorHelper(rumorID, sender)
 		if err != nil {
 			return nil, err
-		}
-
-		if rumorID == myRumorID && sender == mySender {
-			continue
 		}
 		rumor := newRumor(rumorID, sender, messages, timestamp)
 		rumors = append(rumors, rumor)
