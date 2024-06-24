@@ -43,7 +43,7 @@ type nullRumorSender struct{}
 func (n *nullRumorSender) SendRumor(socket socket.Socket, rumor mrumor.Rumor) {
 }
 
-func (n *nullRumorSender) HandleRumorStateAnswer(rumor mrumor.Rumor) error {
+func (n *nullRumorSender) HandleRumorStateAnswer(socket socket.Socket, rumor mrumor.ParamsRumor) error {
 	return nil
 }
 
