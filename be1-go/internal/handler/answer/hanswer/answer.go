@@ -30,7 +30,7 @@ type MessageHandler interface {
 }
 
 type RumorHandler interface {
-	HandleRumorStateAnswer(rumor mrumor.ParamsRumor) error
+	HandleRumorStateAnswer(socket socket.Socket, rumor mrumor.ParamsRumor) error
 	SendRumor(socket socket.Socket, rumor mrumor.Rumor)
 }
 
@@ -53,7 +53,7 @@ func New(queries Queries, handlers Handlers, log zerolog.Logger) *Handler {
 	}
 }
 
-func (h *Handler) Handle(msg []byte) error {
+func (h *Handler) Handle(socket socket.Socket, msg []byte) error {
 	var answerMsg manswer.Answer
 
 	err := json.Unmarshal(msg, &answerMsg)
@@ -74,7 +74,7 @@ func (h *Handler) Handle(msg []byte) error {
 	}
 
 	if h.queries.IsRumorState(*answerMsg.ID) {
-		return h.handleRumorStateAnswer(answerMsg)
+		return h.handleRumorStateAnswer(socket, answerMsg)
 	}
 
 	return errors.NewInvalidActionError("received a invalid jsonrpc answer")
@@ -201,7 +201,7 @@ func (h *Handler) handleRumorAnswer(msg manswer.Answer) error {
 	return nil
 }
 
-func (h *Handler) handleRumorStateAnswer(msg manswer.Answer) error {
+func (h *Handler) handleRumorStateAnswer(socket socket.Socket, msg manswer.Answer) error {
 	defer h.queries.Remove(*msg.ID)
 
 	if msg.Result == nil {
@@ -232,7 +232,7 @@ func (h *Handler) handleRumorStateAnswer(msg manswer.Answer) error {
 	})
 
 	for _, rumor := range rumors {
-		err := h.handlers.RumorHandler.HandleRumorStateAnswer(rumor)
+		err := h.handlers.RumorHandler.HandleRumorStateAnswer(socket, rumor)
 		if err != nil {
 			h.log.Error().Err(err).Msg("")
 		}

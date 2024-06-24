@@ -222,7 +222,7 @@ func (h *Handler) handleNextRumor(rumor mrumor.Rumor) error {
 	return h.handleAndPropagate(nil, rumor)
 }
 
-func (h *Handler) HandleRumorStateAnswer(paramsRumor mrumor.ParamsRumor) error {
+func (h *Handler) HandleRumorStateAnswer(socket socket.Socket, paramsRumor mrumor.ParamsRumor) error {
 	ok, alreadyHas, err := h.db.CheckRumor(paramsRumor.SenderID, paramsRumor.RumorID, paramsRumor.Timestamp)
 	if err != nil {
 		return err
@@ -251,5 +251,5 @@ func (h *Handler) HandleRumorStateAnswer(paramsRumor mrumor.ParamsRumor) error {
 		return nil
 	}
 
-	return h.handleAndPropagate(nil, rumor)
+	return h.handleAndPropagate(socket, rumor)
 }
