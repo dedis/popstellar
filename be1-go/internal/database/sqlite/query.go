@@ -203,7 +203,12 @@ func (s *SQLite) StoreRumor(rumorID int, sender string, timestamp mrumor.RumorTi
 
 	for channelPath, messages := range unprocessed {
 		for _, msg := range messages {
-			_, err = tx.Exec(insertUnprocessedMessage, msg.MessageID, channelPath, msg)
+
+			msgByte, err := json.Marshal(msg)
+			if err != nil {
+				return poperrors.NewJsonMarshalError("unprocessed message: %v", err)
+			}
+			_, err = tx.Exec(insertUnprocessedMessage, msg.MessageID, channelPath, msgByte)
 			if err != nil {
 				return poperrors.NewDatabaseInsertErrorMsg("unprocessed message: %v", err)
 			}
