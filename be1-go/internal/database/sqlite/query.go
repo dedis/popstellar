@@ -435,6 +435,19 @@ func (s *SQLite) GetAllRumors() ([]mrumor.Rumor, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
+	tx, err := s.database.Begin()
+	if err != nil {
+		return nil, poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
+	}
+	defer tx.Rollback()
+
+	var myRumorID int
+	var mySender string
+	err = tx.QueryRow(selectMyRumorInfos, serverKeysPath).Scan(&myRumorID, &mySender)
+	if err != nil {
+		return nil, poperrors.NewDatabaseSelectErrorMsg("current rumor id and sender: %v", err)
+	}
+
 	rows, err := s.database.Query(selectAllRumors)
 	if err != nil {
 		return nil, poperrors.NewDatabaseSelectErrorMsg("all rumors: %v", err)
@@ -459,6 +472,9 @@ func (s *SQLite) GetAllRumors() ([]mrumor.Rumor, error) {
 			return nil, err
 		}
 
+		if rumorID == myRumorID && sender == mySender {
+			continue
+		}
 		rumor := newRumor(rumorID, sender, messages, timestamp)
 		rumors = append(rumors, rumor)
 	}
