@@ -258,7 +258,19 @@ final case class DbActor(
     val chirpsChannel = Channel.apply(s"/root/$laoID/social/chirps")
 
     var allChirpsList = catchupChannel(chirpsChannel)
-    allChirpsList = allChirpsList.slice(1, allChirpsList.length)
+
+    // check in place to remove create lao message if any from the list
+    try {
+      AddChirp.buildFromJson(allChirpsList.head.toJsonString)
+    } catch {
+      case ex: spray.json.DeserializationException =>
+        try {
+          DeleteChirp.buildFromJson(allChirpsList.head.toJsonString)
+        } catch {
+          case ex: spray.json.DeserializationException => allChirpsList = allChirpsList.slice(1, allChirpsList.length)
+        }
+    }
+
     var count = 0
     for chirp <- allChirpsList do {
       try {
