@@ -261,11 +261,11 @@ final case class DbActor(
 
     // check in place to remove create lao message if any from the list
     try {
-      AddChirp.buildFromJson(allChirpsList.head.toJsonString)
+      AddChirp.buildFromJson(allChirpsList.head.data.decodeToString())
     } catch {
       case ex: spray.json.DeserializationException =>
         try {
-          DeleteChirp.buildFromJson(allChirpsList.head.toJsonString)
+          DeleteChirp.buildFromJson(allChirpsList.head.data.decodeToString())
         } catch {
           case ex: spray.json.DeserializationException => allChirpsList = allChirpsList.slice(1, allChirpsList.length)
         }
