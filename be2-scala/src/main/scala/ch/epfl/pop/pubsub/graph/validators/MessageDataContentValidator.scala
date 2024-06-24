@@ -241,7 +241,7 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
         validateChallenge(rpcMessage, challenge, challengeExpect, error)
 
       case Success(DbActor.DbActorReadAck(None)) => Left(error)
-      case _                                                      => Left(error)
+      case _                                     => Left(error)
     }
   }
 
@@ -267,7 +267,7 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
         validateChallenge(rpcMessage, challenge, challengeResult, error)
 
       case Success(DbActor.DbActorReadAck(None)) => Left(error)
-      case _                                                      => Left(error)
+      case _                                     => Left(error)
     }
   }
 

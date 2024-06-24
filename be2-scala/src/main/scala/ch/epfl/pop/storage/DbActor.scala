@@ -521,7 +521,7 @@ final case class DbActor(
     this.synchronized {
       Try(storage.read(key)) match {
         case Success(Some(_)) => storage.delete(key)
-        case Success(None) => /* Do Nothing */
+        case Success(None)    => /* Do Nothing */
         case Failure(ex)      => throw ex
       }
     }
@@ -1233,7 +1233,6 @@ object DbActor {
   /** Response for a [[GetRumorState]] +
     */
   final case class DbActorGetRumorStateAck(rumorState: RumorState) extends DbActorMessage
-  
 
   /** Response for a general db actor ACK
     */

@@ -67,8 +67,8 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
 
           sender() ! Status.Failure(DbActorNAckException(1, "error"))
 
-        case DbActor.ReadFederationChallenge(_,_) | DbActor.ReadFederationInit(_,_)
-             | DbActor.ReadFederationExpect(_,_) =>
+        case DbActor.ReadFederationChallenge(_, _) | DbActor.ReadFederationInit(_, _)
+            | DbActor.ReadFederationExpect(_, _) =>
           system.log.info("Received a ReadFederationMessage")
           system.log.info("Responding with a Nack")
 
@@ -90,21 +90,21 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
   def mockDbWithAck: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActor.WriteFederationChallenge(_,_,_) | DbActor.WriteFederationInit(_,_,_)
-             | DbActor.WriteFederationExpect(_,_,_) | DbActor.WriteFederationResult(_,_,_) =>
+        case DbActor.WriteFederationChallenge(_, _, _) | DbActor.WriteFederationInit(_, _, _)
+            | DbActor.WriteFederationExpect(_, _, _) | DbActor.WriteFederationResult(_, _, _) =>
           system.log.info("Received a WriteFederationMessage")
           system.log.info("Responding with an Ack")
 
           sender() ! DbActor.DbActorAck()
 
-        case DbActor.ReadFederationChallenge(_,_) | DbActor.ReadFederationInit(_,_)
-             | DbActor.ReadFederationExpect(_,_) =>
+        case DbActor.ReadFederationChallenge(_, _) | DbActor.ReadFederationInit(_, _)
+            | DbActor.ReadFederationExpect(_, _) =>
           system.log.info("Received a ReadFederationMessage")
           system.log.info("Responding with an Ack")
 
           sender() ! DbActor.DbActorReadAck(Some(FederationExpectExample.EXPECT_MESSAGE))
 
-        case DbActor.DeleteFederationChallenge(_,_) =>
+        case DbActor.DeleteFederationChallenge(_, _) =>
           system.log.info("Received a DeleteFederationMessage")
           system.log.info("Responding with an Ack")
 
@@ -129,8 +129,8 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
   def mockDbWithNoneReadMessage: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActor.ReadFederationChallenge(_,_) | DbActor.ReadFederationInit(_,_)
-             | DbActor.ReadFederationExpect(_,_) =>
+        case DbActor.ReadFederationChallenge(_, _) | DbActor.ReadFederationInit(_, _)
+            | DbActor.ReadFederationExpect(_, _) =>
           system.log.info("Received a ReadFederationMessage")
           system.log.info("Responding with an Ack")
 
@@ -143,14 +143,14 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
   def mockDbDeleteMessagesFailed: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActor.ReadFederationChallenge(_,_) | DbActor.ReadFederationInit(_,_)
-             | DbActor.ReadFederationExpect(_,_) =>
+        case DbActor.ReadFederationChallenge(_, _) | DbActor.ReadFederationInit(_, _)
+            | DbActor.ReadFederationExpect(_, _) =>
           system.log.info("Received a ReadFederationMessage")
           system.log.info("Responding with an Ack")
 
           sender() ! DbActor.DbActorReadAck(Some(FederationExpectExample.EXPECT_MESSAGE))
 
-        case DbActor.DeleteFederationChallenge(_,_) =>
+        case DbActor.DeleteFederationChallenge(_, _) =>
           system.log.info("Received a DeleteFederationMessage")
           system.log.info("Responding with a Nack")
 
@@ -187,8 +187,8 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
 
           sender() ! DbActor.DbActorReadServerPrivateKeyAck(PRIVATE_KEY)
 
-        case DbActor.WriteFederationChallenge(_,_,_) | DbActor.WriteFederationInit(_,_,_)
-             | DbActor.WriteFederationExpect(_,_,_) | DbActor.WriteFederationResult(_,_,_) =>
+        case DbActor.WriteFederationChallenge(_, _, _) | DbActor.WriteFederationInit(_, _, _)
+            | DbActor.WriteFederationExpect(_, _, _) | DbActor.WriteFederationResult(_, _, _) =>
           system.log.info("Received a WriteFederationMessage")
           system.log.info("Responding with a Nack")
 

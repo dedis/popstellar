@@ -58,11 +58,11 @@ class FederationValidatorSuite extends TestKit(ActorSystem("FederationValidatorT
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
-        case DbActor.ReadFederationChallenge(_,_) =>
+        case DbActor.ReadFederationChallenge(_, _) =>
           sender() ! DbActor.DbActorReadAck(Some(CHALLENGE))
-        case DbActor.ReadFederationExpect(_,_) =>
+        case DbActor.ReadFederationExpect(_, _) =>
           sender() ! DbActor.DbActorReadAck(Some(EXPECT_MESSAGE))
-        case DbActor.ReadFederationInit(_,_) =>
+        case DbActor.ReadFederationInit(_, _) =>
           sender() ! DbActor.DbActorReadAck(Some(INIT_MESSAGE))
       }
 
@@ -77,11 +77,11 @@ class FederationValidatorSuite extends TestKit(ActorSystem("FederationValidatorT
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
-        case DbActor.ReadFederationChallenge(_,_) =>
+        case DbActor.ReadFederationChallenge(_, _) =>
           sender() ! DbActor.DbActorReadAck(Some(CHALLENGE))
-        case DbActor.ReadFederationExpect(_,_) =>
+        case DbActor.ReadFederationExpect(_, _) =>
           sender() ! DbActor.DbActorReadAck(Some(EXPECT_MESSAGE))
-        case DbActor.ReadFederationInit(_,_) =>
+        case DbActor.ReadFederationInit(_, _) =>
           sender() ! DbActor.DbActorReadAck(Some(INIT_MESSAGE))
       }
     })

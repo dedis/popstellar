@@ -1038,16 +1038,16 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val writeAnswer = Await.result(writeAsk, duration)
 
     writeAnswer shouldBe a[DbActor.DbActorAck]
-    
+
     val successReadAsk = dbActor ? DbActor.Read(channel.extractLaoChannel.get, message.message_id)
     val failingReadAsk = dbActor ? DbActor.Read(channel, message.message_id)
-    
+
     val successAnswer = Await.result(successReadAsk, duration)
     val failingAnswer = Await.result(failingReadAsk, duration)
-    
+
     val successMessage = successAnswer.asInstanceOf[DbActor.DbActorReadAck].message
     val failingMessage = failingAnswer.asInstanceOf[DbActor.DbActorReadAck].message
-    
+
     successMessage should equal(Some(message))
     failingMessage should equal(None)
   }
@@ -1070,19 +1070,17 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val message: Message = EXPECT_MESSAGE
     val writeAsk = dbActor ? DbActor.WriteFederationExpect(channel, laoId, message)
     val writeAnswer = Await.result(writeAsk, duration)
-    
+
     writeAnswer shouldBe a[DbActor.DbActorAck]
-    
+
     val readAsk = dbActor ? DbActor.ReadFederationExpect(channel, laoId)
     val readAnswer = Await.result(readAsk, duration)
-    
+
     val readMessage = readAnswer.asInstanceOf[DbActor.DbActorReadAck].message
 
     readMessage should equal(Some(message))
-    
 
   }
-  
 
   test("deleteFederationChallenge successfully deletes the message from the db") {
     val initialStorage = InMemoryStorage()

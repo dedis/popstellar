@@ -229,7 +229,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
         val expectedKey = message.decodedData.get.asInstanceOf[FederationExpect].publicKey
         checkMsgSenderKey(rpcMessage, expectedKey, msgSenderKey, error)
       case Success(DbActor.DbActorReadAck(None)) => Left(PipelineError(ErrorCodes.INVALID_ACTION.id, s"didn't receive federationExpect before", rpcMessage.getId))
-      case _                                                      => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Unexpected server behavior", rpcMessage.getId))
+      case _                                     => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Unexpected server behavior", rpcMessage.getId))
     }
 
   /** Checks if the challenge message sender in the federationResult message from server 2 to server 1 is the organizer expecting the federation and in case of success it also checks if the publicKey in the federationResult is the one of the organizer initiating the federation
@@ -263,7 +263,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
           case _         => Left(PipelineError(ErrorCodes.INVALID_ACTION.id, s"invalid status", rpcMessage.getId))
         }
       case Success(DbActor.DbActorReadAck(None)) => Left(PipelineError(ErrorCodes.INVALID_ACTION.id, s"didn't receive federationInit before", rpcMessage.getId))
-      case _                                                      => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Unexpected server behavior", rpcMessage.getId))
+      case _                                     => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Unexpected server behavior", rpcMessage.getId))
     }
 
   }
