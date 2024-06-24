@@ -17,7 +17,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike
 import org.scalatest.matchers.should.Matchers
 import util.examples.Federation.FederationExpectExample.EXPECT_MESSAGE
-import util.examples.Federation.FederationInitExample.{DATA_INIT_MESSAGE, INIT, INIT_MESSAGE, SENDER}
+import util.examples.Federation.FederationChallengeExample.CHALLENGE_MESSAGE
 import util.examples.MessageExample
 import util.examples.RollCall.{CreateRollCallExamples, OpenRollCallExamples}
 import util.examples.Rumor.RumorExample
@@ -35,7 +35,6 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
   val ELECTION_ID: Hash = Hash(Base64Data.encode("electionId"))
   val ELECTION_DATA_KEY: String = "Data:" + s"$ROOT_CHANNEL_PREFIX${LAO_ID.toString}/private/${ELECTION_ID.toString}"
   val KEYPAIR: KeyPair = KeyPair()
-  final val keys: (String, String, String) = ("expect", "init", "challenge")
   private val timeout = 3.second
 
   override def afterAll(): Unit = {
@@ -1028,84 +1027,84 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     Await.result(generateRumorState, duration) shouldBe DbActorGenerateRumorStateAns(List.empty)
   }
 
-  test("writeFederationMessage successfully add the message to the db") {
+  test("writeFederationExpect successfully adds the message to the db") {
     val initialStorage = InMemoryStorage()
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+    val laoId: Hash = Hash(Base64Data("lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA="))
+    val channel = Channel("/root/" + laoId.toString + "/federation")
 
     val message: Message = EXPECT_MESSAGE
-    val writeAsk = dbActor ? DbActor.WriteFederationMessage(keys._1, message)
+    val writeAsk = dbActor ? DbActor.WriteFederationExpect(channel, laoId, message)
     val writeAnswer = Await.result(writeAsk, duration)
 
     writeAnswer shouldBe a[DbActor.DbActorAck]
+    
+    val successReadAsk = dbActor ? DbActor.Read(channel.extractLaoChannel.get, message.message_id)
+    val failingReadAsk = dbActor ? DbActor.Read(channel, message.message_id)
+    
+    val successAnswer = Await.result(successReadAsk, duration)
+    val failingAnswer = Await.result(failingReadAsk, duration)
+    
+    val successMessage = successAnswer.asInstanceOf[DbActor.DbActorReadAck].message
+    val failingMessage = failingAnswer.asInstanceOf[DbActor.DbActorReadAck].message
+    
+    successMessage should equal(Some(message))
+    failingMessage should equal(None)
   }
 
-  test("readFederationMessage returns Some(message) if message exists in the db, None otherwise") {
+  test("can read and write a federation message correctly") {
     val initialStorage = InMemoryStorage()
-    initialStorage.write((keys._2, INIT_MESSAGE.toJsonString))
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+    val laoId: Hash = Hash(Base64Data("lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA="))
+    val channel = Channel("/root/" + laoId.toString + "/federation")
 
-    val readAsk = dbActor ? DbActor.ReadFederationMessage(keys._1)
+    val failingReadAsk = dbActor ? DbActor.ReadFederationInit(channel, laoId)
+    val failingReadAnswer = Await.result(failingReadAsk, duration)
+
+    failingReadAnswer shouldBe a[DbActor.DbActorReadAck]
+
+    val failingMessage: Option[Message] = failingReadAnswer.asInstanceOf[DbActor.DbActorReadAck].message
+
+    failingMessage should equal(None)
+
+    val message: Message = EXPECT_MESSAGE
+    val writeAsk = dbActor ? DbActor.WriteFederationExpect(channel, laoId, message)
+    val writeAnswer = Await.result(writeAsk, duration)
+    
+    writeAnswer shouldBe a[DbActor.DbActorAck]
+    
+    val readAsk = dbActor ? DbActor.ReadFederationExpect(channel, laoId)
     val readAnswer = Await.result(readAsk, duration)
+    
+    val readMessage = readAnswer.asInstanceOf[DbActor.DbActorReadAck].message
 
-    readAnswer shouldBe a[DbActor.DbActorReadFederationMessageAck]
-
-    val message: Option[Message] = readAnswer.asInstanceOf[DbActor.DbActorReadFederationMessageAck].message
-
-    message should equal(None)
-
-    val read = dbActor ? DbActor.ReadFederationMessage(keys._2)
-    val answer = Await.result(read, duration)
-
-    answer shouldBe a[DbActor.DbActorReadFederationMessageAck]
-
-    val message_ : Option[Message] = answer.asInstanceOf[DbActor.DbActorReadFederationMessageAck].message
-
-    message_.get.sender should equal(SENDER)
-    message_.get.data should equal(DATA_INIT_MESSAGE.base64Data)
-    message_.get.decodedData should equal(Some(INIT))
+    readMessage should equal(Some(message))
+    
 
   }
+  
 
-  test("can WriteFederationMessage and then ReadFederationMessage correctly") {
+  test("deleteFederationChallenge successfully deletes the message from the db") {
     val initialStorage = InMemoryStorage()
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+    val channel = Channel("/root/" + LAO_ID.toString + "/federation")
 
-    val writeAsk = dbActor ? DbActor.WriteFederationMessage(keys._2, INIT_MESSAGE)
+    val writeAsk = dbActor ? DbActor.WriteFederationChallenge(channel, LAO_ID, CHALLENGE_MESSAGE)
     val writeAnswer = Await.result(writeAsk, duration)
 
     writeAnswer shouldBe a[DbActor.DbActorAck]
 
-    val readAsk = dbActor ? DbActor.ReadFederationMessage(keys._2)
-    val readAnswer = Await.result(readAsk, duration)
-
-    readAnswer shouldBe a[DbActor.DbActorReadFederationMessageAck]
-
-    val message: Option[Message] = readAnswer.asInstanceOf[DbActor.DbActorReadFederationMessageAck].message
-    message.get.sender should equal(SENDER)
-    message.get.data should equal(DATA_INIT_MESSAGE.base64Data)
-
-  }
-
-  test("deleteFederationMessage successfully deletes the message from the db") {
-    val initialStorage = InMemoryStorage()
-    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
-
-    val writeAsk = dbActor ? DbActor.WriteFederationMessage(keys._2, INIT_MESSAGE)
-    val writeAnswer = Await.result(writeAsk, duration)
-
-    writeAnswer shouldBe a[DbActor.DbActorAck]
-
-    val deleteAsk = dbActor ? DbActor.DeleteFederationMessage(keys._2)
+    val deleteAsk = dbActor ? DbActor.DeleteFederationChallenge(channel, LAO_ID)
     val deleteAnswer = Await.result(deleteAsk, duration)
 
     deleteAnswer shouldBe a[DbActor.DbActorAck]
 
-    val askAgain = dbActor ? DbActor.ReadFederationMessage(keys._2)
+    val askAgain = dbActor ? DbActor.ReadFederationChallenge(channel, LAO_ID)
     val answer = Await.result(askAgain, duration)
 
-    answer shouldBe a[DbActor.DbActorReadFederationMessageAck]
+    answer shouldBe a[DbActor.DbActorReadAck]
 
-    val message: Option[Message] = answer.asInstanceOf[DbActor.DbActorReadFederationMessageAck].message
+    val message: Option[Message] = answer.asInstanceOf[DbActor.DbActorReadAck].message
 
     message should equal(None)
 

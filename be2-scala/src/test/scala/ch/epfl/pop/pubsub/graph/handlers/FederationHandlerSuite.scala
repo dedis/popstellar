@@ -67,7 +67,8 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
 
           sender() ! Status.Failure(DbActorNAckException(1, "error"))
 
-        case DbActor.ReadFederationMessage(_) =>
+        case DbActor.ReadFederationChallenge(_,_) | DbActor.ReadFederationInit(_,_)
+             | DbActor.ReadFederationExpect(_,_) =>
           system.log.info("Received a ReadFederationMessage")
           system.log.info("Responding with a Nack")
 
@@ -89,19 +90,21 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
   def mockDbWithAck: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActor.WriteFederationMessage(_, _) =>
+        case DbActor.WriteFederationChallenge(_,_,_) | DbActor.WriteFederationInit(_,_,_)
+             | DbActor.WriteFederationExpect(_,_,_) | DbActor.WriteFederationResult(_,_,_) =>
           system.log.info("Received a WriteFederationMessage")
           system.log.info("Responding with an Ack")
 
           sender() ! DbActor.DbActorAck()
 
-        case DbActor.ReadFederationMessage(_) =>
+        case DbActor.ReadFederationChallenge(_,_) | DbActor.ReadFederationInit(_,_)
+             | DbActor.ReadFederationExpect(_,_) =>
           system.log.info("Received a ReadFederationMessage")
           system.log.info("Responding with an Ack")
 
-          sender() ! DbActor.DbActorReadFederationMessageAck(Some(FederationExpectExample.EXPECT_MESSAGE))
+          sender() ! DbActor.DbActorReadAck(Some(FederationExpectExample.EXPECT_MESSAGE))
 
-        case DbActor.DeleteFederationMessage(_) =>
+        case DbActor.DeleteFederationChallenge(_,_) =>
           system.log.info("Received a DeleteFederationMessage")
           system.log.info("Responding with an Ack")
 
@@ -126,11 +129,12 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
   def mockDbWithNoneReadMessage: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActor.ReadFederationMessage(_) =>
+        case DbActor.ReadFederationChallenge(_,_) | DbActor.ReadFederationInit(_,_)
+             | DbActor.ReadFederationExpect(_,_) =>
           system.log.info("Received a ReadFederationMessage")
           system.log.info("Responding with an Ack")
 
-          sender() ! DbActor.DbActorReadFederationMessageAck(None)
+          sender() ! DbActor.DbActorReadAck(None)
       }
     })
     system.actorOf(dbActorMock)
@@ -139,13 +143,14 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
   def mockDbDeleteMessagesFailed: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActor.ReadFederationMessage(_) =>
+        case DbActor.ReadFederationChallenge(_,_) | DbActor.ReadFederationInit(_,_)
+             | DbActor.ReadFederationExpect(_,_) =>
           system.log.info("Received a ReadFederationMessage")
           system.log.info("Responding with an Ack")
 
-          sender() ! DbActor.DbActorReadFederationMessageAck(Some(FederationExpectExample.EXPECT_MESSAGE))
+          sender() ! DbActor.DbActorReadAck(Some(FederationExpectExample.EXPECT_MESSAGE))
 
-        case DbActor.DeleteFederationMessage(_) =>
+        case DbActor.DeleteFederationChallenge(_,_) =>
           system.log.info("Received a DeleteFederationMessage")
           system.log.info("Responding with a Nack")
 
@@ -182,7 +187,8 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
 
           sender() ! DbActor.DbActorReadServerPrivateKeyAck(PRIVATE_KEY)
 
-        case DbActor.WriteFederationMessage(_, _) =>
+        case DbActor.WriteFederationChallenge(_,_,_) | DbActor.WriteFederationInit(_,_,_)
+             | DbActor.WriteFederationExpect(_,_,_) | DbActor.WriteFederationResult(_,_,_) =>
           system.log.info("Received a WriteFederationMessage")
           system.log.info("Responding with a Nack")
 
@@ -212,7 +218,7 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
     system.stop(mockedDB.actorRef)
   }
 
-  test("FederationChallenge should fail if we fail to delete the challenge and expect messages previously stored in the database") {
+  test("FederationChallenge should fail if we fail to delete the challenge message previously stored in the database") {
     val mockedDB = mockDbDeleteMessagesFailed
     val rc = new FederationHandler(mockedDB, mockMed, mockConMed)
     val request = FederationChallengeMessages.federationChallenge
@@ -222,7 +228,7 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
     system.stop(mockedDB.actorRef)
   }
 
-  test("FederationChallenge should succeed if we succeed to read federationExpect from the database and delete the messages") {
+  test("FederationChallenge should succeed if we succeed to read federationExpect from the database and delete the challenge message") {
     val mockedDB = mockDbWithAck
     val rc = new FederationHandler(mockedDB, mockMed, mockConMed)
     val request = FederationChallengeMessages.federationChallenge
@@ -302,17 +308,7 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
     system.stop(mockedDB.actorRef)
   }
 
-  test("FederationResult should fail if we fail to delete the init message from the database") {
-    val mockedDB = mockDbDeleteMessagesFailed
-    val rc = new FederationHandler(mockedDB, mockMed, mockConMed)
-    val request = FederationResultMessages.federationResult
-
-    rc.handleFederationResult(request) shouldBe an[Left[PipelineError, _]]
-
-    system.stop(mockedDB.actorRef)
-  }
-
-  test("FederationResult should succeed if we succeed to delete the init message from the database") {
+  test("FederationResult should succeed if we succeed to store the result message in the database and broadcast it") {
     val mockedDB = mockDbWithAck
     val rc = new FederationHandler(mockedDB, mockMed, mockConMed)
     val request = FederationResultMessages.federationResult
@@ -321,4 +317,5 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
 
     system.stop(mockedDB.actorRef)
   }
+
 }

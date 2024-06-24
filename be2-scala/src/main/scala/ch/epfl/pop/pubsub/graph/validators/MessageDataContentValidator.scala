@@ -206,6 +206,20 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
   final def validateWitnessSignatures(witnessesKeyPairs: List[WitnessSignaturePair], data: Hash): Boolean =
     witnessesKeyPairs.forall(wsp => wsp.verify(data))
 
+  private def validateChallenge(rpcMessage: JsonRpcRequest, actualChallenge: FederationChallenge, expectedChallenge: FederationChallenge, error: PipelineError): GraphMessage = {
+    if (actualChallenge.value.equals(expectedChallenge.value) && actualChallenge.validUntil == expectedChallenge.validUntil)
+      Right(rpcMessage)
+    else
+      Left(error)
+  }
+
+  private def extractData(rpcMessage: JsonRpcRequest, message: Message): (FederationChallenge, Channel, Hash) = {
+    val challenge = FederationChallenge.buildFromJson(message.data.decodeToString())
+    val channel = rpcMessage.getParamsChannel
+    val laoId = rpcMessage.extractLaoId
+    (challenge, channel, laoId)
+  }
+
   /** Checks if the challenge in the federationExpect message is the same challenge stored in the db
     * @param rpcMessage
     *   the rpcMessage to validate
@@ -216,15 +230,19 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     * @param error
     *   the error to forward in case of invalid challenge
     * @return
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
     */
   final def checkExpectChallenge(rpcMessage: JsonRpcRequest, federationExpect: FederationExpect, dbActor: AskableActorRef, error: PipelineError): GraphMessage = {
-    val challengeMessage: Message = federationExpect.challenge
-    val challengeExpect: FederationChallenge = FederationChallenge.buildFromJson(challengeMessage.data.decodeToString())
+    val (challengeExpect, channel, laoId) = extractData(rpcMessage, federationExpect.challenge)
+    val ask = dbActor ? DbActor.ReadFederationChallenge(channel, laoId)
+    Await.ready(ask, duration).value.get match {
+      case Success(DbActor.DbActorReadAck(Some(message))) =>
+        val challenge = FederationChallenge.buildFromJson(message.data.decodeToString())
+        validateChallenge(rpcMessage, challenge, challengeExpect, error)
 
-    if (validateChallengeMessage(dbActor, "challenge", challengeExpect))
-      Right(rpcMessage)
-    else
-      Left(error)
+      case Success(DbActor.DbActorReadAck(None)) => Left(error)
+      case _                                                      => Left(error)
+    }
   }
 
   /** Checks if the challenge in the federationResult message matches the challenge in the federationInit message
@@ -237,34 +255,19 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     * @param error
     *   the error to forward in case of invalid challenge
     * @return
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
     */
   final def checkInitChallenge(rpcMessage: JsonRpcRequest, federationResult: FederationResult, dbActor: AskableActorRef, error: PipelineError): GraphMessage = {
-    val challengeMessage: Message = federationResult.challenge
-    val challengeResult: FederationChallenge = FederationChallenge.buildFromJson(challengeMessage.data.decodeToString())
-
-    if (validateChallengeMessage(dbActor, "init", challengeResult))
-      Right(rpcMessage)
-    else
-      Left(error)
-  }
-
-  private def getChallenge(data: String, messageType: String): FederationChallenge = {
-    messageType match {
-      case "init" =>
-        val init = FederationInit.buildFromJson(data)
-        FederationChallenge.buildFromJson(init.challenge.data.decodeToString())
-      case "challenge" =>
-        FederationChallenge.buildFromJson(data)
-    }
-  }
-  private def validateChallengeMessage(dbActor: AskableActorRef, messageType: String, receivedChallenge: FederationChallenge): Boolean = {
-    val ask = dbActor ? DbActor.ReadFederationMessage(messageType)
+    val (challengeResult, channel, laoId) = extractData(rpcMessage, federationResult.challenge)
+    val ask = dbActor ? DbActor.ReadFederationInit(channel, laoId)
     Await.ready(ask, duration).value.get match {
-      case Success(DbActor.DbActorReadFederationMessageAck(Some(message))) =>
-        val challenge = getChallenge(message.data.decodeToString(), messageType)
-        challenge.value.equals(receivedChallenge.value) && challenge.validUntil == receivedChallenge.validUntil
-      case Success(DbActor.DbActorReadFederationMessageAck(None)) => false
-      case _                                                      => false
+      case Success(DbActor.DbActorReadAck(Some(message))) =>
+        val init = FederationInit.buildFromJson(message.data.decodeToString())
+        val challenge = FederationChallenge.buildFromJson(init.challenge.data.decodeToString())
+        validateChallenge(rpcMessage, challenge, challengeResult, error)
+
+      case Success(DbActor.DbActorReadAck(None)) => Left(error)
+      case _                                                      => Left(error)
     }
   }
 

@@ -13,6 +13,10 @@ trait Storage {
   final val SERVER_PRIVATE_KEY = "ServerPrivateKey:"
   final val RUMOR_KEY = "Rumor:"
   final val DEFAULT = "Default:"
+  final val FEDERATION_CHALLENGE_KEY = "FederationChallenge:"
+  final val FEDERATION_EXPECT_KEY = "FederationExpect:"
+  final val FEDERATION_INIT_KEY = "FederationInit:"
+  final val FEDERATION_RESULT_KEY = "FederationResult:"
 
   /** Optionally returns the value associated with a key
     *
