@@ -10,6 +10,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.federation.
 import com.github.dedis.popstellar.model.network.method.message.data.federation.ChallengeRequest
 import com.github.dedis.popstellar.model.network.method.message.data.federation.FederationExpect
 import com.github.dedis.popstellar.model.network.method.message.data.federation.FederationInit
+import com.github.dedis.popstellar.model.network.method.message.data.federation.TokensExchange
 import com.github.dedis.popstellar.model.objects.view.LaoView
 import com.github.dedis.popstellar.model.qrcode.FederationDetails
 import com.github.dedis.popstellar.repository.LAORepository
@@ -23,6 +24,7 @@ import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
+import java.time.Instant
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
@@ -137,6 +139,31 @@ constructor(
     )
   }
 
+  /**
+   * Sends a Token Exchange data
+   *
+   * @param remoteLaoId ID of the remote LAO
+   * @param rollCallId ID of the rollCall of the remote LAO
+   * @param attendees array with the token of each attendee
+   */
+  fun sendTokensExchange(
+      remoteLaoId: String,
+      rollCallId: String,
+      attendees: Array<String>
+  ): Completable {
+    val laoView: LaoView =
+        try {
+          laoRepo.getLaoView(laoId)
+        } catch (e: UnknownLaoException) {
+          ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception)
+          return Completable.error(UnknownLaoException())
+        }
+    val timestamp = Instant.now().epochSecond
+    val tokensExchange = TokensExchange(remoteLaoId, rollCallId, attendees, timestamp)
+    return networkManager.messageSender.publish(
+        keyManager.mainKeyPair, laoView.channel.subChannel(FEDERATION), tokensExchange)
+  }
+
   fun getChallenge(): Challenge? {
     return linkedOrgRepo.getChallenge()
   }
@@ -165,6 +192,20 @@ constructor(
 
   fun doWhenLinkedLaosIsUpdated(function: (MutableMap<String, Array<String>>) -> Unit) {
     linkedOrgRepo.setOnLinkedLaosUpdatedCallback(function)
+  }
+
+  fun setLinkedLaosNotifyFunction() {
+    linkedOrgRepo.setNewTokensNotifyFunction { otherLaoId, rollCallId, tokens ->
+      disposables.add(
+          sendTokensExchange(otherLaoId, rollCallId, tokens)
+              .subscribe(
+                  { ErrorUtils.logAndShow(getApplication(), TAG, R.string.tokens_exchange_sent) },
+                  { error: Throwable ->
+                    ErrorUtils.logAndShow(
+                        getApplication(), TAG, error, R.string.error_sending_tokens_exchange)
+                  },
+              ))
+    }
   }
 
   override fun handleData(data: String?) {

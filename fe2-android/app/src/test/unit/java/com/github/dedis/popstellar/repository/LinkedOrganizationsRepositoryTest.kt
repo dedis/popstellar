@@ -63,8 +63,9 @@ class LinkedOrganizationsRepositoryTest {
     fun handlerAndRepoTest() {
         val mockLaoRepo = Mockito.mock(LAORepository::class.java)
         val mockContext = Mockito.mock(HandlerContext::class.java)
+        val mockRollCallRepo = Mockito.mock(RollCallRepository::class.java)
         REPO.flush()
-        val handler = LinkedOrganizationsHandler(mockLaoRepo, REPO)
+        val handler = LinkedOrganizationsHandler(mockLaoRepo, REPO, mockRollCallRepo)
         handler.handleChallenge(mockContext, CHALLENGE)
         Assert.assertEquals(CHALLENGE, REPO.getChallenge())
     }

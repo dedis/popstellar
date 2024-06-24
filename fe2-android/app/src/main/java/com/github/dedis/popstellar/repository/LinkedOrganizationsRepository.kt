@@ -15,6 +15,7 @@ class LinkedOrganizationsRepository @Inject constructor() {
   private var onChallengeUpdatedCallback: ((Challenge) -> Unit)? = null
   private var linkedLaos: MutableMap<String, Array<String>> = mutableMapOf()
   private var onLinkedLaosUpdatedCallback: ((MutableMap<String, Array<String>>) -> Unit)? = null
+  private var newTokensNotifyFunction: ((String, String, Array<String>) -> Unit)? = null
   var otherLaoId: String? = null
   var otherServerAddr: String? = null
   var otherPublicKey: String? = null
@@ -37,8 +38,18 @@ class LinkedOrganizationsRepository @Inject constructor() {
     onLinkedLaosUpdatedCallback?.invoke(linkedLaos)
   }
 
+  fun updateAndNotifyLinkedLao(lao_id: String, tokens: Array<String>, rollCallId: String) {
+    linkedLaos[lao_id] = tokens
+    newTokensNotifyFunction?.invoke(lao_id, rollCallId, tokens)
+    onLinkedLaosUpdatedCallback?.invoke(linkedLaos)
+  }
+
   fun setOnLinkedLaosUpdatedCallback(callback: (MutableMap<String, Array<String>>) -> Unit) {
     onLinkedLaosUpdatedCallback = callback
+  }
+
+  fun setNewTokensNotifyFunction(function: (String, String, Array<String>) -> Unit) {
+    newTokensNotifyFunction = function
   }
 
   fun getLinkedLaos(): MutableMap<String, Array<String>> {

@@ -69,6 +69,7 @@ class LinkedOrganizationsFragment : Fragment() {
       }
     }
 
+    linkedOrganizationsViewModel.setLinkedLaosNotifyFunction()
     handleBackNav()
 
     return binding.root
@@ -117,7 +118,7 @@ class LinkedOrganizationsFragment : Fragment() {
 
   private fun displayLinkedOrganizations(laos: Set<String>) {
     if (laos.isNotEmpty()) {
-      val laosText = laos.joinToString(separator = "\n\n - ")
+      val laosText = laos.joinToString(separator = "\n\n")
       val textToDisplay = context?.getString(R.string.list_organizations, laosText)
       binding.noOrganizationsText.visibility = View.GONE
       binding.listOrganizationsText.visibility = View.VISIBLE
