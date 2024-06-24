@@ -232,7 +232,7 @@ func (h *Hub) NotifyNewServer(socket socket.Socket) {
 }
 
 func (h *Hub) Start() {
-	h.wg.Add(3)
+	h.wg.Add(4)
 	go h.runHeartbeat()
 	go h.runRumorSender()
 	go h.runMessageReceiver()
