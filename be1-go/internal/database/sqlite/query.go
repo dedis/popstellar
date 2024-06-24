@@ -3,7 +3,6 @@ package sqlite
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
@@ -473,7 +472,6 @@ func (s *SQLite) GetAllRumors() ([]mrumor.Rumor, error) {
 		}
 		var timestamp mrumor.RumorTimestamp
 		if err = json.Unmarshal(timestampByte, &timestamp); err != nil {
-			fmt.Println("timestampByte")
 			return nil, poperrors.NewInternalServerError("failed to unmarshal timestamp: %v", err)
 		}
 
