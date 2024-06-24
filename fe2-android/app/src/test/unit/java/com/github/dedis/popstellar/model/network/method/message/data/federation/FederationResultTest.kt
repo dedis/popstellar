@@ -1,8 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.federation
 
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral
 import com.github.dedis.popstellar.model.network.method.message.data.Action
 import com.github.dedis.popstellar.model.network.method.message.data.Objects
 import com.github.dedis.popstellar.testutils.Base64DataUtils
+import com.google.gson.Gson
 import org.junit.Assert
 import org.junit.Assert.assertThrows
 import org.junit.Test
@@ -30,8 +32,8 @@ class FederationResultTest {
 
     @Test
     fun resultChallengeTest() {
-        Assert.assertEquals(CHALLENGE, RESULT_SUCCESS.challenge)
-        Assert.assertEquals(CHALLENGE, RESULT_FAILURE.challenge)
+        Assert.assertEquals(MG_CHALLENGE, RESULT_SUCCESS.challenge)
+        Assert.assertEquals(MG_CHALLENGE, RESULT_FAILURE.challenge)
     }
 
     @Test
@@ -48,9 +50,9 @@ class FederationResultTest {
 
     @Test
     fun resultEqualsTest() {
-        val result2 = FederationResult(SUCCESS, publicKey = PK.encoded, challenge = CHALLENGE)
-        val result3 = FederationResult(FAILURE, reason = REASON, challenge = CHALLENGE)
-        val result4 = FederationResult(FAILURE, reason = "reason2", challenge = CHALLENGE)
+        val result2 = FederationResult(SUCCESS, publicKey = PK.encoded, challenge = MG_CHALLENGE)
+        val result3 = FederationResult(FAILURE, reason = REASON, challenge = MG_CHALLENGE)
+        val result4 = FederationResult(FAILURE, reason = "reason2", challenge = MG_CHALLENGE)
         Assert.assertEquals(RESULT_SUCCESS, result2)
         Assert.assertEquals(RESULT_SUCCESS, RESULT_SUCCESS)
         Assert.assertEquals(RESULT_SUCCESS.hashCode().toLong(), result2.hashCode().toLong())
@@ -70,11 +72,11 @@ class FederationResultTest {
     @Test
     fun resultToStringTest() {
         Assert.assertEquals(
-                "FederationResult{status='$SUCCESS', public_key='${PK.encoded}', challenge='$CHALLENGE'}",
+                "FederationResult{status='$SUCCESS', public_key='${PK.encoded}', challenge='$MG_CHALLENGE'}",
                 RESULT_SUCCESS.toString()
         )
         Assert.assertEquals(
-                "FederationResult{status='$FAILURE', reason='$REASON', challenge='$CHALLENGE'}",
+                "FederationResult{status='$FAILURE', reason='$REASON', challenge='$MG_CHALLENGE'}",
                 RESULT_FAILURE.toString()
         )
     }
@@ -82,7 +84,7 @@ class FederationResultTest {
     @Test
     fun invalidMessageTypeTest() {
         val exception = assertThrows(IllegalArgumentException::class.java) {
-            FederationResult("invalid", challenge = CHALLENGE)
+            FederationResult("invalid", challenge = MG_CHALLENGE)
         }
         assert(exception.message == "Status must be either 'failure' or 'success'.")
     }
@@ -90,7 +92,7 @@ class FederationResultTest {
     @Test
     fun invalidSuccessTest1() {
         val exception = assertThrows(IllegalArgumentException::class.java) {
-            FederationResult(SUCCESS, challenge = CHALLENGE)
+            FederationResult(SUCCESS, challenge = MG_CHALLENGE)
         }
         assert(exception.message == "Public key must be provided for success status.")
     }
@@ -98,7 +100,7 @@ class FederationResultTest {
     @Test
     fun invalidSuccessTest2() {
         val exception = assertThrows(IllegalArgumentException::class.java) {
-            FederationResult(SUCCESS, publicKey = PK.encoded, reason = "reason", challenge = CHALLENGE)
+            FederationResult(SUCCESS, publicKey = PK.encoded, reason = "reason", challenge = MG_CHALLENGE)
         }
         assert(exception.message == "Reason must be null for success status.")
     }
@@ -106,7 +108,7 @@ class FederationResultTest {
     @Test
     fun invalidFailureTest1() {
         val exception = assertThrows(IllegalArgumentException::class.java) {
-            FederationResult(FAILURE, challenge = CHALLENGE)
+            FederationResult(FAILURE, challenge = MG_CHALLENGE)
         }
         assert(exception.message == "Reason must be provided for failure status.")
     }
@@ -114,7 +116,7 @@ class FederationResultTest {
     @Test
     fun invalidFailureTest2() {
         val exception = assertThrows(IllegalArgumentException::class.java) {
-            FederationResult(FAILURE, publicKey = PK.encoded, reason = "reason", challenge = CHALLENGE)
+            FederationResult(FAILURE, publicKey = PK.encoded, reason = "reason", challenge = MG_CHALLENGE)
         }
         assert(exception.message == "Public key must be null for failure status.")
     }
@@ -125,10 +127,11 @@ class FederationResultTest {
         private val TIMESTAMP = Instant.now().epochSecond
         private const val CHALLENGE_VALUE = "1feb2a2c7c739ea25f2568d056cc82d11be65d361511872cd35e4abd1a20f3d4"
         private val CHALLENGE = Challenge(CHALLENGE_VALUE, TIMESTAMP)
+        private val MG_CHALLENGE = MessageGeneral(Base64DataUtils.generateKeyPair(), CHALLENGE, Gson())
         private val SUCCESS = "success"
         private val FAILURE = "failure"
         private val REASON = "reason"
-        private val RESULT_SUCCESS = FederationResult(SUCCESS, publicKey = PK.encoded, challenge = CHALLENGE)
-        private val RESULT_FAILURE = FederationResult(FAILURE, reason = REASON, challenge = CHALLENGE)
+        private val RESULT_SUCCESS = FederationResult(SUCCESS, publicKey = PK.encoded, challenge = MG_CHALLENGE)
+        private val RESULT_FAILURE = FederationResult(FAILURE, reason = REASON, challenge = MG_CHALLENGE)
     }
 }

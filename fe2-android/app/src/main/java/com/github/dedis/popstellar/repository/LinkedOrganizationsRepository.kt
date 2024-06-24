@@ -13,16 +13,12 @@ import javax.inject.Singleton
 class LinkedOrganizationsRepository @Inject constructor() {
   private var challenge: Challenge? = null
   private var onChallengeUpdatedCallback: ((Challenge) -> Unit)? = null
+  private var linkedLaos: MutableMap<String, Array<String>> = mutableMapOf()
+  private var onLinkedLaosUpdatedCallback: ((MutableMap<String, Array<String>>) -> Unit)? = null
   var otherLaoId: String? = null
   var otherServerAddr: String? = null
   var otherPublicKey: String? = null
-  var linkedLaos: MutableMap<String, Array<String>> = mutableMapOf()
 
-  /**
-   * Updates the challenge
-   *
-   * @param challenge the new Challenge
-   */
   fun updateChallenge(challenge: Challenge) {
     this.challenge = challenge
     onChallengeUpdatedCallback?.invoke(challenge)
@@ -38,6 +34,15 @@ class LinkedOrganizationsRepository @Inject constructor() {
 
   fun addLinkedLao(lao_id: String, tokens: Array<String>) {
     linkedLaos[lao_id] = tokens
+    onLinkedLaosUpdatedCallback?.invoke(linkedLaos)
+  }
+
+  fun setOnLinkedLaosUpdatedCallback(callback: (MutableMap<String, Array<String>>) -> Unit) {
+    onLinkedLaosUpdatedCallback = callback
+  }
+
+  fun getLinkedLaos(): MutableMap<String, Array<String>> {
+    return linkedLaos
   }
 
   fun flush() {

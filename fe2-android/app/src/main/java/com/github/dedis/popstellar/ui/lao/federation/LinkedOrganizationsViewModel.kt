@@ -142,7 +142,7 @@ constructor(
   }
 
   fun getLinkedLaosMap(): Map<String, Array<String>> {
-    return linkedOrgRepo.linkedLaos
+    return linkedOrgRepo.getLinkedLaos()
   }
 
   fun isRepositoryValid(): Boolean {
@@ -161,6 +161,10 @@ constructor(
 
   fun doWhenChallengeIsReceived(function: (Challenge) -> Unit) {
     linkedOrgRepo.setOnChallengeUpdatedCallback(function)
+  }
+
+  fun doWhenLinkedLaosIsUpdated(function: (MutableMap<String, Array<String>>) -> Unit) {
+    linkedOrgRepo.setOnLinkedLaosUpdatedCallback(function)
   }
 
   override fun handleData(data: String?) {
@@ -183,6 +187,11 @@ constructor(
           return
         }
 
+    // Saving the other organization details to the repository
+    linkedOrgRepo.otherLaoId = federationDetails.laoId
+    linkedOrgRepo.otherServerAddr = federationDetails.serverAddress
+    linkedOrgRepo.otherPublicKey = federationDetails.publicKey
+
     if (federationDetails.challenge == null) {
       // The federationDetails object is sent by the invitation creator
       disposables.add(
@@ -200,9 +209,6 @@ constructor(
               ))
     } else {
       // The federationDetails object is sent by the one who joins the invitation
-      linkedOrgRepo.otherLaoId = federationDetails.laoId
-      linkedOrgRepo.otherServerAddr = federationDetails.serverAddress
-      linkedOrgRepo.otherPublicKey = federationDetails.publicKey
       linkedOrgRepo.updateChallenge(federationDetails.challenge)
     }
     connecting.set(false)

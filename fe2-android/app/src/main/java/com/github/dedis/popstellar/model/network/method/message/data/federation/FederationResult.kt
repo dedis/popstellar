@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.federation
 
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral
 import com.github.dedis.popstellar.model.network.method.message.data.Action
 import com.github.dedis.popstellar.model.network.method.message.data.Data
 import com.github.dedis.popstellar.model.network.method.message.data.Objects
@@ -19,7 +20,7 @@ class FederationResult
     val status: String,
     val reason: String? = null,
     @SerializedName("public_key") val publicKey: String? = null,
-    val challenge: Challenge,
+    val challenge: MessageGeneral,
 ) : Data {
 
   init {
