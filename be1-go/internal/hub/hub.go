@@ -29,7 +29,6 @@ import (
 	"popstellar/internal/handler/method/rumor/hrumor"
 	"popstellar/internal/handler/method/rumor/mrumor"
 	"popstellar/internal/handler/method/rumorstate/hrumorstate"
-	"popstellar/internal/handler/method/rumorstate/mrumorstate"
 	"popstellar/internal/handler/method/subscribe/hsubscribe"
 	"popstellar/internal/handler/method/unsubscribe/hunsubscribe"
 	"popstellar/internal/handler/query/hquery"
@@ -53,15 +52,9 @@ type Subscribers interface {
 	UnsubscribeFromAll(socketID string)
 }
 
-type Queries interface {
-	GetNextID() int
-	AddRumorState(id int) error
-}
-
 type Sockets interface {
 	Upsert(socket socket.Socket)
 	SendToAll(buf []byte)
-	SendToRandom(buf []byte)
 }
 
 type Repository interface {
@@ -85,6 +78,10 @@ type RumorSender interface {
 	SendRumor(socket socket.Socket, rumor mrumor.Rumor)
 }
 
+type RumorStateSender interface {
+	SendRumorState() error
+}
+
 type Hub struct {
 	wg               *sync.WaitGroup
 	messageChan      chan socket.IncomingMessage
@@ -95,7 +92,6 @@ type Hub struct {
 	// in memory states
 	subs    Subscribers
 	sockets Sockets
-	queries Queries
 
 	// database
 	db Repository
@@ -104,6 +100,7 @@ type Hub struct {
 	jsonRpcHandler    JsonRpcHandler
 	greetserverSender GreetServerSender
 	rumorSender       RumorSender
+	rumorStateSender  RumorStateSender
 
 	log zerolog.Logger
 }
@@ -189,7 +186,7 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	rumorHandler := hrumor.New(queries, sockets, &db, msgHandler, log)
 
 	// Create the rumor state handler
-	rumorStateHandler := hrumorstate.New(&db, log)
+	rumorStateHandler := hrumorstate.New(queries, sockets, &db, log)
 
 	// Create the query handler
 	methodHandlers := make(hquery.MethodHandlers)
@@ -222,12 +219,12 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 		stop:              hubParams.GetStopChan(),
 		resetRumorSender:  hubParams.GetResetRumorSender(),
 		subs:              subs,
-		queries:           queries,
 		sockets:           sockets,
 		db:                &db,
 		jsonRpcHandler:    jsonRpcHandler,
 		greetserverSender: greetserverHandler,
 		rumorSender:       rumorHandler,
+		rumorStateSender:  rumorStateHandler,
 		log:               log.With().Str("module", "hub").Logger(),
 	}
 
@@ -400,7 +397,7 @@ func (h *Hub) runRumorState() {
 	for {
 		select {
 		case <-ticker.C:
-			err := h.sendRumorState()
+			err := h.rumorStateSender.SendRumorState()
 			if err != nil {
 				h.log.Error().Err(err).Msg("")
 			}
@@ -408,37 +405,4 @@ func (h *Hub) runRumorState() {
 			return
 		}
 	}
-}
-
-func (h *Hub) sendRumorState() error {
-	timestamp, err := h.db.GetRumorTimestamp()
-	if err != nil {
-		return err
-	}
-
-	rumorStateMessage := mrumorstate.RumorState{
-		Base: mquery.Base{
-			JSONRPCBase: mjsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: "rumor_state",
-		},
-		Params: mrumorstate.RumorStateParams{
-			State: timestamp,
-		},
-	}
-
-	buf, err := json.Marshal(rumorStateMessage)
-	if err != nil {
-		return poperrors.NewJsonMarshalError(err.Error())
-	}
-
-	id := h.queries.GetNextID()
-	err = h.queries.AddRumorState(id)
-	if err != nil {
-		return err
-	}
-
-	h.sockets.SendToRandom(buf)
-	return nil
 }

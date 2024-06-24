@@ -2,11 +2,12 @@ package hrumorstate
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/rs/zerolog"
 	"popstellar/internal/errors"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/method/rumor/mrumor"
 	"popstellar/internal/handler/method/rumorstate/mrumorstate"
+	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
 	"sort"
 )
@@ -16,15 +17,28 @@ type Repository interface {
 	GetAllRumors() ([]mrumor.Rumor, error)
 }
 
-type Handler struct {
-	db  Repository
-	log zerolog.Logger
+type Queries interface {
+	GetNextID() int
+	AddRumorState(id int) error
 }
 
-func New(db Repository, log zerolog.Logger) *Handler {
+type Sockets interface {
+	SendToRandom(buf []byte)
+}
+
+type Handler struct {
+	queries Queries
+	sockets Sockets
+	db      Repository
+	log     zerolog.Logger
+}
+
+func New(queries Queries, sockets Sockets, db Repository, log zerolog.Logger) *Handler {
 	return &Handler{
-		db:  db,
-		log: log.With().Str("module", "rumorstate").Logger(),
+		queries: queries,
+		sockets: sockets,
+		db:      db,
+		log:     log.With().Str("module", "rumor_state").Logger(),
 	}
 }
 
@@ -37,8 +51,6 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 
 	myRumors, err := h.db.GetAllRumors()
 	rumors := make([]mrumor.Rumor, 0)
-
-	fmt.Println("AAAA")
 
 	for _, rumor := range myRumors {
 		if rumor.Params.Timestamp.IsBefore(rumorState.Params.State) {
@@ -53,7 +65,40 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 
 	socket.SendRumorStateAnswer(rumorState.ID, rumors)
 
-	fmt.Println("BBBB")
-
 	return nil, nil
+}
+
+func (h *Handler) SendRumorState() error {
+	timestamp, err := h.db.GetRumorTimestamp()
+	if err != nil {
+		return err
+	}
+
+	id := h.queries.GetNextID()
+
+	rumorStateMessage := mrumorstate.RumorState{
+		Base: mquery.Base{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "rumor_state",
+		},
+		ID: id,
+		Params: mrumorstate.RumorStateParams{
+			State: timestamp,
+		},
+	}
+
+	buf, err := json.Marshal(rumorStateMessage)
+	if err != nil {
+		return errors.NewJsonMarshalError(err.Error())
+	}
+
+	err = h.queries.AddRumorState(id)
+	if err != nil {
+		return err
+	}
+
+	h.sockets.SendToRandom(buf)
+	return nil
 }
