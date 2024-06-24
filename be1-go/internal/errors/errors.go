@@ -30,6 +30,7 @@ const (
 	DatabaseInsertErrorMsg            = InternalServerErrorMsg + "failed to insert into database: "
 	DatabaseSelectErrorMsg            = InternalServerErrorMsg + "failed to select from database: "
 	DatabaseDeleteErrorMsg            = InternalServerErrorMsg + "failed to delete from database: "
+	DatabaseUpdateErrorMsg            = InternalServerErrorMsg + "failed to update database: "
 	DatabaseTransactionBeginErrorMsg  = InternalServerErrorMsg + "failed to start database transaction: "
 	DatabaseTransactionCommitErrorMsg = InternalServerErrorMsg + "failed to commit database transaction: "
 	DatabaseScanErrorMsg              = InternalServerErrorMsg + "failed to scan database row: "
@@ -169,6 +170,11 @@ func NewDatabaseSelectErrorMsg(format string, a ...interface{}) error {
 // NewDatabaseDeleteErrorMsg returns an error with the code -6 when there is an error with a database delete
 func NewDatabaseDeleteErrorMsg(format string, a ...interface{}) error {
 	return NewPopError(InternalServerErrorCode, DatabaseDeleteErrorMsg+format, a...)
+}
+
+// NewDatabaseUpdateErrorMsg returns an error with the code -6 when there is an error with a database update
+func NewDatabaseUpdateErrorMsg(format string, a ...interface{}) error {
+	return NewPopError(InternalServerErrorCode, DatabaseUpdateErrorMsg+format, a...)
 }
 
 // NewDatabaseTransactionBeginErrorMsg returns an error with the code -6 when there is an error with a database transaction

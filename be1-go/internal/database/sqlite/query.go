@@ -330,14 +330,19 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, mrumor.Rumor, error) {
 		return false, mrumor.Rumor{}, err
 	}
 
-	rumor := newRumor(rumorID, sender, messages, timestamp)
-	timestamp[sender] = rumorID + 1
 	timestampBuf, err := json.Marshal(timestamp)
 	if err != nil {
 		return false, mrumor.Rumor{}, poperrors.NewJsonMarshalError("rumor timestamp: %v", err)
 	}
 
-	_, err = tx.Exec(insertRumor, rumorID+1, sender, timestampBuf)
+	_, err = tx.Exec(updateRumorTimestamp, timestampBuf, rumorID, sender)
+	if err != nil {
+		return false, mrumor.Rumor{}, poperrors.NewDatabaseUpdateErrorMsg("rumor timestamp: %v", err)
+	}
+
+	rumor := newRumor(rumorID, sender, messages, timestamp)
+
+	_, err = tx.Exec(insertRumor, rumorID+1, sender, "")
 	if err != nil {
 		return false, mrumor.Rumor{}, poperrors.NewDatabaseInsertErrorMsg("rumor: %v", err)
 	}

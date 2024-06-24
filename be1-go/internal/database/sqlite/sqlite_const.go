@@ -390,3 +390,7 @@ const (
 	deleteUnprocessedMessage      = `DELETE FROM unprocessedMessage WHERE messageID = ?`
 	deleteUnprocessedMessageRumor = `DELETE FROM unprocessedMessageRumor WHERE messageID = ?`
 )
+
+const (
+	updateRumorTimestamp = `UPDATE rumor SET timestamp = ? WHERE ID = ? AND sender = ?`
+)
