@@ -34,7 +34,7 @@ class RumorSuite extends FunSuite with Matchers {
     val messages: Map[Channel, List[Message]] = HashMap(
       chan -> List(message)
     )
-    val rumor: Rumor = new Rumor(senderPk = serverPk, rumorId = 1, messages = messages)
+    val rumor: Rumor = Rumor(senderPk = serverPk, rumorId = 1, messages = messages)
 
     val encodedDecoded = Rumor.buildFromJson(rumor.toJson.toString)
 

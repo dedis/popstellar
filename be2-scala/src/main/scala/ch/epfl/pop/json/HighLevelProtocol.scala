@@ -206,15 +206,16 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     final private val PARAM_SENDER_PK: String = "sender_id"
     final private val PARAM_RUMOR_ID: String = "rumor_id"
     final private val PARAM_MESSAGES: String = "messages"
+    final private val PARAM_TIMESTAMP: String = "timestamp"
 
     override def read(json: JsValue): Rumor = {
-      json.asJsObject.getFields(PARAM_SENDER_PK, PARAM_RUMOR_ID, PARAM_MESSAGES) match {
-        case Seq(senderPk @ JsString(_), rumorId @ JsNumber(_), rumors @ JsObject(_)) =>
+      json.asJsObject.getFields(PARAM_SENDER_PK, PARAM_RUMOR_ID, PARAM_MESSAGES, PARAM_TIMESTAMP) match {
+        case Seq(senderPk @ JsString(_), rumorId @ JsNumber(_), rumors @ JsObject(_), timestamp @ JsObject(_)) =>
           val map: Map[Channel, List[Message]] = rumors.asJsObject.fields.map {
             case (k: String, JsArray(v)) => Channel(k) -> v.map(_.convertTo[Message]).toList
             case _                       => throw new IllegalArgumentException(s"Unrecognizable rumor in $json")
           }
-          new Rumor(senderPk.convertTo[PublicKey], rumorId.convertTo[Int], HashMap.from(map))
+          new Rumor(senderPk.convertTo[PublicKey], rumorId.convertTo[Int], HashMap.from(map), RumorStateFormat.convertToRumorState(timestamp))
         case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a Rumor object")
       }
     }
@@ -223,11 +224,12 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       val jsObjContent: ListMap[String, JsValue] = ListMap[String, JsValue](
         PARAM_SENDER_PK -> obj.senderPk.toJson,
         PARAM_RUMOR_ID -> obj.rumorId.toJson,
-        PARAM_MESSAGES -> obj.messages.toJson
+        PARAM_MESSAGES -> obj.messages.toJson,
+        PARAM_TIMESTAMP -> JsObject(obj.timestamp.state.map((pk, rumorId) => pk.base64Data.data -> rumorId.toJson))
       )
       JsObject(jsObjContent)
     }
-    def fields: Set[String] = Set(PARAM_SENDER_PK, PARAM_RUMOR_ID, PARAM_MESSAGES)
+    def fields: Set[String] = Set(PARAM_SENDER_PK, PARAM_RUMOR_ID, PARAM_MESSAGES, PARAM_TIMESTAMP)
   }
 
   implicit object RumorStateFormat extends RootJsonFormat[RumorState] {
@@ -237,13 +239,17 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     override def read(json: JsValue): RumorState = {
       json.asJsObject.getFields(PARAM_STATE) match
         case Seq(stateObject @ JsObject(_)) =>
-          val state: Map[PublicKey, Int] = stateObject.fields.map((pk, rumorId) => (PublicKey(Base64Data(pk)), rumorId.convertTo[Int]))
-          RumorState(state)
+          convertToRumorState(stateObject)
         case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a RumorState object")
     }
     override def write(rumorState: RumorState): JsValue = {
       val rumorStateObject = JsObject(rumorState.state.map((pk, rumorId) => pk.base64Data.data -> rumorId.toJson))
       JsObject(PARAM_STATE -> rumorStateObject)
+    }
+
+    def convertToRumorState(stateObject: JsObject): RumorState = {
+      val state: Map[PublicKey, Int] = stateObject.fields.map((pk, rumorId) => (PublicKey(Base64Data(pk)), rumorId.convertTo[Int]))
+      RumorState(state)
     }
   }
 
@@ -257,7 +263,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
         // We don't differentiate and use an EmptyList to make result available to different response handler
         if (resultArray.isEmpty)
           new ResultObject(ResultEmptyList())
-        resultArray.head.asJsObject.fields.keySet match
+        else resultArray.head.asJsObject.fields.keySet match
           case keys if keys == RumorFormat.fields =>
             new ResultObject(ResultRumor(resultArray.map(_.convertTo[Rumor]).toList))
           case keys if keys == messageFormat.fields =>

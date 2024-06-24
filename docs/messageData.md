@@ -494,9 +494,9 @@ Last but not least, the greeting message contains a list of peers that tells cli
             "$comment": "Note: the string is encoded in Base64"
         },
         "address": {
-          "description": "Canonical address of the server with a protocol prefix and (optionally) the port number which is by default 80 and 443 for ws and wss respectively",
+            "description": "Canonical address of the server with a protocol prefix and (optionally) the port number which is by default 80 and 443 for ws and wss respectively",
             "type": "string",
-            "pattern": "^(ws|wss):\/\/.*(:\d{0,5})?\/.*$"
+            "pattern": "^(ws|wss):\\/\\/.*(:\\d{0,5})?\\/.*$"
         },
         "peers": {
             "description": "A list of peers the server is connected to (excluding itself). These can be other organizers or witnesses",
@@ -506,9 +506,9 @@ Last but not least, the greeting message contains a list of peers that tells cli
                 "additionalProperties": false,
                 "properties": {
                     "address": {
-                      "description": "Canonical address of the server with a protocol prefix and (optionally) the port number which is by default 80 and 443 for ws and wss respectively",
+                        "description": "Canonical address of the server with a protocol prefix and (optionally) the port number which is by default 80 and 443 for ws and wss respectively",
                         "type": "string",
-                        "pattern": "^(ws|wss):\/\/.*(:\d{0,5})?\/.*$"
+                        "pattern": "^(ws|wss):\\/\\/.*(:\\d{0,5})?\\/.*$"
                     }
                 },
                 "required": ["address"]
@@ -1080,7 +1080,8 @@ the organizer after scanning all attendees’ public key.
             "items": {
                 "type": "string",
                 "contentEncoding": "base64"
-            }
+            },
+            "$comment": "List must be sorted according to byte encoding: -,0...9,A...Z,_,a...z"
         }
     },
     "additionalProperties": false,
@@ -1460,7 +1461,8 @@ The election can be opened by publishing an election/open message on the electio
 </summary>
 
 ```json5
-// ../protocol/examples/messageData/election_open.json
+// ../protocol/examples/messageData/election_open/election_open.json
+
 {
     "object": "election",
     "action": "open",
@@ -1468,11 +1470,13 @@ The election can be opened by publishing an election/open message on the electio
     "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
     "opened_at": 1633099883
 }
+
 ```
 </details>
 
 ```json5
 // ../protocol/query/method/message/data/dataOpenElection.json
+
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataOpenElection.json",
@@ -1510,6 +1514,7 @@ The election can be opened by publishing an election/open message on the electio
         "opened_at"
     ]
 }
+
 ```
 
 
@@ -1572,9 +1577,9 @@ A vote in a secret ballot election
     "created_at": 1633098941,
     "votes": [
         {
-            "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
+            "id": "ad_RtMq73lRS1JF5LY-kHOGHD-yV-JJl7KmJZFOgmqc=",
             "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
-            "vote": "bm90IHJlYWxseSBlbmNyeXB0ZWQgYnV0IGVoaA=="
+            "vote": "ay7_zJTr5wanCpLQXEvICr0BuyI7aELxU0QM8YbGSgD2o-u1bnJqFMjAJYFQVcLe7rZkmhNFUiEOPqIqLj2hQQ=="
         }
     ]
 }
@@ -1690,7 +1695,7 @@ message on the election channel. This message indicates that the organizer will 
     "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
     "created_at": 1633099883,
-    "registered_votes": "tAUYpZDc7lOfrxyviK6V9UsezeubGUZR-TpwF52pzWU="
+    "registered_votes": "GX9slST3yY_Mltkjimp-eNq71mfbSbQ9sruABYN8EoM="
 }
 
 ```
@@ -1881,6 +1886,7 @@ Each Chirp data object consists of the following:
     "text": "I love PoP",
     "timestamp": 1634760180
 }
+
 ```
 
 </details>
@@ -1941,6 +1947,7 @@ message and sends it to a universal chirp channel ("/root/lao_id/social/chirps")
     "channel": "/root/<lao_id>/social/<sender>",
     "timestamp": 1634760180
 }
+
 ```
 </details>
 
@@ -2002,6 +2009,7 @@ protocol, the chirp will always exist in historical records of the users’ chan
     "chirp_id": "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=",
     "timestamp": 1634760180
 }
+
 ```
 
 </details>
@@ -2035,6 +2043,7 @@ protocol, the chirp will always exist in historical records of the users’ chan
   "additionalProperties": false,
   "required": ["object", "action", "chirp_id", "timestamp"]
 }
+
 ```
 
 After validating the removal of the chirp, the organizer’s server propagates the above message
@@ -2056,6 +2065,7 @@ it to a universal chirp channel ("/root/lao_id/social/chirps"):
     "channel": "/root/<lao_id>/social/<sender>",
     "timestamp": 1634760180
 }
+
 ```
 
 </details>
@@ -2095,6 +2105,7 @@ it to a universal chirp channel ("/root/lao_id/social/chirps"):
   "additionalProperties": false,
   "required": ["object", "action", "chirp_id", "channel", "timestamp"]
 }
+
 ```
 
 ## Publishing a reaction (reaction#add)
@@ -2123,6 +2134,7 @@ Each reaction contains the following:
   "chirp_id": "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=",
   "timestamp": 1634760180
 }
+
 ```
 
 </details>
@@ -2162,6 +2174,7 @@ Each reaction contains the following:
   "additionalProperties": false,
   "required": ["object", "action", "reaction_codepoint", "chirp_id", "timestamp"]
 }
+
 ```
 
 ## Removing a reaction (reaction#delete)
@@ -2185,6 +2198,7 @@ protocol, the reaction will always exist in historical records of the reactions�
   "reaction_id": "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=",
   "timestamp": 1634760180
 }
+
 ```
 
 </details>
@@ -2218,6 +2232,7 @@ protocol, the reaction will always exist in historical records of the reactions�
   "additionalProperties": false,
   "required": ["object", "action", "reaction_id", "timestamp"]
 }
+
 ```
 
 ## Consensus (introduction)
@@ -2268,6 +2283,7 @@ and some values linked with the consensus/elect message starting the consensus.
     },
     "value": "started"
 }
+
 ```
 
 </details>
@@ -2336,6 +2352,7 @@ and some values linked with the consensus/elect message starting the consensus.
         "value"
     ]
 }
+
 ```
 
 ## Accepting the start of a Consensus (consensus#elect_accept)
@@ -2359,6 +2376,7 @@ have accepted the start of the consensus, it can start.
     "message_id": "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=",
     "accept": true
 }
+
 ```
 
 </details>
@@ -2400,6 +2418,7 @@ have accepted the start of the consensus, it can start.
         "accept"
     ]
 }
+
 ```
 
 ## Preparing nodes for a Consensus (consensus#prepare)
@@ -2427,6 +2446,7 @@ this proposer in the proposed_try field.
         "proposed_try": 4
     }
 }
+
 ```
 
 </details>
@@ -2483,6 +2503,7 @@ this proposer in the proposed_try field.
         "value"
     ]
 }
+
 ```
 
 ## Promising a value in the Consensus (consensus#promise)
@@ -2514,6 +2535,7 @@ both its accepted_try and accepted value.
         "promised_try": 4
     }
 }
+
 ```
 
 </details>
@@ -2579,6 +2601,7 @@ both its accepted_try and accepted value.
         "value"
     ]
 }
+
 ```
 
 ## Proposing a value during a Consensus (consensus#propose)
@@ -2614,6 +2637,7 @@ the greater received accepted_try and its corresponding accepted_value.
         "LkNLWW1_RXV5Y11XO2xHLypFSlRodzMmJVN0NXlQZCs="
     ]
 }
+
 ```
 
 </details>
@@ -2682,6 +2706,7 @@ the greater received accepted_try and its corresponding accepted_value.
         "acceptor-signatures"
     ]
 }
+
 ```
 
 ## Accepting a value during a Consensus (consensus#accept)
@@ -2710,6 +2735,7 @@ a consensus/accept message containing these values.
         "accepted_value": true
     }
 }
+
 ```
 
 </details>
@@ -2770,6 +2796,7 @@ a consensus/accept message containing these values.
         "value"
     ]
 }
+
 ```
 
 ## Sending the result of a Consensus (consensus#learn)
@@ -2801,6 +2828,7 @@ to all proposers, acceptors, and their clients.
         "OtP_nVgrshTofWYVAcQ-uRz44UD_2tFJUOLLvTbFmzO="
     ]
 }
+
 ```
 
 </details>
@@ -2864,6 +2892,7 @@ to all proposers, acceptors, and their clients.
         "acceptor-signatures"
     ]
 }
+
 ```
 
 ## Sending the failure of a Consensus (consensus#failure)
@@ -2887,6 +2916,7 @@ a consensus/failure message is sent informing the system of the failure.
     "message_id": "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=",
     "created_at": 1634760120
 }
+
 ```
 
 </details>
@@ -2928,6 +2958,7 @@ a consensus/failure message is sent informing the system of the failure.
         "created_at"
     ]
 }
+
 ```
 
 
@@ -2959,10 +2990,11 @@ This challenge will be then used by Alice's server to authenticate itself.
 
 ```json5
 // ../protocol/examples/messageData/federation_challenge_request/federation_challenge_request.json
+
 {
-  "object": "federation",
-  "action": "challenge_request",
-  "timestamp": 1712854874
+    "object": "federation",
+    "action": "challenge_request",
+    "timestamp": 1712854874
 }
 
 ```
@@ -2970,30 +3002,31 @@ This challenge will be then used by Alice's server to authenticate itself.
 
 ```json5
 // ../protocol/query/method/message/data/dataFederationChallengeRequest.json
+
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationChallengeRequest.json",
-  "description": "Sent by an organizer client to its server, to retrieve a challenge object",
-  "type": "object",
-  "properties": {
-    "object": {
-      "const": "federation"
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationChallengeRequest.json",
+    "description": "Sent by an organizer client to its server, to retrieve a challenge object",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "federation"
+        },
+        "action": {
+            "const": "challenge_request"
+        },
+        "timestamp": {
+            "type": "integer",
+            "description": "[Timestamp] of the request",
+            "minimum": 0
+        }
     },
-    "action": {
-      "const": "challenge_request"
-    },
-    "timestamp": {
-      "type": "integer",
-      "description": "[Timestamp] of the request",
-      "minimum": 0
-    }
-  },
-  "additionalProperties": false,
-  "required": [
-    "object",
-    "action",
-    "timestamp"
-  ]
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "timestamp"
+    ]
 }
 
 ```
@@ -3017,37 +3050,38 @@ Bob's server will provide him with the requested challenge.
 
 ```json5
 // ../protocol/query/method/message/data/dataFederationChallenge.json
+
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationChallenge.json",
-  "description": "Challenge object in the context of federation authentication",
-  "type": "object",
-  "properties": {
-    "object": {
-      "const": "federation"
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationChallenge.json",
+    "description": "Challenge object in the context of federation authentication",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "federation"
+        },
+        "action": {
+            "const": "challenge"
+        },
+        "value": {
+            "type": "string",
+            "contentEncoding": "hex",
+            "pattern": "^[0-9a-fA-F]{64}$",
+            "$comment": "A 32 bytes array encoded in hexadecimal"
+        },
+        "valid_until": {
+            "type": "integer",
+            "description": "[Timestamp] of the expiration time",
+            "minimum": 0
+        }
     },
-    "action": {
-      "const": "challenge"
-    },
-    "value": {
-      "type": "string",
-      "contentEncoding": "hex",
-      "pattern": "^[0-9a-fA-F]{64}$",
-      "$comment": "A 32 bytes array encoded in hexadecimal"
-    },
-    "valid_until": {
-      "type": "integer",
-      "description": "[Timestamp] of the expiration time",
-      "minimum": 0
-    }
-  },
-  "additionalProperties": false,
-  "required": [
-    "object",
-    "action",
-    "value",
-    "valid_until"
-  ]
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "value",
+        "valid_until"
+    ]
 }
 
 ```
@@ -3070,11 +3104,11 @@ With this message, Bob informs his server that it should expect a federation inv
     "public_key": "UvViTxoKsB3XVP_ctkmOKCJpMWb7fCzrcb1XDmhNe7Q=",
     "server_address": "wss://ethz.ch:9000/server",
     "challenge": {
-      "data": "eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiY2hhbGxlbmdlIiwidmFsdWUiOiJlYmEzZTI0ZWZjZDBiNTNmYTY5OTA4YmFkNWQxY2I2OTlkNzk4MGQ5MzEwOWRhMGIyYmZkNTAzN2MyYzg5ZWUwIiwidGltZXN0YW1wIjoxNzEzMzg1NTY4fQ==",
-      "sender": "zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4=",
-      "signature": "BILYwYkT5tOBL4rCD7yvhBkhAYqRXOI3ajQ2uJ1gAk-g6nRc38vMMnlHShuNCQ3dQFXYZPn37cCFelhWGjY8Bg==",
-      "message_id": "sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI=",
-      "witness_signatures": []
+        "data": "eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiY2hhbGxlbmdlIiwidmFsdWUiOiJlYmEzZTI0ZWZjZDBiNTNmYTY5OTA4YmFkNWQxY2I2OTlkNzk4MGQ5MzEwOWRhMGIyYmZkNTAzN2MyYzg5ZWUwIiwidGltZXN0YW1wIjoxNzEzMzg1NTY4fQ==",
+        "sender": "zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4=",
+        "signature": "BILYwYkT5tOBL4rCD7yvhBkhAYqRXOI3ajQ2uJ1gAk-g6nRc38vMMnlHShuNCQ3dQFXYZPn37cCFelhWGjY8Bg==",
+        "message_id": "sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI=",
+        "witness_signatures": []
     }
 }
 
@@ -3087,7 +3121,7 @@ With this message, Bob informs his server that it should expect a federation inv
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationExpect.json",
-    "description": "Sent by an organizer client to its server, signals that a connection from another LAO is expected",
+    "description": "Sent by an organizer client to its server, signals that a connection from a remote LAO is expected",
     "type": "object",
     "properties": {
         "object": {
@@ -3099,23 +3133,23 @@ With this message, Bob informs his server that it should expect a federation inv
         "lao_id": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "ID of the other LAO"
+            "$comment": "ID of the remote LAO"
         },
         "server_address": {
             "type": "string",
             "pattern": "^(ws|wss):\/\/.*(:\\d{0,5})?\/.*$",
-            "$comment": "public address of the other organizer server"
+            "$comment": "public address of the remote organizer server"
         },
         "public_key": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "public key of the other organizer"
+            "$comment": "public key of the remote organizer"
         },
         "challenge": {
-          "$ref": "../message.json",
-          "$comment": "message containing a FederationChallenge"
-            }
-        },
+            "$ref": "../message.json",
+            "$comment": "message containing a FederationChallenge"
+        }
+    },
     "additionalProperties": false,
     "required": [
         "object",
@@ -3144,18 +3178,18 @@ It contains the necessary connection details, and a challenge which Bob's server
 // ../protocol/examples/messageData/federation_init/federation_init.json
 
 {
-  "object": "federation",
-  "action": "init",
-  "lao_id": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
-  "public_key": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
-  "server_address": "wss://epfl.ch:9000/server",
-  "challenge": {
-    "data": "eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiY2hhbGxlbmdlIiwidmFsdWUiOiJlYmEzZTI0ZWZjZDBiNTNmYTY5OTA4YmFkNWQxY2I2OTlkNzk4MGQ5MzEwOWRhMGIyYmZkNTAzN2MyYzg5ZWUwIiwidGltZXN0YW1wIjoxNzEzMzg1NTY4fQ==",
-    "sender": "zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4=",
-    "signature": "BILYwYkT5tOBL4rCD7yvhBkhAYqRXOI3ajQ2uJ1gAk-g6nRc38vMMnlHShuNCQ3dQFXYZPn37cCFelhWGjY8Bg==",
-    "message_id": "sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI=",
-    "witness_signatures": []
-  }
+    "object": "federation",
+    "action": "init",
+    "lao_id": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "public_key": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+    "server_address": "wss://epfl.ch:9000/server",
+    "challenge": {
+        "data": "eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiY2hhbGxlbmdlIiwidmFsdWUiOiJlYmEzZTI0ZWZjZDBiNTNmYTY5OTA4YmFkNWQxY2I2OTlkNzk4MGQ5MzEwOWRhMGIyYmZkNTAzN2MyYzg5ZWUwIiwidGltZXN0YW1wIjoxNzEzMzg1NTY4fQ==",
+        "sender": "zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4=",
+        "signature": "BILYwYkT5tOBL4rCD7yvhBkhAYqRXOI3ajQ2uJ1gAk-g6nRc38vMMnlHShuNCQ3dQFXYZPn37cCFelhWGjY8Bg==",
+        "message_id": "sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI=",
+        "witness_signatures": []
+    }
 }
 
 ```
@@ -3163,50 +3197,49 @@ It contains the necessary connection details, and a challenge which Bob's server
 
 ```json5
 // ../protocol/query/method/message/data/dataFederationInit.json
+
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationInit.json",
-  "description": "Sent by an organizer client to its server, initiates a connection to another LAO",
-  "type": "object",
-  "properties": {
-    "object": {
-      "const": "federation"
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationInit.json",
+    "description": "Sent by an organizer client to its server, initiates a connection to a remote LAO",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "federation"
+        },
+        "action": {
+            "const": "init"
+        },
+        "lao_id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the remote LAO"
+        },
+        "server_address": {
+            "type": "string",
+            "pattern": "^(ws|wss):\/\/.*(:\\d{0,5})?\/.*$",
+            "$comment": "public address of the remote organizer server"
+        },
+        "public_key": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "public key of the remote organizer"
+        },
+        "challenge": {
+            "$ref": "../message.json",
+            "$comment": "message containing a FederationChallenge"
+        }
     },
-    "action": {
-      "const": "init"
-    },
-    "lao_id": {
-      "type": "string",
-      "contentEncoding": "base64",
-      "$comment": "ID of the other LAO"
-    },
-    "server_address": {
-      "type": "string",
-      "pattern": "^(ws|wss):\/\/.*(:\\d{0,5})?\/.*$",
-      "$comment": "public address of the other organizer server"
-    },
-    "public_key": {
-      "type": "string",
-      "contentEncoding": "base64",
-      "$comment": "public key of the other organizer"
-    },
-    "challenge": {
-      "$ref": "../message.json",
-      "$comment": "message containing a FederationChallenge"
-    }
-  },
-  "additionalProperties": false,
-  "required": [
-    "object",
-    "action",
-    "lao_id",
-    "server_address",
-    "public_key",
-    "challenge"
-  ]
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "lao_id",
+        "server_address",
+        "public_key",
+        "challenge"
+    ]
 }
-
-
 
 ```
 
@@ -3219,96 +3252,100 @@ This message is sent by Bob's server. The purpose of this message is to provide 
 
 ```json5
 // ../protocol/examples/messageData/federation_result/federation_result.json
+
 {
-  "object": "federation",
-  "action": "result",
-  "status": "success",
-  "public_key": "UvViTxoKsB3XVP_ctkmOKCJpMWb7fCzrcb1XDmhNe7Q=",
-  "challenge": {
-    "data": "eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiY2hhbGxlbmdlIiwidmFsdWUiOiJlYmEzZTI0ZWZjZDBiNTNmYTY5OTA4YmFkNWQxY2I2OTlkNzk4MGQ5MzEwOWRhMGIyYmZkNTAzN2MyYzg5ZWUwIiwidGltZXN0YW1wIjoxNzEzMzg1NTY4fQ==",
-    "sender": "zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4=",
-    "signature": "BILYwYkT5tOBL4rCD7yvhBkhAYqRXOI3ajQ2uJ1gAk-g6nRc38vMMnlHShuNCQ3dQFXYZPn37cCFelhWGjY8Bg==",
-    "message_id": "sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI=",
-    "witness_signatures": []
-  }
+    "object": "federation",
+    "action": "result",
+    "status": "success",
+    "public_key": "UvViTxoKsB3XVP_ctkmOKCJpMWb7fCzrcb1XDmhNe7Q=",
+    "challenge": {
+        "data": "eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiY2hhbGxlbmdlIiwidmFsdWUiOiJlYmEzZTI0ZWZjZDBiNTNmYTY5OTA4YmFkNWQxY2I2OTlkNzk4MGQ5MzEwOWRhMGIyYmZkNTAzN2MyYzg5ZWUwIiwidGltZXN0YW1wIjoxNzEzMzg1NTY4fQ==",
+        "sender": "zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4=",
+        "signature": "BILYwYkT5tOBL4rCD7yvhBkhAYqRXOI3ajQ2uJ1gAk-g6nRc38vMMnlHShuNCQ3dQFXYZPn37cCFelhWGjY8Bg==",
+        "message_id": "sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI=",
+        "witness_signatures": []
+    }
 }
+
 ```
 </details>
 
 ```json5
 // ../protocol/query/method/message/data/dataFederationResult.json
+
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationResult.json",
-  "description": "Sent by a server to the other server, to inform them about the result of the authentication procedure",
-  "type": "object",
-  "oneOf": [
-    {
-      "type": "object",
-      "properties": {
-        "object": {
-          "const": "federation"
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationResult.json",
+    "description": "Sent by an server to a remote server, to inform them about the result of the authentication procedure",
+    "type": "object",
+    "oneOf": [
+        {
+            "type": "object",
+            "properties": {
+                "object": {
+                    "const": "federation"
+                },
+                "action": {
+                    "const": "result"
+                },
+                "status": {
+                    "type": "string",
+                    "pattern": "^failure$",
+                    "$comment": "status of the authentication attempt"
+                },
+                "reason": {
+                    "type": "string",
+                    "$comment": "to be used in failures, describing the error that happened"
+                },
+                "challenge": {
+                    "$ref": "../message.json",
+                    "$comment": "message containing a FederationChallenge"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "object",
+                "action",
+                "status",
+                "reason",
+                "challenge"
+            ]
         },
-        "action": {
-          "const": "result"
-        },
-        "status": {
-          "type": "string",
-          "pattern": "^failure$",
-          "$comment": "status of the authentication attempt"
-        },
-        "reason": {
-          "type": "string",
-          "$comment": "to be used in failures, describing the error that happened"
-        },
-        "challenge": {
-          "$ref": "../message.json",
-          "$comment": "message containing a FederationChallenge"
+        {
+            "type": "object",
+            "properties": {
+                "object": {
+                    "const": "federation"
+                },
+                "action": {
+                    "const": "result"
+                },
+                "status": {
+                    "type": "string",
+                    "pattern": "^success$",
+                    "$comment": "status of the authentication attempt"
+                },
+                "public_key": {
+                    "type": "string",
+                    "contentEncoding": "base64",
+                    "$comment": "public key of the remote organizer"
+                },
+                "challenge": {
+                    "$ref": "../message.json",
+                    "$comment": "message containing a FederationChallenge"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "object",
+                "action",
+                "status",
+                "public_key",
+                "challenge"
+            ]
         }
-      },
-      "additionalProperties": false,
-      "required": [
-        "object",
-        "action",
-        "status",
-        "reason",
-        "challenge"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "object": {
-          "const": "federation"
-        },
-        "action": {
-          "const": "result"
-        },
-        "status": {
-          "type": "string",
-          "pattern": "^success$",
-          "$comment": "status of the authentication attempt"
-        },
-        "public_key": {
-          "type": "string",
-          "contentEncoding": "base64",
-          "$comment": "public key of the other organizer"
-        },
-        "challenge": {
-          "$ref": "../message.json",
-          "$comment": "message containing a FederationChallenge"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "object",
-        "action",
-        "status",
-        "public_key",
-        "challenge"
-      ]
-    }
-  ]
+    ]
 }
+
 ```
 
