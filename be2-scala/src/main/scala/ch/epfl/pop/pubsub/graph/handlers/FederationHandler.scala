@@ -118,7 +118,7 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
 
     Await.ready(ask, duration).value match {
       case Some(Success(message, data)) =>
-        val challengeMessage: Message = data.challenge // already signed by Alice
+        val challengeMessage: Message = data.challenge // already signed by the organizer
         val serverAddress = data.serverAddress
         val remoteFederationChannel = generateFederationChannel(data.laoId)
 
