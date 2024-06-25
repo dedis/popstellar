@@ -1,6 +1,6 @@
 import { dispatch } from 'core/redux';
 
-import { Broadcast, JsonRpcMethod, ExtendedJsonRpcRequest } from '../jsonrpc';
+import { Broadcast, JsonRpcMethod, ExtendedJsonRpcRequest, Publish } from '../jsonrpc';
 import { ActionType, MessageRegistry, ObjectType } from '../jsonrpc/messages';
 import { ExtendedMessage } from './ExtendedMessage';
 import { addMessages } from './MessageReducer';
@@ -60,6 +60,11 @@ export function handleExtendedRpcRequests(req: ExtendedJsonRpcRequest) {
         req.receivedFrom,
         broadcastParams.channel,
       ),
+    );
+  } else if (req.request.method === JsonRpcMethod.PUBLISH) {
+    const publishParams = req.request.params as Publish;
+    storeMessage(
+      ExtendedMessage.fromMessage(publishParams.message, req.receivedFrom, publishParams.channel),
     );
   } else {
     console.warn('A request was received but it is currently unsupported:', req);

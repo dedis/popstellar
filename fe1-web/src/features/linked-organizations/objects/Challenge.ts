@@ -3,7 +3,7 @@ import { OmitMethods } from 'core/types';
 
 export interface ChallengeState {
   value: HashState;
-  valid_until: Timestamp;
+  valid_until: number;
 }
 
 export class Challenge {
@@ -32,14 +32,14 @@ export class Challenge {
   public toState(): ChallengeState {
     return {
       value: this.value.toState(),
-      valid_until: this.valid_until,
+      valid_until: this.valid_until.valueOf(),
     };
   }
 
   public static fromState(challengeState: ChallengeState): Challenge {
     return new Challenge({
       value: Hash.fromState(challengeState.value),
-      valid_until: challengeState.valid_until,
+      valid_until: new Timestamp(challengeState.valid_until),
     });
   }
 
