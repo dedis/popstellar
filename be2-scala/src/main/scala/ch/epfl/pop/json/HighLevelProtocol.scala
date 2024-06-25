@@ -306,7 +306,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
         // We don't differentiate and use an EmptyList to make result available to different response handler
         if (resultArray.isEmpty)
           new ResultObject(ResultEmptyList())
-        resultArray.head.asJsObject.fields.keySet match
+        else resultArray.head.asJsObject.fields.keySet match
           case keys if keys == RumorFormat.fields =>
             new ResultObject(ResultRumor(resultArray.map(_.convertTo[Rumor]).toList))
           case keys if keys == messageFormat.fields =>
