@@ -1,9 +1,13 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Output
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptOutput
@@ -179,15 +183,15 @@ class DigitalCashActivityTest {
     DigitalCashPageObject.sendButton().perform(ViewActions.click())
     LaoActivityPageObject.fragmentContainer()
       .check(
-        ViewAssertions.matches(
-          ViewMatchers.withChild(ViewMatchers.withId(SendPageObject.fragmentDigitalCashSendId()))
+        matches(
+          ViewMatchers.withChild(withId(SendPageObject.fragmentDigitalCashSendId()))
         )
       )
     SendPageObject.sendButtonToReceipt().perform(ViewActions.click())
     LaoActivityPageObject.fragmentContainer()
       .check(
-        ViewAssertions.matches(
-          ViewMatchers.withChild(ViewMatchers.withId(SendPageObject.fragmentDigitalCashSendId()))
+        matches(
+          ViewMatchers.withChild(withId(SendPageObject.fragmentDigitalCashSendId()))
         )
       )
   }
@@ -197,12 +201,36 @@ class DigitalCashActivityTest {
     DigitalCashPageObject.historyButton().perform(ViewActions.click())
     LaoActivityPageObject.fragmentContainer()
       .check(
-        ViewAssertions.matches(
+        matches(
           ViewMatchers.withChild(
-            ViewMatchers.withId(HistoryPageObject.fragmentDigitalCashHistoryId())
+            withId(HistoryPageObject.fragmentDigitalCashHistoryId())
           )
         )
       )
+  }
+
+  @Test
+  fun historyElementsAreExpandable() {
+    // Ensure the Digital Cash screen is displayed
+    DigitalCashPageObject.historyButton().perform(ViewActions.click())
+
+    // Click on the first transaction
+    onView(withId(HistoryPageObject.transactionCardView()))
+      .perform(ViewActions.click())
+
+    // Check if the transaction details are displayed
+    onView(withId(HistoryPageObject.transactionProvenanceTitle())
+    )
+      .check(matches(isDisplayed()))
+    onView(withId(HistoryPageObject.transactionProvenanceValue())
+    )
+      .check(matches(isDisplayed()))
+    onView(withId(HistoryPageObject.transactionIdValue())
+    )
+      .check(matches(isDisplayed()))
+    onView(withId(HistoryPageObject.transactionIdTitle())
+    )
+      .check(matches(isDisplayed()))
   }
 
   @Test
@@ -210,8 +238,8 @@ class DigitalCashActivityTest {
     DigitalCashPageObject.issueButton().perform(ViewActions.click())
     LaoActivityPageObject.fragmentContainer()
       .check(
-        ViewAssertions.matches(
-          ViewMatchers.withChild(ViewMatchers.withId(IssuePageObject.fragmentDigitalCashIssueId()))
+        matches(
+          ViewMatchers.withChild(withId(IssuePageObject.fragmentDigitalCashIssueId()))
         )
       )
   }
@@ -221,9 +249,9 @@ class DigitalCashActivityTest {
     DigitalCashPageObject.receiveButton().perform(ViewActions.click())
     LaoActivityPageObject.fragmentContainer()
       .check(
-        ViewAssertions.matches(
+        matches(
           ViewMatchers.withChild(
-            ViewMatchers.withId(ReceivePageObject.fragmentDigitalCashReceiveId())
+            withId(ReceivePageObject.fragmentDigitalCashReceiveId())
           )
         )
       )
@@ -235,9 +263,9 @@ class DigitalCashActivityTest {
     DigitalCashPageObject.historyButton().perform(ViewActions.click())
     LaoActivityPageObject.fragmentContainer()
       .check(
-        ViewAssertions.matches(
+        matches(
           ViewMatchers.withChild(
-            ViewMatchers.withId(DigitalCashPageObject.fragmentDigitalCashHomeId())
+            withId(DigitalCashPageObject.fragmentDigitalCashHomeId())
           )
         )
       )
