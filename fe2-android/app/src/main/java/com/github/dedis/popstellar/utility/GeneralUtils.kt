@@ -5,6 +5,10 @@ import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.Lifecycle
 import com.github.dedis.popstellar.model.objects.security.Base64URLData
+import com.github.dedis.popstellar.utility.Constants.DEFAULT_USERNAME
+import com.github.dedis.popstellar.utility.Constants.EMPTY_USERNAME
+import com.github.dedis.popstellar.utility.Constants.MNEMONIC_USERNAME_WORDS
+import com.github.dedis.popstellar.utility.Constants.USERNAME_DIGITS
 import io.github.novacrypto.bip39.MnemonicGenerator
 import io.github.novacrypto.bip39.wordlists.English
 import java.security.MessageDigest
@@ -126,14 +130,14 @@ object GeneralUtils {
   fun generateUsernameFromBase64(input: String): String {
     if (input.isEmpty()) {
       Timber.tag(TAG).w("Empty input for username generation")
-      return "emptyBase64"
+      return EMPTY_USERNAME
     }
 
-    val number = getFirstNumberDigits(input, 4)
-    val words = generateMnemonicWordFromBase64(input, 2)
+    val number = getFirstNumberDigits(input)
+    val words = generateMnemonicWordFromBase64(input, MNEMONIC_USERNAME_WORDS)
     if (words.isEmpty()) {
       Timber.tag(TAG).w("Empty words for username generation for base64 string %s", input)
-      return "defaultUsername$number"
+      return "$DEFAULT_USERNAME$number"
     }
 
     val (word1, word2) = words.split(" ")
@@ -142,7 +146,7 @@ object GeneralUtils {
   }
 
   /** Filters the digits from a base64 string and returns the first n digits. */
-  private fun getFirstNumberDigits(b64: String, nbDigits: Int): String {
+  private fun getFirstNumberDigits(b64: String, nbDigits: Int = USERNAME_DIGITS): String {
     val digits = b64.filter { it.isDigit() }
     return digits.take(nbDigits).padStart(nbDigits, '0')
   }
