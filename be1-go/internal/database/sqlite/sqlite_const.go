@@ -161,7 +161,7 @@ const (
     FROM message 
     JOIN channelMessage ON message.messageID = channelMessage.messageID
     WHERE channelMessage.channelPath = ?
-    ORDER BY message.storedTime DESC`
+    ORDER BY message.storedTime ASC`
 
 	selectChannelPath = `SELECT channelPath FROM channel WHERE channelPath = ?`
 

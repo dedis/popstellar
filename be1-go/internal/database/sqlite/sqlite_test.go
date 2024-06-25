@@ -138,7 +138,7 @@ func Test_SQLite_GetAllMessagesFromChannel(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	expected := []mmessage.Message{testMessages[3].msg, testMessages[0].msg}
+	expected := []mmessage.Message{testMessages[0].msg, testMessages[3].msg}
 	messages, err := lite.GetAllMessagesFromChannel("channel1")
 	require.NoError(t, err)
 	require.Equal(t, expected, messages)
