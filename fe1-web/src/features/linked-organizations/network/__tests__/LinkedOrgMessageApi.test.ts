@@ -87,7 +87,7 @@ describe('LinkedOrgMessageApi', () => {
   it('should create the correct request for initFederation', async () => {
     const challengeState: ChallengeState = {
       value: VALID_HASH_VALUE.toState(),
-      valid_until: VALID_TIMESTAMP,
+      valid_until: VALID_TIMESTAMP.valueOf(),
     };
     const challenge = Challenge.fromState(challengeState);
     await msApi.initFederation(
@@ -107,7 +107,7 @@ describe('LinkedOrgMessageApi', () => {
   it('should create the correct request for expectFederation', async () => {
     const challengeState: ChallengeState = {
       value: VALID_HASH_VALUE.toState(),
-      valid_until: VALID_TIMESTAMP,
+      valid_until: VALID_TIMESTAMP.valueOf(),
     };
     const challenge = Challenge.fromState(challengeState);
     await msApi.expectFederation(
