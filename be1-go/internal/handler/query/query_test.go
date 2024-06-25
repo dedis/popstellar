@@ -1,40 +1,42 @@
 package query
 
 import (
-	"fmt"
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
-	"io"
-	"os"
 	"popstellar/internal/mock"
 	"popstellar/internal/mock/generator"
-	"popstellar/internal/singleton/utils"
-	"popstellar/internal/validation"
+	"popstellar/internal/network/socket"
 	"testing"
 )
 
-var noLog = zerolog.New(io.Discard)
+// nullMethodHandler is a struct that implements the MethodHandler interface with no-op methods
+type nullMethodHandler struct{}
 
-func TestMain(m *testing.M) {
-	schemaValidator, err := validation.NewSchemaValidator()
-	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
-	}
+// Handle method for nullMethodHandler that always returns nil
+func (n *nullMethodHandler) Handle(socket socket.Socket, msg []byte) (*int, error) {
+	return nil, nil
+}
 
-	utils.InitUtils(&noLog, schemaValidator)
-
-	exitVal := m.Run()
-
-	os.Exit(exitVal)
+// Initialize methodHandlers with nullMethodHandler instances
+var methodHandlers = MethodHandlers{
+	Catchup:         &nullMethodHandler{},
+	GetMessagesbyid: &nullMethodHandler{},
+	Greetserver:     &nullMethodHandler{},
+	Heartbeat:       &nullMethodHandler{},
+	Publish:         &nullMethodHandler{},
+	Subscribe:       &nullMethodHandler{},
+	Unsubscribe:     &nullMethodHandler{},
+	Rumor:           &nullMethodHandler{},
 }
 
 func Test_handleQuery(t *testing.T) {
 	type input struct {
 		name     string
 		message  []byte
+		isError  bool
 		contains string
 	}
+
+	handler := New(methodHandlers)
 
 	args := make([]input, 0)
 
@@ -45,6 +47,7 @@ func Test_handleQuery(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 1",
 		message:  msg,
+		isError:  true,
 		contains: "unexpected method",
 	})
 
@@ -53,9 +56,12 @@ func Test_handleQuery(t *testing.T) {
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
 			fakeSocket := mock.FakeSocket{Id: "fakesocket"}
-			errAnswer := HandleQuery(&fakeSocket, arg.message)
-			require.NotNil(t, errAnswer)
-			require.Contains(t, errAnswer.Error(), arg.contains)
+			err := handler.Handle(&fakeSocket, arg.message)
+			if arg.isError {
+				require.Error(t, err, arg.contains)
+			} else {
+				require.NoError(t, err)
+			}
 		})
 	}
 }

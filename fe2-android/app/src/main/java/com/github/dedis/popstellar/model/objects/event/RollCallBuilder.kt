@@ -30,7 +30,7 @@ class RollCallBuilder {
     start = rollCall.startTimestamp
     end = rollCall.end
     state = rollCall.state
-    attendees = HashSet(rollCall.attendees)
+    attendees = LinkedHashSet(rollCall.attendees)
     location = rollCall.location
     description = rollCall.description
   }
@@ -66,12 +66,12 @@ class RollCallBuilder {
   }
 
   fun setAttendees(attendees: Set<PublicKey>): RollCallBuilder {
-    this.attendees = HashSet(attendees)
+    this.attendees = LinkedHashSet(attendees)
     return this
   }
 
   fun setEmptyAttendees(): RollCallBuilder {
-    attendees = HashSet()
+    attendees = LinkedHashSet()
     return this
   }
 
@@ -102,7 +102,7 @@ class RollCallBuilder {
         start,
         end,
         state!!,
-        attendees!!,
+        LinkedHashSet(attendees),
         location!!,
         description!!)
   }

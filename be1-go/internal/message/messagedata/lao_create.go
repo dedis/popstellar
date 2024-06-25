@@ -3,7 +3,8 @@ package messagedata
 import (
 	"encoding/base64"
 	"fmt"
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
+	message2 "popstellar/internal/message/query/method/message"
 )
 
 // LaoCreate defines a message data
@@ -25,40 +26,40 @@ func (message LaoCreate) Verify() error {
 	// verify id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(message.ID)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("lao id is %s, should be base64URL encoded", message.ID)
+		return errors.NewInvalidMessageFieldError("lao id is %s, should be base64URL encoded", message.ID)
 	}
 
 	// verify lao id
-	expectedLaoID := Hash(
+	expectedLaoID := message2.Hash(
 		message.Organizer,
 		fmt.Sprintf("%d", message.Creation),
 		message.Name,
 	)
 	if message.ID != expectedLaoID {
-		return answer.NewInvalidMessageFieldError("lao id is %s, should be %s", message.ID, expectedLaoID)
+		return errors.NewInvalidMessageFieldError("lao id is %s, should be %s", message.ID, expectedLaoID)
 	}
 
 	// verify lao name non-empty
 	if len(message.Name) == 0 {
-		return answer.NewInvalidMessageFieldError("lao name is %s, should not be empty", message.Name)
+		return errors.NewInvalidMessageFieldError("lao name is %s, should not be empty", message.Name)
 	}
 
 	// verify creation is positive
 	if message.Creation < 0 {
-		return answer.NewInvalidMessageFieldError("lao creation is %d, should be minimum 0", message.Creation)
+		return errors.NewInvalidMessageFieldError("lao creation is %d, should be minimum 0", message.Creation)
 	}
 
 	// verify organizer is base64URL encoded
 	_, err = base64.URLEncoding.DecodeString(message.Organizer)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("lao organizer is %s, should be base64URL encoded", message.Organizer)
+		return errors.NewInvalidMessageFieldError("lao organizer is %s, should be base64URL encoded", message.Organizer)
 	}
 
 	// verify all witnesses are base64URL encoded
 	for _, witness := range message.Witnesses {
 		_, err = base64.URLEncoding.DecodeString(witness)
 		if err != nil {
-			return answer.NewInvalidMessageFieldError("lao witness is %s, should be base64URL encoded", witness)
+			return errors.NewInvalidMessageFieldError("lao witness is %s, should be base64URL encoded", witness)
 		}
 	}
 

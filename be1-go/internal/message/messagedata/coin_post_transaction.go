@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/base64"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/xerrors"
 	"popstellar/internal/crypto"
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
+	message2 "popstellar/internal/message/query/method/message"
 	"popstellar/internal/types"
 	"strconv"
 )
@@ -61,7 +61,7 @@ func (transaction Transaction) SumOutputs() (types.Uint53, error) {
 	for _, out := range transaction.Outputs {
 		acc, err = types.SafePlus(acc, out.Value)
 		if err != nil {
-			return 0, xerrors.Errorf("failed to perform uint53 addition: %v", err)
+			return 0, err
 		}
 	}
 
@@ -72,27 +72,21 @@ func (transaction Transaction) SumOutputs() (types.Uint53, error) {
 func (message PostTransaction) Verify() error {
 	_, err := message.Transaction.SumOutputs()
 	if err != nil {
-		return xerrors.Errorf("failed to compute the sum of outputs: %w", err)
+		return err
 	}
 
 	// verify id is base64URL encoded
 	_, err = base64.URLEncoding.DecodeString(message.TransactionID)
 	if err != nil {
-		return xerrors.Errorf("transaction id is %s, should be base64URL "+
-			"encoded", message.TransactionID)
+		return errors.NewInvalidMessageFieldError("transaction id is %s, should be base64URL encoded", message.TransactionID)
 	}
 
 	err = message.verifyTransactionId()
 	if err != nil {
-		return xerrors.Errorf("failed to verify the transaction id: %v", err)
+		return err
 	}
 
-	err = message.verifySignature()
-	if err != nil {
-		return xerrors.Errorf("failed to verify the signature: %v", err)
-	}
-
-	return nil
+	return message.verifySignature()
 }
 
 func (message PostTransaction) verifyTransactionId() error {
@@ -134,10 +128,10 @@ func (message PostTransaction) verifyTransactionId() error {
 
 	hashFields = append(hashFields, version)
 
-	expectedID := Hash(hashFields...)
+	expectedID := message2.Hash(hashFields...)
 
 	if message.TransactionID != expectedID {
-		return xerrors.Errorf("transaction id is not valid: %s != %s", message.TransactionID, expectedID)
+		return errors.NewInvalidMessageFieldError("transaction id is not valid: %s != %s", message.TransactionID, expectedID)
 	}
 
 	return nil
@@ -168,17 +162,17 @@ func (message PostTransaction) verifySignature() error {
 	for _, inp := range message.Transaction.Inputs {
 		signatureBytes, err := base64.URLEncoding.DecodeString(inp.Script.Sig)
 		if err != nil {
-			return xerrors.Errorf("failed to decode signature string: %v", err)
+			return errors.NewInvalidMessageFieldError("failed to decode signature string: %v", err)
 		}
 
 		publicKeySender, err := base64.URLEncoding.DecodeString(inp.Script.PubKey)
 		if err != nil {
-			return xerrors.Errorf("failed to decode public key string: %v", err)
+			return errors.NewInvalidMessageFieldError("failed to decode public key string: %v", err)
 		}
 
 		err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, sigComp.Bytes(), signatureBytes)
 		if err != nil {
-			return answer.NewErrorf(-4, "failed to verify signature : %v", err)
+			return errors.NewInvalidMessageFieldError("failed to verify signature : %v", err)
 		}
 	}
 

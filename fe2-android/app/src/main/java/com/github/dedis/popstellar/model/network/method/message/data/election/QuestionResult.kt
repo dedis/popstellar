@@ -11,7 +11,9 @@ class QuestionResult(ballotOption: String?, count: Int) {
   val count: Int
 
   init {
-    verify().stringNotEmpty(ballotOption, "ballot option").greaterOrEqualThan(count, 0, "count")
+    verify()
+        .stringNotEmpty(ballotOption, "ballot option")
+        .greaterOrEqualThan(count.toLong(), 0, "count")
 
     ballot = ballotOption!!
     this.count = count

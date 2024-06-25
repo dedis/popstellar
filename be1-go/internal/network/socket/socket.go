@@ -50,6 +50,12 @@ type Socket interface {
 	// message which does not have an ID.
 	SendError(id *int, err error)
 
+	// SendPopError is used to send an error to the client.  Please refer to
+	// the Protocol Specification document for information on the error
+	// codes. id is a pointer type because an error might be for a
+	// message which does not have an ID.
+	SendPopError(id *int, err error)
+
 	// SendResult is used to send a result message to the client. Res can be
 	// nil, empty, or filled if the result is a slice of messages.
 	// MissingMessagesByChannel can be nil or filled if the result is a map

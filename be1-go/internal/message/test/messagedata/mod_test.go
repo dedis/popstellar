@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/message/messagedata"
+	"popstellar/internal/message/query/method/message"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -61,10 +62,10 @@ func Test_Hash(t *testing.T) {
 	data4 := []string{"text 🥰", "🏉", "more text🎃️", "♠️"}
 
 	// the expected hash has been taken from the Scala system
-	require.Equal(t, messagedata.Hash(data1...), "61I7DQkiMtdHFM5VygjbFqrVmn4NAl0wSVxkj6Q5iDw=")
-	require.Equal(t, messagedata.Hash(), "47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU=")
-	require.Equal(t, messagedata.Hash(data2), "8BMmJjQMPhtD0QwVor1uVB3B_PyMMyIbIvaDHcOQnTg=")
-	require.Equal(t, messagedata.Hash(data3), "ht7cQAkPdd6o-ZFVW6gTbt0gEIEUcr5FTDgOaeW8BOU=")
-	require.Equal(t, messagedata.Hash(data4...), "wANKJFj9q_ncRKalYmK4yozUpet33JaFXVQEpMcHdfU=")
+	require.Equal(t, message.Hash(data1...), "61I7DQkiMtdHFM5VygjbFqrVmn4NAl0wSVxkj6Q5iDw=")
+	require.Equal(t, message.Hash(), "47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU=")
+	require.Equal(t, message.Hash(data2), "8BMmJjQMPhtD0QwVor1uVB3B_PyMMyIbIvaDHcOQnTg=")
+	require.Equal(t, message.Hash(data3), "ht7cQAkPdd6o-ZFVW6gTbt0gEIEUcr5FTDgOaeW8BOU=")
+	require.Equal(t, message.Hash(data4...), "wANKJFj9q_ncRKalYmK4yozUpet33JaFXVQEpMcHdfU=")
 
 }

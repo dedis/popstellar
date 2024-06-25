@@ -2,7 +2,8 @@ package messagedata
 
 import (
 	"encoding/base64"
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
+	message2 "popstellar/internal/message/query/method/message"
 	"strconv"
 )
 
@@ -29,59 +30,49 @@ type ElectionSetup struct {
 
 const ElectionFlag = "Election"
 
-func (message ElectionSetup) Verify(laoID string) *answer.Error {
-	var errAnswer *answer.Error
+func (message ElectionSetup) Verify(laoID string) error {
 	_, err := base64.URLEncoding.DecodeString(message.Lao)
 	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode lao: %v", err)
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("failed to decode lao: %v", err)
 	}
 
 	if message.Lao != laoID {
-		errAnswer = answer.NewInvalidMessageFieldError("lao id is %s, should be %s", message.Lao, laoID)
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("lao id is %s, should be %s", message.Lao, laoID)
 	}
 
 	_, err = base64.URLEncoding.DecodeString(message.ID)
 	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode election id: %v", err)
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("failed to decode election id: %v", err)
 	}
 
 	// verify election setup message id
-	expectedID := Hash(
+	expectedID := message2.Hash(
 		ElectionFlag,
 		laoID,
 		strconv.Itoa(int(message.CreatedAt)),
 		message.Name,
 	)
 	if message.ID != expectedID {
-		errAnswer = answer.NewInvalidMessageFieldError("election id is %s, should be %s", message.ID, expectedID)
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("election id is %s, should be %s", message.ID, expectedID)
 	}
 	if len(message.Name) == 0 {
-		errAnswer = answer.NewInvalidMessageFieldError("election name is empty")
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("election name is empty")
 	}
 	if message.Version != OpenBallot && message.Version != SecretBallot {
-		errAnswer = answer.NewInvalidMessageFieldError("election version is %s, should be %s or %s", message.Version, OpenBallot, SecretBallot)
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("election version is %s, should be %s or %s", message.Version,
+			OpenBallot, SecretBallot)
 	}
 	if message.CreatedAt < 0 {
-		errAnswer = answer.NewInvalidMessageFieldError("election created at is %d, should be minimum 0", message.CreatedAt)
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("election created at is %d, should be minimum 0", message.CreatedAt)
 	}
 	if message.StartTime < message.CreatedAt {
-		errAnswer = answer.NewInvalidMessageFieldError("election start should be greater that creation time")
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("election start should be greater that creation time")
 	}
 	if message.EndTime < message.StartTime {
-		errAnswer = answer.NewInvalidMessageFieldError("election end should be greater that start time")
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("election end should be greater that start time")
 	}
 	if len(message.Questions) == 0 {
-		errAnswer = answer.NewInvalidMessageFieldError("election contains no questions")
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("election contains no questions")
 	}
 	return nil
 }
@@ -120,30 +111,30 @@ type ElectionSetupQuestion struct {
 	WriteIn       bool     `json:"write_in"`
 }
 
-func (q ElectionSetupQuestion) Verify(electionSetupID string) *answer.Error {
-	var errAnswer *answer.Error
+func (q ElectionSetupQuestion) Verify(electionSetupID string) error {
 	_, err := base64.URLEncoding.DecodeString(q.ID)
 	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode Question id: %v", err)
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("failed to decode Question id: %v", err)
 	}
-	expectedID := Hash(
+
+	expectedID := message2.Hash(
 		questionFlag,
 		electionSetupID,
 		q.Question,
 	)
+
 	if q.ID != expectedID {
-		errAnswer = answer.NewInvalidMessageFieldError("Question id is %s, should be %s", q.ID, expectedID)
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("Question id is %s, should be %s", q.ID, expectedID)
 	}
+
 	if len(q.Question) == 0 {
-		errAnswer = answer.NewInvalidMessageFieldError("Question is empty")
-		return errAnswer
+		return errors.NewInvalidMessageFieldError("Question is empty")
 	}
+
 	if q.VotingMethod != PluralityMethod && q.VotingMethod != ApprovalMethod {
-		errAnswer = answer.NewInvalidMessageFieldError("Question voting method is %s, should be %s or %s",
+		return errors.NewInvalidMessageFieldError("Question voting method is %s, should be %s or %s",
 			q.VotingMethod, PluralityMethod, ApprovalMethod)
-		return errAnswer
 	}
+
 	return nil
 }

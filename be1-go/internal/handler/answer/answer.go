@@ -3,12 +3,13 @@ package answer
 import (
 	"encoding/json"
 	"math/rand"
-	"popstellar/internal/handler/channel"
-	"popstellar/internal/handler/query"
+	poperrors "popstellar/internal/errors"
 	"popstellar/internal/logger"
 	"popstellar/internal/message/answer"
+	"popstellar/internal/message/query/method"
 	"popstellar/internal/message/query/method/message"
-	"popstellar/internal/singleton/state"
+	"popstellar/internal/network/socket"
+	"popstellar/internal/repository"
 	"sort"
 )
 
@@ -17,21 +18,47 @@ const (
 	continueMongering = 0.5
 )
 
-func HandleAnswer(msg []byte) *answer.Error {
+type MessageHandler interface {
+	Handle(channelPath string, msg message.Message, fromRumor bool) error
+}
+
+type RumorSender interface {
+	SendRumor(socket socket.Socket, rumor method.Rumor)
+}
+
+type AnswerHandlers struct {
+	MessageHandler MessageHandler
+	RumorSender    RumorSender
+}
+
+type Handler struct {
+	queries  repository.QueryManager
+	handlers AnswerHandlers
+}
+
+func New(queries repository.QueryManager, handlers AnswerHandlers) *Handler {
+	return &Handler{
+		queries:  queries,
+		handlers: handlers,
+	}
+}
+
+func (h *Handler) Handle(msg []byte) error {
 	var answerMsg answer.Answer
 
 	err := json.Unmarshal(msg, &answerMsg)
 	if err != nil {
-		errAnswer := answer.NewJsonUnmarshalError(err.Error())
-		return errAnswer.Wrap("handleAnswer")
+		return poperrors.NewJsonUnmarshalError(err.Error())
 	}
 
-	isRumor, errAnswer := state.IsRumorQuery(*answerMsg.ID)
-	if errAnswer != nil {
-		return errAnswer
+	if answerMsg.ID == nil {
+		logger.Logger.Info().Msg("received an answer with a null id")
+		return nil
 	}
+
+	isRumor := h.queries.IsRumorQuery(*answerMsg.ID)
 	if isRumor {
-		return handleRumorAnswer(answerMsg)
+		return h.handleRumorAnswer(answerMsg)
 	}
 
 	if answerMsg.Result == nil {
@@ -46,30 +73,27 @@ func HandleAnswer(msg []byte) *answer.Error {
 		return nil
 	}
 
-	errAnswer = state.SetQueryReceived(*answerMsg.ID)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleAnswer")
+	err = h.queries.SetQueryReceived(*answerMsg.ID)
+	if err != nil {
+		return err
 	}
 
-	errAnswer = handleGetMessagesByIDAnswer(answerMsg)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleAnswer")
-	}
+	h.handleGetMessagesByIDAnswer(answerMsg)
 
 	return nil
 }
 
-func handleRumorAnswer(msg answer.Answer) *answer.Error {
-	errAnswer := state.SetQueryReceived(*msg.ID)
-	if errAnswer != nil {
-		return errAnswer
+func (h *Handler) handleRumorAnswer(msg answer.Answer) error {
+	err := h.queries.SetQueryReceived(*msg.ID)
+	if err != nil {
+		return err
 	}
 
 	logger.Logger.Debug().Msgf("received an answer to rumor query %d", *msg.ID)
 
 	if msg.Error != nil {
 		logger.Logger.Debug().Msgf("received an answer error to rumor query %d", *msg.ID)
-		if msg.Error.Code != answer.DuplicateResourceErrorCode {
+		if msg.Error.Code != poperrors.DuplicateResourceErrorCode {
 			logger.Logger.Debug().Msgf("invalid error code to rumor query %d", *msg.ID)
 			return nil
 		}
@@ -85,20 +109,17 @@ func handleRumorAnswer(msg answer.Answer) *answer.Error {
 	}
 
 	logger.Logger.Debug().Msgf("sender rumor need to continue sending query %d", *msg.ID)
-	rumor, ok, errAnswer := state.GetRumorFromPastQuery(*msg.ID)
-	if errAnswer != nil {
-		return errAnswer
-	}
+	rumor, ok := h.queries.GetRumorFromPastQuery(*msg.ID)
 	if !ok {
-		return answer.NewInternalServerError("rumor query %d doesn't exist", *msg.ID)
+		return poperrors.NewInternalServerError("rumor query %d doesn't exist", *msg.ID)
 	}
 
-	query.SendRumor(nil, rumor)
+	h.handlers.RumorSender.SendRumor(nil, rumor)
 
 	return nil
 }
 
-func handleGetMessagesByIDAnswer(msg answer.Answer) *answer.Error {
+func (h *Handler) handleGetMessagesByIDAnswer(msg answer.Answer) {
 	result := msg.Result.GetMessagesByChannel()
 	msgsByChan := make(map[string]map[string]message.Message)
 
@@ -113,8 +134,8 @@ func handleGetMessagesByIDAnswer(msg answer.Answer) *answer.Error {
 				continue
 			}
 
-			errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err)
-			logger.Logger.Error().Err(errAnswer)
+			err = poperrors.NewJsonUnmarshalError(err.Error())
+			logger.Logger.Error().Err(err)
 		}
 
 		if len(msgsByChan[channelID]) == 0 {
@@ -123,18 +144,16 @@ func handleGetMessagesByIDAnswer(msg answer.Answer) *answer.Error {
 	}
 
 	// Handle every message and discard them if handled without error
-	handleMessagesByChannel(msgsByChan)
-
-	return nil
+	h.handleMessagesByChannel(msgsByChan)
 }
 
-func handleMessagesByChannel(msgsByChannel map[string]map[string]message.Message) {
+func (h *Handler) handleMessagesByChannel(msgsByChannel map[string]map[string]message.Message) {
 	// Handle every messages
 	for i := 0; i < maxRetry; i++ {
 		// Sort by channelID length
-		sortedChannelIDs := getSortedChannels(msgsByChannel)
+		sortedChannelIDs := h.getSortedChannels(msgsByChannel)
 
-		tryToHandleMessages(msgsByChannel, sortedChannelIDs)
+		h.tryToHandleMessages(msgsByChannel, sortedChannelIDs)
 
 		if len(msgsByChannel) == 0 {
 			return
@@ -142,22 +161,17 @@ func handleMessagesByChannel(msgsByChannel map[string]map[string]message.Message
 	}
 }
 
-func tryToHandleMessages(msgsByChannel map[string]map[string]message.Message, sortedChannelIDs []string) {
+func (h *Handler) tryToHandleMessages(msgsByChannel map[string]map[string]message.Message, sortedChannelIDs []string) {
 	for _, channelID := range sortedChannelIDs {
 		msgs := msgsByChannel[channelID]
 		for msgID, msg := range msgs {
-			errAnswer := channel.HandleChannel(channelID, msg, false)
-			if errAnswer == nil {
+			err := h.handlers.MessageHandler.Handle(channelID, msg, false)
+			if err == nil {
 				delete(msgsByChannel[channelID], msgID)
 				continue
 			}
 
-			if errAnswer.Code == answer.InvalidMessageFieldErrorCode {
-				delete(msgsByChannel[channelID], msgID)
-			}
-
-			errAnswer = errAnswer.Wrap(msgID).Wrap("tryToHandleMessages")
-			logger.Logger.Error().Err(errAnswer)
+			logger.Logger.Error().Err(err)
 		}
 
 		if len(msgsByChannel[channelID]) == 0 {
@@ -166,7 +180,7 @@ func tryToHandleMessages(msgsByChannel map[string]map[string]message.Message, so
 	}
 }
 
-func getSortedChannels(msgsByChannel map[string]map[string]message.Message) []string {
+func (h *Handler) getSortedChannels(msgsByChannel map[string]map[string]message.Message) []string {
 	sortedChannelIDs := make([]string, 0)
 	for channelID := range msgsByChannel {
 		sortedChannelIDs = append(sortedChannelIDs, channelID)

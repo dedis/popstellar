@@ -50,6 +50,18 @@ This is a possible improvement that could be done in the future.
   <img src="images/architecture_diagram.png" alt="Architecture"/>
 </div>
 
+### Launch a single server
+The feature `tests/karate/src/test/java/be/features/utils/server.feature` is a utility that can be used to test a single server for the current `env` (i.e go or scala). When the feature is called, it starts the server. Then, when the scenario is done it automatically stops the server and cleans up the database.
+
+### Launch multiple servers
+If you need to launch multiple servers, you can use the classes `GoServer` and `ScalaServer`.
+The classes offer a few methods:
+- `start`: Launches the server. If the database path specified in the constructor is `null`, it will automatically create a temporary database.
+- `stop`: Stops the server
+- `pairWith`: Pairs two servers. Must be called before starting the server.
+- `unpairWith`: Unpairs two servers. Must be called before starting the server.
+- `deleteDatabaseDir`: Removes the database directory.
+
 ### Example: Create a valid roll call scenario
 - The first `read` of the background section uses the full path description of the `constants.feature`.
 Subsequent paths used are defined as constants within this feature to make it easier to change them in the future.

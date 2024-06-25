@@ -1,7 +1,7 @@
 package messagedata
 
 import (
-	"golang.org/x/xerrors"
+	"popstellar/internal/errors"
 )
 
 // ChirpAdd defines a message data
@@ -19,7 +19,7 @@ type ChirpAdd struct {
 func (message ChirpAdd) Verify() error {
 	// verify that Timestamp is positive
 	if message.Timestamp < 0 {
-		return xerrors.Errorf("timestamp is %d, should be minimum 0", message.Timestamp)
+		return errors.NewInvalidMessageFieldError("timestamp is %d, should be minimum 0", message.Timestamp)
 	}
 
 	return nil

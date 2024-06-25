@@ -2,8 +2,8 @@ package messagedata
 
 import (
 	"encoding/base64"
-
-	"golang.org/x/xerrors"
+	"popstellar/internal/errors"
+	message2 "popstellar/internal/message/query/method/message"
 )
 
 // ConsensusElect defines a message data
@@ -31,11 +31,11 @@ func (message ConsensusElect) Verify() error {
 	// verify that the instance id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(message.InstanceID)
 	if err != nil {
-		return xerrors.Errorf("lao id is %s, should be base64URL encoded", message.InstanceID)
+		return errors.NewInvalidMessageFieldError("lao id is %s, should be base64URL encoded", message.InstanceID)
 	}
 
 	// verify the instance ID
-	expectedID := Hash(
+	expectedID := message2.Hash(
 		message.Object,
 		message.Key.Type,
 		message.Key.ID,
@@ -43,12 +43,12 @@ func (message ConsensusElect) Verify() error {
 	)
 
 	if message.InstanceID != expectedID {
-		return xerrors.Errorf("instance id is %s, should be %s", message.InstanceID, expectedID)
+		return errors.NewInvalidMessageFieldError("instance id is %s, should be %s", message.InstanceID, expectedID)
 	}
 
 	// verify CreatedAt is positive
 	if message.CreatedAt < 0 {
-		return xerrors.Errorf("consensus creation is %d, should be at minimum 0", message.CreatedAt)
+		return errors.NewInvalidMessageFieldError("consensus creation is %d, should be at minimum 0", message.CreatedAt)
 	}
 
 	return nil

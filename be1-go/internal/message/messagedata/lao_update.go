@@ -2,8 +2,7 @@ package messagedata
 
 import (
 	"encoding/base64"
-
-	"golang.org/x/xerrors"
+	"popstellar/internal/errors"
 )
 
 // LaoUpdate defines a message data
@@ -24,24 +23,24 @@ func (message LaoUpdate) Verify() error {
 	// verify id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(message.ID)
 	if err != nil {
-		return xerrors.Errorf("lao id is %s, should be base64URL encoded", message.ID)
+		return errors.NewInvalidMessageFieldError("lao id is %s, should be base64URL encoded", message.ID)
 	}
 
 	// verify lao name non-empty
 	if len(message.Name) == 0 {
-		return xerrors.Errorf("lao name is %s, should not be empty", message.Name)
+		return errors.NewInvalidMessageFieldError("lao name is %s, should not be empty", message.Name)
 	}
 
 	// verify LastModified is positive
 	if message.LastModified < 0 {
-		return xerrors.Errorf("last modified is %d, should be minimum 0", message.LastModified)
+		return errors.NewInvalidMessageFieldError("last modified is %d, should be minimum 0", message.LastModified)
 	}
 
 	// verify all witnesses are base64URL encoded
 	for _, witness := range message.Witnesses {
 		_, err = base64.URLEncoding.DecodeString(witness)
 		if err != nil {
-			return xerrors.Errorf("lao witness is %s, should be base64URL encoded", witness)
+			return errors.NewInvalidMessageFieldError("lao witness is %s, should be base64URL encoded", witness)
 		}
 	}
 

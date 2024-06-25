@@ -9,7 +9,12 @@ import (
 )
 
 type Repository interface {
-	QueryRepository
+	HeartbeatSenderRepository
+	PublishRepository
+	CatchupRepository
+	GetMessagesByIDRepository
+	HeartbeatRepository
+	RumorRepository
 	AnswerRepository
 	ChannelRepository
 	RootRepository
@@ -20,6 +25,7 @@ type Repository interface {
 	ReactionRepository
 	RumorSenderRepository
 	FederationRepository
+	HubRepository
 
 	// StoreServerKeys stores the keys of the server
 	StoreServerKeys(electionPubKey kyber.Point, electionSecretKey kyber.Scalar) error
@@ -37,27 +43,42 @@ type Repository interface {
 	GetMessageByID(ID string) (message.Message, error)
 }
 
-type RumorSenderRepository interface {
-	// AddMessageToMyRumor adds the message to the last rumor of the server and returns the current number of message inside the last rumor
-	AddMessageToMyRumor(messageID string) (int, error)
+type HubRepository interface {
+	HeartbeatSenderRepository
+	RumorSenderRepository
+}
 
+type HeartbeatSenderRepository interface {
+	GetParamsHeartbeat() (map[string][]string, error)
+}
+
+type RumorSenderRepository interface {
 	// GetAndIncrementMyRumor return false if the last rumor is empty otherwise returns the new rumor to send and create the next rumor
 	GetAndIncrementMyRumor() (bool, method.Rumor, error)
 }
 
 // ======================= Query ==========================
 
-type QueryRepository interface {
-	GetResultForGetMessagesByID(params map[string][]string) (map[string][]message.Message, error)
+type PublishRepository interface {
+	// AddMessageToMyRumor adds the message to the last rumor of the server and returns the current number of message inside the last rumor
+	AddMessageToMyRumor(messageID string) (int, error)
+}
 
-	// GetParamsForGetMessageByID returns the params to do the getMessageByID msg in reponse of heartbeat
-	GetParamsForGetMessageByID(params map[string][]string) (map[string][]string, error)
-
+type CatchupRepository interface {
 	// GetAllMessagesFromChannel return all the messages received + sent on a channel
 	GetAllMessagesFromChannel(channelID string) ([]message.Message, error)
+}
 
-	GetParamsHeartbeat() (map[string][]string, error)
+type GetMessagesByIDRepository interface {
+	GetResultForGetMessagesByID(params map[string][]string) (map[string][]message.Message, error)
+}
 
+type HeartbeatRepository interface {
+	// GetParamsForGetMessageByID returns the params to do the getMessageByID msg in reponse of heartbeat
+	GetParamsForGetMessageByID(params map[string][]string) (map[string][]string, error)
+}
+
+type RumorRepository interface {
 	// CheckRumor returns true if the rumor already exists
 	CheckRumor(senderID string, rumorID int) (bool, error)
 
@@ -76,8 +97,6 @@ type AnswerRepository interface {
 // ======================= Channel ==========================
 
 type ChannelRepository interface {
-	// HasChannel returns true if the channel already exists.
-	HasChannel(channel string) (bool, error)
 
 	// HasMessage returns true if the message already exists.
 	HasMessage(messageID string) (bool, error)

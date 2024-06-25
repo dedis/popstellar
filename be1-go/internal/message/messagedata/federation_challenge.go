@@ -2,7 +2,7 @@ package messagedata
 
 import (
 	"encoding/hex"
-	"popstellar/internal/message/answer"
+	"popstellar/internal/errors"
 )
 
 // FederationChallenge defines a message data
@@ -30,26 +30,26 @@ func (FederationChallenge) NewEmpty() MessageData {
 	return &FederationChallenge{}
 }
 
-func (message FederationChallenge) Verify() *answer.Error {
+func (message FederationChallenge) Verify() error {
 	if message.Object != message.GetObject() {
-		return answer.NewInvalidMessageFieldError(
+		return errors.NewInvalidMessageFieldError(
 			"object is %s instead of %s",
 			message.Object, message.GetAction())
 	}
 
 	if message.Action != message.GetAction() {
-		return answer.NewInvalidMessageFieldError(
+		return errors.NewInvalidMessageFieldError(
 			"action is %s instead of %s",
 			message.Action, message.GetAction())
 	}
 
 	if message.ValidUntil < 0 {
-		return answer.NewInvalidMessageFieldError("valid_until is negative")
+		return errors.NewInvalidMessageFieldError("valid_until is negative")
 	}
 
 	valueBytes, err := hex.DecodeString(message.Value)
 	if err != nil || len(valueBytes) != 32 {
-		return answer.NewInvalidMessageFieldError(
+		return errors.NewInvalidMessageFieldError(
 			"value is not a 32 bytes array encoded in hexadecimal")
 	}
 

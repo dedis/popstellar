@@ -16,6 +16,8 @@ import scala.concurrent.duration.DurationInt
 class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSuiteActorSystem")) with FunSuiteLike with Matchers with BeforeAndAfterAll {
   private val timeout = 3.seconds
 
+  private val fakeRef = TestProbe().ref
+
   override def afterAll(): Unit = {
     // Stops the test actor system
     TestKit.shutdownActorSystem(system)
@@ -26,7 +28,7 @@ class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSui
     val server = TestProbe()
 
     val connectionMediatorRef = system.actorOf(
-      ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, MessageRegistry())
+      ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, fakeRef, MessageRegistry())
     )
 
     mockMonitor.expectMsg(timeout, ConnectionMediator.Ping())
@@ -50,7 +52,7 @@ class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSui
     val server3 = TestProbe()
 
     val connectionMediatorRef = system.actorOf(
-      ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, MessageRegistry())
+      ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, fakeRef, MessageRegistry())
     )
 
     mockMonitor.expectMsg(timeout, ConnectionMediator.Ping())
@@ -91,7 +93,7 @@ class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSui
     val mockMonitor = TestProbe()
     val testProbe = TestProbe()
     val connectionMediatorRef = system.actorOf(
-      ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, MessageRegistry())
+      ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, fakeRef, MessageRegistry())
     )
 
     testProbe.send(connectionMediatorRef, ConnectionMediator.ReadPeersClientAddress())
