@@ -317,8 +317,13 @@ func (h *Handler) handleInit(msg mmessage.Message, channelPath string,
 			Message: publishBytes,
 		}
 
-		h.hub.GetMessageChan() <- incomingMsg
-		return nil
+		// when adding the message to the message queue, we check if it is full
+		select {
+		case h.hub.GetMessageChan() <- incomingMsg:
+			return nil
+		default:
+			return errors.NewInternalServerError("Messages queue full")
+		}
 	}
 
 	remote, err := h.connectTo(federationInit.ServerAddress)
@@ -381,6 +386,7 @@ func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string,
 		// In the edge case where the two LAOs are on the same server, the
 		// result message would already be stored and handleResult will not be
 		// called => broadcast the result to both federation channels directly.
+		_ = h.db.StoreMessageAndData(remoteChannel, resultMsg)
 		_ = h.subs.BroadcastToAllClients(resultMsg, remoteChannel)
 	} else {
 		// publish the FederationResult to the other server
