@@ -17,7 +17,7 @@ import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, 
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor, RumorState}
 import ch.epfl.pop.model.objects.{Base64Data, PublicKey, RumorData}
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
-import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.pubsub.graph.{GraphMessage, MessageDecoder}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.storage.DbActor.{DbActorAck, DbActorReadRumorData}
 import org.scalatest.BeforeAndAfterEach
@@ -57,9 +57,11 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
   val pathCorrectRumor: String = "src/test/scala/util/examples/json/rumor/rumor.json"
   val pathCorrectCastVote: String = "src/test/scala/util/examples/json/election/cast_vote1.json"
+  val pathCorrectFederationInit: String = "src/test/scala/util/examples/json/federation/federation_init.json"
 
   val rumorRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(readJsonFromPath(pathCorrectRumor))
   val castVoteRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(readJsonFromPath(pathCorrectCastVote))
+  val federationInitRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(readJsonFromPath(pathCorrectFederationInit))
 
   val rumor: Rumor = rumorRequest.getParams.asInstanceOf[Rumor]
 
@@ -96,6 +98,28 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
         val jsonRumor = jsonRpcRequest.getParams.asInstanceOf[Rumor]
         jsonRumor shouldBe rumor
       case _ => 0 shouldBe 1
+  }
+  
+  test("When receiving ignored message, doesn't start gossiping") {
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef))
+    connectionMediatorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipManager, messageRegistry))
+    val sender = TestProbe("a")
+    val gossip = GossipManager.startGossip(gossipManager, sender.ref)
+
+    val server = TestProbe()
+
+    // registers a new server
+    connectionMediatorRef ? ConnectionMediator.NewServerConnected(server.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+
+    checkPeersWritten(connectionMediatorRef)
+    
+    val decodedInit = MessageDecoder.parseData(Right(federationInitRequest), messageRegistry)
+
+    // emulates receiving a federationInit and processes it
+    val outputCreateRumor = Source.single(decodedInit).via(gossip).runWith(Sink.head)
+    Await.result(outputCreateRumor, duration)
+    
+    server.expectNoMessage()
   }
 
   test("Gossip manager increments jsonRpcId and rumorID when starting a gossip from message") {
