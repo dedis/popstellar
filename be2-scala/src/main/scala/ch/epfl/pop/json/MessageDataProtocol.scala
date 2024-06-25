@@ -597,6 +597,8 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
     override def write(obj: FederationResult): JsValue = {
       val fields = scala.collection.mutable.Map[String, JsValue]()
+      fields += PARAM_OBJECT -> JsString(obj._object.toString)
+      fields += PARAM_ACTION -> JsString(obj.action.toString)
       fields += PARAM_STATUS -> obj.status.toJson
       fields += PARAM_CHALLENGE -> obj.challenge.toJson
 
