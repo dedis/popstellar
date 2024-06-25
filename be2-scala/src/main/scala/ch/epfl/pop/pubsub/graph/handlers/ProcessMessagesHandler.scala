@@ -56,7 +56,6 @@ object ProcessMessagesHandler extends AskPatternConstants {
       resultObject.resultRumor match
         case Some(rumorList) =>
           val orderedRumors = rumorList.sortBy(_.timestamp)
-          println(s"orderedRumors $orderedRumors")
           var processedRumors: List[Rumor] = List.empty
           var successful = true
           for rumor <- orderedRumors if successful do {
