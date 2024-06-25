@@ -60,7 +60,6 @@ class RumorStateAnsHandlerSuite extends TestKit(ActorSystem("RumorStateAnsHandle
 
   test("rumor state ans processes all msg well") {
 
-    
     val output = Source.single(Right(rumorStateResponse)).via(rumorStateAnsHandler).runWith(Sink.head)
     Await.result(output, duration)
 
@@ -71,7 +70,6 @@ class RumorStateAnsHandlerSuite extends TestKit(ActorSystem("RumorStateAnsHandle
     }
 
     val rumorList = rumorStateResponse.result.get.resultRumor.get
-    println(rumorList)
     val channelsInRumor = rumorList.flatMap(rumor => rumor.messages.keySet).toSet
     channelsInRumor.diff(channelsInDb) should equal(Set.empty)
 
@@ -91,7 +89,6 @@ class RumorStateAnsHandlerSuite extends TestKit(ActorSystem("RumorStateAnsHandle
     val responseInt = JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, ResultObject(0), Some(0))
     val outputResponseInt = Source.single(Right(responseInt)).via(rumorStateAnsHandler).runWith(Sink.head)
     Await.result(outputResponseInt, duration) shouldBe a[Left[PipelineError, Nothing]]
-
 
     val rumorList = rumorStateResponse.result.get.resultRumor.get
     val request = JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, publish, Publish(rumorList.head.messages.head._1, rumorList.head.messages.head._2.head), None)
