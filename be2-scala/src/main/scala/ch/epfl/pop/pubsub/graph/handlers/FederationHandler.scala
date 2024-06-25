@@ -51,7 +51,6 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
   private final val REASON: String = "Incorrect challenge"
   private final val STATUS: (String, String) = ("success", "failure")
   private val serverUnexpectedAnswer: String = "The server is doing something unexpected"
-  private final val keys: (String, String, String) = ("expect", "init", "challenge")
 
   def handleFederationChallengeRequest(rpcMessage: JsonRpcRequest): GraphMessage = {
     var challengeValue = ""
@@ -265,7 +264,7 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
 
   private def constructAndSendRpc(channel: Channel, message: Message, serverRef: ActorRef): Unit = {
     val messageParams: ParamsWithMessage = new ParamsWithMessage(channel, message)
-    val challengeRpc: JsonRpcRequest = JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, publish, messageParams, None)
+    val challengeRpc: JsonRpcRequest = JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, publish, messageParams, Some(0))
     serverRef ! ClientAnswer(Right(challengeRpc))
 
   }
