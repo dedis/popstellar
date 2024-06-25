@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.lao.digitalcash
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -48,10 +47,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Completable
 import io.reactivex.subjects.BehaviorSubject
-import java.nio.charset.StandardCharsets
-import java.security.GeneralSecurityException
-import java.util.Collections
-import javax.inject.Inject
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
@@ -61,6 +56,10 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoTestRule
+import java.nio.charset.StandardCharsets
+import java.security.GeneralSecurityException
+import java.util.Collections
+import javax.inject.Inject
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -242,6 +241,28 @@ class DigitalCashActivityTest {
           ViewMatchers.withChild(withId(IssuePageObject.fragmentDigitalCashIssueId()))
         )
       )
+  }
+
+  @Test
+  fun issueButtonsWork(){
+    DigitalCashPageObject.issueButton().perform(ViewActions.click())
+    LaoActivityPageObject.fragmentContainer()
+      .check(
+        matches(
+          ViewMatchers.withChild(withId(IssuePageObject.fragmentDigitalCashIssueId()))
+        )
+      )
+
+    // open the spinner
+    IssuePageObject.spinner().perform(ViewActions.click())
+    //close the spinner
+    IssuePageObject.spinner().perform(ViewActions.click())
+    // select the radio button
+    IssuePageObject.radioButtonAttendees().perform(ViewActions.click())
+    // input amount
+    IssuePageObject.issueAmount().perform(ViewActions.typeText("500"))
+    // click issue button
+    IssuePageObject.issueButton().perform(ViewActions.click())
   }
 
   @Test
