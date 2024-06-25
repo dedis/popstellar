@@ -96,8 +96,9 @@ class DigitalCashIssueFragment : Fragment() {
   }
 
   private fun getPublicKeyFromUsername(username: String): PublicKey {
-    return digitalCashViewModel.attendeesFromTheRollCallList.firstOrNull { it.getUsername() == username }
-      ?: digitalCashViewModel.validToken.publicKey
+    return digitalCashViewModel.attendeesFromTheRollCallList.firstOrNull {
+      it.getUsername() == username
+    } ?: digitalCashViewModel.validToken.publicKey
   }
 
   private fun displayToast(radioGroup: Int) {

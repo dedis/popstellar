@@ -41,6 +41,11 @@ class RollCallArrayAdapter(
       holder.usernameTextView.text = publicKey.getUsername()
       holder.hashTextView.text = publicKey.encoded
 
+      // Set the default color
+      val defaultColor = ContextCompat.getColor(context, R.color.textOnBackground)
+      holder.usernameTextView.setTextColor(defaultColor)
+      holder.hashTextView.setTextColor(defaultColor)
+
       // highlights our token in the list
       if (myToken != null && publicKey.encoded == myToken.publicKey.encoded) {
         val colorAccent = ContextCompat.getColor(context, R.color.colorAccent)
