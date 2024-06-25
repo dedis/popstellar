@@ -5,7 +5,7 @@ import ch.epfl.pop.json.HighLevelProtocol.RumorStateFormat
 import ch.epfl.pop.model.objects.PublicKey
 import spray.json.*
 
-final case class RumorState(state: Map[PublicKey, Int]) extends Params {
+final case class RumorState(state: Map[PublicKey, Int]) extends Params, Ordered[RumorState] {
 
   override def hasChannel: Boolean = false
 
@@ -26,6 +26,20 @@ final case class RumorState(state: Map[PublicKey, Int]) extends Params {
     } ++ {
       otherRumorState.state.filter((pk, _) => !this.state.contains(pk)).map((pk, rumorId) => pk -> List.range(0, rumorId + 1))
     }
+  }
+
+  override def compare(that: RumorState): Int = {
+    val stateDiff: Map[PublicKey, Int] = state.map { (pk, id) =>
+      that.state.get(pk) match
+        case Some(value) => pk -> (id - value)
+        case None        => pk -> id
+    } ++ that.state.removedAll(state.keySet).map((pk, value) => (pk, -value))
+    if stateDiff.values.forall(_ <= 0) && stateDiff.values.exists(_ < 0) then
+      -1
+    else if stateDiff.values.forall(_ >= 0) && stateDiff.values.exists(_ > 0) then
+      1
+    else
+      0
   }
 }
 
