@@ -76,6 +76,8 @@ object ParamsHandler extends AskPatternConstants {
   // Catchup requests are treated at the AnswerGenerator stage since it generates a JsonRpcResponse directly
   def catchupHandler(clientActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map(m => m)
 
+  // pagedCatchup requests are treated at the AnswerGenerator stage since it generates a JsonRpcResponse directly
+  def pagedCatchupHandler(clientActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map(m => m)
   def greetServerHandler(clientActorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcMessage: JsonRpcRequest) =>
       jsonRpcMessage.method match {

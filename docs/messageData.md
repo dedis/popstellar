@@ -1929,8 +1929,8 @@ Each Chirp data object consists of the following:
 ```
 
 After validating the chirp, the organizer’s server propagates the above message
-on the channel it is meant for (like usual) but it also creates the following
-message and sends it to a universal chirp channel ("/root/lao_id/social/chirps"):
+on the channel it is meant for (like usual) and a universal chirp channel ("/root/lao_id/social/chirps").
+It also creates the following message and sends it to the universal chirp channel ("/root/lao_id/social/chirps"):
 
 <details>
 <summary>
@@ -2046,9 +2046,10 @@ protocol, the chirp will always exist in historical records of the users’ chan
 
 ```
 
-After validating the removal of the chirp, the organizer’s server propagates the above message
-on the channel it is meant for (like usual) but it also creates the following message and sends
-it to a universal chirp channel ("/root/lao_id/social/chirps"):
+After validating the chirp, the organizer’s server propagates the above message
+on the channel it is meant for (like usual) and a universal chirp channel ("/root/lao_id/social/chirps").
+It also creates the following message and sends it to the universal chirp channel ("/root/lao_id/social/chirps"):
+
 
 <details>
 <summary>
@@ -2234,6 +2235,9 @@ protocol, the reaction will always exist in historical records of the reactions�
 }
 
 ```
+## Top chirps
+
+As mentioned in the catchup message section in `protocol.md`, to request top chirps, a catchup message should be sent to the subchannel `/root/{lao_id}/social/top_chirps`, where the server responds with the top 3 chirps among those that it has ranked by reactions. Where '👍' is a +1, '👎' is a -1, and '❤️' is a +1.   
 
 ## Consensus (introduction)
 

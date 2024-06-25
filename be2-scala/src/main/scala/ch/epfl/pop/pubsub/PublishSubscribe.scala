@@ -173,7 +173,8 @@ object PublishSubscribe {
           val portGreetServer = 7
           val portRumor = 8
           val portRumorState = 9
-          val totalPorts = 10
+          val portPagedCatchup = 10
+          val totalPorts = 11
 
           /* building blocks */
           val input = builder.add(Flow[GraphMessage].collect { case msg: GraphMessage => msg })
@@ -193,6 +194,7 @@ object PublishSubscribe {
                   case MethodType.greet_server       => portGreetServer
                   case MethodType.rumor              => portRumor
                   case MethodType.rumor_state        => portRumorState
+                  case MethodType.paged_catchup      => portPagedCatchup
                   case _                             => portPipelineError
                 }
 
@@ -211,6 +213,7 @@ object PublishSubscribe {
           val gossipManagerPartition = builder.add(GossipManager.gossipHandler(gossipManager, clientActorRef))
           val gossipStartPartition = builder.add(GossipManager.startGossip(gossipManager, clientActorRef))
           val rumorStatePartition = builder.add(ParamsHandler.rumorStateHandler(dbActorRef))
+          val pagedCatchupPartition = builder.add(ParamsHandler.pagedCatchupHandler(clientActorRef))
 
           val merger = builder.add(Merge[GraphMessage](totalPorts))
 
@@ -227,6 +230,7 @@ object PublishSubscribe {
           methodPartitioner.out(portGreetServer) ~> greetServerPartition ~> merger
           methodPartitioner.out(portRumor) ~> gossipManagerPartition ~> rumorPartition ~> merger
           methodPartitioner.out(portRumorState) ~> rumorStatePartition ~> merger
+          methodPartitioner.out(portPagedCatchup) ~> pagedCatchupPartition ~> merger
 
           /* close the shape */
           FlowShape(input.in, merger.out)

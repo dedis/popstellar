@@ -607,4 +607,19 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     }
   }
 
+  implicit object NumberOfChirpsReactionsDataFormat extends JsonFormat[NumberOfChirpsReactionsData] {
+    final private val PARAM_NUMBER_OF_CHIRPS_REACTIONS: String = "numberOfChirpsReactions"
+
+    override def read(json: JsValue): NumberOfChirpsReactionsData = json.asJsObject().getFields(PARAM_NUMBER_OF_CHIRPS_REACTIONS) match {
+      case Seq(numberOfChirpsReactions @ JsNumber(_)) => NumberOfChirpsReactionsData(
+          numberOfChirpsReactions.convertTo[Int]
+        )
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a NumberOfChirpsReactionsData object")
+    }
+
+    override def write(obj: NumberOfChirpsReactionsData): JsValue = JsObject(
+      PARAM_NUMBER_OF_CHIRPS_REACTIONS -> obj.numberOfChirpsReactions.toJson
+    )
+  }
+
 }

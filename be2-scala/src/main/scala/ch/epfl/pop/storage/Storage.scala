@@ -13,6 +13,7 @@ trait Storage {
   final val SERVER_PRIVATE_KEY = "ServerPrivateKey:"
   final val RUMOR_KEY = "Rumor:"
   final val DEFAULT = "Default:"
+  final val NUMBER_OF_REACTIONS_KEY = "NumberOfReactions:"
 
   /** Optionally returns the value associated with a key
     *
