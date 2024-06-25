@@ -211,7 +211,6 @@ const (
         WHERE channelPath = ?
     )
 `
-
 	selectLastElectionMessage = `
     SELECT json_extract(messageData, '$.action')
     FROM message

@@ -171,7 +171,7 @@ func (s *SQLite) CheckRumor(senderID string, rumorID int, timestamp mrumor.Rumor
 		isValid = true
 		for senderID1, rumorID1 := range timestamp {
 			rumorID2, ok := myTimestamp[senderID1]
-			if !ok || rumorID1 > rumorID2 {
+			if (!ok || rumorID1 > rumorID2) && senderID1 != senderID {
 				isValid = false
 				break
 			}
@@ -458,7 +458,7 @@ func (s *SQLite) GetAllRumors() ([]mrumor.Rumor, error) {
 		return nil, poperrors.NewDatabaseSelectErrorMsg("current rumor id and sender: %v", err)
 	}
 
-	rows, err := s.database.Query(selectAllRumors)
+	rows, err := tx.Query(selectAllRumors)
 	if err != nil {
 		return nil, poperrors.NewDatabaseSelectErrorMsg("all rumors: %v", err)
 	}
@@ -480,7 +480,7 @@ func (s *SQLite) GetAllRumors() ([]mrumor.Rumor, error) {
 			return nil, poperrors.NewInternalServerError("failed to unmarshal timestamp: %v", err)
 		}
 
-		messages, err := s.GetMessagesFromRumorHelper(rumorID, sender)
+		messages, err := s.GetMessagesFromRumorHelper(tx, rumorID, sender)
 		if err != nil {
 			return nil, err
 		}
@@ -495,9 +495,9 @@ func (s *SQLite) GetAllRumors() ([]mrumor.Rumor, error) {
 	return rumors, nil
 }
 
-func (s *SQLite) GetMessagesFromRumorHelper(rumorID int, sender string) (map[string][]mmessage.Message, error) {
+func (s *SQLite) GetMessagesFromRumorHelper(tx *sql.Tx, rumorID int, sender string) (map[string][]mmessage.Message, error) {
 
-	rows, err := s.database.Query(selectRumorMessages, true, sender, rumorID)
+	rows, err := tx.Query(selectRumorMessages, true, sender, rumorID)
 	if err != nil {
 		return nil, poperrors.NewDatabaseSelectErrorMsg("messages from rumor %d: %v", rumorID, err)
 	}

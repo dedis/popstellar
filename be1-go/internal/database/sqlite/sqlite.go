@@ -126,8 +126,26 @@ func (s *SQLite) StoreMessageAndData(channelPath string, msg mmessage.Message) e
 	return nil
 }
 
-// GetMessagesByID returns a set of messages by their IDs.
-func (s *SQLite) GetMessagesByID(IDs []string) (map[string]mmessage.Message, error) {
+func (s *SQLite) HasMessage(messageID string) (bool, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	var msgID string
+	err := s.database.QueryRow(selectMessageID, messageID).Scan(&msgID)
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	} else if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return false, poperrors.NewDatabaseSelectErrorMsg("message ID: %v", err)
+	} else {
+		return true, nil
+	}
+}
+
+func (s *SQLite) GetParamsHeartbeat() (map[string][]string, error) {
+	return nil, nil
+}
+
+func (s *SQLite) GetMessagesByIDUtil(IDs []string) (map[string]mmessage.Message, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
@@ -170,8 +188,8 @@ func (s *SQLite) GetMessagesByID(IDs []string) (map[string]mmessage.Message, err
 	return messagesByID, nil
 }
 
-// GetMessageByID returns a message by its ID.
-func (s *SQLite) GetMessageByID(ID string) (mmessage.Message, error) {
+// GetMessageByIDUtil returns a message by its ID.
+func (s *SQLite) GetMessageByIDUtil(ID string) (mmessage.Message, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
@@ -188,8 +206,7 @@ func (s *SQLite) GetMessageByID(ID string) (mmessage.Message, error) {
 	return msg, nil
 }
 
-// StoreChannel mainly used for testing purposes.
-func (s *SQLite) StoreChannel(channelPath, channelType, laoPath string) error {
+func (s *SQLite) StoreChannelUtil(channelPath, channelType, laoPath string) error {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
@@ -201,21 +218,13 @@ func (s *SQLite) StoreChannel(channelPath, channelType, laoPath string) error {
 	return nil
 }
 
-func (s *SQLite) HasMessage(messageID string) (bool, error) {
+func (s *SQLite) StorePubKeyUtil(keyPath string, key []byte) error {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
-	var msgID string
-	err := s.database.QueryRow(selectMessageID, messageID).Scan(&msgID)
-	if err != nil && errors.Is(err, sql.ErrNoRows) {
-		return false, nil
-	} else if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return false, poperrors.NewDatabaseSelectErrorMsg("message ID: %v", err)
-	} else {
-		return true, nil
+	_, err := s.database.Exec(insertKeys, keyPath, base64.URLEncoding.EncodeToString(key), nil)
+	if err != nil {
+		return poperrors.NewDatabaseInsertErrorMsg("key %s: %v", keyPath, err)
 	}
-}
-
-func (s *SQLite) GetParamsHeartbeat() (map[string][]string, error) {
-	return nil, nil
+	return nil
 }
