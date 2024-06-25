@@ -496,11 +496,13 @@ func Test_handleFederationInit(t *testing.T) {
 	mux.HandleFunc("/client", websocketHandler(t, msgChan))
 	serverB := &http.Server{Addr: "localhost:9801", Handler: mux}
 
+	fakeSocket1 := &mock2.FakeSocket{Id: "1"}
+
 	go websocketServer(t, serverB, serverBStarted)
 	<-serverBStarted
 	defer serverB.Close()
 
-	err = federationHandler.handleInit(initMsg, channelPath)
+	err = federationHandler.handleInit(initMsg, channelPath, fakeSocket1)
 	require.NoError(t, err)
 
 	var msgBytes []byte

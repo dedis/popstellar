@@ -142,7 +142,7 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message,
 	case channel.FederationActionChallengeRequest:
 		err = h.handleRequestChallenge(msg, channelPath)
 	case channel.FederationActionInit:
-		err = h.handleInit(msg, channelPath)
+		err = h.handleInit(msg, channelPath, socket)
 	case channel.FederationActionExpect:
 		err = h.handleExpect(msg, channelPath)
 	case channel.FederationActionChallenge:
@@ -252,7 +252,8 @@ func (h *Handler) handleExpect(msg mmessage.Message, channelPath string) error {
 // handleInit checks that the message is from the local organizer and that
 // it contains a valid challenge, then stores the msg,
 // connect to the server and send the embedded challenge
-func (h *Handler) handleInit(msg mmessage.Message, channelPath string) error {
+func (h *Handler) handleInit(msg mmessage.Message, channelPath string,
+	s socket.Socket) error {
 	var federationInit mfederation.FederationInit
 	err := msg.UnmarshalData(&federationInit)
 	if err != nil {
@@ -292,8 +293,32 @@ func (h *Handler) handleInit(msg mmessage.Message, channelPath string) error {
 		// In the edge case where the two LAOs are on the same server,
 		// there is no need to create a websocket connection to the other
 		// server and message from one "server" to the "other" could be
-		// directly handled.
-		return h.handleChallenge(federationInit.ChallengeMsg, remoteChannel, nil)
+		// directly added to the message channel.
+		publishMsg := mpublish.Publish{
+			Base: mquery.Base{
+				JSONRPCBase: mjsonrpc.JSONRPCBase{
+					JSONRPC: "2.0",
+				},
+				Method: mquery.MethodPublish,
+			},
+			Params: mpublish.PublishParams{
+				Channel: remoteChannel,
+				Message: federationInit.ChallengeMsg,
+			},
+		}
+
+		publishBytes, err := json.Marshal(&publishMsg)
+		if err != nil {
+			return errors.NewJsonMarshalError(err.Error())
+		}
+
+		incomingMsg := socket.IncomingMessage{
+			Socket:  s,
+			Message: publishBytes,
+		}
+
+		h.hub.GetMessageChan() <- incomingMsg
+		return nil
 	}
 
 	remote, err := h.connectTo(federationInit.ServerAddress)
