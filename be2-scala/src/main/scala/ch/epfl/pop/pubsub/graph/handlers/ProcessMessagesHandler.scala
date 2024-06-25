@@ -55,14 +55,22 @@ object ProcessMessagesHandler extends AskPatternConstants {
     case msg @ Right(JsonRpcResponse(_, Some(resultObject), None, jsonId)) =>
       resultObject.resultRumor match
         case Some(rumorList) =>
-          val mergedMsg = rumorList
-            .flatMap(_.messages)
-            .groupBy(_._1)
-            .view.mapValues(_.flatMap(_._2).toSet).toMap
-          if (processMsgMap(mergedMsg, messageRegistry) && writeRumorsInDb(dbActorRef, rumorList))
-            msg
+          val orderedRumors = rumorList.sortBy(_.timestamp)
+          var processedRumors: List[Rumor] = List.empty
+          var failed = false
+          for rumor <- orderedRumors if !failed do {
+            failed = rumorHandler(messageRegistry, rumor) && writeRumorInDb(dbActorRef, rumor)
+            processedRumors = processedRumors.appended(rumor)
+          }
+          if failed then
+            system.log.info(s"Failed to process all rumors from rumorStateAnswer $jsonId. Processed rumors where ${processedRumors.map(rumor => (rumor.senderPk, rumor.rumorId))}")
+            Left(PipelineError(
+              ErrorCodes.SERVER_ERROR.id,
+              s"Rumor state handler was not able to process all rumors from $msg",
+              jsonId
+            ))
           else
-            Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Rumor state handler was not able to process all rumors from $msg", jsonId))
+            msg
         case _ => Left(PipelineError(
             ErrorCodes.SERVER_ERROR.id,
             s"Rumor state handler received an unexpected type of result $msg",
@@ -75,14 +83,11 @@ object ProcessMessagesHandler extends AskPatternConstants {
       ))
   }
 
-  private def writeRumorsInDb(dbActorRef: AskableActorRef, rumors: List[Rumor]): Boolean = {
-    rumors.foreach { rumor =>
-      val writeRumor = dbActorRef ? WriteRumor(rumor)
-      Await.result(writeRumor, duration) match
-        case DbActorAck() => /* DO NOTHING*/
-        case _            => false
-    }
-    true
+  private def writeRumorInDb(dbActorRef: AskableActorRef, rumor: Rumor): Boolean = {
+    val writeRumor = dbActorRef ? WriteRumor(rumor)
+    Await.result(writeRumor, duration) match
+      case DbActorAck() => true
+      case _            => false
   }
 
   def rumorHandler(messageRegistry: MessageRegistry, rumor: Rumor)(implicit system: ActorSystem): Boolean = {
