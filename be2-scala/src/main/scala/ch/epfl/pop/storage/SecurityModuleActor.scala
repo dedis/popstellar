@@ -53,22 +53,22 @@ final case class SecurityModuleActor(keysFolderPath: String) extends Actor with 
 
   override def receive: Receive = LoggingReceive {
     case ReadRsaPublicKey() =>
-      log.info(s"Actor $self (SecurityModuleActor) received a ReadRsaPublicKey request")
+      log.info(s"Received a ReadRsaPublicKey request")
       sender() ! ReadRsaPublicKeyAck(rsaPublicKey)
 
     case ReadRsaPublicKeyPem() =>
-      log.info(s"Actor $self (SecurityModuleActor) received a ReadRsaPublicKeyPem request")
+      log.info(s"Received a ReadRsaPublicKeyPem request")
       sender() ! ReadRsaPublicKeyPemAck(rsaPublicKeyPem)
 
     case SignJwt(jwt) =>
-      log.info(s"Actor $self (SecurityModuleActor) received a SignJwt request for jwt $jwt")
+      log.info(s"Received a SignJwt request for jwt $jwt")
       Try(signJwt(jwt)) match {
         case Success(jwtStr) => sender() ! SignJwtAck(jwtStr)
         case failure         => sender() ! failure.recover(Status.Failure(_))
       }
 
     case m =>
-      log.info(s"Actor $self (SecurityModuleActor) received an unknown message")
+      log.warning(s"Received an unknown message $m")
       sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"securityModuleActor actor received a message '$m' that it could not recognize"))
   }
 }
