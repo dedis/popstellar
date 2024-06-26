@@ -3,6 +3,7 @@ package hrumor
 import (
 	"encoding/json"
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
@@ -243,6 +244,7 @@ func (h *Handler) HandleRumorStateAnswer(socket socket.Socket, paramsRumor mrumo
 	}
 
 	if !ok {
+		log.Info().Msgf("Trying to insert into buffer rumor %s:%d", paramsRumor.SenderID, paramsRumor.RumorID)
 		err = h.buf.insert(rumor)
 		if err != nil {
 			return err

@@ -94,7 +94,7 @@ func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[str
 	defer dbLock.Unlock()
 
 	var interfaces []interface{}
-	// isBaseChannel must be true
+
 	interfaces = append(interfaces, true)
 	for _, value := range params {
 		for _, v := range value {
@@ -159,6 +159,13 @@ func (s *SQLite) CheckRumor(senderID string, rumorID int, timestamp mrumor.Rumor
 		return false, false, poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 	}
 
+	isValid, alreadyExist := s.CheckTimestampHelper(senderID, rumorID, timestamp, myTimestamp)
+	return isValid, alreadyExist, nil
+}
+
+func (s *SQLite) CheckTimestampHelper(senderID string, rumorID int,
+	timestamp, myTimestamp mrumor.RumorTimestamp) (bool, bool) {
+
 	isValid := false
 	alreadyExist := false
 
@@ -177,7 +184,8 @@ func (s *SQLite) CheckRumor(senderID string, rumorID int, timestamp mrumor.Rumor
 			}
 		}
 	}
-	return isValid, alreadyExist, nil
+
+	return isValid, alreadyExist
 }
 
 func (s *SQLite) StoreRumor(rumorID int, sender string, timestamp mrumor.RumorTimestamp,
@@ -193,7 +201,7 @@ func (s *SQLite) StoreRumor(rumorID int, sender string, timestamp mrumor.RumorTi
 
 	timestampBuf, err := json.Marshal(timestamp)
 	if err != nil {
-		return poperrors.NewJsonMarshalError("rumor timestamp: %v", err)
+		return poperrors.NewJsonMarshalError("my rumor timestamp: %v", err)
 	}
 
 	_, err = tx.Exec(insertRumor, rumorID, sender, timestampBuf)
@@ -201,9 +209,28 @@ func (s *SQLite) StoreRumor(rumorID int, sender string, timestamp mrumor.RumorTi
 		return poperrors.NewDatabaseInsertErrorMsg("rumor: %v", err)
 	}
 
+	err = StoreUnprocessedHelper(tx, rumorID, sender, unprocessed)
+	if err != nil {
+		return err
+	}
+
+	for _, msgID := range processed {
+		_, err = tx.Exec(insertMessageRumor, msgID, rumorID, sender)
+		if err != nil {
+			return poperrors.NewDatabaseInsertErrorMsg("relation message and rumor: %v", err)
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
+	}
+	return nil
+}
+
+func StoreUnprocessedHelper(tx *sql.Tx, rumorID int, sender string, unprocessed map[string][]mmessage.Message) error {
 	for channelPath, messages := range unprocessed {
 		for _, msg := range messages {
-
 			msgByte, err := json.Marshal(msg)
 			if err != nil {
 				return poperrors.NewJsonMarshalError("unprocessed message: %v", err)
@@ -217,18 +244,6 @@ func (s *SQLite) StoreRumor(rumorID int, sender string, timestamp mrumor.RumorTi
 				return poperrors.NewDatabaseInsertErrorMsg("relation unprocessed message and rumor: %v", err)
 			}
 		}
-	}
-
-	for _, msgID := range processed {
-		_, err = tx.Exec(insertMessageRumor, msgID, rumorID, sender)
-		if err != nil {
-			return poperrors.NewDatabaseInsertErrorMsg("relation message and rumor: %v", err)
-		}
-	}
-
-	err = tx.Commit()
-	if err != nil {
-		return poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 	}
 	return nil
 }
@@ -249,7 +264,7 @@ func (s *SQLite) GetUnprocessedMessagesByChannel() (map[string][]mmessage.Messag
 		var channelPath string
 		var messageByte []byte
 		if err = rows.Scan(&channelPath, &messageByte); err != nil {
-			return nil, poperrors.NewDatabaseScanErrorMsg("unprocessed message: %v", err)
+			return nil, poperrors.NewDatabaseScanErrorMsg("unprocessed message and channelPath: %v", err)
 		}
 		var msg mmessage.Message
 		if err = json.Unmarshal(messageByte, &msg); err != nil {
@@ -327,7 +342,7 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, mrumor.Rumor, error) {
 	var sender string
 	err = tx.QueryRow(selectMyRumorInfos, serverKeysPath).Scan(&rumorID, &sender)
 	if err != nil {
-		return false, mrumor.Rumor{}, poperrors.NewDatabaseSelectErrorMsg("current rumor id and sender: %v", err)
+		return false, mrumor.Rumor{}, poperrors.NewDatabaseSelectCurrRumorInfosErrorMsg(err.Error())
 	}
 
 	timestamp, err := s.GetRumorTimestampHelper(tx)
@@ -337,12 +352,12 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, mrumor.Rumor, error) {
 
 	timestampBuf, err := json.Marshal(timestamp)
 	if err != nil {
-		return false, mrumor.Rumor{}, poperrors.NewJsonMarshalError("rumor timestamp: %v", err)
+		return false, mrumor.Rumor{}, poperrors.NewJsonMarshalError("my rumor timestamp: %v", err)
 	}
 
 	_, err = tx.Exec(updateRumorTimestamp, timestampBuf, rumorID, sender)
 	if err != nil {
-		return false, mrumor.Rumor{}, poperrors.NewDatabaseUpdateErrorMsg("rumor timestamp: %v", err)
+		return false, mrumor.Rumor{}, poperrors.NewDatabaseUpdateErrorMsg("my last rumor timestamp: %v", err)
 	}
 
 	rumor := newRumor(rumorID, sender, messages, timestamp)
@@ -415,7 +430,7 @@ func (s *SQLite) GetRumorTimestampHelper(tx *sql.Tx) (mrumor.RumorTimestamp, err
 	var sender string
 	err = tx.QueryRow(selectMyRumorInfos, serverKeysPath).Scan(&rumorID, &sender)
 	if err != nil {
-		return nil, poperrors.NewDatabaseSelectErrorMsg("current rumor id and sender: %v", err)
+		return nil, poperrors.NewDatabaseSelectCurrRumorInfosErrorMsg(err.Error())
 	}
 
 	if rumorID == 0 {
@@ -464,7 +479,7 @@ func (s *SQLite) GetAllRumorParams() ([]mrumor.ParamsRumor, error) {
 	var mySender string
 	err = tx.QueryRow(selectMyRumorInfos, serverKeysPath).Scan(&myRumorID, &mySender)
 	if err != nil {
-		return nil, poperrors.NewDatabaseSelectErrorMsg("current rumor id and sender: %v", err)
+		return nil, poperrors.NewDatabaseSelectCurrRumorInfosErrorMsg(err.Error())
 	}
 
 	rows, err := tx.Query(selectAllRumors)
@@ -521,7 +536,7 @@ func (s *SQLite) GetMessagesFromRumorHelper(tx *sql.Tx, rumorID int, sender stri
 		}
 		var msg mmessage.Message
 		if err = json.Unmarshal(messageByte, &msg); err != nil {
-			return nil, poperrors.NewInternalServerError("failed to unmarshal message: %v", err)
+			return nil, poperrors.NewInternalServerError("failed to unmarshal message of rumor : %v", err)
 		}
 		messages[channelPath] = append(messages[channelPath], msg)
 	}
