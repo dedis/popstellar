@@ -14,7 +14,6 @@ import spray.json.*
 
 object Answerer {
   private val CLIENT_BUFFER_SIZE: Int = 256
-  
 
   private def errorResponseString(code: Int, reason: String, rpcId: Option[Int]): String = JsonRpcResponse(
     RpcValidator.JSON_RPC_VERSION,
