@@ -294,7 +294,7 @@ class RollCallFragment : AbstractEventFragment {
   private fun retrieveAndDisplayPublicKey() {
     val popToken = popToken ?: return
     val pk = popToken.publicKey.encoded
-    val pkUsername = popToken.publicKey.getUsername()
+    val pkUsername = popToken.publicKey.getLabel()
     Timber.tag(TAG).d("key displayed is %s", pk)
 
     // Set the QR visible only if the rollcall is opened and the user isn't the organizer

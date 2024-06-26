@@ -54,7 +54,7 @@ class HistoryListAdapter(
     holder.transactionProvenanceValue.text =
         if (element.senderOrReceiver.encoded == viewModel.organizer.encoded)
             element.senderOrReceiver.encoded + " (organizer)"
-        else element.senderOrReceiver.getUsername()
+        else element.senderOrReceiver.getLabel()
 
     val listener =
         View.OnClickListener {
@@ -148,7 +148,7 @@ class HistoryListAdapter(
   ) {
 
     override fun toString(): String {
-      return "TransactionHistoryElement{senderOrReceiverHash='${senderOrReceiver.encoded}', senderOrReceiverUsername='${senderOrReceiver.getUsername()}',value='$value', " +
+      return "TransactionHistoryElement{senderOrReceiverHash='${senderOrReceiver.encoded}', senderOrReceiverUsername='${senderOrReceiver.getLabel()}',value='$value', " +
           "id='$id', isSender=$isSender}"
     }
   }

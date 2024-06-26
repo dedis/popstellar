@@ -83,7 +83,7 @@ class ChirpListAdapter(
     previousDisposable?.dispose()
 
     val sender = chirp.sender
-    val senderUsername = sender.getUsername()
+    val senderUsername = sender.getLabel()
     val timestamp = chirp.timestamp
     val text: String
     val itemUsername = view.findViewById<TextView>(R.id.social_media_username)

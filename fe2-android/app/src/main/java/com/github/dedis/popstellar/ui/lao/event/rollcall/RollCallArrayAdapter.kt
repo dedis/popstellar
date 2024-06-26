@@ -38,7 +38,7 @@ class RollCallArrayAdapter(
 
     val publicKey = getItem(position)
     if (publicKey != null) {
-      holder.usernameTextView.text = publicKey.getUsername()
+      holder.usernameTextView.text = publicKey.getLabel()
       holder.hashTextView.text = publicKey.encoded
 
       // Set the default color
