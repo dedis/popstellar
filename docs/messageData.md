@@ -45,6 +45,7 @@
   - [Expecting a connection (federation#expect)](#expecting-a-connection-federationexpect)
   - [Initiating a connection (federation#init)](#initiating-a-connection-federationinit)
   - [Confirming or Aborting the connection attempt (federation#result)](#confirming-or-aborting-the-connection-attempt-federationresult)
+  - [Exchanging tokens to share data between LAOs (federation#tokens_exchange)](#exchanging-tokens-to-share-data-between-LAOs-federationtokens_exchange)
 
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
@@ -3352,4 +3353,77 @@ This message is sent by Bob's server. The purpose of this message is to provide 
 }
 
 ```
+## Exchanging tokens to share data between LAOs (federation#tokens_exchange)
+For now, data exchange is only implemented for social media channel.
 
+This message is sent by both organizers to their servers to be broadcast. The message include the pop tokens of the other LAO. Upon receiving this message, participants will be able to subscribe to each channel /root/lao_id/social/token.
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/federation_tokens_exchange/federation_tokens_exchange.json
+{
+  "object": "federation",
+  "action": "tokens_exchange",
+  "lao_id": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+  "roll_call_id": "fEvAfdtNrykd9NPYl9ReHLX-6IP6SFLKTZJLeGUHZ_U=" ,
+  "tokens": ["M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="],
+  "timestamp": 1712854874
+}
+```
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataFederationTokensExchange.json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationTokensExchange.json",
+  "description": "Sent by an organizer client to its server, to broadcast the Pop tokens",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "federation"
+    },
+    "action": {
+      "const": "tokens_exchange"
+    },
+    "lao_id": {
+      "type": "string",
+      "contentEncoding": "base64",
+      "$comment": "Hash : HashLen(organizer, creation, name)"
+    },
+    "roll_call_id": {
+      "type": "string",
+      "contentEncoding": "base64",
+      "$comment": "last roll call id"
+    },
+    "tokens": {
+      "description": "[Array[Base64String]] list of Pop tokens",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "contentEncoding": "base64"
+      },
+      "$comment": "List must be sorted according to byte encoding: -,0...9,A...Z,_,a...z"
+    },
+    "timestamp": {
+      "type": "integer",
+      "description": "[Timestamp] of the tokens' exchange",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "object",
+    "action",
+    "lao_id",
+    "roll_call_id",
+    "tokens",
+    "timestamp"
+  ]
+}
+
+```

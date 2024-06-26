@@ -27,16 +27,18 @@ const (
 	AccessDeniedErrorMsg        = "access denied: "
 	InternalServerErrorMsg      = "internal server error: "
 
-	DatabaseInsertErrorMsg            = InternalServerErrorMsg + "failed to insert into database: "
-	DatabaseSelectErrorMsg            = InternalServerErrorMsg + "failed to select from database: "
-	DatabaseDeleteErrorMsg            = InternalServerErrorMsg + "failed to delete from database: "
-	DatabaseTransactionBeginErrorMsg  = InternalServerErrorMsg + "failed to start database transaction: "
-	DatabaseTransactionCommitErrorMsg = InternalServerErrorMsg + "failed to commit database transaction: "
-	DatabaseScanErrorMsg              = InternalServerErrorMsg + "failed to scan database row: "
-	DatabaseIteratorErrorMsg          = InternalServerErrorMsg + "failed to iterate over database rows: "
-	DatabaseRowsAffectedErrorMsg      = InternalServerErrorMsg + "failed to get number of rows affected: "
-	DatabaseCreateTableErrorMsg       = InternalServerErrorMsg + "failed to create table: "
-	DatabaseInternalErrorMsg          = InternalServerErrorMsg + "internal database error: "
+	DatabaseInsertErrorMsg               = InternalServerErrorMsg + "failed to insert into database: "
+	DatabaseSelectErrorMsg               = InternalServerErrorMsg + "failed to select from database: "
+	DatabaseDeleteErrorMsg               = InternalServerErrorMsg + "failed to delete from database: "
+	DatabaseUpdateErrorMsg               = InternalServerErrorMsg + "failed to update database: "
+	DatabaseTransactionBeginErrorMsg     = InternalServerErrorMsg + "failed to start database transaction: "
+	DatabaseTransactionCommitErrorMsg    = InternalServerErrorMsg + "failed to commit database transaction: "
+	DatabaseScanErrorMsg                 = InternalServerErrorMsg + "failed to scan database row: "
+	DatabaseIteratorErrorMsg             = InternalServerErrorMsg + "failed to iterate over database rows: "
+	DatabaseRowsAffectedErrorMsg         = InternalServerErrorMsg + "failed to get number of rows affected: "
+	DatabaseCreateTableErrorMsg          = InternalServerErrorMsg + "failed to create table: "
+	DatabaseInternalErrorMsg             = InternalServerErrorMsg + "internal database error: "
+	DatabaseSelectCurrRumorInfosErrorMsg = InternalServerErrorMsg + "failed to select current rumor id and sender: "
 
 	KeyMarshalErrorMsg   = InternalServerErrorMsg + "failed to marshal key: "
 	KeyUnmarshalErrorMsg = InternalServerErrorMsg + "failed to unmarshal key: "
@@ -171,6 +173,11 @@ func NewDatabaseDeleteErrorMsg(format string, a ...interface{}) error {
 	return NewPopError(InternalServerErrorCode, DatabaseDeleteErrorMsg+format, a...)
 }
 
+// NewDatabaseUpdateErrorMsg returns an error with the code -6 when there is an error with a database update
+func NewDatabaseUpdateErrorMsg(format string, a ...interface{}) error {
+	return NewPopError(InternalServerErrorCode, DatabaseUpdateErrorMsg+format, a...)
+}
+
 // NewDatabaseTransactionBeginErrorMsg returns an error with the code -6 when there is an error with a database transaction
 func NewDatabaseTransactionBeginErrorMsg(format string, a ...interface{}) error {
 	return NewPopError(InternalServerErrorCode, DatabaseTransactionBeginErrorMsg+format, a...)
@@ -214,4 +221,9 @@ func NewDatabaseCreateTableErrorMsg(format string, a ...interface{}) error {
 // NewDatabaseInternalErrorMsg returns an error with the code -6 when there is an internal database error
 func NewDatabaseInternalErrorMsg(format string, a ...interface{}) error {
 	return NewPopError(InternalServerErrorCode, DatabaseInternalErrorMsg+format, a...)
+}
+
+// NewDatabaseSelectCurrRumorInfosErrorMsg returns an error with the code -6 when there is an error with a database select
+func NewDatabaseSelectCurrRumorInfosErrorMsg(format string, a ...interface{}) error {
+	return NewPopError(InternalServerErrorCode, DatabaseSelectCurrRumorInfosErrorMsg+format, a...)
 }

@@ -5,8 +5,11 @@ import akka.event.{Logging, LoggingReceive}
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.json.MessageDataProtocol
+import ch.epfl.pop.json.MessageDataProtocol.*
+import ch.epfl.pop.model.network.method.Rumor
 import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.federation.FederationChallenge
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.network.method.{Rumor, RumorState}
@@ -25,6 +28,7 @@ import scala.collection.immutable.HashMap
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.util.{Failure, Success, Try}
+import spray.json.*
 import scala.util.matching.Regex
 
 final case class DbActor(
@@ -844,10 +848,88 @@ final case class DbActor(
     }
   }
 
-  @throws[DbActorNAckException]
   private def writeNumberOfReactions(numberOfReactions: NumberOfChirpsReactionsData, laoID: Hash): Unit = {
     this.synchronized {
       storage.write(generateNumberOfReactionsKey(laoID) -> numberOfReactions.toJsonString)
+
+    }
+  }
+
+  @throws[DbActorNAckException]
+  private def readFederationMessages(channel: Channel, key: String): Option[Message] = {
+    channel.extractLaoChannel match {
+      case Some(mainLaoChannel) =>
+        storage.read(storage.DATA_KEY + key + channel.toString) match {
+          case Some(msgId) => read(mainLaoChannel, Hash(Base64Data(msgId)))
+          case _           => None
+        }
+      case _ =>
+        log.info("Error : Trying to read a federationMessage from an invalid channel")
+        None
+    }
+  }
+
+  @throws[DbActorNAckException]
+  private def readFederationChallenge(channel: Channel, laoId: Hash): Option[Message] = {
+    readFederationMessages(channel, storage.FEDERATION_CHALLENGE_KEY + laoId.toString)
+  }
+
+  @throws[DbActorNAckException]
+  private def readFederationExpect(channel: Channel, laoId: Hash): Option[Message] = {
+    readFederationMessages(channel, storage.FEDERATION_EXPECT_KEY + laoId.toString)
+  }
+
+  @throws[DbActorNAckException]
+  private def readFederationInit(channel: Channel, laoId: Hash): Option[Message] = {
+    readFederationMessages(channel, storage.FEDERATION_INIT_KEY + laoId.toString)
+  }
+
+  @throws[DbActorNAckException]
+  private def readFederationResult(channel: Channel, laoId: Hash): Option[Message] = {
+    readFederationMessages(channel, storage.FEDERATION_RESULT_KEY + laoId.toString)
+  }
+
+  @throws[DbActorNAckException]
+  private def writeFederationMessages(channel: Channel, key: String, message: Message): Unit = {
+    channel.extractLaoChannel match {
+      case Some(mainLaoChannel) =>
+        createChannel(channel, ObjectType.federation)
+        storage.write((storage.DATA_KEY + key + channel.toString, message.message_id.toString()))
+        writeAndPropagate(mainLaoChannel, message)
+
+      case _ => log.info("Error : Trying to write a federationMessage on an invalid channel")
+    }
+  }
+
+  @throws[DbActorNAckException]
+  private def writeFederationChallenge(channel: Channel, laoId: Hash, message: Message): Unit = {
+    writeFederationMessages(channel, storage.FEDERATION_CHALLENGE_KEY + laoId.toString, message)
+  }
+
+  @throws[DbActorNAckException]
+  private def writeFederationExpect(channel: Channel, laoId: Hash, message: Message): Unit = {
+    writeFederationMessages(channel, storage.FEDERATION_EXPECT_KEY + laoId.toString, message)
+  }
+
+  @throws[DbActorNAckException]
+  private def writeFederationInit(channel: Channel, laoId: Hash, message: Message): Unit = {
+    writeFederationMessages(channel, storage.FEDERATION_INIT_KEY + laoId.toString, message)
+  }
+
+  @throws[DbActorNAckException]
+  private def writeFederationResult(channel: Channel, laoId: Hash, message: Message): Unit = {
+    writeFederationMessages(channel, storage.FEDERATION_RESULT_KEY + laoId.toString, message)
+  }
+
+  @throws[DbActorNAckException]
+  private def deleteFederationChallenge(channel: Channel, laoId: Hash): Unit = {
+    val key = storage.DATA_KEY + storage.FEDERATION_CHALLENGE_KEY + laoId.toString + channel.toString
+    this.synchronized {
+      Try(storage.read(key)) match {
+        case Success(Some(_)) => storage.delete(key)
+        case Success(None)    => /* Do Nothing */
+        case Failure(ex)      => throw ex
+      }
     }
   }
 
@@ -1075,6 +1157,69 @@ final case class DbActor(
 
     case UpdateNumberOfNewChirpsReactions(channel: Channel) =>
       updateNumberOfNewChirpsReactions(channel, false)
+
+    case ReadFederationChallenge(channel, laoId) =>
+      log.info(s"Actor $self (db) received a ReadFederationChallenge request")
+      Try(readFederationChallenge(channel, laoId)) match {
+        case Success(message) => sender() ! DbActorReadAck(message)
+        case failure          => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case ReadFederationExpect(channel, laoId) =>
+      log.info(s"Actor $self (db) received a ReadFederationExpect request")
+      Try(readFederationExpect(channel, laoId)) match {
+        case Success(message) => sender() ! DbActorReadAck(message)
+        case failure          => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case ReadFederationInit(channel, laoId) =>
+      log.info(s"Actor $self (db) received a ReadFederationInit request")
+      Try(readFederationInit(channel, laoId)) match {
+        case Success(message) => sender() ! DbActorReadAck(message)
+        case failure          => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case ReadFederationResult(channel, laoId) =>
+      log.info(s"Actor $self (db) received a ReadFederationResult request")
+      Try(readFederationResult(channel, laoId)) match {
+        case Success(message) => sender() ! DbActorReadAck(message)
+        case failure          => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case WriteFederationChallenge(channel, laoId, message) =>
+      log.info(s"Actor $self (db) received a WriteFederationChallenge request")
+      Try(writeFederationChallenge(channel, laoId, message)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case failure    => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case WriteFederationExpect(channel, laoId, message) =>
+      log.info(s"Actor $self (db) received a WriteFederationExpect request")
+      Try(writeFederationExpect(channel, laoId, message)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case failure    => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case WriteFederationInit(channel, laoId, message) =>
+      log.info(s"Actor $self (db) received a WriteFederationInit request")
+      Try(writeFederationInit(channel, laoId, message)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case failure    => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case WriteFederationResult(channel, laoId, message) =>
+      log.info(s"Actor $self (db) received a WriteFederationResult request")
+      Try(writeFederationResult(channel, laoId, message)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case failure    => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case DeleteFederationChallenge(channel, laoId) =>
+      log.info(s"Actor $self (db) received a DeleteFederationChallenge request")
+      Try(deleteFederationChallenge(channel, laoId)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case failure    => sender() ! failure.recover(Status.Failure(_))
+      }
 
     case m =>
       log.warning(s"Received an unknown message $m")
@@ -1329,6 +1474,91 @@ object DbActor {
   /** Requests the db to build out rumorState +
     */
   final case class GetRumorState() extends Event
+
+  /** Requests the Db for the challenge stored
+    * @param channel
+    *   the channel in which the challenge is being sent
+    * @param laoId
+    *   the id of the lao in which the challenge message is
+    */
+  final case class ReadFederationChallenge(channel: Channel, laoId: Hash) extends Event
+
+  /** Requests the Db for the federationExpect message
+    * @param channel
+    *   the channel in which the federationExpect is being sent
+    * @param laoId
+    *   the id of the lao in which the federationExpect message is
+    */
+  final case class ReadFederationExpect(channel: Channel, laoId: Hash) extends Event
+
+  /** Requests the Db for the federationInit message
+    *
+    * @param channel
+    *   the channel in which the federationInit is being sent
+    * @param laoId
+    *   the id of the lao in which the federationInit message is
+    */
+  final case class ReadFederationInit(channel: Channel, laoId: Hash) extends Event
+
+  /** Requests the Db for the federationResult message
+    *
+    * @param channel
+    *   the channel in which the federationResult is being sent
+    * @param laoId
+    *   the id of the lao in which the federationResult message is
+    */
+  final case class ReadFederationResult(channel: Channel, laoId: Hash) extends Event
+
+  /** Requests the Db to write the challenge
+    * @param channel
+    *   the channel in which the challenge is being sent
+    * @param laoId
+    *   the id of the lao in which the challenge message is
+    * @param message
+    *   the challenge message
+    */
+  final case class WriteFederationChallenge(channel: Channel, laoId: Hash, message: Message) extends Event
+
+  /** Requests the Db to write the federationExpect
+    *
+    * @param channel
+    *   the channel in which the federationExpect is being sent
+    * @param laoId
+    *   the id of the lao in which the federationExpect message is
+    * @param message
+    *   the federationExpect message
+    */
+  final case class WriteFederationExpect(channel: Channel, laoId: Hash, message: Message) extends Event
+
+  /** Requests the Db to write the federationInit
+    *
+    * @param channel
+    *   the channel in which the federationInit is being sent
+    * @param laoId
+    *   the id of the lao in which the federationInit message is
+    * @param message
+    *   the federationInit message
+    */
+  final case class WriteFederationInit(channel: Channel, laoId: Hash, message: Message) extends Event
+
+  /** Requests the Db to write the federationResult
+    *
+    * @param channel
+    *   the channel in which the federationResult is being sent
+    * @param laoId
+    *   the id of the lao in which the federationResult message is
+    * @param message
+    *   the federationResult message
+    */
+  final case class WriteFederationResult(channel: Channel, laoId: Hash, message: Message) extends Event
+
+  /** Requests the Db to delete the challenge
+    * @param channel
+    *   the channel in which the challenge is being sent
+    * @param laoId
+    *   the id of the lao in which the challenge message is
+    */
+  final case class DeleteFederationChallenge(channel: Channel, laoId: Hash) extends Event
 
   /** Requests the Db to update the number of chirps reaction events since last top chirps request
     *

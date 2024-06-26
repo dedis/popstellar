@@ -270,6 +270,9 @@ test("message data: federation", () => {
     federation_result = require("../examples/messageData/federation_result/federation_result.json");
     expect(federation_result).toBeValid(messageDataSchema);
 
+    federation_tokens_exchange = require("../examples/messageData/federation_tokens_exchange/federation_tokens_exchange.json");
+    expect(federation_tokens_exchange).toBeValid(messageDataSchema);
+
 });
 
 test("message data: chirp", () => {

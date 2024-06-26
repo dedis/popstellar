@@ -20,7 +20,7 @@ func (n *nullQueryHandler) Handle(socket socket.Socket, msg []byte) error {
 
 type nullAnswerHandler struct{}
 
-func (n *nullAnswerHandler) Handle(msg []byte) error {
+func (n *nullAnswerHandler) Handle(socket socket.Socket, msg []byte) error {
 	return nil
 }
 
