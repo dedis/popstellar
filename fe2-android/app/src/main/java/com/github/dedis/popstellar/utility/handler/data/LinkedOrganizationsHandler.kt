@@ -106,9 +106,9 @@ constructor(
 
   companion object {
     private val TAG = LinkedOrganizationsHandler::class.java.simpleName
-    private val SOCIAL = "social"
-    private val REACTIONS = "reactions"
-    private val SUCCESS = "subscription is a success"
-    private val ERROR = "subscription error"
+    private const val SOCIAL = "social"
+    private const val REACTIONS = "reactions"
+    private const val SUCCESS = "subscription is a success"
+    private const val ERROR = "subscription error"
   }
 }

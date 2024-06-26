@@ -111,10 +111,26 @@ class LinkedOrganizationsRepositoryTest {
         REPO.updateChallenge(CHALLENGE)
         val handler = LinkedOrganizationsHandler(mockLaoRepo, REPO, mockRollCallRepo)
         Assert.assertThrows(NullPointerException::class.java) {
-            handler.handleResult(mockContext, RESULT)
+            handler.handleResult(mockContext, RESULT_SUCCESS)
         }
         Assert.assertEquals(mutableSetOf(LAO_ID_4), REPO.getLinkedLaos(LAO_ID_5).keys)
         Assert.assertTrue(REPO.getLinkedLaos(LAO_ID_5)[LAO_ID_4]!!.isEmpty())
+    }
+
+    @Test
+    fun handleResultAndRepoTest2() {
+        val mockLaoRepo = Mockito.mock(LAORepository::class.java)
+        val mockContext = Mockito.mock(HandlerContext::class.java)
+        val mockChannel = Mockito.mock(Channel::class.java)
+        Mockito.`when`(mockContext.channel).thenReturn(mockChannel)
+        Mockito.`when`(mockChannel.extractLaoId()).thenReturn(LAO_ID_7)
+        val mockRollCallRepo = Mockito.mock(RollCallRepository::class.java)
+        REPO.flush()
+        REPO.otherLaoId = LAO_ID_4
+        REPO.updateChallenge(CHALLENGE)
+        val handler = LinkedOrganizationsHandler(mockLaoRepo, REPO, mockRollCallRepo)
+        handler.handleResult(mockContext, RESULT_FAILURE)
+        Assert.assertEquals(mutableSetOf<String>(), REPO.getLinkedLaos(LAO_ID_7).keys)
     }
 
     @Test
@@ -146,6 +162,7 @@ class LinkedOrganizationsRepositoryTest {
         private val LAO_ID_4 = "id4"
         private val LAO_ID_5 = "id5"
         private val LAO_ID_6 = "id6"
+        private val LAO_ID_7 = "id7"
         private val TIMESTAMP = Instant.now().epochSecond
         private const val SERVER_ADDRESS = "wss://1.1.1.1:9000/client"
         private const val CHALLENGE_VALUE = "1feb2a2c7c739ea25f2568d056cc82d11be65d361511872cd35e4abd1a20f3d4"
@@ -153,7 +170,8 @@ class LinkedOrganizationsRepositoryTest {
         private val TOKENS_ARRAY_2 = arrayOf("token7", "token8", "token9")
         private val CHALLENGE = Challenge(CHALLENGE_VALUE, TIMESTAMP)
         private val MG_CHALLENGE = MessageGeneral(Base64DataUtils.generateKeyPair(), CHALLENGE, Gson())
-        private val RESULT = FederationResult("success", publicKey = "PK", challenge = MG_CHALLENGE)
+        private val RESULT_SUCCESS = FederationResult("success", publicKey = "PK", challenge = MG_CHALLENGE)
+        private val RESULT_FAILURE = FederationResult("failure", reason = "fail", challenge = MG_CHALLENGE)
         private val TOKENS_EXCHANGE = TokensExchange(LAO_ID_3, "rollCall", TOKENS_ARRAY_1, TIMESTAMP)
         private val REPO = LinkedOrganizationsRepository()
     }
