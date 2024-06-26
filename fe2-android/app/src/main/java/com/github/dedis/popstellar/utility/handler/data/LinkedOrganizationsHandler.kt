@@ -50,7 +50,7 @@ constructor(
                 .subscribe(Channel.getLaoChannel(linkedOrgRepo.otherLaoId!!))
                 .subscribe(
                     { putRemoteLaoTokensInRepository(laoId) },
-                    { error: Throwable -> Timber.tag(TAG).e(error, "subscription error") }))
+                    { error: Throwable -> Timber.tag(TAG).e(error, ERROR) }))
       } else {
         Timber.tag(TAG).d("Invalid FederationResult success")
       }
@@ -67,7 +67,6 @@ constructor(
    */
   @Throws(UnknownLaoException::class)
   fun handleTokensExchange(context: HandlerContext, tokenExchange: TokensExchange) {
-    Timber.tag(TAG).d("TokensExchange received")
     // Adds the tokens in the repository
     linkedOrgRepo.addLinkedLao(
         context.channel.extractLaoId(), tokenExchange.laoId, tokenExchange.tokens)
@@ -80,21 +79,18 @@ constructor(
       laoRepo.addDisposable(
           context.messageSender
               .subscribe(
-                  Channel.getLaoChannel(tokenExchange.laoId).subChannel("social").subChannel(t))
+                  Channel.getLaoChannel(tokenExchange.laoId).subChannel(SOCIAL).subChannel(t))
               .subscribe(
-                  { Timber.tag(TAG).d("subscription a success") },
-                  { error: Throwable -> Timber.tag(TAG).e(error, "subscription error") }))
+                  { Timber.tag(TAG).d(SUCCESS) },
+                  { error: Throwable -> Timber.tag(TAG).e(error, ERROR) }))
     }
     laoRepo.addDisposable(
         context.messageSender
             .subscribe(
-                Channel.getLaoChannel(tokenExchange.laoId)
-                    .subChannel("social")
-                    .subChannel("reactions"))
+                Channel.getLaoChannel(tokenExchange.laoId).subChannel(SOCIAL).subChannel(REACTIONS))
             .subscribe(
-                { Timber.tag(TAG).d("subscription a success") },
-                { error: Throwable -> Timber.tag(TAG).e(error, "subscription error") }))
-    Timber.tag(TAG).d("TokensExchange successful")
+                { Timber.tag(TAG).d(SUCCESS) },
+                { error: Throwable -> Timber.tag(TAG).e(error, ERROR) }))
   }
 
   private fun putRemoteLaoTokensInRepository(myLaoId: String) {
@@ -110,5 +106,9 @@ constructor(
 
   companion object {
     private val TAG = LinkedOrganizationsHandler::class.java.simpleName
+    private val SOCIAL = "social"
+    private val REACTIONS = "reactions"
+    private val SUCCESS = "subscription is a success"
+    private val ERROR = "subscription error"
   }
 }
