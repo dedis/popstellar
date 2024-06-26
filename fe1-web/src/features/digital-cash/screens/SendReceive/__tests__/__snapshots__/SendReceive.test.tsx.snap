@@ -448,7 +448,7 @@ exports[`SendReceive renders correctly 1`] = `
                                           editable={true}
                                           onChangeText={[Function]}
                                           onFocus={[Function]}
-                                          placeholder="defuser1234"
+                                          placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
                                           placeholderTextColor="#8E8E8E"
                                           style={
                                             [
@@ -1101,7 +1101,7 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                           editable={true}
                                           onChangeText={[Function]}
                                           onFocus={[Function]}
-                                          placeholder="defuser1234"
+                                          placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
                                           placeholderTextColor="#8E8E8E"
                                           style={
                                             [

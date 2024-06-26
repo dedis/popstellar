@@ -517,6 +517,7 @@ namespace STRINGS {
   export const digital_cash_wallet_issue_all_attendees = 'All attendees of roll call';
   export const digital_cash_wallet_issue_to_every_participants =
     'Issue to every attendee of this roll call';
+  export const digital_cash_wallet_transaction_history_organizer = ' (organizer)';
 
   export const digital_cash_infinity = '∞';
   export const digital_cash_error_rollcall_not_defined =

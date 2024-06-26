@@ -1,7 +1,7 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import * as Clipboard from 'expo-clipboard';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Modal, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import {
   ScrollView,
@@ -89,18 +89,20 @@ const SendReceive = () => {
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
 
-  const setBeneficiary = (newBeneficiary: string) => {
-    if(rollCall?.attendees) {
-      for (let i=0; i < rollCall!.attendees!.length; i++) {
-        let username = generateUsernameFromBase64(rollCall!.attendees![i].valueOf());
-        if (username == newBeneficiary) {
-          setBeneficiaryState(rollCall!.attendees![i].valueOf());
-          return;
+  const setBeneficiary = useCallback(
+    (newBeneficiary: string) => {
+      if (rollCall?.attendees) {
+        for (let i = 0; i < rollCall!.attendees!.length; i += 1) {
+          if (generateUsernameFromBase64(rollCall!.attendees![i].valueOf()) === newBeneficiary) {
+            setBeneficiaryState(rollCall!.attendees![i].valueOf());
+            return;
+          }
         }
       }
-    }
-    setBeneficiaryState(newBeneficiary);
-  };
+      setBeneficiaryState(newBeneficiary);
+    },
+    [rollCall],
+  );
 
   const suggestedBeneficiaries = useMemo(() => {
     // do not show any suggestions if no text has been entered
@@ -137,7 +139,7 @@ const SendReceive = () => {
     if (scannedPoPToken) {
       setBeneficiary(scannedPoPToken);
     }
-  }, [scannedPoPToken]);
+  }, [scannedPoPToken, setBeneficiary]);
 
   const checkBeneficiaryValidity = (): boolean => {
     if (!isCoinbase && beneficiary === '') {
