@@ -6,7 +6,7 @@ import akka.pattern.{AskableActorRef, ask}
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.decentralized.GossipManager.TriggerPullState
 import ch.epfl.pop.model.network.MethodType.rumor_state
-import ch.epfl.pop.model.network.method.Rumor
+import ch.epfl.pop.model.network.method.{Rumor, RumorState}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ActionType
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType}
@@ -29,10 +29,10 @@ import scala.util.Random
   *   probability with which we stop the gossipping in case of error response
   */
 final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Double = 0.5, pullRate: FiniteDuration = 5.seconds) extends Actor with AskPatternConstants with ActorLogging with Timers {
-  
+
   private var activeGossipProtocol: Map[JsonRpcRequest, Set[ActorRef]] = Map.empty
   private var rumorMap: Map[PublicKey, Int] = Map.empty
-  private var jsonId = 0
+  private var jsonId = 1
   private var publicKey: Option[PublicKey] = None
   private var connectionMediatorRef: AskableActorRef = _
 
@@ -130,7 +130,15 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
     */
   private def startGossip(messages: Map[Channel, List[Message]]): Unit = {
     if (publicKey.isDefined)
-      val rumor: Rumor = Rumor(publicKey.get, getRumorId(publicKey.get) + 1, messages)
+      var state: RumorState = RumorState(Map.empty)
+      val getRumorState = dbActorRef ? GetRumorState()
+      Await.result(getRumorState, duration) match
+        case DbActorGetRumorStateAck(rumorState) =>
+          state = rumorState
+        case _ =>
+          log.info(s"Actor (gossip) $self was not able to get its rumor state. Gossip has not started")
+          return
+      val rumor: Rumor = Rumor(publicKey.get, getRumorId(publicKey.get) + 1, messages, state)
       val jsonRpcRequest = prepareRumor(rumor)
       val writeRumor = dbActorRef ? DbActor.WriteRumor(rumor)
       Await.result(writeRumor, duration) match
@@ -223,7 +231,6 @@ object GossipManager extends AskPatternConstants {
     Props(new GossipManager(dbActorRef, pullRate = pullRate))
 
   final private val IGNORED_ACTIONS = List(ActionType.init, ActionType.expect, ActionType.challenge, ActionType.challenge_request)
-    
 
   /** When receiving a rumor, gossip manager handles the rumor by relaying
     *
@@ -268,9 +275,10 @@ object GossipManager extends AskPatternConstants {
       jsonRpcRequest.getParamsMessage match
         case Some(message) =>
           // Start gossiping only if message comes from a real actor (and not from processing pipeline)
-          val ignore = message.decodedData match
-            case Some(messageData) => IGNORED_ACTIONS.contains(messageData.action)
-            case None => false
+          val ignore =
+            message.decodedData match
+              case Some(messageData) => IGNORED_ACTIONS.contains(messageData.action)
+              case None              => false
           if (clientActorRef != Actor.noSender && !ignore)
             gossipManager ? StartGossip(Map(jsonRpcRequest.getParamsChannel -> List(message)))
         case None => /* Do nothing */

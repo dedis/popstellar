@@ -17,6 +17,7 @@ trait Storage {
   final val FEDERATION_EXPECT_KEY = "FederationExpect:"
   final val FEDERATION_INIT_KEY = "FederationInit:"
   final val FEDERATION_RESULT_KEY = "FederationResult:"
+  final val NUMBER_OF_REACTIONS_KEY = "NumberOfReactions:"
 
   /** Optionally returns the value associated with a key
     *

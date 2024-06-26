@@ -99,7 +99,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
         jsonRumor shouldBe rumor
       case _ => 0 shouldBe 1
   }
-  
+
   test("When receiving ignored message, doesn't start gossiping") {
     val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef))
     connectionMediatorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipManager, messageRegistry))
@@ -112,13 +112,13 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     connectionMediatorRef ? ConnectionMediator.NewServerConnected(server.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
 
     checkPeersWritten(connectionMediatorRef)
-    
+
     val decodedInit = MessageDecoder.parseData(Right(federationInitRequest), messageRegistry)
 
     // emulates receiving a federationInit and processes it
     val outputCreateRumor = Source.single(decodedInit).via(gossip).runWith(Sink.head)
     Await.result(outputCreateRumor, duration)
-    
+
     server.expectNoMessage()
   }
 
