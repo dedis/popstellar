@@ -16,6 +16,7 @@ import com.github.dedis.popstellar.model.objects.security.MessageID
 import com.github.dedis.popstellar.model.objects.security.PoPToken
 import com.github.dedis.popstellar.model.objects.view.LaoView
 import com.github.dedis.popstellar.repository.LAORepository
+import com.github.dedis.popstellar.repository.LinkedOrganizationsRepository
 import com.github.dedis.popstellar.repository.RollCallRepository
 import com.github.dedis.popstellar.repository.SocialMediaRepository
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager
@@ -47,6 +48,7 @@ constructor(
      */
     private val laoRepo: LAORepository,
     private val rollCallRepo: RollCallRepository,
+    private val linkedOrgRepo: LinkedOrganizationsRepository,
     private val schedulerProvider: SchedulerProvider,
     private val socialMediaRepository: SocialMediaRepository,
     private val networkManager: GlobalNetworkManager,
@@ -225,36 +227,77 @@ constructor(
   }
 
   val chirps: Observable<List<Chirp>>
-    get() =
-        socialMediaRepository
-            .getChirpsOfLao(laoId)
-            // Retrieve chirp subjects per id
-            .map { ids: Set<MessageID> ->
-              val chirps: MutableList<Observable<Chirp>> = ArrayList(ids.size)
-              for (id in ids) {
-                chirps.add(socialMediaRepository.getChirp(laoId, id))
-              }
-              chirps
-            }
-            // Zip the subjects together to a sorted list
-            .flatMap { observables: List<Observable<Chirp>> ->
-              Observable.combineLatest(observables) { chirps: Array<Any?> ->
-                Arrays.stream(chirps)
-                    .map { obj: Any? -> Chirp::class.java.cast(obj) }
-                    .sorted(
-                        Comparator.comparing { chirp: Chirp? ->
-                          if (chirp != null) -chirp.timestamp else 0
-                        })
-                    .collect(Collectors.toList())
-              }
-            }
-            // We want to observe these changes on the main thread such that any modification done
-            // to
-            // the view are done on the thread. Otherwise, the app might crash
-            .observeOn(schedulerProvider.mainThread())
+    get() {
+      val laoIds = listOf(laoId) + linkedOrgRepo.getLinkedLaos(laoId).keys
+      val laoObservables: MutableList<Observable<MutableList<Chirp>>> = ArrayList()
+      for (lao in laoIds) {
+        val observable =
+            socialMediaRepository
+                .getChirpsOfLao(lao)
+                .map { ids: Set<MessageID> ->
+                  val chirps: MutableList<Observable<Chirp>> = ArrayList(ids.size)
+                  for (id in ids) {
+                    chirps.add(socialMediaRepository.getChirp(lao, id))
+                  }
+                  chirps
+                }
+                .flatMap { observables: List<Observable<Chirp>> ->
+                  Observable.combineLatest(observables) { chirps: Array<Any?> ->
+                    Arrays.stream(chirps)
+                        .map { obj: Any? -> Chirp::class.java.cast(obj) }
+                        .sorted(
+                            Comparator.comparing { chirp: Chirp? ->
+                              if (chirp != null) -chirp.timestamp else 0
+                            })
+                        .collect(Collectors.toList())
+                  }
+                }
+        laoObservables.add(observable)
+      }
+      val combinedObservables =
+          Observable.combineLatest(laoObservables) { chirpsLists: Array<Any?> ->
+            Arrays.stream(chirpsLists)
+                .flatMap { chirpsList: Any? -> (chirpsList as List<Chirp>).stream() }
+                .sorted(
+                    Comparator.comparing { chirp: Chirp? ->
+                      if (chirp != null) -chirp.timestamp else 0
+                    })
+                .collect(Collectors.toList())
+          }
+      // We want to observe these changes on the main thread such that any modification done
+      // to
+      // the view are done on the thread. Otherwise, the app might crash
+      return combinedObservables.observeOn(schedulerProvider.mainThread())
+      /*return socialMediaRepository
+      .getChirpsOfLao(laoId)
+      // Retrieve chirp subjects per id
+      .map { ids: Set<MessageID> ->
+          val chirps: MutableList<Observable<Chirp>> = ArrayList(ids.size)
+          for (id in ids) {
+              chirps.add(socialMediaRepository.getChirp(laoId, id))
+          }
+          chirps
+      }
+      // Zip the subjects together to a sorted list
+      .flatMap { observables: List<Observable<Chirp>> ->
+          Observable.combineLatest(observables) { chirps: Array<Any?> ->
+              Arrays.stream(chirps)
+                      .map { obj: Any? -> Chirp::class.java.cast(obj) }
+                      .sorted(
+                              Comparator.comparing { chirp: Chirp? ->
+                                  if (chirp != null) -chirp.timestamp else 0
+                              })
+                      .collect(Collectors.toList())
+          }
+      }
+      // We want to observe these changes on the main thread such that any modification done
+      // to
+      // the view are done on the thread. Otherwise, the app might crash
+      .observeOn(schedulerProvider.mainThread())*/
+    }
 
   @Throws(UnknownChirpException::class)
-  fun getReactions(chirpId: MessageID): Observable<Set<Reaction>> {
+  fun getReactions(laoId: String, chirpId: MessageID): Observable<Set<Reaction>> {
     return socialMediaRepository
         .getReactions(laoId, chirpId)
         .observeOn(schedulerProvider.mainThread())

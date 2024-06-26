@@ -44,7 +44,8 @@ constructor(
             senderPk,
             addChirp.text,
             addChirp.timestamp,
-            addChirp.getParentId().orElse(MessageID("")))
+            addChirp.getParentId().orElse(MessageID("")),
+            context.channel.extractLaoId())
 
     socialMediaRepo.addChirp(laoView.id, chirp)
   }

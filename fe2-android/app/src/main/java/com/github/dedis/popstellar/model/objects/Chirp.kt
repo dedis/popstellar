@@ -13,6 +13,7 @@ class Chirp : Copyable<Chirp> {
   val timestamp: Long
   val isDeleted: Boolean
   val parentId: MessageID
+  val laoId: String
 
   constructor(
       id: MessageID,
@@ -20,7 +21,8 @@ class Chirp : Copyable<Chirp> {
       text: String,
       timestamp: Long,
       isDeleted: Boolean,
-      parentId: MessageID
+      parentId: MessageID,
+      laoId: String
   ) {
     require(id.encoded.isNotEmpty()) { "The id of the Chirp is empty" }
     require(timestamp >= 0) { "The timestamp of the Chirp is negative" }
@@ -32,6 +34,7 @@ class Chirp : Copyable<Chirp> {
     this.timestamp = timestamp
     this.parentId = parentId
     this.isDeleted = isDeleted
+    this.laoId = laoId
   }
 
   constructor(
@@ -39,8 +42,9 @@ class Chirp : Copyable<Chirp> {
       sender: PublicKey,
       text: String,
       timestamp: Long,
-      parentId: MessageID
-  ) : this(id, sender, text, timestamp, false, parentId)
+      parentId: MessageID,
+      laoId: String
+  ) : this(id, sender, text, timestamp, false, parentId, laoId)
 
   constructor(chirp: Chirp, deleted: Boolean) {
     id = chirp.id
@@ -49,6 +53,7 @@ class Chirp : Copyable<Chirp> {
     timestamp = chirp.timestamp
     parentId = chirp.parentId
     isDeleted = deleted
+    laoId = chirp.laoId
   }
 
   constructor(chirp: Chirp) {
@@ -58,6 +63,7 @@ class Chirp : Copyable<Chirp> {
     timestamp = chirp.timestamp
     isDeleted = chirp.isDeleted
     parentId = chirp.parentId
+    laoId = chirp.laoId
   }
 
   override fun copy(): Chirp {

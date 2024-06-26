@@ -67,6 +67,7 @@ constructor(
    */
   @Throws(UnknownLaoException::class)
   fun handleTokensExchange(context: HandlerContext, tokenExchange: TokensExchange) {
+    Timber.tag(TAG).d("TokensExchange received")
     // Adds the tokens in the repository
     linkedOrgRepo.addLinkedLao(
         context.channel.extractLaoId(), tokenExchange.laoId, tokenExchange.tokens)
@@ -84,6 +85,7 @@ constructor(
                   { Timber.tag(TAG).d("subscription a success") },
                   { error: Throwable -> Timber.tag(TAG).e(error, "subscription error") }))
     }
+    Timber.tag(TAG).d("TokensExchange successful")
   }
 
   private fun putRemoteLaoTokensInRepository(myLaoId: String) {
