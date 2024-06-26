@@ -165,6 +165,7 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
         val rumorStateGet = dbActorRef ? GetRumorState()
         Await.result(rumorStateGet, duration) match
           case DbActorGetRumorStateAck(rumorState) =>
+            log.info(s"Sending rumor_state ${rumorState.state} to ${greetServer.serverAddress}")
             serverRef ! ClientAnswer(
               Right(JsonRpcRequest(
                 RpcValidator.JSON_RPC_VERSION,
