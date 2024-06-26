@@ -50,6 +50,24 @@ func (r RumorTimestamp) IsBefore(other RumorTimestamp) bool {
 	return true
 }
 
+func (r RumorTimestamp) IsEqual(other RumorTimestamp) bool {
+	for senderID, rumorID := range other {
+		myRumorID, ok := r[senderID]
+		if !ok || myRumorID != rumorID {
+			return false
+		}
+	}
+
+	for senderID, rumorID := range r {
+		otherRumorID, ok := other[senderID]
+		if !ok || otherRumorID != rumorID {
+			return false
+		}
+	}
+
+	return true
+}
+
 func (r RumorTimestamp) IsValid(other RumorTimestamp) bool {
 	for senderID, rumorID := range other {
 		myRumorID, ok := r[senderID]

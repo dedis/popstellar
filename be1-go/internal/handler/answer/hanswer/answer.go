@@ -70,7 +70,7 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) error {
 	}
 
 	if h.queries.IsRumor(*answerMsg.ID) {
-		return h.handleRumorAnswer(answerMsg)
+		return h.handleRumorAnswer(continueMongering, answerMsg)
 	}
 
 	if h.queries.IsRumorState(*answerMsg.ID) {
@@ -168,7 +168,7 @@ func (h *Handler) getSortedChannels(msgsByChannel map[string]map[string]mmessage
 	return sortedChannelIDs
 }
 
-func (h *Handler) handleRumorAnswer(msg manswer.Answer) error {
+func (h *Handler) handleRumorAnswer(continueMongering float64, msg manswer.Answer) error {
 	defer h.queries.Remove(*msg.ID)
 
 	h.log.Debug().Msgf("received an answer to rumor query %d", *msg.ID)

@@ -11,6 +11,7 @@ import (
 	"popstellar/internal/handler/method/heartbeat/mheartbeat"
 	"popstellar/internal/handler/method/publish/mpublish"
 	"popstellar/internal/handler/method/rumor/mrumor"
+	"popstellar/internal/handler/method/rumorstate/mrumorstate"
 	"popstellar/internal/handler/method/subscribe/msubscribe"
 	"popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
@@ -178,4 +179,24 @@ func NewRumorQuery(t *testing.T, queryID int, senderID string, rumorID int, time
 	require.NoError(t, err)
 
 	return rumor, rumorBuf
+}
+
+func NewRumorStateQuery(t *testing.T, queryID int, timestamp mrumor.RumorTimestamp) (mrumorstate.RumorState, []byte) {
+	rumorState := mrumorstate.RumorState{
+		Base: mquery.Base{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: mquery.MethodRumorState,
+		},
+		ID: queryID,
+		Params: mrumorstate.RumorStateParams{
+			State: timestamp,
+		},
+	}
+
+	rumorStateBuf, err := json.Marshal(&rumorState)
+	require.NoError(t, err)
+
+	return rumorState, rumorStateBuf
 }

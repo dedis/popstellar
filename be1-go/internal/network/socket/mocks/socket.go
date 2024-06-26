@@ -2,6 +2,7 @@ package mocks
 
 import (
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/method/rumor/mrumor"
 	"popstellar/internal/network/socket"
 )
 
@@ -20,6 +21,9 @@ type FakeSocket struct {
 
 	// the Socket ID
 	Id string
+
+	// the rumors present in a rumor state answer
+	Rumors []mrumor.Rumor
 }
 
 func NewFakeSocket(ID string) *FakeSocket {
@@ -46,6 +50,15 @@ func (f *FakeSocket) SendError(_ *int, err error) {
 // SendPopError implements socket.Socket
 func (f *FakeSocket) SendPopError(_ *int, err error) {
 	f.Err = err
+}
+
+func (f *FakeSocket) SendToRandom(buf []byte) {
+	f.Msg = buf
+}
+
+func (f *FakeSocket) SendRumorStateAnswer(id int, rumors []mrumor.Rumor) {
+	f.Rumors = rumors
+	f.ResultID = id
 }
 
 func (f *FakeSocket) ID() string {
