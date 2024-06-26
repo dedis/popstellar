@@ -42,7 +42,6 @@ constructor(
   fun handleResult(context: HandlerContext, result: FederationResult) {
     if (result.isSuccess()) {
       if (result.challenge.data == linkedOrgRepo.getChallenge() &&
-          result.publicKey == linkedOrgRepo.otherPublicKey &&
           linkedOrgRepo.otherLaoId != null) {
         linkedOrgRepo.addLinkedLao(linkedOrgRepo.otherLaoId!!, arrayOf())
         laoRepo.addDisposable(
