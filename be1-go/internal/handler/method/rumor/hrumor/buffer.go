@@ -62,14 +62,13 @@ func (b *buffer) deleteWithDelay(ID string) {
 func (b *buffer) getNextRumorParams(state mrumor.RumorTimestamp) (mrumor.ParamsRumor, bool) {
 	b.Lock()
 	defer b.Unlock()
-	fmt.Println("len(b.queue): ", len(b.queue))
+
 	for _, param := range b.queue {
 		if state.IsValid(param.Timestamp) {
 			b.deleteEntry(fmt.Sprintf("%s:%d", param.SenderID, param.RumorID))
 			return param, true
 		}
 	}
-	fmt.Println("Trying to get next rumor")
 
 	return mrumor.ParamsRumor{}, false
 }
