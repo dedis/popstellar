@@ -30,6 +30,7 @@ import com.github.dedis.popstellar.utility.ActivityUtils.getQRCodeColor
 import com.github.dedis.popstellar.utility.ActivityUtils.handleExpandArrow
 import com.github.dedis.popstellar.utility.Constants.ID_NULL
 import com.github.dedis.popstellar.utility.Constants.ROLL_CALL_ID
+import com.github.dedis.popstellar.utility.UIUtils
 import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException
@@ -55,6 +56,8 @@ class RollCallFragment : AbstractEventFragment {
 
   private val deAnonymizationWarned = MutableLiveData(false)
 
+  private lateinit var clipboardManager: UIUtils.ClipboardUtil
+
   constructor()
 
   override fun onCreateView(
@@ -67,7 +70,7 @@ class RollCallFragment : AbstractEventFragment {
 
     laoViewModel = obtainViewModel(requireActivity())
     rollCallViewModel = obtainRollCallViewModel(requireActivity(), laoViewModel.laoId)
-
+    clipboardManager = UIUtils.ClipboardUtil(requireActivity())
     rollCall =
         try {
           rollCallRepo.getRollCallWithPersistentId(
@@ -146,6 +149,9 @@ class RollCallFragment : AbstractEventFragment {
                 }))
 
     handleBackNav(TAG)
+
+    clipboardManager.setupCopyButton(
+        binding.rollCallPopTokenTextCopyButton, binding.rollCallPopTokenText, "PoP Token Hash")
 
     return binding.root
   }
