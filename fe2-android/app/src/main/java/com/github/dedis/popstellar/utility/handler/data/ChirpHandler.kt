@@ -37,7 +37,6 @@ constructor(
             channel,
             addChirp.getParentId().orElse(MessageID("")))
 
-    val laoView = laoRepo.getLaoViewByChannel(channel)
     val chirp =
         Chirp(
             messageId,
@@ -45,9 +44,9 @@ constructor(
             addChirp.text,
             addChirp.timestamp,
             addChirp.getParentId().orElse(MessageID("")),
-            context.channel.extractLaoId())
+            channel.extractLaoId())
 
-    socialMediaRepo.addChirp(laoView.id, chirp)
+    socialMediaRepo.addChirp(channel.extractLaoId(), chirp)
   }
 
   /**
@@ -61,8 +60,7 @@ constructor(
     val channel = context.channel
     Timber.tag(TAG).d("handleDeleteChirp: channel: %s, id: %s", channel, deleteChirp.chirpId)
 
-    val laoView = laoRepo.getLaoViewByChannel(channel)
-    val chirpExist = socialMediaRepo.deleteChirp(laoView.id, deleteChirp.chirpId)
+    val chirpExist = socialMediaRepo.deleteChirp(channel.extractLaoId(), deleteChirp.chirpId)
 
     if (!chirpExist) {
       throw InvalidMessageIdException(deleteChirp, deleteChirp.chirpId)
