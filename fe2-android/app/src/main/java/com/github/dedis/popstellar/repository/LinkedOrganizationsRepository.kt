@@ -13,7 +13,7 @@ import javax.inject.Singleton
 class LinkedOrganizationsRepository @Inject constructor() {
   private var challenge: Challenge? = null
   private var onChallengeUpdatedCallback: ((Challenge) -> Unit)? = null
-  private var linkedLaos: MutableMap<String, Array<String>> = mutableMapOf()
+  private var linkedLaos: MutableMap<String, MutableMap<String, Array<String>>> = mutableMapOf()
   private var onLinkedLaosUpdatedCallback: ((MutableMap<String, Array<String>>) -> Unit)? = null
   private var newTokensNotifyFunction: ((String, String, Array<String>) -> Unit)? = null
   var otherLaoId: String? = null
@@ -33,15 +33,22 @@ class LinkedOrganizationsRepository @Inject constructor() {
     return challenge
   }
 
-  fun addLinkedLao(lao_id: String, tokens: Array<String>) {
-    linkedLaos[lao_id] = tokens
-    onLinkedLaosUpdatedCallback?.invoke(linkedLaos)
+  fun addLinkedLao(laoId: String, otherLaoId: String, tokens: Array<String>) {
+    if (!linkedLaos.containsKey(laoId)) {
+      linkedLaos[laoId] = mutableMapOf()
+    }
+    linkedLaos[laoId]!![otherLaoId] = tokens
+    onLinkedLaosUpdatedCallback?.invoke(linkedLaos[laoId]!!)
   }
 
-  fun updateAndNotifyLinkedLao(lao_id: String, tokens: Array<String>, rollCallId: String) {
-    linkedLaos[lao_id] = tokens
-    newTokensNotifyFunction?.invoke(lao_id, rollCallId, tokens)
-    onLinkedLaosUpdatedCallback?.invoke(linkedLaos)
+  fun updateAndNotifyLinkedLao(
+      laoId: String,
+      otherLaoId: String,
+      tokens: Array<String>,
+      rollCallId: String
+  ) {
+    addLinkedLao(laoId, otherLaoId, tokens)
+    newTokensNotifyFunction?.invoke(laoId, rollCallId, tokens)
   }
 
   fun setOnLinkedLaosUpdatedCallback(callback: (MutableMap<String, Array<String>>) -> Unit) {
@@ -52,8 +59,12 @@ class LinkedOrganizationsRepository @Inject constructor() {
     newTokensNotifyFunction = function
   }
 
-  fun getLinkedLaos(): MutableMap<String, Array<String>> {
-    return linkedLaos
+  fun getLinkedLaos(laoId: String): MutableMap<String, Array<String>> {
+    return if (linkedLaos.containsKey(laoId)) {
+      linkedLaos[laoId]!!
+    } else {
+      mutableMapOf()
+    }
   }
 
   fun flush() {

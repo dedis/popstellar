@@ -43,12 +43,13 @@ constructor(
     if (result.isSuccess()) {
       if (result.challenge.data == linkedOrgRepo.getChallenge() &&
           linkedOrgRepo.otherLaoId != null) {
-        linkedOrgRepo.addLinkedLao(linkedOrgRepo.otherLaoId!!, arrayOf())
+        val laoId = context.channel.extractLaoId()
+        linkedOrgRepo.addLinkedLao(laoId, linkedOrgRepo.otherLaoId!!, arrayOf())
         laoRepo.addDisposable(
             context.messageSender
                 .subscribe(Channel.getLaoChannel(linkedOrgRepo.otherLaoId!!))
                 .subscribe(
-                    { putRemoteLaoTokensInRepository() },
+                    { putRemoteLaoTokensInRepository(laoId) },
                     { error: Throwable -> Timber.tag(TAG).e(error, "subscription error") }))
       } else {
         Timber.tag(TAG).d("Invalid FederationResult success")
@@ -67,7 +68,8 @@ constructor(
   @Throws(UnknownLaoException::class)
   fun handleTokensExchange(context: HandlerContext, tokenExchange: TokensExchange) {
     // Adds the tokens in the repository
-    linkedOrgRepo.addLinkedLao(tokenExchange.laoId, tokenExchange.tokens)
+    linkedOrgRepo.addLinkedLao(
+        context.channel.extractLaoId(), tokenExchange.laoId, tokenExchange.tokens)
 
     // Subscribes to social of the linked organization automatically
     // Note that for now the participants of an LAO automatically subscribe to social of the other
@@ -84,12 +86,12 @@ constructor(
     }
   }
 
-  private fun putRemoteLaoTokensInRepository() {
+  private fun putRemoteLaoTokensInRepository(myLaoId: String) {
     try {
       val rollCall = rollCallRepo.getLastClosedRollCall(linkedOrgRepo.otherLaoId!!)
       val attendees = rollCall.attendees.map { e -> e.encoded }.toTypedArray()
       linkedOrgRepo.updateAndNotifyLinkedLao(
-          linkedOrgRepo.otherLaoId!!, attendees, rollCall.persistentId)
+          myLaoId, linkedOrgRepo.otherLaoId!!, attendees, rollCall.persistentId)
     } catch (e: NoRollCallException) {
       Timber.tag(TAG).d("No RollCall was found on the linked LAO")
     }

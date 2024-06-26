@@ -169,7 +169,7 @@ constructor(
   }
 
   fun getLinkedLaosMap(): Map<String, Array<String>> {
-    return linkedOrgRepo.getLinkedLaos()
+    return linkedOrgRepo.getLinkedLaos(laoId)
   }
 
   fun isRepositoryValid(): Boolean {
