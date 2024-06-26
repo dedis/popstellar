@@ -54,7 +54,7 @@ final case class ConnectionMediator(
       )
 
     case ConnectionMediator.ServerLeft(serverRef) =>
-      log.info("Server left")
+      log.info(s"Server ${serverMap(serverRef).serverAddress} left")
       serverMap -= serverRef
       // Tell monitor to stop scheduling heartbeats since there is no one to receive them
       if (serverMap.isEmpty)

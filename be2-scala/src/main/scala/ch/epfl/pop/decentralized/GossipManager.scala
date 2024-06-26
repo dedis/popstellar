@@ -42,7 +42,7 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
     Await.result(readPk, duration) match
       case DbActor.DbActorReadServerPublicKeyAck(pk) => Some(pk)
       case _ =>
-        log.info(s"Actor (gossip) $self will not be able to create rumors because it has no publicKey")
+        log.error(s"Will not be able to create rumors because it has no publicKey")
         None
   }
 
@@ -67,6 +67,7 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
     // checks the peers to which we already forwarded the message
     val activeGossip: Set[ActorRef] = peersAlreadyReceived(rumorRpc)
     // selects a random peer from remaining peers
+    val rumor = rumorRpc.getParams.asInstanceOf[Rumor]
     val randomPeer = connectionMediatorRef ? ConnectionMediator.GetRandomPeer(activeGossip)
     Await.result(randomPeer, duration) match {
       // updates the list based on response
@@ -74,7 +75,7 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
       case ConnectionMediator.GetRandomPeerAck(serverRef, greetServer) =>
         val alreadySent: Set[ActorRef] = activeGossip + serverRef
         activeGossipProtocol += (rumorRpc -> alreadySent)
-        log.info(s"rumorSent > dest : ${greetServer.clientAddress}, rumor : $rumorRpc")
+        log.info(s"Sent rumor {${rumor.senderPk}:${rumor.rumorId}} to ${greetServer.clientAddress}")
         serverRef ! ClientAnswer(
           Right(rumorRpc)
         )
@@ -82,7 +83,7 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
       case ConnectionMediator.NoPeer() =>
         activeGossipProtocol = activeGossipProtocol.removed(rumorRpc)
       case _ =>
-        log.info(s"Actor $self received an unexpected message waiting for a random peer")
+        log.warning(s"Received an unexpected message waiting for a random peer. Gossip step has been ignored for rumor {${rumor.senderPk}:${rumor.rumorId}}")
     }
   }
 
@@ -115,7 +116,7 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
         }
       }
     } else {
-      log.info(s"Unexpected match for active gossip. Response with id ${response.id} matched with ${activeGossipPeers.size} entries")
+      log.warning(s"Unexpected match for active gossip. Response with id ${response.id} matched with ${activeGossipPeers.size} entries. Duplicates will be removed.")
       // removes duplicate entries to come back to a stable state
       activeGossipPeers.foreach { (rumorRpc, _) =>
         activeGossipProtocol -= rumorRpc
@@ -135,16 +136,16 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
         case DbActorGetRumorStateAck(rumorState) =>
           state = rumorState
         case _ =>
-          log.info(s"Actor (gossip) $self was not able to get its rumor state. Gossip has not started")
+          log.warning(s"Was not able to get its rumor state. Gossip has not started")
           return
       val rumor: Rumor = Rumor(publicKey.get, getRumorId(publicKey.get) + 1, messages, state)
       val jsonRpcRequest = prepareRumor(rumor)
       val writeRumor = dbActorRef ? DbActor.WriteRumor(rumor)
       Await.result(writeRumor, duration) match
         case DbActorAck() => updateGossip(jsonRpcRequest)
-        case _            => log.info(s"Actor (gossip) $self was not able to write rumor in memory. Gossip has not started.")
+        case _            => log.warning(s"Was not able to write rumor in memory. Gossip has not started.")
     else
-      log.info(s"Actor (gossip) $self will not be able to start rumors because it has no publicKey")
+      log.error(s"Will not be able to start rumors because it has no publicKey")
   }
 
   private def getRumorId(publicKey: PublicKey): Int = {
@@ -172,9 +173,9 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
               ))
             )
             jsonId += 1
-          case _ => log.info(s"Actor $self failed on creating rumor state")
-      case _ =>
-        log.info(s"Actor $self received an unexpected message waiting for a random peer")
+          case _ => log.error(s"Actor $self failed on creating rumor state. State wasn't gossiped.")
+      case m @ _ =>
+        log.warning(s"Received an unexpected message $m waiting for a random peer")
     }
   }
 
@@ -207,7 +208,7 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
       startGossip(messages)
 
     case ConnectionMediator.Ping() =>
-      log.info(s"Actor $self received a ping from Connection Mediator")
+      log.info(s"Received a ping from Connection Mediator")
       connectionMediatorRef = sender()
 
     case Monitor.AtLeastOneServerConnected =>
@@ -219,8 +220,8 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
     case TriggerPullState() =>
       sendRumorState()
 
-    case _ =>
-      log.info(s"Actor $self received an unexpected message")
+    case m @ _ =>
+      log.info(s"Received an unexpected message $m.")
   }
 
 }
