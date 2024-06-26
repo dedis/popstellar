@@ -126,3 +126,22 @@ func NewFailedFederationResult(t *testing.T, sender, reason string,
 
 	return msg
 }
+
+func NewTokensExchange(t *testing.T, sender, laoId, rollcallId string,
+	timestamp int64, tokens []string, senderSk kyber.Scalar) mmessage.Message {
+	tokensExchange := mfederation.FederationTokensExchange{
+		Object:     channel.FederationObject,
+		Action:     channel.FederationActionTokensExchange,
+		LaoId:      laoId,
+		RollcallId: rollcallId,
+		Timestamp:  timestamp,
+		Tokens:     tokens,
+	}
+
+	tokensExchangeBuf, err := json.Marshal(tokensExchange)
+	require.NoError(t, err)
+
+	msg := newMessage(t, sender, senderSk, tokensExchangeBuf)
+
+	return msg
+}

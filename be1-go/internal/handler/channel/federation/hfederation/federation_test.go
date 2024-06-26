@@ -74,6 +74,9 @@ func Test_handleChannelFederation(t *testing.T) {
 	laoPath := fmt.Sprintf("/root/%s", laoID)
 	channelPath := fmt.Sprintf("/root/%s/federation", laoID)
 
+	rollcallId := "fEvAfdtNrykd9NPYl9ReHLX-6IP6SFLKTZJLeGUHZ_U="
+	tokens := []string{organizer}
+
 	serverAddressA := "ws://localhost:9801/client"
 	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
@@ -316,6 +319,16 @@ func Test_handleChannelFederation(t *testing.T) {
 				value, validUntil, organizer2Sk), organizer2Sk),
 		isError:  true,
 		contains: "sql: no rows in result set",
+	})
+
+	// Test 19 Error when token exchange sender is not the organizerPk
+	args = append(args, input{
+		name:        "Test 19",
+		channelPath: channelPath,
+		msg: generator.NewTokensExchange(t, notOrganizer, laoID, rollcallId,
+			time.Now().Unix(), tokens, notOrganizerSk),
+		isError:  true,
+		contains: "sender is not the organizer of the channelPath",
 	})
 
 	for _, arg := range args {
