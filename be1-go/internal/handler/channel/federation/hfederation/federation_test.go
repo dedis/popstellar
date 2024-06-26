@@ -509,13 +509,11 @@ func Test_handleFederationInit(t *testing.T) {
 	mux.HandleFunc("/client", websocketHandler(t, msgChan))
 	serverB := &http.Server{Addr: "localhost:9801", Handler: mux}
 
-	fakeSocket1 := &mock2.FakeSocket{Id: "1"}
-
 	go websocketServer(t, serverB, serverBStarted)
 	<-serverBStarted
 	defer serverB.Close()
 
-	err = federationHandler.handleInit(initMsg, channelPath, fakeSocket1)
+	err = federationHandler.handleInit(initMsg, channelPath)
 	require.NoError(t, err)
 
 	var msgBytes []byte
@@ -543,7 +541,7 @@ func Test_handleFederationInitOnSingleServer(t *testing.T) {
 	require.NoError(t, err)
 
 	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
-	organizer2Pk, _, _, _ := generator.GenerateKeyPair(t)
+	organizer2Pk, _, organizer2Sk, _ := generator.GenerateKeyPair(t)
 
 	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
 
@@ -561,45 +559,104 @@ func Test_handleFederationInitOnSingleServer(t *testing.T) {
 	require.NoError(t, err)
 	organizer2 := base64.URLEncoding.EncodeToString(organizer2Buf)
 
+	serverBuf, err := serverPk.MarshalBinary()
+	require.NoError(t, err)
+	server := base64.URLEncoding.EncodeToString(serverBuf)
+
 	laoID := "lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA="
 	laoID2 := "OWY4NmQwODE4ODRjN2Q2NTlhMmZlYWEwYzU1YWQwMQ=="
 	laoPath := fmt.Sprintf("/root/%s", laoID)
+	laoPath2 := fmt.Sprintf("/root/%s", laoID2)
 	channelPath := fmt.Sprintf("/root/%s/federation", laoID)
 	channelPath2 := fmt.Sprintf("/root/%s/federation", laoID2)
 
-	serverAddressA := clientAddress
 	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
 	validUntil := time.Now().Add(5 * time.Minute).Unix()
+	challenge := mfederation.FederationChallenge{
+		Object:     channel.FederationObject,
+		Action:     channel.FederationActionChallenge,
+		Value:      value,
+		ValidUntil: validUntil,
+	}
 
 	challengeMsg := generator.NewFederationChallenge(t, organizer, value,
 		validUntil, organizerSk)
+	challengeMsg2 := generator.NewFederationChallenge(t, organizer2, value,
+		validUntil, organizer2Sk)
+
+	federationExpect := mfederation.FederationExpect{
+		Object:        channel.FederationObject,
+		Action:        channel.FederationActionExpect,
+		LaoId:         laoID,
+		ServerAddress: clientAddress,
+		PublicKey:     organizer,
+		ChallengeMsg:  challengeMsg2,
+	}
 
 	initMsg := generator.NewFederationInit(t, organizer, laoID2,
-		serverAddressA, organizer2, challengeMsg, organizerSk)
+		clientAddress, organizer2, challengeMsg, organizerSk)
 
 	db.On("GetOrganizerPubKey", laoPath).Return(organizerPk, nil)
 	db.On("StoreMessageAndData", channelPath, initMsg).Return(nil)
 
-	fakeSocket1 := &mock2.FakeSocket{Id: "1"}
+	db.On("GetOrganizerPubKey", laoPath2).Return(organizer2Pk, nil)
+	db.On("GetFederationExpect", organizer2, organizer, challenge,
+		channelPath2).Return(federationExpect, nil)
+	db.On("RemoveChallenge", challenge).Return(nil)
+	db.On("GetServerKeys").Return(serverPk, serverSk, nil)
 
-	err = federationHandler.handleInit(initMsg, channelPath, fakeSocket1)
+	db.On("StoreMessageAndData", channelPath2, mock.AnythingOfType("mmessage.Message")).Return(nil)
+	db.On("StoreMessageAndData", channelPath, mock.AnythingOfType("mmessage.Message")).Return(nil)
+
+	fakeSocket2 := &mock2.FakeSocket{Id: "2"}
+	fakeSocket3 := &mock2.FakeSocket{Id: "3"}
+
+	err = subs.AddChannel(channelPath)
+	require.NoError(t, err)
+	err = subs.AddChannel(channelPath2)
 	require.NoError(t, err)
 
-	// If the server address match the local server address,
-	// the message is expected to be received directly on the message channel
-	// instead of from another websocket
-	select {
-	case incomingMsg := <-hub.GetMessageChan():
-		var publishMsg mpublish.Publish
-		err = json.Unmarshal(incomingMsg.Message, &publishMsg)
-		require.NoError(t, err)
+	err = subs.Subscribe(channelPath, fakeSocket3)
+	require.NoError(t, err)
+	err = subs.Subscribe(channelPath2, fakeSocket2)
+	require.NoError(t, err)
 
-		require.Equal(t, mquery.MethodPublish, publishMsg.Method)
-		require.Equal(t, channelPath2, publishMsg.Params.Channel)
-		require.Equal(t, challengeMsg, publishMsg.Params.Message)
-	case <-time.After(time.Second):
-		require.Fail(t, "Timed out waiting for expected message")
-	}
+	err = federationHandler.handleInit(initMsg, channelPath)
+	require.NoError(t, err)
+
+	result2Bytes := fakeSocket2.Msg
+	require.NotEmpty(t, result2Bytes)
+	var broadcast2 mbroadcast.Broadcast
+	err = json.Unmarshal(result2Bytes, &broadcast2)
+	require.NoError(t, err)
+	require.Equal(t, channelPath2, broadcast2.Params.Channel)
+	require.Equal(t, server, broadcast2.Params.Message.Sender)
+	var result2 mfederation.FederationResult
+	err = broadcast2.Params.Message.UnmarshalData(&result2)
+	require.NoError(t, err)
+	require.Equal(t, challengeMsg2, result2.ChallengeMsg)
+	require.Equal(t, "success", result2.Status)
+	require.Equal(t, organizer, result2.PublicKey)
+	require.Equal(t, "", result2.Reason)
+	require.Equal(t, channel.FederationObject, result2.Object)
+	require.Equal(t, channel.FederationActionResult, result2.Action)
+
+	result3Bytes := fakeSocket3.Msg
+	require.NotEmpty(t, result3Bytes, "")
+	var broadcast3 mbroadcast.Broadcast
+	err = json.Unmarshal(result3Bytes, &broadcast3)
+	require.NoError(t, err)
+	require.Equal(t, channelPath, broadcast3.Params.Channel)
+	require.Equal(t, server, broadcast2.Params.Message.Sender)
+	var result3 mfederation.FederationResult
+	err = broadcast3.Params.Message.UnmarshalData(&result3)
+	require.NoError(t, err)
+	require.Equal(t, challengeMsg2, result3.ChallengeMsg)
+	require.Equal(t, "success", result3.Status)
+	require.Equal(t, organizer, result3.PublicKey)
+	require.Equal(t, "", result3.Reason)
+	require.Equal(t, channel.FederationObject, result3.Object)
+	require.Equal(t, channel.FederationActionResult, result3.Action)
 }
 
 func Test_handleFederationChallenge(t *testing.T) {

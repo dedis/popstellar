@@ -17,7 +17,7 @@ type HubParams struct {
 
 func NewHubParams(log zerolog.Logger) *HubParams {
 	return &HubParams{
-		messageChan:      make(chan socket.IncomingMessage, 100),
+		messageChan:      make(chan socket.IncomingMessage),
 		stop:             make(chan struct{}),
 		closedSockets:    make(chan string),
 		resetRumorSender: make(chan struct{}),
