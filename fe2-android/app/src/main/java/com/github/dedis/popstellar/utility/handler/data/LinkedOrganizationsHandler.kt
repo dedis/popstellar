@@ -86,12 +86,14 @@ constructor(
                   { error: Throwable -> Timber.tag(TAG).e(error, "subscription error") }))
     }
     laoRepo.addDisposable(
-            context.messageSender
-                    .subscribe(
-                            Channel.getLaoChannel(tokenExchange.laoId).subChannel("social").subChannel("reactions"))
-                    .subscribe(
-                            { Timber.tag(TAG).d("subscription a success") },
-                            { error: Throwable -> Timber.tag(TAG).e(error, "subscription error") }))
+        context.messageSender
+            .subscribe(
+                Channel.getLaoChannel(tokenExchange.laoId)
+                    .subChannel("social")
+                    .subChannel("reactions"))
+            .subscribe(
+                { Timber.tag(TAG).d("subscription a success") },
+                { error: Throwable -> Timber.tag(TAG).e(error, "subscription error") }))
     Timber.tag(TAG).d("TokensExchange successful")
   }
 

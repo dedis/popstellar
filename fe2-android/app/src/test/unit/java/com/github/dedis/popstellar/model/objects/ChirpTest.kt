@@ -10,14 +10,14 @@ class ChirpTest {
   fun createChirpWithEmptyIdFails() {
     Assert.assertThrows(
       IllegalArgumentException::class.java
-    ) { Chirp(EMPTY_MESSAGE_ID, SENDER, TEXT, TIMESTAMP, EMPTY_MESSAGE_ID) }
+    ) { Chirp(EMPTY_MESSAGE_ID, SENDER, TEXT, TIMESTAMP, EMPTY_MESSAGE_ID, LAO_ID) }
   }
 
   @Test
   fun createChirpWithNegativeTimestampFails() {
     Assert.assertThrows(
       IllegalArgumentException::class.java
-    ) { Chirp(ID, SENDER, TEXT, -5, EMPTY_MESSAGE_ID) }
+    ) { Chirp(ID, SENDER, TEXT, -5, EMPTY_MESSAGE_ID, LAO_ID) }
   }
 
   @Test
@@ -30,12 +30,12 @@ class ChirpTest {
           + " the threshold.")
     Assert.assertThrows(
       IllegalArgumentException::class.java
-    ) { Chirp(ID, SENDER, textTooLong, TIMESTAMP, EMPTY_MESSAGE_ID) }
+    ) { Chirp(ID, SENDER, textTooLong, TIMESTAMP, EMPTY_MESSAGE_ID, LAO_ID) }
   }
 
   @Test
   fun deletedChirpProducesASimilarChirpWithEmptyTextAndDeletedProperty() {
-    val chirp = Chirp(ID, SENDER, TEXT, TIMESTAMP, EMPTY_MESSAGE_ID)
+    val chirp = Chirp(ID, SENDER, TEXT, TIMESTAMP, EMPTY_MESSAGE_ID, LAO_ID)
     val deleted = chirp.deleted()
     Assert.assertEquals(chirp.id, deleted.id)
     Assert.assertEquals(chirp.sender, deleted.sender)
@@ -43,6 +43,13 @@ class ChirpTest {
     Assert.assertEquals(chirp.timestamp, deleted.timestamp)
     Assert.assertEquals(chirp.parentId, deleted.parentId)
     Assert.assertTrue(deleted.isDeleted)
+    Assert.assertEquals(chirp.laoId, deleted.laoId)
+  }
+
+  @Test
+  fun laoIdIsStoredCorrectlyInChirp() {
+    val chirp = Chirp(ID, SENDER, TEXT, TIMESTAMP, EMPTY_MESSAGE_ID, LAO_ID)
+    Assert.assertEquals(LAO_ID, chirp.laoId)
   }
 
   companion object {
@@ -52,5 +59,6 @@ class ChirpTest {
     private const val TEXT = "This is a Chirp !"
     private const val TIMESTAMP: Long = 10000
     private val EMPTY_MESSAGE_ID = MessageID("")
+    private val LAO_ID = Lao.generateLaoId(Base64DataUtils.generatePublicKey(), 1000, "LAO")
   }
 }

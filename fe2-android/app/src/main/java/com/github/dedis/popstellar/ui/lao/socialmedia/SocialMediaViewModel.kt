@@ -265,35 +265,8 @@ constructor(
                 .collect(Collectors.toList())
           }
       // We want to observe these changes on the main thread such that any modification done
-      // to
-      // the view are done on the thread. Otherwise, the app might crash
+      // to the view are done on the thread. Otherwise, the app might crash
       return combinedObservables.observeOn(schedulerProvider.mainThread())
-      /*return socialMediaRepository
-      .getChirpsOfLao(laoId)
-      // Retrieve chirp subjects per id
-      .map { ids: Set<MessageID> ->
-          val chirps: MutableList<Observable<Chirp>> = ArrayList(ids.size)
-          for (id in ids) {
-              chirps.add(socialMediaRepository.getChirp(laoId, id))
-          }
-          chirps
-      }
-      // Zip the subjects together to a sorted list
-      .flatMap { observables: List<Observable<Chirp>> ->
-          Observable.combineLatest(observables) { chirps: Array<Any?> ->
-              Arrays.stream(chirps)
-                      .map { obj: Any? -> Chirp::class.java.cast(obj) }
-                      .sorted(
-                              Comparator.comparing { chirp: Chirp? ->
-                                  if (chirp != null) -chirp.timestamp else 0
-                              })
-                      .collect(Collectors.toList())
-          }
-      }
-      // We want to observe these changes on the main thread such that any modification done
-      // to
-      // the view are done on the thread. Otherwise, the app might crash
-      .observeOn(schedulerProvider.mainThread())*/
     }
 
   @Throws(UnknownChirpException::class)
