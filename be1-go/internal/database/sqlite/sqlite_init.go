@@ -3,10 +3,12 @@ package sqlite
 import (
 	"database/sql"
 	"encoding/base64"
+	"encoding/json"
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/channel"
+	"popstellar/internal/handler/method/rumor/mrumor"
 	"sync"
 )
 
@@ -178,13 +180,30 @@ func (s *SQLite) StoreServerKeys(serverPubKey kyber.Point, serverSecretKey kyber
 func (s *SQLite) StoreFirstRumor() error {
 	dbLock.Lock()
 	defer dbLock.Unlock()
-	_, err := s.database.Exec(insertFirstRumor, 0, serverKeysPath)
 
+	tx, err := s.database.Begin()
+	if err != nil {
+		return poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
+	}
+	var serverPubKey string
+	err = tx.QueryRow(selectPublicKey, serverKeysPath).Scan(&serverPubKey)
+	if err != nil {
+		return poperrors.NewDatabaseSelectErrorMsg("server keys: %v", err)
+	}
+
+	timestamp := make(mrumor.RumorTimestamp)
+	timestamp[serverPubKey] = 0
+	timestampBuf, err := json.Marshal(timestamp)
+	if err != nil {
+		return poperrors.NewJsonMarshalError("rumor timestamp: %v", err)
+	}
+
+	_, err = tx.Exec(insertFirstRumor, 0, serverPubKey, timestampBuf)
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("first rumor: %v", err)
 	}
 
-	return nil
+	return tx.Commit()
 }
 
 func fillChannelTypes(tx *sql.Tx) error {

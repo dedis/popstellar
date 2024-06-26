@@ -12,11 +12,11 @@ import ch.epfl.pop.model.network.method.message.data.election.VersionType.*
 import ch.epfl.pop.model.network.method.message.data.federation.{FederationChallenge, FederationChallengeRequest, FederationExpect, FederationInit, FederationResult}
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import spray.json.*
-import util.examples.Federation.FederationChallengeExample.CHALLENGE
+import util.examples.Federation.FederationChallengeExample.{CHALLENGE, CHALLENGE_1}
 import util.examples.Federation.FederationChallengeRequestExample.CHALLENGE_REQUEST
-import util.examples.Federation.FederationExpectExample.EXPECT
-import util.examples.Federation.FederationInitExample.INIT
-import util.examples.Federation.FederationResultExample.{RESULT_1, RESULT_2}
+import util.examples.Federation.FederationExpectExample.{EXPECT, EXPECT_1}
+import util.examples.Federation.FederationInitExample.{INIT, INIT_1}
+import util.examples.Federation.FederationResultExample.{RESULT_1, RESULT_1_1, RESULT_2, RESULT_2_2}
 
 class MessageDataProtocolSuite extends FunSuite with Matchers {
 
@@ -241,7 +241,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
 
   test("Parser correctly encodes and decodes FederationChallenge") {
     val example = getExampleMessage("messageData/federation_challenge/federation_challenge.json")
-    val expectedFederationChallenge = CHALLENGE
+    val expectedFederationChallenge = CHALLENGE_1
 
     val federationChallengeFromExample = FederationChallenge.buildFromJson(example)
     val buildChallengeJson = MessageDataProtocol.FederationChallengeFormat.write(expectedFederationChallenge)
@@ -269,7 +269,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
 
   test("Parser correctly encodes and decodes FederationInit") {
     val example = getExampleMessage("messageData/federation_init/federation_init.json")
-    val expectedFederationInit = INIT
+    val expectedFederationInit = INIT_1
 
     val federationInitFromExample = FederationInit.buildFromJson(example)
     val buildInitJson = MessageDataProtocol.FederationInitFormat.write(expectedFederationInit)
@@ -284,7 +284,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
 
   test("Parser correctly encodes and decodes FederationExpect") {
     val example = getExampleMessage("messageData/federation_expect/federation_expect.json")
-    val expectedFederationExpect = EXPECT
+    val expectedFederationExpect = EXPECT_1
 
     val federationExpectFromExample = FederationExpect.buildFromJson(example)
     val buildExpectJson = MessageDataProtocol.FederationExpectFormat.write(expectedFederationExpect)
@@ -300,8 +300,8 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
   test("Parser correctly encodes and decodes FederationResult") {
     val example_1 = getExampleMessage("messageData/federation_result/federation_result.json")
     val example_2 = getExampleMessage("messageData/federation_result/federation_result_2.json")
-    val expectedFederationResult_1 = RESULT_1
-    val expectedFederationResult_2 = RESULT_2
+    val expectedFederationResult_1 = RESULT_1_1
+    val expectedFederationResult_2 = RESULT_2_2
 
     val federationResultFromExample_1 = FederationResult.buildFromJson(example_1)
     val buildResultJson_1 = MessageDataProtocol.FederationResultFormat.write(expectedFederationResult_1)

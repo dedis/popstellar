@@ -14,6 +14,7 @@ const (
 	MethodGetMessagesById = "get_messages_by_id"
 	MethodGreetServer     = "greet_server"
 	MethodRumor           = "rumor"
+	MethodRumorState      = "rumor_state"
 )
 
 // Base defines all the common attributes for a Query RPC message

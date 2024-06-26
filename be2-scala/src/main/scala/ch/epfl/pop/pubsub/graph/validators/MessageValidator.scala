@@ -4,9 +4,10 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.model.network.method.message.data.federation.{FederationExpect, FederationInit, FederationResult}
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.AskPatternConstants
-import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
 import scala.annotation.tailrec
@@ -183,6 +184,88 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
       Right(rpcMessage)
     else
       Left(error)
+  }
+
+  /** Checks if the organizer is the sender of the challenge in FederationExpect/FederationInit messages
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param challenge
+    *   the challenge message to verify its sender
+    * @param channel
+    *   the channel we want the LaoData for
+    * @param dbActor
+    *   the DbActor we use (by default the main one, obtained through getInstance)
+    * @param error
+    *   the error to forward in case the sender publicKey doesn't match the expected one
+    * @return
+    *   GraphMessage: passes the rpcMessage to Right if successful Left with pipeline error
+    */
+  def checkOrganizerChallengeSender(rpcMessage: JsonRpcRequest, challenge: Message, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance, error: PipelineError): GraphMessage = {
+    val sender = challenge.sender
+    if (validateOwner(sender, channel, dbActor))
+      Right(rpcMessage)
+    else
+      Left(error)
+  }
+
+  /** Checks if the challenge message sender from server 1 to server 2 is the organizer initiating the federation
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param msgSenderKey
+    *   the sender to verify
+    * @param dbActor
+    *   the DbActor we use (by default the main one, obtained through getInstance)
+    * @param error
+    *   the error to forward in case the sender publicKey doesn't match the expected one
+    * @return
+    *   GraphMessage: passes the rpcMessage to Right if successful Left with pipeline error
+    */
+  def checkChallengeSenderKey(rpcMessage: JsonRpcRequest, msgSenderKey: PublicKey, dbActor: AskableActorRef = DbActor.getInstance, error: PipelineError): GraphMessage =
+    val channel = rpcMessage.getParamsChannel
+    val laoId = rpcMessage.extractLaoId
+    val ask = dbActor ? DbActor.ReadFederationExpect(channel, laoId)
+    Await.ready(ask, duration).value.get match {
+      case Success(DbActor.DbActorReadAck(Some(message))) =>
+        val expectedKey = message.decodedData.get.asInstanceOf[FederationExpect].publicKey
+        checkMsgSenderKey(rpcMessage, expectedKey, msgSenderKey, error)
+      case Success(DbActor.DbActorReadAck(None)) => Left(PipelineError(ErrorCodes.INVALID_ACTION.id, s"didn't receive federationExpect before", rpcMessage.getId))
+      case _                                     => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Unexpected server behavior", rpcMessage.getId))
+    }
+
+  /** Checks if the challenge message sender in the federationResult message from server 2 to server 1 is the organizer expecting the federation and in case of success it also checks if the publicKey in the federationResult is the one of the organizer initiating the federation
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param msgSenderKey
+    *   the sender to verify
+    * @param dbActor
+    *   the DbActor we use (by default the main one, obtained through getInstance)
+    * @param error
+    *   the error to forward in case the sender publicKey doesn't match the expected one
+    * @return
+    *   GraphMessage: passes the rpcMessage to Right if successful Left with pipeline error
+    */
+  def checkResultChallengeSenderKey(rpcMessage: JsonRpcRequest, result: FederationResult, msgSenderKey: PublicKey, dbActor: AskableActorRef = DbActor.getInstance, error: PipelineError): GraphMessage = {
+    val channel = rpcMessage.getParamsChannel
+    val laoId = rpcMessage.extractLaoId
+    val ask = dbActor ? DbActor.ReadFederationInit(channel, laoId)
+    Await.ready(ask, duration).value.get match {
+      case Success(DbActor.DbActorReadAck(Some(message))) =>
+        val init = message.decodedData.get.asInstanceOf[FederationInit]
+        val expectedKey = init.publicKey
+        val initSender = message.sender
+        result.status match {
+          case "success" =>
+            if (expectedKey == msgSenderKey && initSender == result.publicKey.get)
+              Right(rpcMessage)
+            else
+              Left(error)
+          case "failure" => checkMsgSenderKey(rpcMessage, expectedKey, msgSenderKey, error)
+          case _         => Left(PipelineError(ErrorCodes.INVALID_ACTION.id, s"invalid status", rpcMessage.getId))
+        }
+      case Success(DbActor.DbActorReadAck(None)) => Left(PipelineError(ErrorCodes.INVALID_ACTION.id, s"didn't receive federationInit before", rpcMessage.getId))
+      case _                                     => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Unexpected server behavior", rpcMessage.getId))
+    }
+
   }
 
 }

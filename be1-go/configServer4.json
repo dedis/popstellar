@@ -1,0 +1,16 @@
+{
+    "public-key"                           : "",
+    "server-address"                       : "ws://127.0.0.1:9007/server",
+    "client-address"                       : "ws://127.0.0.1:9006/client",
+    "server-public-address"                : "localhost",
+    "server-listen-address"                : "localhost",
+    "auth-server-address"                  : "localhost",
+    "client-port"                          : 9006,
+    "server-port"                          : 9007,
+    "auth-port"                            : 9204,
+    "other-servers": [
+        "localhost:9003",
+        "localhost:9001"
+    ],
+    "database-path"                        : "./database-d/sqlite.db"
+}

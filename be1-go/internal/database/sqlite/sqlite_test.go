@@ -17,6 +17,7 @@ import (
 	"popstellar/internal/handler/channel/federation/mfederation"
 	"popstellar/internal/handler/channel/lao/mlao"
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/method/rumor/mrumor"
 	"popstellar/internal/test/generator"
 	"sort"
 	"testing"
@@ -27,7 +28,7 @@ import (
 // Repository interface implementation tests
 //======================================================================================================================
 
-func Test_SQLite_GetMessageByID(t *testing.T) {
+func Test_SQLite_GetMessageByIDUtil(t *testing.T) {
 	lite, dir, err := newFakeSQLite(t)
 	require.NoError(t, err)
 
@@ -46,13 +47,13 @@ func Test_SQLite_GetMessageByID(t *testing.T) {
 		testMessages[3].msg}
 	IDs := []string{"ID1", "ID2", "ID3", "ID4"}
 	for i, elem := range IDs {
-		msg, err := lite.GetMessageByID(elem)
+		msg, err := lite.GetMessageByIDUtil(elem)
 		require.NoError(t, err)
 		require.Equal(t, expected[i], msg)
 	}
 }
 
-func Test_SQLite_GetMessagesByID(t *testing.T) {
+func Test_SQLite_GetMessagesByIDUtil(t *testing.T) {
 	lite, dir, err := newFakeSQLite(t)
 	require.NoError(t, err)
 	defer lite.Close()
@@ -70,7 +71,7 @@ func Test_SQLite_GetMessagesByID(t *testing.T) {
 		"ID3": testMessages[2].msg,
 		"ID4": testMessages[3].msg}
 
-	messages, err := lite.GetMessagesByID(IDs)
+	messages, err := lite.GetMessagesByIDUtil(IDs)
 	require.NoError(t, err)
 	require.Equal(t, expected, messages)
 }
@@ -150,7 +151,7 @@ func Test_SQLite_GetChannelType(t *testing.T) {
 	defer lite.Close()
 	defer os.RemoveAll(dir)
 
-	err = lite.StoreChannel("channel1", "root", "")
+	err = lite.StoreChannelUtil("channel1", "root", "")
 	require.NoError(t, err)
 
 	channelType, err := lite.GetChannelType("channel1")
@@ -216,7 +217,7 @@ func Test_SQLite_HasChannel(t *testing.T) {
 	defer lite.Close()
 	defer os.RemoveAll(dir)
 
-	err = lite.StoreChannel(
+	err = lite.StoreChannelUtil(
 		"channel1",
 		"root",
 		"")
@@ -337,7 +338,7 @@ func Test_SQLite_StoreLaoWithLaoGreet(t *testing.T) {
 
 	// Test that we can retrieve the organizer public key from the election channel
 	electionPath := "electionID"
-	err = lite.StoreChannel(electionPath, "election", laoID)
+	err = lite.StoreChannelUtil(electionPath, "election", laoID)
 	require.NoError(t, err)
 	returnedKey, err = lite.GetLAOOrganizerPubKey(electionPath)
 	require.NoError(t, err)
@@ -612,7 +613,7 @@ func Test_SQLite_GetElectionAttendees(t *testing.T) {
 	err = lite.StoreMessageAndData(laoID, rollCallCloseMsg)
 	require.NoError(t, err)
 
-	err = lite.StoreChannel(electionID, "election", laoID)
+	err = lite.StoreChannelUtil(electionID, "election", laoID)
 	require.NoError(t, err)
 
 	returnedAttendees, err := lite.GetElectionAttendees(electionID)
@@ -923,4 +924,221 @@ func Test_SQLite_GetFederationInit(t *testing.T) {
 
 	_, err = lite.GetFederationInit(organizer2, organizer, challenge, fedPath)
 	require.ErrorIs(t, err, sql.ErrNoRows)
+}
+
+//======================================================================================================================
+// Rumor queries tests
+//======================================================================================================================
+
+func Test_SQLite_StoreRumor(t *testing.T) {
+	lite, dir, err := newFakeSQLite(t)
+	require.NoError(t, err)
+	defer lite.Close()
+	defer os.RemoveAll(dir)
+
+	timestamp0 := make(mrumor.RumorTimestamp)
+	timestamp0["sender1"] = 0
+	timestamp0["sender2"] = 0
+	rumorID := 0
+	senderID := "sender1"
+
+	msg := generator.NewNothingMsg(t, "client1", nil)
+	unprocessed := map[string][]mmessage.Message{"lao": {msg}}
+	processed := make([]string, 0)
+
+	err = lite.StoreRumor(rumorID, senderID, timestamp0, unprocessed, processed)
+	require.NoError(t, err)
+
+	messages, err := lite.GetUnprocessedMessagesByChannel()
+
+	require.NoError(t, err)
+	require.Equal(t, unprocessed, messages)
+
+	err = lite.StoreMessageAndData("lao", msg)
+	require.NoError(t, err)
+
+	messages, err = lite.GetUnprocessedMessagesByChannel()
+
+	require.NoError(t, err)
+	require.Len(t, messages, 0)
+}
+
+func Test_SQLite_CheckRumor(t *testing.T) {
+	lite, dir, err := newFakeSQLite(t)
+	require.NoError(t, err)
+	defer lite.Close()
+	defer os.RemoveAll(dir)
+
+	err = lite.StorePubKeyUtil(serverKeysPath, []byte("sender"))
+	require.NoError(t, err)
+
+	err = lite.StoreFirstRumor()
+	require.NoError(t, err)
+
+	timestamp0 := make(mrumor.RumorTimestamp)
+	timestamp0["sender1"] = 1
+
+	err = lite.StoreRumor(1, "sender1", timestamp0, nil, nil)
+	require.NoError(t, err)
+
+	timestamp1 := make(mrumor.RumorTimestamp)
+	timestamp1["sender1"] = 1
+	timestamp1["sender2"] = 0
+	err = lite.StoreRumor(0, "sender2", timestamp1, nil, nil)
+	require.NoError(t, err)
+
+	timestamp := make(mrumor.RumorTimestamp)
+	timestamp["sender1"] = 1
+	rumorID := 1
+
+	ok, alreadyHas, err := lite.CheckRumor("sender1", rumorID, timestamp0)
+	require.NoError(t, err)
+	require.False(t, ok)
+	require.True(t, alreadyHas)
+
+	timestamp["sender1"] = 0
+	rumorID = 0
+	ok, alreadyHas, err = lite.CheckRumor("sender1", rumorID, timestamp0)
+	require.NoError(t, err)
+	require.False(t, ok)
+	require.True(t, alreadyHas)
+
+	timestamp["sender3"] = 1
+	rumorID = 1
+	ok, alreadyHas, err = lite.CheckRumor("sender3", rumorID, timestamp)
+	require.NoError(t, err)
+	require.False(t, ok)
+	require.False(t, alreadyHas)
+
+	delete(timestamp, "sender3")
+
+	timestamp["sender1"] = 3
+	rumorID = 3
+	ok, alreadyHas, err = lite.CheckRumor("sender1", rumorID, timestamp)
+	require.NoError(t, err)
+	require.False(t, ok)
+	require.False(t, alreadyHas)
+
+	timestamp["sender1"] = 2
+	rumorID = 2
+	timestamp["sender2"] = 1
+	ok, alreadyHas, err = lite.CheckRumor("sender1", rumorID, timestamp)
+	require.NoError(t, err)
+	require.False(t, ok)
+	require.False(t, alreadyHas)
+
+	delete(timestamp, "sender2")
+
+	timestamp["sender3"] = 0
+	rumorID = 2
+	ok, alreadyHas, err = lite.CheckRumor("sender1", rumorID, timestamp)
+	require.NoError(t, err)
+	require.False(t, ok)
+	require.False(t, alreadyHas)
+
+	delete(timestamp, "sender3")
+
+	ok, alreadyHas, err = lite.CheckRumor("sender1", rumorID, timestamp)
+	require.NoError(t, err)
+	require.True(t, ok)
+	require.False(t, alreadyHas)
+
+	timestamp["sender2"] = 0
+	ok, alreadyHas, err = lite.CheckRumor("sender1", rumorID, timestamp)
+	require.NoError(t, err)
+	require.True(t, ok)
+	require.False(t, alreadyHas)
+}
+
+func Test_SQLite_GetRumorTimestamps(t *testing.T) {
+	lite, dir, err := newFakeSQLite(t)
+	require.NoError(t, err)
+	defer lite.Close()
+	defer os.RemoveAll(dir)
+
+	err = lite.StorePubKeyUtil(serverKeysPath, []byte("sender"))
+	require.NoError(t, err)
+
+	err = lite.StoreFirstRumor()
+	require.NoError(t, err)
+
+	timestamp, err := lite.GetRumorTimestamp()
+	require.NoError(t, err)
+	require.Equal(t, mrumor.RumorTimestamp{}, timestamp)
+
+	msg1 := generator.NewNothingMsg(t, "client1", nil)
+	err = lite.StoreMessageAndData("lao", msg1)
+	require.NoError(t, err)
+
+	ok, _, err := lite.GetAndIncrementMyRumor()
+	require.NoError(t, err)
+	require.False(t, ok)
+
+	count, err := lite.AddMessageToMyRumor(msg1.MessageID)
+	require.NoError(t, err)
+	require.Equal(t, 1, count)
+
+	ok, params, err := lite.GetAndIncrementMyRumor()
+	require.NoError(t, err)
+	require.True(t, ok)
+	require.Equal(t, map[string][]mmessage.Message{"lao": {msg1}}, params.Messages)
+
+	timestamp, err = lite.GetRumorTimestamp()
+	require.NoError(t, err)
+	require.Equal(t, mrumor.RumorTimestamp{base64.URLEncoding.EncodeToString([]byte("sender")): 0}, timestamp)
+
+}
+
+func Test_SQLite_GetAllRumors(t *testing.T) {
+
+	lite, dir, err := newFakeSQLite(t)
+	require.NoError(t, err)
+	defer lite.Close()
+	defer os.RemoveAll(dir)
+
+	err = lite.StorePubKeyUtil(serverKeysPath, []byte("sender"))
+	require.NoError(t, err)
+
+	err = lite.StoreFirstRumor()
+	require.NoError(t, err)
+
+	params, err := lite.GetAllRumorParams()
+	require.NoError(t, err)
+
+	require.Len(t, params, 0)
+
+	timestamp0 := make(mrumor.RumorTimestamp)
+	timestamp0["sender1"] = 0
+
+	err = lite.StoreRumor(0, "sender1", timestamp0, nil, nil)
+	require.NoError(t, err)
+
+	timestamp1 := make(mrumor.RumorTimestamp)
+	timestamp1["sender1"] = 0
+	timestamp1["sender2"] = 0
+	err = lite.StoreRumor(0, "sender2", timestamp1, nil, nil)
+	require.NoError(t, err)
+
+	params, err = lite.GetAllRumorParams()
+	require.NoError(t, err)
+
+	require.Len(t, params, 2)
+
+	msg1 := generator.NewNothingMsg(t, "client1", nil)
+	err = lite.StoreMessageAndData("lao", msg1)
+	require.NoError(t, err)
+
+	count, err := lite.AddMessageToMyRumor(msg1.MessageID)
+	require.NoError(t, err)
+	require.Equal(t, 1, count)
+
+	ok, rumorParams, err := lite.GetAndIncrementMyRumor()
+	require.NoError(t, err)
+	require.True(t, ok)
+	require.Equal(t, map[string][]mmessage.Message{"lao": {msg1}}, rumorParams.Messages)
+
+	params, err = lite.GetAllRumorParams()
+	require.NoError(t, err)
+	require.Len(t, params, 3)
+
 }

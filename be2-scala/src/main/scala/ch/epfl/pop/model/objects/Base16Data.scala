@@ -14,7 +14,7 @@ final case class Base16Data(data: String) {
   def getBytes: Array[Byte] = data.getBytes(StandardCharsets.UTF_8)
 
   override def equals(that: Any): Boolean = that match {
-    case that: Base16Data => this.data.equalsIgnoreCase(that.data)
+    case that: Base16Data => this.data.equals(that.data)
     case _                => false
   }
 

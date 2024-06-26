@@ -13,9 +13,22 @@ type Queries struct {
 	mock.Mock
 }
 
-// AddRumorQuery provides a mock function with given fields: id, query
-func (_m *Queries) AddRumorQuery(id int, query mrumor.Rumor) {
-	_m.Called(id, query)
+// AddRumor provides a mock function with given fields: id, query
+func (_m *Queries) AddRumor(id int, query mrumor.Rumor) error {
+	ret := _m.Called(id, query)
+
+	if len(ret) == 0 {
+		panic("no return value specified for AddRumor")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(int, mrumor.Rumor) error); ok {
+		r0 = rf(id, query)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // GetNextID provides a mock function with given fields:
