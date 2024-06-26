@@ -970,6 +970,7 @@ func Test_SQLite_CheckRumor(t *testing.T) {
 	defer os.RemoveAll(dir)
 
 	err = lite.StorePubKeyUtil(serverKeysPath, []byte("sender"))
+	require.NoError(t, err)
 
 	err = lite.StoreFirstRumor()
 	require.NoError(t, err)
@@ -984,6 +985,7 @@ func Test_SQLite_CheckRumor(t *testing.T) {
 	timestamp1["sender1"] = 1
 	timestamp1["sender2"] = 0
 	err = lite.StoreRumor(0, "sender2", timestamp1, nil, nil)
+	require.NoError(t, err)
 
 	timestamp := make(mrumor.RumorTimestamp)
 	timestamp["sender1"] = 1
@@ -1055,6 +1057,7 @@ func Test_SQLite_GetRumorTimestamps(t *testing.T) {
 	defer os.RemoveAll(dir)
 
 	err = lite.StorePubKeyUtil(serverKeysPath, []byte("sender"))
+	require.NoError(t, err)
 
 	err = lite.StoreFirstRumor()
 	require.NoError(t, err)
@@ -1094,6 +1097,7 @@ func Test_SQLite_GetAllRumors(t *testing.T) {
 	defer os.RemoveAll(dir)
 
 	err = lite.StorePubKeyUtil(serverKeysPath, []byte("sender"))
+	require.NoError(t, err)
 
 	err = lite.StoreFirstRumor()
 	require.NoError(t, err)
@@ -1113,6 +1117,7 @@ func Test_SQLite_GetAllRumors(t *testing.T) {
 	timestamp1["sender1"] = 0
 	timestamp1["sender2"] = 0
 	err = lite.StoreRumor(0, "sender2", timestamp1, nil, nil)
+	require.NoError(t, err)
 
 	params, err = lite.GetAllRumorParams()
 	require.NoError(t, err)

@@ -203,9 +203,7 @@ func (s *SQLite) StoreFirstRumor() error {
 		return poperrors.NewDatabaseInsertErrorMsg("first rumor: %v", err)
 	}
 
-	err = tx.Commit()
-
-	return nil
+	return tx.Commit()
 }
 
 func fillChannelTypes(tx *sql.Tx) error {
