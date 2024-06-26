@@ -138,3 +138,16 @@ func (s *Sockets) Delete(ID string) bool {
 
 	return true
 }
+
+func (s *Sockets) SendToRandom(buf []byte) {
+	s.RLock()
+	defer s.RUnlock()
+
+	if len(s.store) == 0 {
+		return
+	}
+
+	index := rand.Intn(len(s.store))
+
+	s.store[s.socketIDs[index]].Send(buf)
+}

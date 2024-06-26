@@ -10,11 +10,15 @@ import (
 	"io"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
+	"popstellar/internal/handler/answer/hanswer/mocks"
+	"popstellar/internal/handler/answer/manswer"
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/channel/root/mroot"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/rumor/mrumor"
+	"popstellar/internal/logger"
 	"popstellar/internal/network/socket"
+	mocks2 "popstellar/internal/network/socket/mocks"
 	"popstellar/internal/state"
 	"popstellar/internal/test/generator"
 	"testing"
@@ -40,7 +44,11 @@ func (n *nullMessageHandler) Handle(channelPath string, msg mmessage.Message, fr
 
 type nullRumorSender struct{}
 
-func (n *nullRumorSender) SendRumor(socket socket.Socket, rumor mrumor.Rumor) {
+func (n *nullRumorSender) SendRumor(socket socket.Socket, rumor mrumor.ParamsRumor) {
+}
+
+func (n *nullRumorSender) HandleRumorStateAnswer(socket socket.Socket, rumor mrumor.ParamsRumor) error {
+	return nil
 }
 
 func Test_handleMessagesByChannel(t *testing.T) {
@@ -51,7 +59,7 @@ func Test_handleMessagesByChannel(t *testing.T) {
 
 	answerHandlers := Handlers{
 		MessageHandler: &nullMessageHandler{},
-		RumorSender:    &nullRumorSender{},
+		RumorHandler:   &nullRumorSender{},
 	}
 
 	handler := New(queries, answerHandlers, log)
@@ -135,11 +143,82 @@ func Test_handleMessagesByChannel(t *testing.T) {
 
 			for k0, v0 := range i.expected {
 				for k1 := range v0 {
-					fmt.Println(i.messages[k0][k1])
 					require.Equal(t, i.expected[k0][k1], i.messages[k0][k1])
 				}
 			}
 		})
 	}
+
+}
+
+func Test_handleRumorStateAnswer(t *testing.T) {
+	log := logger.Logger.With().Str("test", "handleRumorState").Logger()
+	queries := mocks.NewQueries(t)
+	rumorHandler := mocks.NewRumorHandler(t)
+	messageHandler := mocks.NewMessageHandler(t)
+	fakeSocket := mocks2.NewFakeSocket("0")
+
+	answerHandler := New(queries, Handlers{MessageHandler: messageHandler, RumorHandler: rumorHandler}, log)
+
+	sender1 := "sender1"
+	sender2 := "sender2"
+
+	timestamp1 := make(mrumor.RumorTimestamp)
+	timestamp1[sender1] = 0
+	timestamp2 := make(mrumor.RumorTimestamp)
+	timestamp2[sender2] = 0
+	timestamp3 := make(mrumor.RumorTimestamp)
+	timestamp3[sender1] = 1
+
+	rumor1, _ := generator.NewRumorQuery(t, 1, sender1, 0, timestamp1, make(map[string][]mmessage.Message))
+	rumor2, _ := generator.NewRumorQuery(t, 2, sender2, 0, timestamp2, make(map[string][]mmessage.Message))
+	rumor3, _ := generator.NewRumorQuery(t, 3, sender1, 1, timestamp3, make(map[string][]mmessage.Message))
+
+	rumors := []mrumor.Rumor{rumor3, rumor1, rumor2}
+	answer1, _ := generator.NewRumorStateAnswer(t, 4, rumors)
+
+	queries.On("Remove", 4).Return(nil).Once()
+	rumorHandler.On("HandleRumorStateAnswer", fakeSocket, rumor1.Params).Return(nil).Once()
+	rumorHandler.On("HandleRumorStateAnswer", fakeSocket, rumor3.Params).Return(nil).Once()
+	rumorHandler.On("HandleRumorStateAnswer", fakeSocket, rumor2.Params).Return(nil).Once()
+
+	err := answerHandler.handleRumorStateAnswer(fakeSocket, answer1)
+	require.NoError(t, err)
+}
+
+func Test_handleRumorAnswer(t *testing.T) {
+	log := logger.Logger.With().Str("test", "handleRumorState").Logger()
+	queries := mocks.NewQueries(t)
+	rumorHandler := mocks.NewRumorHandler(t)
+	messageHandler := mocks.NewMessageHandler(t)
+
+	answerHandler := New(queries, Handlers{MessageHandler: messageHandler, RumorHandler: rumorHandler}, log)
+
+	continueMongeringTest := float64(0)
+
+	answer1, _ := generator.NewRumorAnswer(t, 1, nil)
+
+	queries.On("Remove", 1).Return(nil).Once()
+	queries.On("GetRumor", 1).Return(mrumor.Rumor{}, true).Once()
+	rumorHandler.On("SendRumor", nil, mrumor.ParamsRumor{}).Return().Once()
+
+	err := answerHandler.handleRumorAnswer(continueMongeringTest, answer1)
+	require.NoError(t, err)
+
+	answer2, _ := generator.NewRumorAnswer(t, 1, &manswer.Error{Code: errors.DuplicateResourceErrorCode})
+
+	queries.On("Remove", 1).Return(nil).Once()
+	queries.On("GetRumor", 1).Return(mrumor.Rumor{}, true).Once()
+	rumorHandler.On("SendRumor", nil, mrumor.ParamsRumor{}).Return().Once()
+
+	err = answerHandler.handleRumorAnswer(continueMongeringTest, answer2)
+	require.NoError(t, err)
+
+	continueMongeringTest = float64(1)
+
+	queries.On("Remove", 1).Return(nil).Once()
+
+	err = answerHandler.handleRumorAnswer(continueMongeringTest, answer2)
+	require.NoError(t, err)
 
 }

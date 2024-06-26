@@ -18,22 +18,25 @@ const (
 )
 
 type Queries interface {
-	SetQueryReceived(ID int) error
-	IsRumorQuery(queryID int) bool
-	GetRumorFromPastQuery(queryID int) (mrumor.Rumor, bool)
+	Remove(id int)
+	GetRumor(queryID int) (mrumor.Rumor, bool)
+	IsGetMessagesByID(id int) bool
+	IsRumor(id int) bool
+	IsRumorState(id int) bool
 }
 
 type MessageHandler interface {
 	Handle(channelPath string, msg mmessage.Message, fromRumor bool) error
 }
 
-type RumorSender interface {
-	SendRumor(socket socket.Socket, rumor mrumor.Rumor)
+type RumorHandler interface {
+	HandleRumorStateAnswer(socket socket.Socket, rumor mrumor.ParamsRumor) error
+	SendRumor(socket socket.Socket, rumor mrumor.ParamsRumor)
 }
 
 type Handlers struct {
 	MessageHandler MessageHandler
-	RumorSender    RumorSender
+	RumorHandler   RumorHandler
 }
 
 type Handler struct {
@@ -50,7 +53,7 @@ func New(queries Queries, handlers Handlers, log zerolog.Logger) *Handler {
 	}
 }
 
-func (h *Handler) Handle(msg []byte) error {
+func (h *Handler) Handle(socket socket.Socket, msg []byte) error {
 	var answerMsg manswer.Answer
 
 	err := json.Unmarshal(msg, &answerMsg)
@@ -59,74 +62,39 @@ func (h *Handler) Handle(msg []byte) error {
 	}
 
 	if answerMsg.ID == nil {
-		h.log.Info().Msg("received an answer with a null id")
-		return nil
+		return errors.NewInvalidMessageFieldError("received an answer with a null id")
 	}
 
-	isRumor := h.queries.IsRumorQuery(*answerMsg.ID)
-	if isRumor {
-		return h.handleRumorAnswer(answerMsg)
+	if h.queries.IsGetMessagesByID(*answerMsg.ID) {
+		return h.handleGetMessagesByIDAnswer(answerMsg)
 	}
 
-	if answerMsg.Result == nil {
-		h.log.Info().Msg("received an error, nothing to handle")
+	if h.queries.IsRumor(*answerMsg.ID) {
+		return h.handleRumorAnswer(continueMongering, answerMsg)
+	}
+
+	if h.queries.IsRumorState(*answerMsg.ID) {
+		return h.handleRumorStateAnswer(socket, answerMsg)
+	}
+
+	return errors.NewInvalidActionError("received a invalid jsonrpc answer")
+}
+
+func (h *Handler) handleGetMessagesByIDAnswer(msg manswer.Answer) error {
+	defer h.queries.Remove(*msg.ID)
+
+	if msg.Result == nil {
+		h.log.Debug().Msg("received an error, nothing to handle")
 		// don't send any error to avoid infinite error loop as a server will
 		// send an error to another server that will create another error
 		return nil
 	}
 
-	if answerMsg.Result.IsEmpty() {
-		h.log.Info().Msg("expected isn't an answer to a popquery, nothing to handle")
+	if msg.Result.IsEmpty() {
+		h.log.Debug().Msg("expected isn't an answer to a query, nothing to handle")
 		return nil
 	}
 
-	err = h.queries.SetQueryReceived(*answerMsg.ID)
-	if err != nil {
-		return err
-	}
-
-	h.handleGetMessagesByIDAnswer(answerMsg)
-
-	return nil
-}
-
-func (h *Handler) handleRumorAnswer(msg manswer.Answer) error {
-	err := h.queries.SetQueryReceived(*msg.ID)
-	if err != nil {
-		return err
-	}
-
-	h.log.Debug().Msgf("received an answer to rumor query %d", *msg.ID)
-
-	if msg.Error != nil {
-		h.log.Debug().Msgf("received an answer error to rumor query %d", *msg.ID)
-		if msg.Error.Code != errors.DuplicateResourceErrorCode {
-			h.log.Debug().Msgf("invalid error code to rumor query %d", *msg.ID)
-			return nil
-		}
-
-		stop := rand.Float64() < continueMongering
-
-		if stop {
-			h.log.Debug().Msgf("stop mongering rumor query %d", *msg.ID)
-			return nil
-		}
-
-		h.log.Debug().Msgf("continue mongering rumor query %d", *msg.ID)
-	}
-
-	h.log.Debug().Msgf("sender rumor need to continue sending query %d", *msg.ID)
-	rumor, ok := h.queries.GetRumorFromPastQuery(*msg.ID)
-	if !ok {
-		return errors.NewInternalServerError("rumor query %d doesn't exist", *msg.ID)
-	}
-
-	h.handlers.RumorSender.SendRumor(nil, rumor)
-
-	return nil
-}
-
-func (h *Handler) handleGetMessagesByIDAnswer(msg manswer.Answer) {
 	result := msg.Result.GetMessagesByChannel()
 	msgsByChan := make(map[string]map[string]mmessage.Message)
 
@@ -152,6 +120,8 @@ func (h *Handler) handleGetMessagesByIDAnswer(msg manswer.Answer) {
 
 	// Handle every message and discard them if handled without error
 	h.handleMessagesByChannel(msgsByChan)
+
+	return nil
 }
 
 func (h *Handler) handleMessagesByChannel(msgsByChannel map[string]map[string]mmessage.Message) {
@@ -196,4 +166,77 @@ func (h *Handler) getSortedChannels(msgsByChannel map[string]map[string]mmessage
 		return len(sortedChannelIDs[i]) < len(sortedChannelIDs[j])
 	})
 	return sortedChannelIDs
+}
+
+func (h *Handler) handleRumorAnswer(continueMongering float64, msg manswer.Answer) error {
+	defer h.queries.Remove(*msg.ID)
+
+	h.log.Debug().Msgf("received an answer to rumor query %d", *msg.ID)
+
+	if msg.Error != nil {
+		h.log.Debug().Msgf("received an answer error to rumor query %d", *msg.ID)
+		if msg.Error.Code != errors.DuplicateResourceErrorCode {
+			h.log.Debug().Msgf("invalid error code to rumor query %d", *msg.ID)
+			return nil
+		}
+
+		stop := rand.Float64() < continueMongering
+
+		if stop {
+			h.log.Debug().Msgf("stop mongering rumor query %d", *msg.ID)
+			return nil
+		}
+
+		h.log.Debug().Msgf("continue mongering rumor query %d", *msg.ID)
+	}
+
+	h.log.Debug().Msgf("sender rumor need to continue sending query %d", *msg.ID)
+	rumor, ok := h.queries.GetRumor(*msg.ID)
+	if !ok {
+		return errors.NewInternalServerError("rumor query %d doesn't exist", *msg.ID)
+	}
+
+	h.handlers.RumorHandler.SendRumor(nil, rumor.Params)
+
+	return nil
+}
+
+func (h *Handler) handleRumorStateAnswer(socket socket.Socket, msg manswer.Answer) error {
+	defer h.queries.Remove(*msg.ID)
+
+	if msg.Result == nil {
+		return nil
+	}
+
+	if msg.Result.IsEmpty() {
+		return nil
+	}
+
+	rumors := make([]mrumor.ParamsRumor, 0)
+
+	result := msg.Result.GetData()
+	for _, rawRumor := range result {
+		var rumor mrumor.ParamsRumor
+		err := json.Unmarshal(rawRumor, &rumor)
+		if err == nil {
+			rumors = append(rumors, rumor)
+			continue
+		}
+
+		err = errors.NewJsonUnmarshalError(err.Error())
+		h.log.Error().Err(err)
+	}
+
+	sort.Slice(rumors, func(i, j int) bool {
+		return rumors[i].Timestamp.IsBefore(rumors[j].Timestamp)
+	})
+
+	for _, rumor := range rumors {
+		err := h.handlers.RumorHandler.HandleRumorStateAnswer(socket, rumor)
+		if err != nil {
+			h.log.Error().Err(err).Msg("")
+		}
+	}
+
+	return nil
 }

@@ -11,6 +11,7 @@ import (
 	"popstellar/internal/handler/method/heartbeat/mheartbeat"
 	"popstellar/internal/handler/method/publish/mpublish"
 	"popstellar/internal/handler/method/rumor/mrumor"
+	"popstellar/internal/handler/method/rumorstate/mrumorstate"
 	"popstellar/internal/handler/method/subscribe/msubscribe"
 	"popstellar/internal/handler/method/unsubscribe/munsubscribe"
 	"popstellar/internal/handler/query/mquery"
@@ -157,7 +158,7 @@ func NewGetMessagesByIDQuery(t *testing.T, queryID int, msgIDsByChannel map[stri
 	return getMessagesByIDBuf
 }
 
-func NewRumorQuery(t *testing.T, queryID int, senderID string, rumorID int, messages map[string][]mmessage.Message) (mrumor.Rumor, []byte) {
+func NewRumorQuery(t *testing.T, queryID int, senderID string, rumorID int, timestamp mrumor.RumorTimestamp, messages map[string][]mmessage.Message) (mrumor.Rumor, []byte) {
 	rumor := mrumor.Rumor{
 		Base: mquery.Base{
 			JSONRPCBase: mjsonrpc.JSONRPCBase{
@@ -167,9 +168,10 @@ func NewRumorQuery(t *testing.T, queryID int, senderID string, rumorID int, mess
 		},
 		ID: queryID,
 		Params: mrumor.ParamsRumor{
-			SenderID: senderID,
-			RumorID:  rumorID,
-			Messages: messages,
+			SenderID:  senderID,
+			RumorID:   rumorID,
+			Timestamp: timestamp,
+			Messages:  messages,
 		},
 	}
 
@@ -177,4 +179,24 @@ func NewRumorQuery(t *testing.T, queryID int, senderID string, rumorID int, mess
 	require.NoError(t, err)
 
 	return rumor, rumorBuf
+}
+
+func NewRumorStateQuery(t *testing.T, queryID int, timestamp mrumor.RumorTimestamp) (mrumorstate.RumorState, []byte) {
+	rumorState := mrumorstate.RumorState{
+		Base: mquery.Base{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: mquery.MethodRumorState,
+		},
+		ID: queryID,
+		Params: mrumorstate.RumorStateParams{
+			State: timestamp,
+		},
+	}
+
+	rumorStateBuf, err := json.Marshal(&rumorState)
+	require.NoError(t, err)
+
+	return rumorState, rumorStateBuf
 }

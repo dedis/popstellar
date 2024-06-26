@@ -19,7 +19,7 @@ type Answer struct {
 // Result can be either a 0 int, a slice of messages or a map of messages associated to a channel ID
 type Result struct {
 	isEmpty           bool
-	data              []json.RawMessage
+	Data              []json.RawMessage
 	MessagesByChannel map[string][]json.RawMessage
 }
 
@@ -32,7 +32,7 @@ func (r *Result) UnmarshalJSON(buf []byte) error {
 		return nil
 	}
 
-	errData := json.Unmarshal(buf, &r.data)
+	errData := json.Unmarshal(buf, &r.Data)
 	if errData == nil {
 		return nil
 	}
@@ -56,7 +56,7 @@ func (r Result) IsEmpty() bool {
 
 // GetData returns the answer data. It can be nil in case the return is empty.
 func (r *Result) GetData() []json.RawMessage {
-	return r.data
+	return r.Data
 }
 
 // GetMessagesByChannel returns the array of objects mapping a channel with its messages.
