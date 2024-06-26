@@ -84,14 +84,14 @@ func (h *Handler) handleGetMessagesByIDAnswer(msg manswer.Answer) error {
 	defer h.queries.Remove(*msg.ID)
 
 	if msg.Result == nil {
-		h.log.Info().Msg("received an error, nothing to handle")
+		h.log.Debug().Msg("received an error, nothing to handle")
 		// don't send any error to avoid infinite error loop as a server will
 		// send an error to another server that will create another error
 		return nil
 	}
 
 	if msg.Result.IsEmpty() {
-		h.log.Info().Msg("expected isn't an answer to a query, nothing to handle")
+		h.log.Debug().Msg("expected isn't an answer to a query, nothing to handle")
 		return nil
 	}
 
