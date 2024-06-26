@@ -32,7 +32,7 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
 
   private var activeGossipProtocol: Map[JsonRpcRequest, Set[ActorRef]] = Map.empty
   private var rumorMap: Map[PublicKey, Int] = Map.empty
-  private var jsonId = 1
+  private var jsonId = 0
   private var publicKey: Option[PublicKey] = None
   private var connectionMediatorRef: AskableActorRef = _
 
