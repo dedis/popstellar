@@ -15,16 +15,16 @@ import timber.log.Timber
 @Immutable
 class PublicKey : Base64URLData {
   private val verifier: PublicKeyVerify
-  private var toUsername: String
+  @Transient private var label: String
 
   constructor(data: ByteArray) : super(data) {
     verifier = Ed25519Verify(data)
-    toUsername = GeneralUtils.generateUsernameFromBase64(this.encoded)
+    label = GeneralUtils.generateUsernameFromBase64(this.encoded)
   }
 
   constructor(data: String) : super(data) {
     verifier = Ed25519Verify(this.data)
-    toUsername = GeneralUtils.generateUsernameFromBase64(this.encoded)
+    label = GeneralUtils.generateUsernameFromBase64(this.encoded)
   }
 
   fun verify(signature: Signature, data: Base64URLData): Boolean {
@@ -41,8 +41,8 @@ class PublicKey : Base64URLData {
    * Function that return the username of the public key The username is deterministic and is
    * computed from the hash of the public key
    */
-  fun getUsername(): String {
-    return toUsername
+  fun getLabel(): String {
+    return label
   }
 
   /**
@@ -64,5 +64,13 @@ class PublicKey : Base64URLData {
 
   companion object {
     private val TAG = PublicKey::class.java.simpleName
+
+    fun findPublicKeyFromUsername(
+        username: String,
+        publicKeys: List<PublicKey>,
+        default: PublicKey
+    ): PublicKey {
+      return publicKeys.firstOrNull { it.getLabel() == username } ?: default
+    }
   }
 }

@@ -57,7 +57,7 @@ class DigitalCashReceiptFragment : Fragment() {
       if (pk != null) {
         binding.digitalCashReceiptBeneficiary.text =
             String.format(
-                resources.getString(R.string.digital_cash_beneficiary_address), pk.getUsername())
+                resources.getString(R.string.digital_cash_beneficiary_address), pk.getLabel())
       }
     }
   }

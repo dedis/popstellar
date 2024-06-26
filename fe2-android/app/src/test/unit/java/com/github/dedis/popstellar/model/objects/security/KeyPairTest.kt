@@ -58,7 +58,7 @@ class KeyPairTest {
     val pk = PublicKey("oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=")
     val digits = "3877"
     // last 4 characters of the hash are the 4 first numerical digits of the hash
-    Assert.assertEquals(digits, pk.getUsername().substring(pk.getUsername().length - USERNAME_DIGITS))
+    Assert.assertEquals(digits, pk.getLabel().substring(pk.getLabel().length - USERNAME_DIGITS))
   }
 
   @Test
@@ -66,7 +66,7 @@ class KeyPairTest {
     val pk = PublicKey("oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJmhmms=")
     val digits = "0387"
     // If the Hash contains less than 4 digits, the username will be padded with 0
-    Assert.assertEquals(digits, pk.getUsername().substring(pk.getUsername().length - USERNAME_DIGITS))
+    Assert.assertEquals(digits, pk.getLabel().substring(pk.getLabel().length - USERNAME_DIGITS))
   }
 
   @Test

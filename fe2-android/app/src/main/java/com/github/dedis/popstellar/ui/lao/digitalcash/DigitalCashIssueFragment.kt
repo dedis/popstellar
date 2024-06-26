@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.DigitalCashIssueFragmentBinding
 import com.github.dedis.popstellar.model.objects.security.PublicKey
+import com.github.dedis.popstellar.model.objects.security.PublicKey.Companion.findPublicKeyFromUsername
 import com.github.dedis.popstellar.ui.lao.LaoActivity.Companion.obtainDigitalCashViewModel
 import com.github.dedis.popstellar.ui.lao.LaoActivity.Companion.obtainViewModel
 import com.github.dedis.popstellar.ui.lao.LaoActivity.Companion.setCurrentFragment
@@ -75,7 +76,10 @@ class DigitalCashIssueFragment : Fragment() {
     /*Take the amount entered by the user*/
     val currentAmount = binding.digitalCashIssueAmount.text.toString()
     val currentPublicKeySelected =
-        getPublicKeyFromUsername(binding.digitalCashIssueSpinner.editText!!.text.toString())
+        findPublicKeyFromUsername(
+            binding.digitalCashIssueSpinner.editText!!.text.toString(),
+            digitalCashViewModel.attendeesFromTheRollCallList,
+            digitalCashViewModel.validToken.publicKey)
     val radioGroup = binding.digitalCashIssueSelect.checkedRadioButtonId
 
     if (digitalCashViewModel.canPerformTransaction(
@@ -93,12 +97,6 @@ class DigitalCashIssueFragment : Fragment() {
         logAndShow(requireContext(), TAG, r, R.string.no_rollcall_exception)
       }
     }
-  }
-
-  private fun getPublicKeyFromUsername(username: String): PublicKey {
-    return digitalCashViewModel.attendeesFromTheRollCallList.firstOrNull {
-      it.getUsername() == username
-    } ?: digitalCashViewModel.validToken.publicKey
   }
 
   private fun displayToast(radioGroup: Int) {
@@ -173,7 +171,7 @@ class DigitalCashIssueFragment : Fragment() {
     /* Roll Call attendees to which we can send*/
     var myArray: List<String>
     try {
-      myArray = digitalCashViewModel.attendeesFromTheRollCallList.map { it.getUsername() }
+      myArray = digitalCashViewModel.attendeesFromTheRollCallList.map { it.getLabel() }
     } catch (e: NoRollCallException) {
       Timber.tag(TAG).e(getString(R.string.error_no_rollcall_closed_in_LAO))
       Toast.makeText(
