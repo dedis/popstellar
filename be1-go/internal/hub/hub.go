@@ -186,8 +186,8 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 
 	// Create the rumor state handler
 	rumorStateHandler := hrumorstate.New(queries, sockets, &db, log)
-  
-  // Create the federation handler
+
+	// Create the federation handler
 	federationHandler := hfederation.New(hubParams, subs, sockets, conf, &db, schemaValidator, log)
 
 	// Create the query handler
