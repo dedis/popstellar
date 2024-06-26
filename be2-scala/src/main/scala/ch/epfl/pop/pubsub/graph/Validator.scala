@@ -31,6 +31,7 @@ object Validator {
     case Right(jsonRpcRequest: JsonRpcRequest) => jsonRpcRequest.getParams match {
         case _: Broadcast       => validateBroadcast(jsonRpcRequest)
         case _: Catchup         => validateCatchup(jsonRpcRequest)
+        case _: PagedCatchup    => validatePagedCatchup(jsonRpcRequest)
         case _: Publish         => validatePublish(jsonRpcRequest)
         case _: Subscribe       => validateSubscribe(jsonRpcRequest)
         case _: Unsubscribe     => validateUnsubscribe(jsonRpcRequest)
@@ -49,6 +50,7 @@ object Validator {
     case Right(jsonRpcRequest: JsonRpcRequest) => jsonRpcRequest.getParams match {
         case _: Broadcast       => validateMessage(jsonRpcRequest)
         case _: Catchup         => graphMessage
+        case _: PagedCatchup    => graphMessage
         case _: Publish         => validateMessage(jsonRpcRequest)
         case _: Subscribe       => graphMessage
         case _: Unsubscribe     => graphMessage

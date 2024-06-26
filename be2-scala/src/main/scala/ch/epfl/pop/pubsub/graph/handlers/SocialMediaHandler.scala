@@ -1,6 +1,7 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.pattern.AskableActorRef
+import ch.epfl.pop.json.HighLevelProtocol.messageFormat
 import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
@@ -32,6 +33,7 @@ object SocialMediaHandler extends MessageHandler {
         val (chirpId, channelChirp, data, broadcastChannel) = parametersToBroadcast[AddChirp](rpcMessage)
         //  create and propagate the notifyAddChirp message
         val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirpId, channelChirp, data.timestamp)
+        dbActor ? DbActor.WriteAndPropagate(broadcastChannel, rpcMessage.getParamsMessage.get)
         Await.result(
           broadcast(rpcMessage, channelChirp, notifyAddChirp.toJson, broadcastChannel, writeToDb = false),
           duration
@@ -64,6 +66,7 @@ object SocialMediaHandler extends MessageHandler {
         val (chirpId, channelChirp, data, broadcastChannel) = parametersToBroadcast[DeleteChirp](rpcMessage)
         // create and propagate the notifyDeleteChirp message
         val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirpId, channelChirp, data.timestamp)
+        dbActor ? DbActor.WriteAndPropagate(broadcastChannel, rpcMessage.getParamsMessage.get)
         Await.result(
           broadcast(rpcMessage, channelChirp, notifyDeleteChirp.toJson, broadcastChannel, writeToDb = false),
           duration
@@ -95,11 +98,13 @@ object SocialMediaHandler extends MessageHandler {
 
   def handleAddReaction(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    dbActor ? DbActor.UpdateNumberOfNewChirpsReactions(rpcMessage.getParamsChannel)
     Await.result(ask, duration)
   }
 
   def handleDeleteReaction(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    dbActor ? DbActor.UpdateNumberOfNewChirpsReactions(rpcMessage.getParamsChannel)
     Await.result(ask, duration)
   }
 

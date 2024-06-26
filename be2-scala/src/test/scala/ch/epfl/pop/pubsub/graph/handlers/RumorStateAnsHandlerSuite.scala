@@ -16,10 +16,12 @@ import akka.pattern.ask
 import ch.epfl.pop.model.network.MethodType.publish
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{Publish, Rumor, RumorState}
-import ch.epfl.pop.model.objects.Channel
+import ch.epfl.pop.model.objects.{Channel, RumorData}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
+import ch.epfl.pop.storage.DbActor.{DbActorReadRumorData, ReadRumorData}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.matchers.should.Matchers.{a, equal, should, shouldBe}
+import util.examples.MessageExample
 
 import scala.concurrent.Await
 
@@ -29,15 +31,14 @@ class RumorStateAnsHandlerSuite extends TestKit(ActorSystem("RumorStateAnsHandle
   private var pubSubMediatorRef: ActorRef = _
   private var dbActorRef: AskableActorRef = _
   private var rumorStateAnsHandler: Flow[GraphMessage, GraphMessage, NotUsed] = _
-  private val rumorRequest = JsonRpcRequest.buildFromJson(IOHelper.readJsonFromPath("src/test/scala/util/examples/json/rumor/rumor_correct_msg.json"))
-  private val rumor = rumorRequest.getParams.asInstanceOf[Rumor]
+  private val rumorStateResponse = JsonRpcResponse.buildFromJson(IOHelper.readJsonFromPath("src/test/scala/util/examples/json/rumor_state/rumor_state_ans.json"))
 
   override def beforeAll(): Unit = {
     inMemoryStorage = InMemoryStorage()
     messageRegistry = MessageRegistry()
     pubSubMediatorRef = system.actorOf(PubSubMediator.props, "pubSubRumorState")
     dbActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)), "dbRumorStateAns")
-    rumorStateAnsHandler = ProcessMessagesHandler.rumorStateAnsHandler(messageRegistry)
+    rumorStateAnsHandler = ProcessMessagesHandler.rumorStateAnsHandler(dbActorRef, messageRegistry)
 
     PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, ActorRef.noSender, messageRegistry, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, false)
   }
@@ -58,15 +59,8 @@ class RumorStateAnsHandlerSuite extends TestKit(ActorSystem("RumorStateAnsHandle
   }
 
   test("rumor state ans processes all msg well") {
-    val splitMsg = rumor.messages.toList.flatMap((channel, msgList) => msgList.map(msg => (channel, List(msg))))
-    var rumorId = -1
-    val rumorList = splitMsg.map((channel, msgList) => {
-      rumorId += 1
-      Rumor(rumor.senderPk, rumorId, Map(channel -> msgList))
-    })
-    val rumorStateAnsMsg = Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, ResultObject(ResultRumor(rumorList)), Some(1)))
 
-    val output = Source.single(rumorStateAnsMsg).via(rumorStateAnsHandler).runWith(Sink.head)
+    val output = Source.single(Right(rumorStateResponse)).via(rumorStateAnsHandler).runWith(Sink.head)
     Await.result(output, duration)
 
     val ask = dbActorRef ? DbActor.GetAllChannels()
@@ -75,13 +69,20 @@ class RumorStateAnsHandlerSuite extends TestKit(ActorSystem("RumorStateAnsHandle
       case err @ _                                    => Matchers.fail(err.toString)
     }
 
-    val channelsInRumor = rumor.messages.keySet
+    val rumorList = rumorStateResponse.result.get.resultRumor.get
+    val channelsInRumor = rumorList.flatMap(rumor => rumor.messages.keySet).toSet
     channelsInRumor.diff(channelsInDb) should equal(Set.empty)
 
     val messagesInDb: Set[Message] = channelsInDb.foldLeft(Set.empty: Set[Message])((acc, channel) => acc ++ getMessages(channel))
-    val messagesInRumor = rumor.messages.values.foldLeft(Set.empty: Set[Message])((acc, set) => acc ++ set)
+    val messagesInRumor = rumorList.flatMap(rumor => rumor.messages.values).foldLeft(Set.empty: Set[Message])((acc, set) => acc ++ set)
 
     messagesInRumor.diff(messagesInDb) should equal(Set.empty)
+
+    val readRumorData = dbActorRef ? ReadRumorData(rumorList.head.senderPk)
+    Await.result(readRumorData, duration) match
+      case DbActorReadRumorData(rumorData: RumorData) =>
+        rumorData.rumorIds shouldBe rumorList.map(_.rumorId)
+      case _ => 0 shouldBe 1
   }
 
   test("rumor state ans handler fails on wrong type") {
@@ -89,7 +90,8 @@ class RumorStateAnsHandlerSuite extends TestKit(ActorSystem("RumorStateAnsHandle
     val outputResponseInt = Source.single(Right(responseInt)).via(rumorStateAnsHandler).runWith(Sink.head)
     Await.result(outputResponseInt, duration) shouldBe a[Left[PipelineError, Nothing]]
 
-    val request = JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, publish, Publish(rumor.messages.head._1, rumor.messages.head._2.head), None)
+    val rumorList = rumorStateResponse.result.get.resultRumor.get
+    val request = JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, publish, Publish(rumorList.head.messages.head._1, rumorList.head.messages.head._2.head), None)
     val outputRequest = Source.single(Right(request)).via(rumorStateAnsHandler).runWith(Sink.head)
     Await.result(outputRequest, duration) shouldBe a[Left[PipelineError, Nothing]]
 
