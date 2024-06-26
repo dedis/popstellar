@@ -131,6 +131,14 @@ class LinkedOrganizationsRepositoryTest {
         val handler = LinkedOrganizationsHandler(mockLaoRepo, REPO, mockRollCallRepo)
         handler.handleResult(mockContext, RESULT_FAILURE)
         Assert.assertEquals(mutableSetOf<String>(), REPO.getLinkedLaos(LAO_ID_7).keys)
+
+        REPO.otherLaoId = null
+        handler.handleResult(mockContext, RESULT_SUCCESS)
+        Assert.assertEquals(mutableSetOf<String>(), REPO.getLinkedLaos(LAO_ID_7).keys)
+        REPO.flush()
+        REPO.otherLaoId = LAO_ID_4
+        handler.handleResult(mockContext, RESULT_SUCCESS)
+        Assert.assertEquals(mutableSetOf<String>(), REPO.getLinkedLaos(LAO_ID_7).keys)
     }
 
     @Test
