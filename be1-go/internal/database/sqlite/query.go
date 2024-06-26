@@ -4,10 +4,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	poperrors "popstellar/internal/errors"
-	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/rumor/mrumor"
-	"popstellar/internal/handler/query/mquery"
 	"strings"
 )
 
@@ -373,25 +371,6 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, mrumor.ParamsRumor, error) {
 	}
 
 	return true, params, nil
-}
-
-func newRumor(rumorID int, sender string, messages map[string][]mmessage.Message, timestamp mrumor.RumorTimestamp) mrumor.Rumor {
-	params := mrumor.ParamsRumor{
-		RumorID:   rumorID,
-		SenderID:  sender,
-		Messages:  messages,
-		Timestamp: timestamp,
-	}
-
-	return mrumor.Rumor{
-		Base: mquery.Base{
-			JSONRPCBase: mjsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: "rumor",
-		},
-		Params: params,
-	}
 }
 
 func newRumorParams(rumorID int, sender string, messages map[string][]mmessage.Message, timestamp mrumor.RumorTimestamp) mrumor.ParamsRumor {
