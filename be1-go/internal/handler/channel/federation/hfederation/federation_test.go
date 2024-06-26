@@ -532,6 +532,76 @@ func Test_handleFederationInit(t *testing.T) {
 	require.Equal(t, challengeMsg, publishMsg.Params.Message)
 }
 
+func Test_handleFederationInitOnSingleServer(t *testing.T) {
+	log := zerolog.New(io.Discard)
+
+	db := mocks.NewRepository(t)
+	subs := state.NewSubscribers(log)
+	sockets := state.NewSockets(log)
+	hub := state.NewHubParams(log)
+	schema, err := validation.NewSchemaValidator()
+	require.NoError(t, err)
+
+	organizerPk, _, organizerSk, _ := generator.GenerateKeyPair(t)
+	organizer2Pk, _, _, _ := generator.GenerateKeyPair(t)
+
+	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
+
+	clientAddress := "ws://localhost:9800/client"
+	serverAddress := "ws://localhost:9800/server"
+
+	conf := state.CreateConfig(organizerPk, serverPk, serverSk, clientAddress, serverAddress, log)
+	federationHandler := New(hub, subs, sockets, conf, db, schema, log)
+
+	organizerBuf, err := organizerPk.MarshalBinary()
+	require.NoError(t, err)
+	organizer := base64.URLEncoding.EncodeToString(organizerBuf)
+
+	organizer2Buf, err := organizer2Pk.MarshalBinary()
+	require.NoError(t, err)
+	organizer2 := base64.URLEncoding.EncodeToString(organizer2Buf)
+
+	laoID := "lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA="
+	laoID2 := "OWY4NmQwODE4ODRjN2Q2NTlhMmZlYWEwYzU1YWQwMQ=="
+	laoPath := fmt.Sprintf("/root/%s", laoID)
+	channelPath := fmt.Sprintf("/root/%s/federation", laoID)
+	channelPath2 := fmt.Sprintf("/root/%s/federation", laoID2)
+
+	serverAddressA := clientAddress
+	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
+	validUntil := time.Now().Add(5 * time.Minute).Unix()
+
+	challengeMsg := generator.NewFederationChallenge(t, organizer, value,
+		validUntil, organizerSk)
+
+	initMsg := generator.NewFederationInit(t, organizer, laoID2,
+		serverAddressA, organizer2, challengeMsg, organizerSk)
+
+	db.On("GetOrganizerPubKey", laoPath).Return(organizerPk, nil)
+	db.On("StoreMessageAndData", channelPath, initMsg).Return(nil)
+
+	fakeSocket1 := &mock2.FakeSocket{Id: "1"}
+
+	err = federationHandler.handleInit(initMsg, channelPath, fakeSocket1)
+	require.NoError(t, err)
+
+	// If the server address match the local server address,
+	// the message is expected to be received directly on the message channel
+	// instead of from another websocket
+	select {
+	case incomingMsg := <-hub.GetMessageChan():
+		var publishMsg mpublish.Publish
+		err = json.Unmarshal(incomingMsg.Message, &publishMsg)
+		require.NoError(t, err)
+
+		require.Equal(t, mquery.MethodPublish, publishMsg.Method)
+		require.Equal(t, channelPath2, publishMsg.Params.Channel)
+		require.Equal(t, challengeMsg, publishMsg.Params.Message)
+	case <-time.After(time.Second):
+		require.Fail(t, "Timed out waiting for expected message")
+	}
+}
+
 func Test_handleFederationChallenge(t *testing.T) {
 	log := zerolog.New(io.Discard)
 
