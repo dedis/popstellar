@@ -56,10 +56,10 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 	params := make([]mrumor.ParamsRumor, 0)
 
 	for _, param := range myParams {
-		if param.Timestamp.IsBefore(rumorState.Params.State) {
-			continue
+		rumorID, ok := rumorState.Params.State[param.SenderID]
+		if !ok || rumorID < param.RumorID {
+			params = append(params, param)
 		}
-		params = append(params, param)
 	}
 
 	sort.Slice(params, func(i, j int) bool {

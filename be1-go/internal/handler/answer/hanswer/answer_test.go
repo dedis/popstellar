@@ -44,7 +44,7 @@ func (n *nullMessageHandler) Handle(channelPath string, msg mmessage.Message, fr
 
 type nullRumorSender struct{}
 
-func (n *nullRumorSender) SendRumor(socket socket.Socket, rumor mrumor.Rumor) {
+func (n *nullRumorSender) SendRumor(socket socket.Socket, rumor mrumor.ParamsRumor) {
 }
 
 func (n *nullRumorSender) HandleRumorStateAnswer(socket socket.Socket, rumor mrumor.ParamsRumor) error {
@@ -200,7 +200,7 @@ func Test_handleRumorAnswer(t *testing.T) {
 
 	queries.On("Remove", 1).Return(nil).Once()
 	queries.On("GetRumor", 1).Return(mrumor.Rumor{}, true).Once()
-	rumorHandler.On("SendRumor", nil, mrumor.Rumor{}).Return().Once()
+	rumorHandler.On("SendRumor", nil, mrumor.ParamsRumor{}).Return().Once()
 
 	err := answerHandler.handleRumorAnswer(continueMongeringTest, answer1)
 	require.NoError(t, err)
@@ -209,7 +209,7 @@ func Test_handleRumorAnswer(t *testing.T) {
 
 	queries.On("Remove", 1).Return(nil).Once()
 	queries.On("GetRumor", 1).Return(mrumor.Rumor{}, true).Once()
-	rumorHandler.On("SendRumor", nil, mrumor.Rumor{}).Return().Once()
+	rumorHandler.On("SendRumor", nil, mrumor.ParamsRumor{}).Return().Once()
 
 	err = answerHandler.handleRumorAnswer(continueMongeringTest, answer2)
 	require.NoError(t, err)

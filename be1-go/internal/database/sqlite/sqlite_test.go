@@ -1078,10 +1078,10 @@ func Test_SQLite_GetRumorTimestamps(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, 1, count)
 
-	ok, rumor, err := lite.GetAndIncrementMyRumor()
+	ok, params, err := lite.GetAndIncrementMyRumor()
 	require.NoError(t, err)
 	require.True(t, ok)
-	require.Equal(t, map[string][]mmessage.Message{"lao": {msg1}}, rumor.Params.Messages)
+	require.Equal(t, map[string][]mmessage.Message{"lao": {msg1}}, params.Messages)
 
 	timestamp, err = lite.GetRumorTimestamp()
 	require.NoError(t, err)
@@ -1132,10 +1132,10 @@ func Test_SQLite_GetAllRumors(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, 1, count)
 
-	ok, rumor, err := lite.GetAndIncrementMyRumor()
+	ok, rumorParams, err := lite.GetAndIncrementMyRumor()
 	require.NoError(t, err)
 	require.True(t, ok)
-	require.Equal(t, map[string][]mmessage.Message{"lao": {msg1}}, rumor.Params.Messages)
+	require.Equal(t, map[string][]mmessage.Message{"lao": {msg1}}, rumorParams.Messages)
 
 	params, err = lite.GetAllRumorParams()
 	require.NoError(t, err)

@@ -82,7 +82,7 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 	}
 	if !ok {
 		h.log.Debug().Msgf("Trying to insert into buffer rumor %s:%d", rumor.Params.SenderID, rumor.Params.RumorID)
-		err = h.buf.insert(rumor)
+		err = h.buf.insert(rumor.Params)
 		if err != nil {
 			return &rumor.ID, err
 		}
@@ -94,15 +94,16 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 
 	socket.SendResult(rumor.ID, nil, nil)
 
-	return nil, h.handleAndPropagate(socket, rumor)
+	return nil, h.handleAndPropagate(socket, rumor.Params)
 }
 
-func (h *Handler) handleAndPropagate(socket socket.Socket, rumor mrumor.Rumor) error {
-	h.SendRumor(socket, rumor)
+func (h *Handler) handleAndPropagate(socket socket.Socket, params mrumor.ParamsRumor) error {
 
-	processedMsgs := h.tryHandlingMessagesByChannel(rumor.Params.Messages)
+	h.SendRumor(socket, params)
 
-	err := h.db.StoreRumor(rumor.Params.RumorID, rumor.Params.SenderID, rumor.Params.Timestamp, rumor.Params.Messages, processedMsgs)
+	processedMsgs := h.tryHandlingMessagesByChannel(params.Messages)
+
+	err := h.db.StoreRumor(params.RumorID, params.SenderID, params.Timestamp, params.Messages, processedMsgs)
 	if err != nil {
 		return err
 	}
@@ -119,12 +120,12 @@ func (h *Handler) handleAndPropagate(socket socket.Socket, rumor mrumor.Rumor) e
 		return err
 	}
 
-	nextRumor, ok := h.buf.getNextRumor(state)
+	nextParams, ok := h.buf.getNextRumorParams(state)
 	if !ok {
 		return nil
 	}
 
-	return h.handleNextRumor(nextRumor)
+	return h.handleNextRumor(nextParams)
 }
 
 func (h *Handler) tryHandlingMessagesByChannel(unprocessedMsgsByChannel map[string][]mmessage.Message) []string {
@@ -191,9 +192,19 @@ func (h *Handler) sortChannels(msgsByChannel map[string][]mmessage.Message) []st
 	return sortedChannelIDs
 }
 
-func (h *Handler) SendRumor(socket socket.Socket, rumor mrumor.Rumor) {
+func (h *Handler) SendRumor(socket socket.Socket, rumorParams mrumor.ParamsRumor) {
+
 	id := h.queries.GetNextID()
-	rumor.ID = id
+	rumor := mrumor.Rumor{
+		Base: mquery.Base{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "rumor",
+		},
+		ID:     id,
+		Params: rumorParams,
+	}
 
 	err := h.queries.AddRumor(id, rumor)
 	if err != nil {
@@ -211,8 +222,8 @@ func (h *Handler) SendRumor(socket socket.Socket, rumor mrumor.Rumor) {
 	h.sockets.SendRumor(socket, rumor.Params.SenderID, rumor.Params.RumorID, buf)
 }
 
-func (h *Handler) handleNextRumor(rumor mrumor.Rumor) error {
-	ok, _, err := h.db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID, rumor.Params.Timestamp)
+func (h *Handler) handleNextRumor(params mrumor.ParamsRumor) error {
+	ok, _, err := h.db.CheckRumor(params.SenderID, params.RumorID, params.Timestamp)
 	if err != nil {
 		return err
 	}
@@ -220,32 +231,21 @@ func (h *Handler) handleNextRumor(rumor mrumor.Rumor) error {
 		return nil
 	}
 
-	return h.handleAndPropagate(nil, rumor)
+	return h.handleAndPropagate(nil, params)
 }
 
-func (h *Handler) HandleRumorStateAnswer(socket socket.Socket, paramsRumor mrumor.ParamsRumor) error {
-	ok, alreadyHas, err := h.db.CheckRumor(paramsRumor.SenderID, paramsRumor.RumorID, paramsRumor.Timestamp)
+func (h *Handler) HandleRumorStateAnswer(socket socket.Socket, params mrumor.ParamsRumor) error {
+	ok, alreadyHas, err := h.db.CheckRumor(params.SenderID, params.RumorID, params.Timestamp)
 	if err != nil {
 		return err
 	}
 	if alreadyHas {
-		return errors.NewDuplicateResourceError("rumor %s:%d already exists", paramsRumor.SenderID, paramsRumor.RumorID)
-	}
-
-	rumor := mrumor.Rumor{
-		Base: mquery.Base{
-			JSONRPCBase: mjsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: "rumor",
-		},
-		ID:     0,
-		Params: paramsRumor,
+		return errors.NewDuplicateResourceError("rumor %s:%d already exists", params.SenderID, params.RumorID)
 	}
 
 	if !ok {
-		log.Info().Msgf("Trying to insert into buffer rumor %s:%d", paramsRumor.SenderID, paramsRumor.RumorID)
-		err = h.buf.insert(rumor)
+		log.Debug().Msgf("Trying to insert into buffer rumor %s:%d", params.SenderID, params.RumorID)
+		err = h.buf.insert(params)
 		if err != nil {
 			return err
 		}
@@ -253,5 +253,5 @@ func (h *Handler) HandleRumorStateAnswer(socket socket.Socket, paramsRumor mrumo
 		return nil
 	}
 
-	return h.handleAndPropagate(socket, rumor)
+	return h.handleAndPropagate(socket, params)
 }

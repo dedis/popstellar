@@ -13,32 +13,32 @@ const bufferEntryLifeTime = 3 * time.Second
 
 type buffer struct {
 	sync.Mutex
-	queue     []mrumor.Rumor
+	queue     []mrumor.ParamsRumor
 	senderIDs map[string]struct{}
 }
 
 func newBuffer() *buffer {
 	return &buffer{
-		queue:     make([]mrumor.Rumor, 0),
+		queue:     make([]mrumor.ParamsRumor, 0),
 		senderIDs: make(map[string]struct{}),
 	}
 }
 
-func (b *buffer) insert(rumor mrumor.Rumor) error {
+func (b *buffer) insert(params mrumor.ParamsRumor) error {
 	b.Lock()
 	defer b.Unlock()
 
-	ID := fmt.Sprintf("%s:%d", rumor.Params.SenderID, rumor.Params.RumorID)
+	ID := fmt.Sprintf("%s:%d", params.SenderID, params.RumorID)
 
 	_, ok := b.senderIDs[ID]
 	if ok {
 		return errors.NewDuplicateResourceError("rumor %s is already inside the buffer", ID)
 	}
 
-	b.queue = append(b.queue, rumor)
+	b.queue = append(b.queue, params)
 
 	sort.Slice(b.queue, func(i, j int) bool {
-		return b.queue[i].Params.Timestamp.IsBefore(b.queue[j].Params.Timestamp)
+		return b.queue[i].Timestamp.IsBefore(b.queue[j].Timestamp)
 	})
 
 	b.senderIDs[ID] = struct{}{}
@@ -59,24 +59,25 @@ func (b *buffer) deleteWithDelay(ID string) {
 	b.deleteEntry(ID)
 }
 
-func (b *buffer) getNextRumor(state mrumor.RumorTimestamp) (mrumor.Rumor, bool) {
+func (b *buffer) getNextRumorParams(state mrumor.RumorTimestamp) (mrumor.ParamsRumor, bool) {
 	b.Lock()
 	defer b.Unlock()
-
-	for _, rumor := range b.queue {
-		if state.IsValid(rumor.Params.Timestamp) {
-			b.deleteEntry(fmt.Sprintf("%s:%d", rumor.Params.SenderID, rumor.Params.RumorID))
-			return rumor, true
+	fmt.Println("len(b.queue): ", len(b.queue))
+	for _, param := range b.queue {
+		if state.IsValid(param.Timestamp) {
+			b.deleteEntry(fmt.Sprintf("%s:%d", param.SenderID, param.RumorID))
+			return param, true
 		}
 	}
+	fmt.Println("Trying to get next rumor")
 
-	return mrumor.Rumor{}, false
+	return mrumor.ParamsRumor{}, false
 }
 
 func (b *buffer) deleteEntry(ID string) {
-	for i, rumor := range b.queue {
-		if fmt.Sprintf("%s:%d", rumor.Params.SenderID, rumor.Params.RumorID) == ID {
-			queue := make([]mrumor.Rumor, 0)
+	for i, param := range b.queue {
+		if fmt.Sprintf("%s:%d", param.SenderID, param.RumorID) == ID {
+			queue := make([]mrumor.ParamsRumor, 0)
 			queue = append(queue, b.queue[:i]...)
 			queue = append(queue, b.queue[i+1:]...)
 			b.queue = queue

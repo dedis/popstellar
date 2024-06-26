@@ -20,19 +20,19 @@ func Test_insert(t *testing.T) {
 
 	// successful insert
 
-	err := buf.insert(rumor)
+	err := buf.insert(rumor.Params)
 	require.NoError(t, err)
 
 	// returns error when rumor already buffered
 
-	err = buf.insert(rumor)
+	err = buf.insert(rumor.Params)
 	require.Error(t, err)
 
 	// successful insert after the delay
 
 	time.Sleep(bufferEntryLifeTime * 2)
 
-	err = buf.insert(rumor)
+	err = buf.insert(rumor.Params)
 	require.NoError(t, err)
 }
 
@@ -66,20 +66,20 @@ func Test_getNextRumor(t *testing.T) {
 		},
 	}
 
-	err := buf.insert(rumor00)
+	err := buf.insert(rumor00.Params)
 	require.NoError(t, err)
 
-	err = buf.insert(rumor01)
+	err = buf.insert(rumor01.Params)
 	require.NoError(t, err)
 
 	state := make(mrumor.RumorTimestamp)
 
-	_, ok := buf.getNextRumor(state)
+	_, ok := buf.getNextRumorParams(state)
 	require.True(t, ok)
 
 	state[sender] = 0
 
-	_, ok = buf.getNextRumor(state)
+	_, ok = buf.getNextRumorParams(state)
 	require.True(t, ok)
 
 	// no next rumor
@@ -98,9 +98,9 @@ func Test_getNextRumor(t *testing.T) {
 		},
 	}
 
-	err = buf.insert(rumor10)
+	err = buf.insert(rumor10.Params)
 	require.NoError(t, err)
 
-	_, ok = buf.getNextRumor(state)
+	_, ok = buf.getNextRumorParams(state)
 	require.False(t, ok)
 }

@@ -163,3 +163,57 @@ func Test_tryHandlingMessagesByChannel(t *testing.T) {
 		require.Equal(t, expectedUnprocessed[channelPath], messages)
 	}
 }
+
+func Test_HandleRumorStateAnswer(t *testing.T) {
+	log := logger.Logger.With().Str("test", "Test_HandleRumorStateAnswer").Logger()
+
+	queries := mocks.NewQueries(t)
+	sockets := mocks.NewSockets(t)
+	messageHandler := mocks.NewMessageHandler(t)
+	db := mocks.NewRepository(t)
+
+	rumorHandler := New(queries, sockets, db, messageHandler, log)
+
+	fakeSocket := mocks2.NewFakeSocket("0")
+
+	sender1 := "sender1"
+
+	timestamp1 := make(mrumor.RumorTimestamp)
+	timestamp1[sender1] = 0
+
+	rumor1, _ := generator.NewRumorQuery(t, 1, sender1, 0, timestamp1, make(map[string][]mmessage.Message))
+
+	db.On("CheckRumor", rumor1.Params.SenderID, rumor1.Params.RumorID, rumor1.Params.Timestamp).
+		Return(false, true, nil).Once()
+
+	err := rumorHandler.HandleRumorStateAnswer(fakeSocket, rumor1.Params)
+	require.Contains(t, err.Error(), "already exists")
+	require.Len(t, rumorHandler.buf.queue, 0)
+
+	db.On("CheckRumor", rumor1.Params.SenderID, rumor1.Params.RumorID, rumor1.Params.Timestamp).
+		Return(false, false, nil).Once()
+
+	err = rumorHandler.HandleRumorStateAnswer(fakeSocket, rumor1.Params)
+	require.NoError(t, err)
+	require.Len(t, rumorHandler.buf.queue, 1)
+
+	rumorHandler.buf.queue = make([]mrumor.ParamsRumor, 0)
+
+	db.On("CheckRumor", rumor1.Params.SenderID, rumor1.Params.RumorID, rumor1.Params.Timestamp).
+		Return(true, false, nil).Once()
+
+	queries.On("GetNextID").Return(2).Once()
+	rumor1.ID = 2
+	queries.On("AddRumor", 2, rumor1).Return(nil).Once()
+	sockets.On("SendRumor", fakeSocket, rumor1.Params.SenderID, rumor1.Params.RumorID, mock.AnythingOfType("[]uint8")).
+		Return(nil).Once()
+	db.On("StoreRumor", rumor1.Params.RumorID, rumor1.Params.SenderID, timestamp1, make(map[string][]mmessage.Message), make([]string, 0)).
+		Return(nil).Once()
+	db.On("GetUnprocessedMessagesByChannel").Return(make(map[string][]mmessage.Message), nil).Once()
+	db.On("GetRumorTimestamp").Return(make(mrumor.RumorTimestamp), nil).Once()
+
+	err = rumorHandler.HandleRumorStateAnswer(fakeSocket, rumor1.Params)
+	require.NoError(t, err)
+	require.Len(t, rumorHandler.buf.queue, 0)
+
+}

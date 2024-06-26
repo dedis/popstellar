@@ -47,7 +47,7 @@ func Test_Handle(t *testing.T) {
 	require.NoError(t, err)
 	require.Nil(t, id)
 
-	expected := []mrumor.ParamsRumor{rumor1.Params, rumor3.Params, rumor2.Params}
+	expected := []mrumor.ParamsRumor{rumor3.Params, rumor2.Params}
 
 	require.Equal(t, fakeSocket.ResultID, 4)
 	require.Equal(t, expected, fakeSocket.RumorParams)
@@ -59,7 +59,7 @@ func Test_Handle(t *testing.T) {
 	require.NoError(t, err)
 	require.Nil(t, id)
 
-	expected = []mrumor.ParamsRumor{rumor1.Params, rumor3.Params, rumor2.Params}
+	expected = []mrumor.ParamsRumor{rumor1.Params, rumor3.Params}
 
 	require.Equal(t, fakeSocket.ResultID, 4)
 	require.Equal(t, expected, fakeSocket.RumorParams)
@@ -71,7 +71,7 @@ func Test_Handle(t *testing.T) {
 	require.NoError(t, err)
 	require.Nil(t, id)
 
-	expected = []mrumor.ParamsRumor{rumor3.Params, rumor2.Params}
+	expected = []mrumor.ParamsRumor{rumor2.Params}
 
 	require.Equal(t, fakeSocket.ResultID, 4)
 	require.Equal(t, expected, fakeSocket.RumorParams)

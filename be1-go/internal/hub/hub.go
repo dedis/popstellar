@@ -59,7 +59,7 @@ type Sockets interface {
 
 type Repository interface {
 	// GetAndIncrementMyRumor return false if the last rumor is empty otherwise returns the new rumor to send and create the next rumor
-	GetAndIncrementMyRumor() (bool, mrumor.Rumor, error)
+	GetAndIncrementMyRumor() (bool, mrumor.ParamsRumor, error)
 
 	GetParamsHeartbeat() (map[string][]string, error)
 
@@ -75,7 +75,7 @@ type GreetServerSender interface {
 }
 
 type RumorSender interface {
-	SendRumor(socket socket.Socket, rumor mrumor.Rumor)
+	SendRumor(socket socket.Socket, rumor mrumor.ParamsRumor)
 }
 
 type RumorStateSender interface {
@@ -328,7 +328,7 @@ func (h *Hub) runRumorSender() {
 }
 
 func (h *Hub) tryToSendRumor() error {
-	ok, r, err := h.db.GetAndIncrementMyRumor()
+	ok, params, err := h.db.GetAndIncrementMyRumor()
 	if err != nil {
 		h.log.Err(err).Msg("")
 		return err
@@ -338,7 +338,7 @@ func (h *Hub) tryToSendRumor() error {
 		return nil
 	}
 
-	h.rumorSender.SendRumor(nil, r)
+	h.rumorSender.SendRumor(nil, params)
 
 	return nil
 }

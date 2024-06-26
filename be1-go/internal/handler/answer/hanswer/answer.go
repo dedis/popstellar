@@ -31,7 +31,7 @@ type MessageHandler interface {
 
 type RumorHandler interface {
 	HandleRumorStateAnswer(socket socket.Socket, rumor mrumor.ParamsRumor) error
-	SendRumor(socket socket.Socket, rumor mrumor.Rumor)
+	SendRumor(socket socket.Socket, rumor mrumor.ParamsRumor)
 }
 
 type Handlers struct {
@@ -196,7 +196,7 @@ func (h *Handler) handleRumorAnswer(continueMongering float64, msg manswer.Answe
 		return errors.NewInternalServerError("rumor query %d doesn't exist", *msg.ID)
 	}
 
-	h.handlers.RumorHandler.SendRumor(nil, rumor)
+	h.handlers.RumorHandler.SendRumor(nil, rumor.Params)
 
 	return nil
 }

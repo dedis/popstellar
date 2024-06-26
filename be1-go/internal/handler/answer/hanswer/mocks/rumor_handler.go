@@ -33,7 +33,7 @@ func (_m *RumorHandler) HandleRumorStateAnswer(_a0 socket.Socket, rumor mrumor.P
 }
 
 // SendRumor provides a mock function with given fields: _a0, rumor
-func (_m *RumorHandler) SendRumor(_a0 socket.Socket, rumor mrumor.Rumor) {
+func (_m *RumorHandler) SendRumor(_a0 socket.Socket, rumor mrumor.ParamsRumor) {
 	_m.Called(_a0, rumor)
 }
 
