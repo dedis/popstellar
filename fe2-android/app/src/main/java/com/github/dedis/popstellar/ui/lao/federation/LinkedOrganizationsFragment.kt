@@ -62,10 +62,12 @@ class LinkedOrganizationsFragment : Fragment() {
     // Displaying the linked organizations
     val laos = linkedOrganizationsViewModel.getLinkedLaosMap().keys
     displayLinkedOrganizations(laos)
-    linkedOrganizationsViewModel.doWhenLinkedLaosIsUpdated { laoMap ->
-      CoroutineScope(Dispatchers.Main).launch {
-        val currentLaos = laoMap.keys
-        displayLinkedOrganizations(currentLaos)
+    linkedOrganizationsViewModel.doWhenLinkedLaosIsUpdated { laoId, laoMap ->
+      if (laoId == laoViewModel.laoId) {
+        CoroutineScope(Dispatchers.Main).launch {
+          val currentLaos = laoMap.keys
+          displayLinkedOrganizations(currentLaos)
+        }
       }
     }
 

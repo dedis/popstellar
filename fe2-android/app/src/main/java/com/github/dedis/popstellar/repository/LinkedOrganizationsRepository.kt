@@ -14,8 +14,9 @@ class LinkedOrganizationsRepository @Inject constructor() {
   private var challenge: Challenge? = null
   private var onChallengeUpdatedCallback: ((Challenge) -> Unit)? = null
   private var linkedLaos: MutableMap<String, MutableMap<String, Array<String>>> = mutableMapOf()
-  private var onLinkedLaosUpdatedCallback: ((MutableMap<String, Array<String>>) -> Unit)? = null
-  private var newTokensNotifyFunction: ((String, String, Array<String>) -> Unit)? = null
+  private var onLinkedLaosUpdatedCallback: ((String, MutableMap<String, Array<String>>) -> Unit)? =
+      null
+  private var newTokensNotifyFunction: ((String, String, String, Array<String>) -> Unit)? = null
   var otherLaoId: String? = null
   var otherServerAddr: String? = null
   var otherPublicKey: String? = null
@@ -34,11 +35,9 @@ class LinkedOrganizationsRepository @Inject constructor() {
   }
 
   fun addLinkedLao(laoId: String, otherLaoId: String, tokens: Array<String>) {
-    if (!linkedLaos.containsKey(laoId)) {
-      linkedLaos[laoId] = mutableMapOf()
-    }
-    linkedLaos[laoId]!![otherLaoId] = tokens
-    onLinkedLaosUpdatedCallback?.invoke(linkedLaos[laoId]!!)
+    val laoMap = linkedLaos.getOrPut(laoId) { mutableMapOf() }
+    laoMap[otherLaoId] = tokens
+    onLinkedLaosUpdatedCallback?.invoke(laoId, laoMap)
   }
 
   fun updateAndNotifyLinkedLao(
@@ -48,23 +47,21 @@ class LinkedOrganizationsRepository @Inject constructor() {
       rollCallId: String
   ) {
     addLinkedLao(laoId, otherLaoId, tokens)
-    newTokensNotifyFunction?.invoke(laoId, rollCallId, tokens)
+    newTokensNotifyFunction?.invoke(laoId, otherLaoId, rollCallId, tokens)
   }
 
-  fun setOnLinkedLaosUpdatedCallback(callback: (MutableMap<String, Array<String>>) -> Unit) {
+  fun setOnLinkedLaosUpdatedCallback(
+      callback: (String, MutableMap<String, Array<String>>) -> Unit
+  ) {
     onLinkedLaosUpdatedCallback = callback
   }
 
-  fun setNewTokensNotifyFunction(function: (String, String, Array<String>) -> Unit) {
+  fun setNewTokensNotifyFunction(function: (String, String, String, Array<String>) -> Unit) {
     newTokensNotifyFunction = function
   }
 
   fun getLinkedLaos(laoId: String): MutableMap<String, Array<String>> {
-    return if (linkedLaos.containsKey(laoId)) {
-      linkedLaos[laoId]!!
-    } else {
-      mutableMapOf()
-    }
+    return linkedLaos.getOrDefault(laoId, mutableMapOf())
   }
 
   fun flush() {

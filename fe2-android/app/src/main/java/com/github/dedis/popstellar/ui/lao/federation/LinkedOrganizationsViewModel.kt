@@ -190,21 +190,23 @@ constructor(
     linkedOrgRepo.setOnChallengeUpdatedCallback(function)
   }
 
-  fun doWhenLinkedLaosIsUpdated(function: (MutableMap<String, Array<String>>) -> Unit) {
+  fun doWhenLinkedLaosIsUpdated(function: (String, MutableMap<String, Array<String>>) -> Unit) {
     linkedOrgRepo.setOnLinkedLaosUpdatedCallback(function)
   }
 
   fun setLinkedLaosNotifyFunction() {
-    linkedOrgRepo.setNewTokensNotifyFunction { otherLaoId, rollCallId, tokens ->
-      disposables.add(
-          sendTokensExchange(otherLaoId, rollCallId, tokens)
-              .subscribe(
-                  { ErrorUtils.logAndShow(getApplication(), TAG, R.string.tokens_exchange_sent) },
-                  { error: Throwable ->
-                    ErrorUtils.logAndShow(
-                        getApplication(), TAG, error, R.string.error_sending_tokens_exchange)
-                  },
-              ))
+    linkedOrgRepo.setNewTokensNotifyFunction { receivedLaoId, otherLaoId, rollCallId, tokens ->
+      if (receivedLaoId == laoId) {
+        disposables.add(
+            sendTokensExchange(otherLaoId, rollCallId, tokens)
+                .subscribe(
+                    { ErrorUtils.logAndShow(getApplication(), TAG, R.string.tokens_exchange_sent) },
+                    { error: Throwable ->
+                      ErrorUtils.logAndShow(
+                          getApplication(), TAG, error, R.string.error_sending_tokens_exchange)
+                    },
+                ))
+      }
     }
   }
 
