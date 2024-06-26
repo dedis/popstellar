@@ -65,7 +65,7 @@ type Socket interface {
 	SendResult(id int, res []mmessage.Message, missingMessagesByChannel map[string][]mmessage.Message)
 
 	// SendRumorStateAnswer is used to send either an error or list of rumors to the sender
-	SendRumorStateAnswer(id int, rumors []mrumor.Rumor)
+	SendRumorStateAnswer(id int, params []mrumor.ParamsRumor)
 }
 
 // IncomingMessage wraps the raw message from the websocket connection and pairs

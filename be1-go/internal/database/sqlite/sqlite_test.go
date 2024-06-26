@@ -1098,10 +1098,10 @@ func Test_SQLite_GetAllRumors(t *testing.T) {
 	err = lite.StoreFirstRumor()
 	require.NoError(t, err)
 
-	rumors, err := lite.GetAllRumors()
+	params, err := lite.GetAllRumorParams()
 	require.NoError(t, err)
 
-	require.Len(t, rumors, 0)
+	require.Len(t, params, 0)
 
 	timestamp0 := make(mrumor.RumorTimestamp)
 	timestamp0["sender1"] = 0
@@ -1114,10 +1114,10 @@ func Test_SQLite_GetAllRumors(t *testing.T) {
 	timestamp1["sender2"] = 0
 	err = lite.StoreRumor(0, "sender2", timestamp1, nil, nil)
 
-	rumors, err = lite.GetAllRumors()
+	params, err = lite.GetAllRumorParams()
 	require.NoError(t, err)
 
-	require.Len(t, rumors, 2)
+	require.Len(t, params, 2)
 
 	msg1 := generator.NewNothingMsg(t, "client1", nil)
 	err = lite.StoreMessageAndData("lao", msg1)
@@ -1132,8 +1132,8 @@ func Test_SQLite_GetAllRumors(t *testing.T) {
 	require.True(t, ok)
 	require.Equal(t, map[string][]mmessage.Message{"lao": {msg1}}, rumor.Params.Messages)
 
-	rumors, err = lite.GetAllRumors()
+	params, err = lite.GetAllRumorParams()
 	require.NoError(t, err)
-	require.Len(t, rumors, 3)
+	require.Len(t, params, 3)
 
 }

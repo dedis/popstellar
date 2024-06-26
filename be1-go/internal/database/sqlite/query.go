@@ -379,6 +379,15 @@ func newRumor(rumorID int, sender string, messages map[string][]mmessage.Message
 	}
 }
 
+func newRumorParams(rumorID int, sender string, messages map[string][]mmessage.Message, timestamp mrumor.RumorTimestamp) mrumor.ParamsRumor {
+	return mrumor.ParamsRumor{
+		RumorID:   rumorID,
+		SenderID:  sender,
+		Messages:  messages,
+		Timestamp: timestamp,
+	}
+}
+
 func (s *SQLite) GetRumorTimestampHelper(tx *sql.Tx) (mrumor.RumorTimestamp, error) {
 
 	rows, err := tx.Query(selectRumorState)
@@ -441,7 +450,7 @@ func (s *SQLite) GetRumorTimestamp() (mrumor.RumorTimestamp, error) {
 	return timestamp, nil
 }
 
-func (s *SQLite) GetAllRumors() ([]mrumor.Rumor, error) {
+func (s *SQLite) GetAllRumorParams() ([]mrumor.ParamsRumor, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
@@ -464,7 +473,7 @@ func (s *SQLite) GetAllRumors() ([]mrumor.Rumor, error) {
 	}
 	defer rows.Close()
 
-	rumors := make([]mrumor.Rumor, 0)
+	params := make([]mrumor.ParamsRumor, 0)
 	for rows.Next() {
 		var rumorID int
 		var sender string
@@ -484,15 +493,15 @@ func (s *SQLite) GetAllRumors() ([]mrumor.Rumor, error) {
 		if err != nil {
 			return nil, err
 		}
-		rumor := newRumor(rumorID, sender, messages, timestamp)
-		rumors = append(rumors, rumor)
+		param := newRumorParams(rumorID, sender, messages, timestamp)
+		params = append(params, param)
 	}
 
 	if err = rows.Err(); err != nil {
 		return nil, poperrors.NewDatabaseIteratorErrorMsg(err.Error())
 	}
 
-	return rumors, nil
+	return params, nil
 }
 
 func (s *SQLite) GetMessagesFromRumorHelper(tx *sql.Tx, rumorID int, sender string) (map[string][]mmessage.Message, error) {

@@ -23,7 +23,7 @@ type FakeSocket struct {
 	Id string
 
 	// the rumors present in a rumor state answer
-	Rumors []mrumor.Rumor
+	RumorParams []mrumor.ParamsRumor
 }
 
 func NewFakeSocket(ID string) *FakeSocket {
@@ -56,8 +56,8 @@ func (f *FakeSocket) SendToRandom(buf []byte) {
 	f.Msg = buf
 }
 
-func (f *FakeSocket) SendRumorStateAnswer(id int, rumors []mrumor.Rumor) {
-	f.Rumors = rumors
+func (f *FakeSocket) SendRumorStateAnswer(id int, params []mrumor.ParamsRumor) {
+	f.RumorParams = params
 	f.ResultID = id
 }
 

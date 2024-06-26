@@ -37,9 +37,9 @@ func Test_Handle(t *testing.T) {
 	rumor2, _ := generator.NewRumorQuery(t, 2, sender2, 0, timestamp2, make(map[string][]mmessage.Message))
 	rumor3, _ := generator.NewRumorQuery(t, 3, sender1, 1, timestamp3, make(map[string][]mmessage.Message))
 
-	rumors := []mrumor.Rumor{rumor3, rumor1, rumor2}
+	params := []mrumor.ParamsRumor{rumor3.Params, rumor1.Params, rumor2.Params}
 
-	db.On("GetAllRumors").Return(rumors, nil).Once()
+	db.On("GetAllRumorParams").Return(params, nil).Once()
 
 	_, rumorStateBuf1 := generator.NewRumorStateQuery(t, 4, timestamp1)
 
@@ -47,34 +47,34 @@ func Test_Handle(t *testing.T) {
 	require.NoError(t, err)
 	require.Nil(t, id)
 
-	expected := []mrumor.Rumor{rumor3, rumor2}
+	expected := []mrumor.ParamsRumor{rumor3.Params, rumor2.Params}
 
 	require.Equal(t, fakeSocket.ResultID, 4)
-	require.Equal(t, expected, fakeSocket.Rumors)
+	require.Equal(t, expected, fakeSocket.RumorParams)
 
-	db.On("GetAllRumors").Return(rumors, nil).Once()
+	db.On("GetAllRumorParams").Return(params, nil).Once()
 
 	_, rumorStateBuf2 := generator.NewRumorStateQuery(t, 4, timestamp2)
 	id, err = rumorStateHandler.Handle(fakeSocket, rumorStateBuf2)
 	require.NoError(t, err)
 	require.Nil(t, id)
 
-	expected = []mrumor.Rumor{rumor1, rumor3}
+	expected = []mrumor.ParamsRumor{rumor1.Params, rumor3.Params}
 
 	require.Equal(t, fakeSocket.ResultID, 4)
-	require.Equal(t, expected, fakeSocket.Rumors)
+	require.Equal(t, expected, fakeSocket.RumorParams)
 
-	db.On("GetAllRumors").Return(rumors, nil).Once()
+	db.On("GetAllRumorParams").Return(params, nil).Once()
 
 	_, rumorStateBuf3 := generator.NewRumorStateQuery(t, 4, timestamp3)
 	id, err = rumorStateHandler.Handle(fakeSocket, rumorStateBuf3)
 	require.NoError(t, err)
 	require.Nil(t, id)
 
-	expected = []mrumor.Rumor{rumor2}
+	expected = []mrumor.ParamsRumor{rumor2.Params}
 
 	require.Equal(t, fakeSocket.ResultID, 4)
-	require.Equal(t, expected, fakeSocket.Rumors)
+	require.Equal(t, expected, fakeSocket.RumorParams)
 
 }
 

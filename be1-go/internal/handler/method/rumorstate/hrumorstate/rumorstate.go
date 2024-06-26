@@ -14,7 +14,7 @@ import (
 
 type Repository interface {
 	GetRumorTimestamp() (mrumor.RumorTimestamp, error)
-	GetAllRumors() ([]mrumor.Rumor, error)
+	GetAllRumorParams() ([]mrumor.ParamsRumor, error)
 }
 
 type Queries interface {
@@ -49,24 +49,24 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 		return nil, errors.NewJsonUnmarshalError(err.Error())
 	}
 
-	myRumors, err := h.db.GetAllRumors()
+	myParams, err := h.db.GetAllRumorParams()
 	if err != nil {
 		return nil, err
 	}
-	rumors := make([]mrumor.Rumor, 0)
+	params := make([]mrumor.ParamsRumor, 0)
 
-	for _, rumor := range myRumors {
-		if rumor.Params.Timestamp.IsBefore(rumorState.Params.State) || rumor.Params.Timestamp.IsEqual(rumorState.Params.State) {
+	for _, param := range myParams {
+		if param.Timestamp.IsBefore(rumorState.Params.State) || param.Timestamp.IsEqual(rumorState.Params.State) {
 			continue
 		}
-		rumors = append(rumors, rumor)
+		params = append(params, param)
 	}
 
-	sort.Slice(rumors, func(i, j int) bool {
-		return rumors[i].Params.Timestamp.IsBefore(rumors[j].Params.Timestamp)
+	sort.Slice(params, func(i, j int) bool {
+		return params[i].Timestamp.IsBefore(params[j].Timestamp)
 	})
 
-	socket.SendRumorStateAnswer(rumorState.ID, rumors)
+	socket.SendRumorStateAnswer(rumorState.ID, params)
 
 	return nil, nil
 }
