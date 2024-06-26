@@ -84,10 +84,23 @@ const SendReceive = () => {
 
   const selectedRollCall = DigitalCashHooks.useRollCallById(selectedRollCallId);
 
-  const [beneficiary, setBeneficiary] = useState('');
+  const [beneficiary, setBeneficiaryState] = useState('');
   const [beneficiaryFocused, setBeneficiaryFocused] = useState(false);
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
+
+  const setBeneficiary = (newBeneficiary: string) => {
+    if(rollCall?.attendees) {
+      for (let i=0; i < rollCall!.attendees!.length; i++) {
+        let username = generateUsernameFromBase64(rollCall!.attendees![i].valueOf());
+        if (username == newBeneficiary) {
+          setBeneficiaryState(rollCall!.attendees![i].valueOf());
+          return;
+        }
+      }
+    }
+    setBeneficiaryState(newBeneficiary);
+  };
 
   const suggestedBeneficiaries = useMemo(() => {
     // do not show any suggestions if no text has been entered
@@ -180,7 +193,6 @@ const SendReceive = () => {
     if (!rollCallToken) {
       throw new Error('The roll call token is not defined');
     }
-
     return requestSendTransaction(
       rollCallToken.token,
       new PublicKey(beneficiary),

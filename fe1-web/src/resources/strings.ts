@@ -497,7 +497,8 @@ namespace STRINGS {
   export const digital_cash_wallet_send_transaction = 'Send Transaction';
 
   export const digital_cash_wallet_beneficiary = 'Beneficiary (-ies)';
-  export const digital_cash_wallet_beneficiary_placeholder = 'defuser1234';
+  export const digital_cash_wallet_beneficiary_placeholder =
+    'QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU=';
 
   export const digital_cash_wallet_amount = 'Amount';
   export const digital_cash_wallet_amount_placeholder = '42';

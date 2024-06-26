@@ -12,6 +12,8 @@ import STRINGS from 'resources/strings';
 
 import { DigitalCashHooks } from '../hooks';
 import { Transaction, TransactionState } from '../objects/transaction';
+import { generateUsernameFromBase64 } from 'core/functions/Mnemonic';
+import { getCurrentLao } from 'features/lao/functions';
 
 /**
  * UI for the transactions history given roll call tokens of the user in the lao.
@@ -135,7 +137,7 @@ const TransactionHistory = ({ laoId, rollCallTokens }: IPropTypes) => {
                         <ListItem.Title
                           style={[Typography.base, Typography.code]}
                           numberOfLines={1}>
-                          {input.script.publicKey.valueOf()}
+                          { input.script.publicKey.valueOf() === getCurrentLao().organizer.valueOf() ? input.script.publicKey.valueOf() + ' ' + '(organizer)' : generateUsernameFromBase64(input.script.publicKey.valueOf())}
                         </ListItem.Title>
                         <ListItem.Subtitle>
                           {input.txOutHash.valueOf() === COINBASE_HASH &&
