@@ -470,10 +470,10 @@ func (s *SQLite) GetAllRumorParams() ([]mrumor.ParamsRumor, error) {
 
 	params := make([]mrumor.ParamsRumor, 0)
 	for rows.Next() {
-		cont, param, err := s.GetRumorParamsHelper(tx, rows, mySender, myRumorID)
+		param, err := s.GetRumorParamsHelper(tx, rows, mySender, myRumorID)
 		if err != nil {
 			return nil, err
-		} else if cont {
+		} else if param.SenderID == "" {
 			continue
 		}
 		params = append(params, param)
@@ -487,22 +487,22 @@ func (s *SQLite) GetAllRumorParams() ([]mrumor.ParamsRumor, error) {
 }
 
 func (s *SQLite) GetRumorParamsHelper(tx *sql.Tx, rows *sql.Rows,
-	mySender string, myRumorID int) (bool, mrumor.ParamsRumor, error) {
+	mySender string, myRumorID int) (mrumor.ParamsRumor, error) {
 	var rumorID int
 	var sender string
 	var timestampByte []byte
 
 	if err := rows.Scan(&rumorID, &sender, &timestampByte); err != nil {
-		return false, mrumor.ParamsRumor{}, poperrors.NewDatabaseScanErrorMsg(err.Error())
+		return mrumor.ParamsRumor{}, poperrors.NewDatabaseScanErrorMsg(err.Error())
 	}
 
 	if rumorID == myRumorID && sender == mySender {
-		return true, mrumor.ParamsRumor{}, nil
+		return mrumor.ParamsRumor{}, nil
 	}
 
 	var timestamp mrumor.RumorTimestamp
 	if err := json.Unmarshal(timestampByte, &timestamp); err != nil {
-		return false, mrumor.ParamsRumor{}, poperrors.NewInternalServerError("failed to unmarshal timestamp: %v", err)
+		return mrumor.ParamsRumor{}, poperrors.NewInternalServerError("failed to unmarshal timestamp: %v", err)
 	}
 	messages := make(map[string][]mmessage.Message)
 
@@ -510,16 +510,16 @@ func (s *SQLite) GetRumorParamsHelper(tx *sql.Tx, rows *sql.Rows,
 	err := s.GetMessagesFromRumorHelper(tx, rumorID, args, selectRumorProcessedMessages, messages)
 
 	if err != nil {
-		return false, mrumor.ParamsRumor{}, err
+		return mrumor.ParamsRumor{}, err
 	}
 
 	args = []interface{}{sender, rumorID}
 	err = s.GetMessagesFromRumorHelper(tx, rumorID, args, selectRumorUnprocessedMessages, messages)
 	if err != nil {
-		return false, mrumor.ParamsRumor{}, err
+		return mrumor.ParamsRumor{}, err
 	}
 
-	return false, newRumorParams(rumorID, sender, messages, timestamp), nil
+	return newRumorParams(rumorID, sender, messages, timestamp), nil
 }
 
 func (s *SQLite) GetMessagesFromRumorHelper(tx *sql.Tx, rumorID int, args []interface{},
