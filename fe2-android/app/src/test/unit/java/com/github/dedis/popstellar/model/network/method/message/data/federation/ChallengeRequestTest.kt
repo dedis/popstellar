@@ -41,6 +41,13 @@ class ChallengeRequestTest {
         )
     }
 
+    @Test
+    fun invalidChallengeRequestTest() {
+        Assert.assertThrows(IllegalArgumentException::class.java) {
+            ChallengeRequest(TIMESTAMP + 2000)
+        }
+    }
+
     companion object {
         private val TIMESTAMP = Instant.now().epochSecond
         private val CHALLENGE_REQUEST = ChallengeRequest(TIMESTAMP)

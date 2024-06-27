@@ -4,6 +4,7 @@ import com.github.dedis.popstellar.model.Immutable
 import com.github.dedis.popstellar.model.network.method.message.data.Action
 import com.github.dedis.popstellar.model.network.method.message.data.Data
 import com.github.dedis.popstellar.model.network.method.message.data.Objects
+import com.github.dedis.popstellar.utility.MessageValidator
 
 /** Data sent to get a challenge */
 @Immutable
@@ -14,6 +15,10 @@ class ChallengeRequest
  * @param timestamp time of the Challenge Request
  */
 (val timestamp: Long) : Data {
+
+  init {
+    MessageValidator.verify().validPastTimes(timestamp)
+  }
 
   override val `object`: String
     get() = Objects.FEDERATION.`object`

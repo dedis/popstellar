@@ -19,7 +19,9 @@ class ChallengeTest {
 
     @Test
     fun challengeLowValidUntilTest() {
-        Assert.assertEquals(0L, Challenge(CHALLENGE_VALUE, -1).validUntil)
+        Assert.assertThrows(IllegalArgumentException::class.java) {
+            Challenge(CHALLENGE_VALUE, -1).validUntil
+        }
     }
 
     @Test
@@ -40,8 +42,8 @@ class ChallengeTest {
         Assert.assertEquals(CHALLENGE.hashCode().toLong(), challenge2.hashCode().toLong())
 
         Assert.assertNotEquals(CHALLENGE, Challenge(CHALLENGE_VALUE, TIMESTAMP + 1))
-        Assert.assertNotEquals(CHALLENGE, Challenge("aaa", TIMESTAMP))
-        Assert.assertNotEquals(CHALLENGE, Challenge("bbb", TIMESTAMP - 1))
+        Assert.assertNotEquals(CHALLENGE, Challenge("YWFh", TIMESTAMP))
+        Assert.assertNotEquals(CHALLENGE, Challenge("YmJi", TIMESTAMP - 1))
         Assert.assertNotEquals(CHALLENGE, null)
     }
 
@@ -53,8 +55,15 @@ class ChallengeTest {
         )
     }
 
+    @Test
+    fun testInvalidChallenge() {
+        Assert.assertThrows(IllegalArgumentException::class.java) {
+            Challenge("aaa", TIMESTAMP)
+        }
+    }
+
     companion object {
-        private val TIMESTAMP = Instant.now().epochSecond
+        private val TIMESTAMP = Instant.now().epochSecond + 2000
         private const val CHALLENGE_VALUE = "1feb2a2c7c739ea25f2568d056cc82d11be65d361511872cd35e4abd1a20f3d4"
         private val CHALLENGE = Challenge(CHALLENGE_VALUE, TIMESTAMP)
     }

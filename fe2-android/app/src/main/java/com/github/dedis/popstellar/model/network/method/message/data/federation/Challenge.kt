@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.federation
 import com.github.dedis.popstellar.model.network.method.message.data.Action
 import com.github.dedis.popstellar.model.network.method.message.data.Data
 import com.github.dedis.popstellar.model.network.method.message.data.Objects
+import com.github.dedis.popstellar.utility.MessageValidator
 import com.google.gson.annotations.SerializedName
 import kotlin.math.max
 
@@ -19,6 +20,7 @@ class Challenge
 
   init {
     this.validUntil = max(0L, validUntil)
+    MessageValidator.verify().isNotEmptyBase64(value, "challenge").validFutureTimes(this.validUntil)
   }
 
   override val `object`: String
