@@ -51,6 +51,14 @@ type Config interface {
 	GetServerInfo() (string, string, string, error)
 }
 
+type RumorStateSender interface {
+	SendRumorStateTo(socket socket.Socket) error
+}
+
+type GreetServerSender interface {
+	SendGreetServer(socket socket.Socket) error
+}
+
 type Repository interface {
 	// HasMessage returns true if the message already exists.
 	HasMessage(messageID string) (bool, error)
@@ -85,19 +93,23 @@ type Handler struct {
 	sockets Sockets
 	conf    Config
 	db      Repository
+	rumors  RumorStateSender
+	greets  GreetServerSender
 	schema  *validation.SchemaValidator
 	log     zerolog.Logger
 }
 
 func New(hub Hub, subs Subscribers, sockets Sockets, conf Config,
-	db Repository, schema *validation.SchemaValidator,
-	log zerolog.Logger) *Handler {
+	db Repository, rumors RumorStateSender, greets GreetServerSender,
+	schema *validation.SchemaValidator, log zerolog.Logger) *Handler {
 	return &Handler{
 		hub:     hub,
 		subs:    subs,
 		sockets: sockets,
 		conf:    conf,
 		db:      db,
+		rumors:  rumors,
+		greets:  greets,
 		schema:  schema,
 		log:     log.With().Str("module", "federation").Logger(),
 	}
@@ -366,18 +378,27 @@ func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string,
 		// called => broadcast the result to both federation channels directly.
 		_ = h.db.StoreMessageAndData(remoteChannel, resultMsg)
 		_ = h.subs.BroadcastToAllClients(resultMsg, remoteChannel)
+
+		h.log.Info().Msgf("A federation was created with the local LAO %s",
+			federationExpect.LaoId)
 	} else {
+		// Add the socket to the list of server sockets
+		h.sockets.Upsert(socket)
+
+		// Send the rumor state directly to avoid delay while syncing
+		err = h.rumors.SendRumorStateTo(socket)
+		if err != nil {
+			return err
+		}
+
 		// publish the FederationResult to the other server
 		err = h.publishTo(resultMsg, remoteChannel, socket)
 		if err != nil {
 			return err
 		}
-
-		// Add the socket to the list of server sockets
-		h.sockets.Upsert(socket)
+		h.log.Info().Msgf("A federation was created with the LAO %s from: %s",
+			federationExpect.LaoId, federationExpect.ServerAddress)
 	}
-
-	h.log.Info().Msgf("A federation was successfully")
 
 	// broadcast the FederationResult to the local organizer
 	return h.subs.BroadcastToAllClients(resultMsg, channelPath)
@@ -530,7 +551,12 @@ func (h *Handler) connectTo(serverAddress string) (socket.Socket, error) {
 	go server.WritePump()
 	go server.ReadPump()
 
-	return server, nil
+	err = h.greets.SendGreetServer(server)
+	if err != nil {
+		return nil, err
+	}
+
+	return server, h.rumors.SendRumorStateTo(server)
 }
 
 func (h *Handler) createMessage(data channel.MessageData) (mmessage.Message, error) {

@@ -56,7 +56,9 @@ func Test_handleChannelFederation(t *testing.T) {
 	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
 
 	conf := state.CreateConfig(organizerPk, serverPk, serverSk, "ws://localhost:9801/client", "ws://localhost:9801/server", log)
-	federationHandler := New(hub, subs, sockets, conf, db, schema, log)
+	rumors := mocks.NewRumorStateSender(t)
+	greets := mocks.NewGreetServerSender(t)
+	federationHandler := New(hub, subs, sockets, conf, db, rumors, greets, schema, log)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)
@@ -357,7 +359,9 @@ func Test_handleRequestChallenge(t *testing.T) {
 	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
 
 	conf := state.CreateConfig(organizerPk, serverPk, serverSk, "ws://localhost:9800/client", "ws://localhost:9800/server", log)
-	federationHandler := New(hub, subs, sockets, conf, db, schema, log)
+	rumors := mocks.NewRumorStateSender(t)
+	greets := mocks.NewGreetServerSender(t)
+	federationHandler := New(hub, subs, sockets, conf, db, rumors, greets, schema, log)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)
@@ -413,7 +417,9 @@ func Test_handleFederationExpect(t *testing.T) {
 	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
 
 	conf := state.CreateConfig(organizerPk, serverPk, serverSk, "ws://localhost:9800/client", "ws://localhost:9800/server", log)
-	federationHandler := New(hub, subs, sockets, conf, db, schema, log)
+	rumors := mocks.NewRumorStateSender(t)
+	greets := mocks.NewGreetServerSender(t)
+	federationHandler := New(hub, subs, sockets, conf, db, rumors, greets, schema, log)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)
@@ -474,7 +480,12 @@ func Test_handleFederationInit(t *testing.T) {
 	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
 
 	conf := state.CreateConfig(organizerPk, serverPk, serverSk, "ws://localhost:9800/client", "ws://localhost:9800/server", log)
-	federationHandler := New(hub, subs, sockets, conf, db, schema, log)
+	rumors := mocks.NewRumorStateSender(t)
+	greets := mocks.NewGreetServerSender(t)
+
+	greets.On("SendGreetServer", mock.AnythingOfType("*socket.ServerSocket")).Return(nil)
+	rumors.On("SendRumorStateTo", mock.AnythingOfType("*socket.ServerSocket")).Return(nil)
+	federationHandler := New(hub, subs, sockets, conf, db, rumors, greets, schema, log)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)
@@ -549,7 +560,9 @@ func Test_handleFederationInitOnSingleServer(t *testing.T) {
 	serverAddress := "ws://localhost:9800/server"
 
 	conf := state.CreateConfig(organizerPk, serverPk, serverSk, clientAddress, serverAddress, log)
-	federationHandler := New(hub, subs, sockets, conf, db, schema, log)
+	rumors := mocks.NewRumorStateSender(t)
+	greets := mocks.NewGreetServerSender(t)
+	federationHandler := New(hub, subs, sockets, conf, db, rumors, greets, schema, log)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)
@@ -674,7 +687,9 @@ func Test_handleFederationChallenge(t *testing.T) {
 	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
 
 	conf := state.CreateConfig(organizerPk, serverPk, serverSk, "ws://localhost:9800/client", "ws://localhost:9800/server", log)
-	federationHandler := New(hub, subs, sockets, conf, db, schema, log)
+	rumors := mocks.NewRumorStateSender(t)
+	greets := mocks.NewGreetServerSender(t)
+	federationHandler := New(hub, subs, sockets, conf, db, rumors, greets, schema, log)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)
@@ -702,6 +717,8 @@ func Test_handleFederationChallenge(t *testing.T) {
 	fakeSocket2 := mock2.FakeSocket{Id: "2"}
 	err = subs.Subscribe(channelPath2, &fakeSocket2)
 	require.NoError(t, err)
+
+	rumors.On("SendRumorStateTo", &fakeSocket2).Return(nil)
 
 	serverAddressA := "ws://localhost:9801/client"
 	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
@@ -782,7 +799,9 @@ func Test_handleFederationResult(t *testing.T) {
 	serverPk, _, serverSk, _ := generator.GenerateKeyPair(t)
 
 	conf := state.CreateConfig(organizerPk, serverPk, serverSk, "ws://localhost:9800/client", "ws://localhost:9800/server", log)
-	federationHandler := New(hub, subs, sockets, conf, db, schema, log)
+	rumors := mocks.NewRumorStateSender(t)
+	greets := mocks.NewGreetServerSender(t)
+	federationHandler := New(hub, subs, sockets, conf, db, rumors, greets, schema, log)
 
 	organizerBuf, err := organizerPk.MarshalBinary()
 	require.NoError(t, err)
