@@ -329,7 +329,7 @@ const (
 		       WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?) AND rumorID = (SELECT max(ID) FROM rumor 
 		                                       WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?)))`
 
-	selectRumorMessages = `
+	selectRumorProcessedMessages = `
 	SELECT channelPath, message
 	FROM message JOIN channelMessage ON message.messageID = channelMessage.messageID
 	WHERE isBaseChannel = ? AND message.messageID IN
