@@ -465,29 +465,17 @@ func (s *SQLite) GetAllRumorParams() ([]mrumor.ParamsRumor, error) {
 	if err != nil {
 		return nil, poperrors.NewDatabaseSelectErrorMsg("all rumors: %v", err)
 	}
+
 	defer rows.Close()
 
 	params := make([]mrumor.ParamsRumor, 0)
 	for rows.Next() {
-		var rumorID int
-		var sender string
-		var timestampByte []byte
-		if err = rows.Scan(&rumorID, &sender, &timestampByte); err != nil {
-			return nil, poperrors.NewDatabaseScanErrorMsg(err.Error())
-		}
-		if rumorID == myRumorID && sender == mySender {
-			continue
-		}
-		var timestamp mrumor.RumorTimestamp
-		if err = json.Unmarshal(timestampByte, &timestamp); err != nil {
-			return nil, poperrors.NewInternalServerError("failed to unmarshal timestamp: %v", err)
-		}
-
-		messages, err := s.GetMessagesFromRumorHelper(tx, rumorID, sender)
+		param, err := s.GetRumorParamsHelper(tx, rows, mySender, myRumorID)
 		if err != nil {
 			return nil, err
+		} else if param.SenderID == "" {
+			continue
 		}
-		param := newRumorParams(rumorID, sender, messages, timestamp)
 		params = append(params, param)
 	}
 
@@ -498,31 +486,69 @@ func (s *SQLite) GetAllRumorParams() ([]mrumor.ParamsRumor, error) {
 	return params, nil
 }
 
-func (s *SQLite) GetMessagesFromRumorHelper(tx *sql.Tx, rumorID int, sender string) (map[string][]mmessage.Message, error) {
+func (s *SQLite) GetRumorParamsHelper(tx *sql.Tx, rows *sql.Rows,
+	mySender string, myRumorID int) (mrumor.ParamsRumor, error) {
+	var rumorID int
+	var sender string
+	var timestampByte []byte
 
-	rows, err := tx.Query(selectRumorMessages, true, sender, rumorID)
+	if err := rows.Scan(&rumorID, &sender, &timestampByte); err != nil {
+		return mrumor.ParamsRumor{}, poperrors.NewDatabaseScanErrorMsg(err.Error())
+	}
+
+	if rumorID == myRumorID && sender == mySender {
+		return mrumor.ParamsRumor{}, nil
+	}
+
+	var timestamp mrumor.RumorTimestamp
+	if err := json.Unmarshal(timestampByte, &timestamp); err != nil {
+		return mrumor.ParamsRumor{}, poperrors.NewInternalServerError("failed to unmarshal timestamp: %v", err)
+	}
+
+	messages := make(map[string][]mmessage.Message)
+
+	args := []interface{}{true, sender, rumorID}
+
+	err := s.GetMessagesFromRumorHelper(tx, rumorID, args, selectRumorProcessedMessages, messages)
 	if err != nil {
-		return nil, poperrors.NewDatabaseSelectErrorMsg("messages from rumor %d: %v", rumorID, err)
+		return mrumor.ParamsRumor{}, err
+	}
+
+	args = []interface{}{sender, rumorID}
+
+	err = s.GetMessagesFromRumorHelper(tx, rumorID, args, selectRumorUnprocessedMessages, messages)
+	if err != nil {
+		return mrumor.ParamsRumor{}, err
+	}
+
+	return newRumorParams(rumorID, sender, messages, timestamp), nil
+}
+
+func (s *SQLite) GetMessagesFromRumorHelper(tx *sql.Tx, rumorID int, args []interface{},
+	query string, messages map[string][]mmessage.Message) error {
+
+	rows, err := tx.Query(query, args...)
+	if err != nil {
+		return poperrors.NewDatabaseSelectErrorMsg("messages from rumor %d: %v", rumorID, err)
 	}
 	defer rows.Close()
 
-	messages := make(map[string][]mmessage.Message)
 	for rows.Next() {
 		var channelPath string
 		var messageByte []byte
 		if err = rows.Scan(&channelPath, &messageByte); err != nil {
-			return nil, poperrors.NewDatabaseScanErrorMsg(err.Error())
+			return poperrors.NewDatabaseScanErrorMsg(err.Error())
 		}
 		var msg mmessage.Message
 		if err = json.Unmarshal(messageByte, &msg); err != nil {
-			return nil, poperrors.NewInternalServerError("failed to unmarshal message of rumor : %v", err)
+			return poperrors.NewInternalServerError("failed to unmarshal message from rumor %d: %v", rumorID, err)
 		}
 		messages[channelPath] = append(messages[channelPath], msg)
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, poperrors.NewDatabaseIteratorErrorMsg(err.Error())
+		return poperrors.NewDatabaseIteratorErrorMsg(err.Error())
 	}
 
-	return messages, nil
+	return nil
 }
