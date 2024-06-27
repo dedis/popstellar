@@ -125,7 +125,7 @@ object ParamsHandler extends AskPatternConstants {
           system.log.info(s"All messages from rumor ${rumor.rumorId} were processed correctly")
           return Right(jsonRpcMessage)
     }
-    system.log.info(s"Some messages from rumor ${rumor.rumorId} were not processed")
+    system.log.warning(s"Some messages from rumor ${rumor.rumorId} were not processed. Unprocessed rumor not written in memory")
     Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Some messages from Rumor ${rumor.rumorId} with jsonRpcId : ${jsonRpcMessage.id} couldn't be processed", jsonRpcMessage.id))
   }
 

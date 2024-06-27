@@ -2,14 +2,15 @@ package ch.epfl.pop.pubsub.graph
 
 import akka.NotUsed
 import akka.actor.{ActorRef, ActorSystem}
+import akka.event.Logging
 import akka.http.scaladsl.model.ws.TextMessage
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.stream.{CompletionStrategy, OverflowStrategy}
-import ch.epfl.pop.json.HighLevelProtocol._
+import ch.epfl.pop.json.HighLevelProtocol.*
 import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.pubsub.ClientActor.{ClientAnswer, ConnectWsHandle, DisconnectWsHandle}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import spray.json._
+import spray.json.*
 
 object Answerer {
   private val CLIENT_BUFFER_SIZE: Int = 256
