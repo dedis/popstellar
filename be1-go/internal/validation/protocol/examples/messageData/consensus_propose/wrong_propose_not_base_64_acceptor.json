@@ -1,0 +1,16 @@
+{
+    "object": "consensus",
+    "action": "propose",
+    "instance_id": "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=",
+    "message_id": "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=",
+    "created_at": 1634760120,
+    "value": {
+        "proposed_try": 4,
+        "proposed_value": true
+    },
+    "acceptor-signatures": [
+        "@@@",
+        "Z1ghQm4iVihAPSZRVXteZWJTekNdbWAhXDtOKyJwag4=",
+        "LkNLWW1_RXV5Y11XO2xHLypFSlRodzMmJVN0NXlQZCs="
+    ]
+}

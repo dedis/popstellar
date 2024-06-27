@@ -52,6 +52,19 @@ export interface LinkedOrganizationsConfiguration {
    * @returns The current lao
    */
   useCurrentLao: () => LinkedOrganizationsFeature.Lao;
+
+  /**
+   * Gets a lao from the store by its id
+   * @param laoId The id of the lao
+   * @returns A lao or undefined if none was found
+   */
+  getLaoById(laoId: Hash): LinkedOrganizationsFeature.Lao | undefined;
+
+  /**
+   * Returns a map from laoIds to names
+   */
+
+  getRollCallById: (id: Hash) => LinkedOrganizationsFeature.RollCall | undefined;
 }
 
 /**
@@ -59,7 +72,7 @@ export interface LinkedOrganizationsConfiguration {
  */
 export type LinkedOrganizationsReactContext = Pick<
   LinkedOrganizationsConfiguration,
-  'useCurrentLaoId' | 'useIsLaoOrganizer' | 'useCurrentLao'
+  'useCurrentLaoId' | 'useIsLaoOrganizer' | 'useCurrentLao' | 'getLaoById' | 'getRollCallById'
 >;
 
 /**

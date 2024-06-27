@@ -1,0 +1,119 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/data.json",
+    "description": "Match one type of data",
+    "type": "object",
+    "oneOf": [
+        {
+            "$ref": "dataCastVote.json"
+        },
+        {
+            "$ref": "dataAuthenticateUser.json"
+        },
+        {
+            "$ref": "dataCloseRollCall.json"
+        },
+        {
+            "$ref": "dataCreateLao.json"
+        },
+        {
+            "$ref": "dataCreateMeeting.json"
+        },
+        {
+            "$ref": "dataCreateRollCall.json"
+        },
+        {
+            "$ref": "dataKeyElection.json"
+        },
+        {
+            "$ref": "dataEndElection.json"
+        },
+        {
+            "$ref": "dataResultElection.json"
+        },
+        {
+            "$ref": "dataSetupElection.json"
+        },
+        {
+            "$ref": "dataOpenElection.json"
+        },
+        {
+            "$ref": "dataOpenRollCall.json"
+        },
+        {
+            "$ref": "dataStateLao.json"
+        },
+        {
+            "$ref": "dataGreetLao.json"
+        },
+        {
+            "$ref": "dataStateMeeting.json"
+        },
+        {
+            "$ref": "dataUpdateLao.json"
+        },
+        {
+            "$ref": "dataFederationInit.json"
+        },
+        {
+            "$ref": "dataFederationExpect.json"
+        },
+        {
+            "$ref": "dataFederationChallengeRequest.json"
+        },
+        {
+            "$ref": "dataFederationChallenge.json"
+        },
+        {
+            "$ref": "dataFederationResult.json"
+        },
+        {
+            "$ref": "dataWitnessMessage.json"
+        },
+        {
+            "$ref": "dataAddChirp.json"
+        },
+        {
+            "$ref": "dataNotifyAddChirp.json"
+        },
+        {
+            "$ref": "dataDeleteChirp.json"
+        },
+        {
+            "$ref": "dataNotifyDeleteChirp.json"
+        },
+        {
+            "$ref": "dataAddReaction.json"
+        },
+        {
+            "$ref": "dataDeleteReaction.json"
+        },
+        {
+            "$ref": "dataElect.json"
+        },
+        {
+            "$ref": "dataElectAccept.json"
+        },
+        {
+            "$ref": "dataPrepare.json"
+        },
+        {
+            "$ref": "dataPromise.json"
+        },
+        {
+            "$ref": "dataPropose.json"
+        },
+        {
+            "$ref": "dataAccept.json"
+        },
+        {
+            "$ref": "dataLearn.json"
+        },
+        {
+            "$ref": "dataFailure.json"
+        },
+        {
+            "$ref": "dataPostTransactionCoin.json"
+        }
+    ]
+}

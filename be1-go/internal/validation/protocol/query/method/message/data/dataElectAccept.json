@@ -1,0 +1,34 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataElectAccept.json",
+    "description": "Match an elect_accept query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "consensus"
+        },
+        "action": {
+            "const": "elect_accept"
+        },
+        "instance_id": {
+            "description": "Unique id of the consensus instance taken from the elect message",
+            "type": "string"
+        },
+        "message_id": {
+            "description": "message_id of the elect message",
+            "type": "string"
+        },
+        "accept": {
+            "description": "Indicating whether the proposal is accepted (true) or rejected (false)",
+            "type": "boolean"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "instance_id",
+        "message_id",
+        "accept"
+    ]
+}

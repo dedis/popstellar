@@ -1,0 +1,62 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCreateRollCall.json",
+    "description": "Match a create roll-call query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "roll_call"
+        },
+        "action": {
+            "const": "create"
+        },
+        "id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Hash : HashLen('R', lao_id, creation, name)"
+        },
+        "name": {
+            "type": "string"
+        },
+        "creation": {
+            "description": "[Timestamp] creation time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "proposed_start": {
+            "description": "[Timestamp] proposed start time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "proposed_end": {
+            "description": "[Timestamp] proposed end time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "location": {
+            "description": "[String] location of the roll-call",
+            "type": "string"
+        },
+        "description": {
+            "description": "An optional description of the meeting",
+            "type": "string",
+            "$comment": "Optional"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "id",
+        "name",
+        "creation",
+        "location",
+        "proposed_start",
+        "proposed_end"
+    ],
+    "note": [
+        "The roll_call/create message denotes the organizer's intention to create a new roll call",
+        "The proposed_start and proposed_end fields denote the start and end time for the roll call for displaying the event in the UI.",
+        "The roll call may however be only considered started/closed based on its latest state and the attestation of witnesses for the message leading to that state transition."
+    ]
+}

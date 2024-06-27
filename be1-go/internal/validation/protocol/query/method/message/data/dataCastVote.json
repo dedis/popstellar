@@ -1,0 +1,82 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCastVote.json",
+    "description": "Match a cast vote query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "election"
+        },
+        "action": {
+            "const": "cast_vote"
+        },
+        "lao": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the LAO"
+        },
+        "election": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the election"
+        },
+        "created_at": {
+            "description": "[Timestamp] time created in UTC",
+            "type": "integer",
+            "minimum": 0
+        },
+        "votes": {
+            "description": "Array of votes",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "oneOf": [
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index | write_in))"
+                            },
+                            "question": {
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
+                            },
+                            "vote": {
+                                "description": "index corresponding to the ballot_option",
+                                "type": "integer",
+                                "$comment": "index of the option to vote for"
+                            }
+                        }
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (encrypted_vote_index | encrypted_write_in)))"
+                            },
+                            "question": {
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
+                            },
+                            "vote": {
+                                "description": "encrypted index corresponding to the ballot_option",
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "encrypted index of the option to vote for"
+                            }
+                        }
+                    }
+                ],
+                "required": ["id", "question", "vote"]
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        }
+    },
+    "additionalProperties": false,
+    "required": ["object", "action", "lao", "election", "created_at", "votes"]
+}

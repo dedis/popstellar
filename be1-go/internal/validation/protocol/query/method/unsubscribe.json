@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/unsubscribe.json",
+    "description": "Match unsubscribe from a channel client query",
+    "type": "object",
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "unsubscribe"
+        },
+
+        "params": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "channel": {
+                    "description": "[String] name of the channel",
+                    "type": "string",
+                    "pattern": "^/root(/[^/]+)+$"
+                }
+            },
+
+            "required": ["channel"]
+        },
+
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        },
+
+        "id": {
+            "type": "integer"
+        }
+    },
+
+    "required": ["method", "params", "id", "jsonrpc"]
+}

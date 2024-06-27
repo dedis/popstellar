@@ -1,0 +1,17 @@
+{
+    "name": "test",
+    "version": "1.0.0",
+    "description": "test suite for json schemas ",
+    "main": "index.js",
+    "scripts": {
+        "test": "jest"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "ajv": "^8.6.2"
+    },
+    "devDependencies": {
+        "jest": "^27.1.0"
+    }
+}

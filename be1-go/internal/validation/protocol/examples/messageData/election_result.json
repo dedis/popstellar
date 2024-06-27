@@ -1,0 +1,20 @@
+{
+    "object": "election",
+    "action": "result",
+    "questions": [
+        {
+            "id": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
+            "result": [
+                {
+                    "ballot_option": "Yes",
+                    "count": 1
+                },
+                {
+                    "ballot_option": "No",
+                    "count": 0
+                }
+            ]
+        }
+    ],
+    "witness_signatures": []
+}

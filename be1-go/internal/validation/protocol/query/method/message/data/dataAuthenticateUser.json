@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataAuthenticateUser.json",
+  "description": "Authenticate a user in PoPCHA protocol",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "popcha"
+    },
+    "action": {
+      "const": "authenticate"
+    },
+     "client_id": {
+        "description": "id of the external client",
+        "type": "string"
+    },
+    "nonce": {
+        "description": "one-time value linked to the client",
+        "type": "string",
+        "contentEncoding": "base64"
+    },
+    "identifier": {
+        "description": "public key associated to the pop token and client id",
+        "type": "string",
+        "contentEncoding": "base64"
+    },
+    "identifier_proof": {
+        "description": "signature of the nonce using the identifier",
+        "type": "string",
+        "contentEncoding": "base64"
+    },
+    "state": {
+        "description": "opaque string to maintain state between request and callback",
+        "type": "string"
+    },
+    "response_mode": {
+        "description": "type of http response",
+        "type": "string"
+    },
+    "popcha_address": {
+        "description": "host of the popcha authorization server",
+        "type": "string"
+    }
+    
+  },
+  "additionalProperties": false,
+  "required": ["object", "action","client_id","nonce","identifier","identifier_proof","popcha_address"]
+}

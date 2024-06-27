@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/jsonRPC.json",
+    "title": "Match a custom JsonRpc 2.0 message",
+    "description": "Match a client query or a positive or negative server answer.",
+    "type": "object",
+    "properties": {
+        "jsonrpc": {
+            "type": "string",
+            "const": "2.0",
+            "description": "JSON RPC version"
+        }
+    },
+    "oneOf": [
+        {
+            "$ref": "answer/answer.json"
+        },
+        {
+            "$ref": "query/query.json"
+        }
+    ],
+    "required": ["jsonrpc"]
+}

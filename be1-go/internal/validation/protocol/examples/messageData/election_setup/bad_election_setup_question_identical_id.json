@@ -1,0 +1,27 @@
+{
+  "object": "election",
+  "action": "setup",
+  "version": "OPEN_BALLOT",
+  "id": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
+  "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+  "name": "Election",
+  "created_at": 1633098941,
+  "start_time": 1633098941,
+  "end_time": 1633099812,
+  "questions": [
+    {
+      "id": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
+      "question": "Is this project fun?",
+      "voting_method": "Plurality",
+      "ballot_options": ["Yes", "No"],
+      "write_in": false
+    },
+    {
+      "id": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
+      "question": "Is this project fun?",
+      "voting_method": "Plurality",
+      "ballot_options": ["Yes", "No", "Prefer not to answer"],
+      "write_in": false
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+    "jsonrpc": "2.0",
+    "id": 999,
+    "method": "publish",
+    "params": {
+        "channel": "/root/XXX",
+        "message": {
+            "data": "XXX",
+            "sender": "XXX",
+            "signature": "XXX",
+            "message_id": "XXX",
+            "witness_signatures": []
+        },
+        "additional_params": 0
+    }
+}

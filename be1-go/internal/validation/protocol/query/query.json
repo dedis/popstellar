@@ -1,0 +1,59 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/query.json",
+    "title": "Match a custom JsonRpc 2.0 query message",
+    "description": "Match a client query",
+    "type": "object",
+    "properties": {
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        },
+
+        "method": {
+            "type": "string"
+        },
+
+        "params": {
+            "type": "object"
+        }
+    },
+    "oneOf": [
+        {
+            "$ref": "method/subscribe.json"
+        },
+        {
+            "$ref": "method/broadcast.json"
+        },
+        {
+            "$ref": "method/unsubscribe.json"
+        },
+        {
+            "$ref": "method/publish.json"
+        },
+        {
+            "$ref": "method/catchup.json"
+        },
+        {
+            "$ref": "method/heartbeat.json"
+        },
+        {
+            "$ref": "method/get_messages_by_id.json"
+        },
+        {
+            "$ref": "method/greet_server.json"
+        },
+        {
+            "$ref": "method/rumor.json"
+        },
+        {
+            "$ref": "method/rumor_state.json"
+        },
+        {
+            "$ref": "method/paged_catchup.json"
+        }
+    ],
+
+    "required": ["method", "params", "jsonrpc"],
+
+    "$comment": "can have an additional property `id` if not a broadcast"
+}

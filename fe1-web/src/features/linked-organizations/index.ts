@@ -13,7 +13,7 @@ import { challengeReducer, linkedOrganizationsReducer } from './reducer';
 export function configure(
   configuration: LinkedOrganizationsConfiguration,
 ): LinkedOrganizationsInterface {
-  const { useCurrentLao, useCurrentLaoId, useIsLaoOrganizer } = configuration;
+  const { useCurrentLao, useCurrentLaoId, useIsLaoOrganizer, getLaoById, getRollCallById } = configuration;
   configureNetwork(configuration);
   return {
     identifier: LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER,
@@ -26,6 +26,8 @@ export function configure(
       useCurrentLaoId: useCurrentLaoId,
       useIsLaoOrganizer: useIsLaoOrganizer,
       useCurrentLao: useCurrentLao,
+      getLaoById: getLaoById,
+      getRollCallById: getRollCallById,
     },
   };
 }

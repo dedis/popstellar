@@ -1,0 +1,65 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/message.json",
+    "title": "This represents a message someone would want to publish on a specific channel",
+    "description": "Match general message content (Create LAO, Update LAO, Broadcast LAO, Create Meeting, Broadcast Meeting)",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "data": {
+            "description": "[Base64String] data contained in the message",
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Note: the string is encoded in Base64"
+        },
+        "sender": {
+            "description": "[Base64String] public key of the sender/organizer/server",
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Note: the string is encoded in Base64"
+        },
+        "signature": {
+            "description": "[Base64String] organizer's signature on data : Sign(data)",
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Note: the string is encoded in Base64"
+        },
+        "message_id": {
+            "description": "[Base64String] message id : HashLen(data, signature)",
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Note: the string is encoded in Base64"
+        },
+        "witness_signatures": {
+            "description": "[Array[Base64String]] signatures of the witnesses on the modification message (either creation/update)",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "witness": {
+                        "description": "[Base64String] public key of the witness",
+                        "type": "string",
+                        "contentEncoding": "base64",
+                        "$comment": "Note: the string is encoded in Base64"
+                    },
+                    "signature": {
+                        "description": "[Base64String] witness' signature : Sign(message_id)",
+                        "type": "string",
+                        "contentEncoding": "base64",
+                        "$comment": "Note: the strings are encoded in Base64"
+                    }
+                },
+                "additionalProperties": false,
+                "required": ["witness", "signature"]
+            },
+            "$comment": "Note: the items are encoded in Base64"
+        }
+    },
+    "required": [
+        "data",
+        "sender",
+        "signature",
+        "message_id",
+        "witness_signatures"
+    ]
+}

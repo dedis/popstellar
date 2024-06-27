@@ -1,0 +1,60 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataResultElection.json",
+    "description": "Match an ElectionResult query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "election"
+        },
+        "action": {
+            "const": "result"
+        },
+        "questions": {
+            "description": "Array of questions with their result",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "$comment": "ID of the question"
+                    },
+                    "result": {
+                        "description": "[Array[object{'ballot_options':string, 'count':integer}]] results",
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "$comment": "result of Plurality Voting",
+                            "properties": {
+                                "ballot_option": {
+                                    "type": "string",
+                                    "$comment": "string containing ballot option of the question"
+                                },
+                                "count": {
+                                    "type": "integer",
+                                    "$comment": "vote-count of the corresponding option",
+                                    "minimum": 0
+                                }
+                            },
+                            "required": ["ballot_option", "count"],
+                            "additionalProperties": false
+                        },
+                        "minItems": 1,
+                        "uniqueItems": true
+                    }
+                },
+                "additionalProperties": false,
+                "required": ["id", "result"]
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        },
+        "witness_signatures": {
+            "description": "[Array[Base64String]] list of witnesses' signatures",
+            "type": "array"
+        }
+    },
+    "additionalProperties": false,
+    "required": ["object", "action", "questions"]
+}

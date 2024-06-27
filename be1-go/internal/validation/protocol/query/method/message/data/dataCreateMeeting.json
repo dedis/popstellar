@@ -1,0 +1,57 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCreateMeeting.json",
+    "description": "Match a create Meeting query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "meeting"
+        },
+        "action": {
+            "const": "create"
+        },
+        "id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Hash : HashLen('M', lao_id, creation, name)"
+        },
+        "name": {
+            "type": "string"
+        },
+        "creation": {
+            "description": "[Timestamp] creation time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "location": {
+            "description": "[String] location of the meeting",
+            "type": "string",
+            "$comment": "Note: optional"
+        },
+        "start": {
+            "description": "[Timestamp] start time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "end": {
+            "description": "[Timestamp] end time",
+            "type": "integer",
+            "minimum": 0,
+            "$comment": "Note: optional"
+        },
+        "extra": {
+            "description": "[JsObject] arbitrary object for extra information",
+            "type": "object",
+            "$comment": "Note: optional"
+        }
+    },
+    "additionalProperties": false,
+    "required": ["object", "action", "id", "name", "creation", "start"],
+    "note": [
+        "By sending the meeting/create message to the LAO’s main channel (LAO's id), the meeting will be created with ",
+        "the identifier id. The server is expected to verify the data, such that the last modified timestamp is equal ",
+        "to the creation timestamp, that the timestamp is reasonably recent with respect to the server’s clock, that ",
+        "the attestation is valid, etc. Upon successful creation, the organizer is expected to broadcast the Meeting state ",
+        "to all witnesses and clients (see \"Meeting state broadcast\")"
+    ]
+}

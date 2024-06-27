@@ -1,5 +1,5 @@
 import { ListItem } from '@rneui/themed';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Text, View, StyleSheet, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
@@ -19,12 +19,17 @@ import {
   makeScannedLinkedOrganizationSelector,
   removeScannedLinkedOrganization,
 } from '../reducer/LinkedOrganizationsReducer';
+import { LinkedOrganization } from '../objects/LinkedOrganization';
+import { Hash } from 'core/objects';
+import BroadcastLinkedOrgInfo from '../components/BroadcastLinkedOrgInfo';
+import { catchup, subscribeToChannel } from 'core/network';
 
 const styles = StyleSheet.create({
   flexibleView: {
     flex: 1,
   } as ViewStyle,
 });
+
 
 const LinkedOrganizationsScreen = () => {
   const laoId = LinkedOrganizationsHooks.useCurrentLaoId();
@@ -41,8 +46,16 @@ const LinkedOrganizationsScreen = () => {
     [laoId],
   );
   const scannedLinkedOrgStates = useSelector(scannedLinkedOrgSelector);
+  const [linkedLaoId, setLinkedLaoId] = useState<Hash|null>(null);
+
 
   useEffect(() => {
+    const fetchData = async (linkedLaoId: Hash) => {
+      await subscribeToChannel(linkedLaoId, dispatch, '/root/' + linkedLaoId.valueOf());
+      await catchup('/root/' + linkedLaoId.valueOf());
+      await catchup('/root/' + linkedLaoId.valueOf() + '/roll_call');
+      setLinkedLaoId(linkedLaoId);
+    };
     if (
       recvChallengeState &&
       scannedLinkedOrgStates &&
@@ -65,6 +78,8 @@ const LinkedOrganizationsScreen = () => {
             });
             dispatch(removeScannedLinkedOrganization(laoId, matchingOrg.lao_id));
             dispatch(removeReceivedChallenge(laoId, challenge, publicKey));
+            const linkedOrg = LinkedOrganization.fromState(matchingOrg);
+            fetchData(linkedOrg.lao_id);
           } else {
             toast.show(`Could not link organizations`, {
               type: 'danger',
@@ -99,6 +114,7 @@ const LinkedOrganizationsScreen = () => {
             </ListItem>
           ))}
         </View>
+        {linkedLaoId && <BroadcastLinkedOrgInfo linkedLaoId={linkedLaoId} />}
       </ScreenWrapper>
     </View>
   );

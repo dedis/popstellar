@@ -1,0 +1,109 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataSetupElection.json",
+    "description": "Match an ElectionSetup query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "election"
+        },
+        "action": {
+            "const": "setup"
+        },
+        "version": {
+            "type": "string",
+            "enum": ["OPEN_BALLOT", "SECRET_BALLOT"],
+            "$comment": "features/implementation identifier"
+        },
+        "id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Hash : HashLen('Election', lao_id, created_at, name)"
+        },
+        "lao": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the LAO"
+        },
+        "name": {
+            "type": "string",
+            "$comment": "name of the election",
+            "minLength": 1
+        },
+        "created_at": {
+            "description": "[Timestamp] time created in UTC",
+            "type": "integer",
+            "minimum": 0
+        },
+        "start_time": {
+            "description": "[Timestamp] start time of the election in UTC",
+            "type": "integer",
+            "minimum": 0
+        },
+        "end_time": {
+            "description": "[Timestamp] end time of the election in UTC",
+            "type": "integer",
+            "minimum": 0
+        },
+        "questions": {
+            "description": "Array of questions",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "contentEncoding": "base64",
+                        "$comment": "Question ID: Hash : HashLen('Question', election_id, question)"
+                    },
+                    "question": {
+                        "type": "string",
+                        "$comment": "Voting topic. Has to be be unique."
+                    },
+                    "voting_method": {
+                        "type": "string",
+                        "enum": ["Plurality"],
+                        "$comment": "supported voting methods"
+                    },
+                    "ballot_options": {
+                        "description": "[Array[String]] ballot options",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "$comment": "ballot option"
+                        },
+                        "minItems": 2,
+                        "uniqueItems": true
+                    },
+                    "write_in": {
+                        "const": false,
+                        "$comment": "whether write-in is allowed. not supported yet"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "id",
+                    "question",
+                    "voting_method",
+                    "ballot_options",
+                    "write_in"
+                ]
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "version",
+        "id",
+        "lao",
+        "name",
+        "created_at",
+        "start_time",
+        "end_time",
+        "questions"
+    ]
+}

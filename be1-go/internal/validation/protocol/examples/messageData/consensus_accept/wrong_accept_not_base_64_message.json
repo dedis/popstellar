@@ -1,0 +1,11 @@
+{
+    "object": "consensus",
+    "action": "accept",
+    "instance_id": "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=",
+    "message_id": "@@@",
+    "created_at": 1634760180,
+    "value": {
+        "accepted_try": 4,
+        "accepted_value": true
+    }
+}

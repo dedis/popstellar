@@ -1,0 +1,14 @@
+{
+    "object": "election",
+    "action": "cast_vote",
+    "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
+    "created_at": 1633098941,
+    "votes": [
+        {
+            "id": "ad_RtMq73lRS1JF5LY-kHOGHD-yV-JJl7KmJZFOgmqc=",
+            "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
+            "vote": "ay7_zJTr5wanCpLQXEvICr0BuyI7aELxU0QM8YbGSgD2o-u1bnJqFMjAJYFQVcLe7rZkmhNFUiEOPqIqLj2hQQ=="
+        }
+    ]
+}

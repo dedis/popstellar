@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/broadcast.json",
+    "description": "Match propagation/broadcast of a message on a channel query",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "broadcast"
+        },
+
+        "params": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "channel": {
+                    "description": "[String] name of the channel",
+                    "type": "string",
+                    "pattern": "^/root(/[^/]+)*$"
+                },
+
+                "message": {
+                    "description": "[Message] message to be published",
+                    "$ref": "message/message.json"
+                }
+            },
+
+            "required": ["channel", "message"]
+        },
+
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        }
+    },
+
+    "required": ["method", "params", "jsonrpc"]
+}

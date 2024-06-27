@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/publish.json",
+    "description": "Match publish query",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "publish"
+        },
+
+        "params": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "channel": {
+                    "description": "[String] name of the channel",
+                    "type": "string",
+                    "pattern": "^/root(/[^/]+)*$",
+                    "$comment": "Note: the regex matches a \"/root\" or a \"/root/<channel>\""
+                },
+                "message": {
+                    "description": "[Message] message to be published",
+                    "$ref": "message/message.json"
+                }
+            },
+
+            "required": ["channel", "message"]
+        },
+
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        },
+
+        "id": {
+            "type": "integer"
+        }
+    },
+
+    "required": ["method", "params", "id", "jsonrpc"]
+}

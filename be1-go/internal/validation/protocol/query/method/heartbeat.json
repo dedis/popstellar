@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/heartbeat.json",
+    "description": "Heartbeat message",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "heartbeat"
+        },
+        "params": {
+            "description": "[Object] containing key-value pairs where each key is a channel and the value is a list of message_ids from that channel",
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+                "^/root(/[^/]+)*$": {
+                    "description": "[Array] of message_ids corresponding to the channel",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "minItems": 1
+                }
+            }
+        },
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        }
+    },
+    "required": ["method", "params", "jsonrpc"]
+}

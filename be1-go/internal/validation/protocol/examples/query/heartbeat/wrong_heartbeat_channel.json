@@ -1,0 +1,11 @@
+{
+    "jsonrpc": "2.0",
+    "method": "heartbeat",
+    "params": {
+        "/XXX": [
+            "z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=",
+            "txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg="
+        ]
+    }
+}
+

@@ -1,0 +1,97 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataStateMeeting.json",
+    "description": "Match a state broadcast Meeting query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "meeting"
+        },
+        "action": {
+            "const": "state"
+        },
+        "id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Hash : HashLen('M', lao_id, creation, name)"
+        },
+        "name": {
+            "type": "string"
+        },
+        "creation": {
+            "description": "[Timestamp] creation time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "last_modified": {
+            "description": "[Timestamp] last modification's time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "location": {
+            "description": "[String] location of the meeting",
+            "type": "string",
+            "$comment": "Note: optional"
+        },
+        "start": {
+            "description": "[Timestamp] start time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "end": {
+            "description": "[Timestamp] end time",
+            "type": "integer",
+            "minimum": 0,
+            "$comment": "Note: optional"
+        },
+        "extra": {
+            "description": "[JsObject] arbitrary object for extra information",
+            "type": "object",
+            "$comment": "Note: optional"
+        },
+        "modification_id": {
+            "description": "[Base64String] id of the modification (either creation/update)",
+            "type": "string",
+            "contentEncoding": "base64"
+        },
+        "modification_signatures": {
+            "description": "[Array[Base64String]] signatures of the witnesses on the modification message (either creation/update)",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "witness": {
+                        "description": "[Base64String] public key of the witness",
+                        "type": "string",
+                        "contentEncoding": "base64",
+                        "$comment": "Note: the string is encoded in Base64"
+                    },
+                    "signature": {
+                        "description": "[Base64String] witness' signature : Sign(message_id)",
+                        "type": "string",
+                        "contentEncoding": "base64",
+                        "$comment": "Note: the strings are encoded in Base64"
+                    }
+                },
+                "additionalProperties": false,
+                "required": ["witness", "signature"]
+            }
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "id",
+        "name",
+        "creation",
+        "last_modified",
+        "start",
+        "modification_id",
+        "modification_signatures"
+    ],
+    "note": [
+        "When a meeting is created or modified, the organizer is expected to publish the ",
+        "meeting/state message to the LAO’s main channel (LAO's id)"
+    ]
+}
