@@ -338,6 +338,15 @@ const (
 	                            		 WHERE sender = ?
 	                            		 AND rumorID = ?)`
 
+	selectRumorUnprocessedMessages = `
+	SELECT channelPath, message
+	FROM unprocessedMessage
+	WHERE unprocessedMessage.messageID IN 
+	      					(SELECT messageID
+	                         FROM unprocessedMessageRumor
+	                    	 WHERE sender = ?
+	                         AND rumorID = ?)`
+
 	selectAllRumors = `SELECT ID, sender, timestamp FROM rumor `
 
 	selectMyRumorInfos = `SELECT max(ID), sender FROM rumor WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?)`
