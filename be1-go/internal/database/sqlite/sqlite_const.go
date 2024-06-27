@@ -392,6 +392,21 @@ const (
 		AND json_extract(messageData, '$.public_key') = ?
 	ORDER BY storedTime DESC
 	`
+
+	selectLastTokensExchanges = `
+	SELECT messageData
+	FROM (
+	    SELECT *
+		FROM message
+		JOIN channelMessage ON message.messageID = channelMessage.messageID
+		GROUP BY json_extract(messageData, '$.lao_id')
+		ORDER BY storedTime DESC
+		LIMIT 1
+	)
+	WHERE channelPath = ?
+		AND json_extract(messageData, '$.object') = ?
+        AND json_extract(messageData, '$.action') = ?
+	`
 )
 
 const (

@@ -6,6 +6,7 @@ import (
 	poperrors "popstellar/internal/errors"
 	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/channel/federation/mfederation"
+	"slices"
 )
 
 func (s *SQLite) IsChallengeValid(senderPk string, challenge mfederation.FederationChallenge, channelPath string) error {
@@ -138,4 +139,37 @@ func (s *SQLite) GetFederationInit(senderPk string, remotePk string, challenge m
 	}
 
 	return mfederation.FederationInit{}, sql.ErrNoRows
+}
+
+func (s *SQLite) IsAttendeeFederation(channelPath, poptoken string) (bool, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	rows, err := s.database.Query(selectLastTokensExchanges, channelPath,
+		channel.FederationObject, channel.FederationActionTokensExchange)
+	if err != nil {
+		return false, poperrors.NewDatabaseSelectErrorMsg("tokens exchange: %v", err)
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var tokensExchangeBytes []byte
+		var tokensExchange mfederation.FederationTokensExchange
+
+		err = rows.Scan(&tokensExchangeBytes)
+		if err != nil {
+			continue
+		}
+
+		err = json.Unmarshal(tokensExchangeBytes, &tokensExchange)
+		if err != nil {
+			continue
+		}
+
+		if slices.Contains(tokensExchange.Tokens, poptoken) {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }
