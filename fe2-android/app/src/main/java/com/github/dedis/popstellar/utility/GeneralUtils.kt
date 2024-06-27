@@ -141,8 +141,12 @@ object GeneralUtils {
     }
 
     val (word1, word2) = words.split(" ")
+    val capitalizedWord1 =
+        word1.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+    val capitalizedWord2 =
+        word2.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 
-    return "$word1$word2$number"
+    return "$capitalizedWord1$capitalizedWord2$number"
   }
 
   /** Filters the digits from a base64 string and returns the first n digits. */
