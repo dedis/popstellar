@@ -15,8 +15,6 @@ class PostTransactionCoin( // the transaction object // String
   : String =
       transaction.computeId()
 
-  init {}
-
   override fun equals(other: Any?): Boolean {
     if (this === other) {
       return true
