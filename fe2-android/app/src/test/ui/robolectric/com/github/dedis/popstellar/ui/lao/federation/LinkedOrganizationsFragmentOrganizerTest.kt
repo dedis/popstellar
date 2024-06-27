@@ -106,7 +106,7 @@ class LinkedOrganizationsFragmentOrganizerTest {
     }
 
     @Test
-    fun testTextDisplayed() {
+    fun testNoLAOTextDisplayed() {
         LinkedOrganizationsFragmentPageObject.noOrganizationsText().check(matches(isDisplayed()))
         LinkedOrganizationsFragmentPageObject.listOrganizationsText().check(matches(withEffectiveVisibility(Visibility.GONE)))
     }

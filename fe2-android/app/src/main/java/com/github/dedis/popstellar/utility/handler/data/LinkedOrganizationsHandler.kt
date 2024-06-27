@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.repository.LinkedOrganizationsRepository
 import com.github.dedis.popstellar.repository.RollCallRepository
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException
+import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -45,7 +46,7 @@ constructor(
           linkedOrgRepo.otherLaoId != null) {
         val laoId = context.channel.extractLaoId()
         linkedOrgRepo.addLinkedLao(laoId, linkedOrgRepo.otherLaoId!!, arrayOf())
-        laoRepo.addDisposable(
+        disposables.add(
             context.messageSender
                 .subscribe(Channel.getLaoChannel(linkedOrgRepo.otherLaoId!!))
                 .subscribe(
@@ -76,7 +77,7 @@ constructor(
     // LAO. This might be changed in the future (making a pop-up asking the user if he/she wants
     // to subscribe to that)
     tokenExchange.tokens.forEach { t ->
-      laoRepo.addDisposable(
+      disposables.add(
           context.messageSender
               .subscribe(
                   Channel.getLaoChannel(tokenExchange.laoId).subChannel(SOCIAL).subChannel(t))
@@ -84,7 +85,7 @@ constructor(
                   { Timber.tag(TAG).d(SUCCESS) },
                   { error: Throwable -> Timber.tag(TAG).e(error, ERROR) }))
     }
-    laoRepo.addDisposable(
+    disposables.add(
         context.messageSender
             .subscribe(
                 Channel.getLaoChannel(tokenExchange.laoId).subChannel(SOCIAL).subChannel(REACTIONS))
@@ -106,6 +107,7 @@ constructor(
 
   companion object {
     private val TAG = LinkedOrganizationsHandler::class.java.simpleName
+    private val disposables = CompositeDisposable()
     private const val SOCIAL = "social"
     private const val REACTIONS = "reactions"
     private const val SUCCESS = "subscription is a success"

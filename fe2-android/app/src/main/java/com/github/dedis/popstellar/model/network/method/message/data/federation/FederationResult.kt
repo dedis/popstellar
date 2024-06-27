@@ -25,15 +25,15 @@ class FederationResult
 
   init {
     when (status) {
-      "failure" -> {
-        require(reason != null) { "Reason must be provided for failure status." }
-        require(publicKey == null) { "Public key must be null for failure status." }
+      FAILURE -> {
+        require(reason != null) { "Reason must be provided for $FAILURE status." }
+        require(publicKey == null) { "Public key must be null for $FAILURE status." }
       }
-      "success" -> {
-        require(publicKey != null) { "Public key must be provided for success status." }
-        require(reason == null) { "Reason must be null for success status." }
+      SUCCESS -> {
+        require(publicKey != null) { "Public key must be provided for $SUCCESS status." }
+        require(reason == null) { "Reason must be null for $SUCCESS status." }
       }
-      else -> throw IllegalArgumentException("Status must be either 'failure' or 'success'.")
+      else -> throw IllegalArgumentException("Status must be either '$FAILURE' or '$SUCCESS'.")
     }
   }
 
@@ -62,9 +62,9 @@ class FederationResult
   }
 
   override fun toString(): String {
-    if (status == "failure") {
+    if (status == FAILURE) {
       return "FederationResult{status='$status', reason='$reason', challenge='$challenge'}"
-    } else if (status == "success") {
+    } else if (status == SUCCESS) {
       return "FederationResult{status='$status', public_key='$publicKey', " +
           "challenge='$challenge'}"
     }
@@ -72,6 +72,11 @@ class FederationResult
   }
 
   fun isSuccess(): Boolean {
-    return status == "success"
+    return status == SUCCESS
+  }
+
+  companion object {
+    private const val SUCCESS = "success"
+    private const val FAILURE = "failure"
   }
 }
