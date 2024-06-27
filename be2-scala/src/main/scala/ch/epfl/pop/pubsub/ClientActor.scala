@@ -8,9 +8,9 @@ import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.network.method.GreetServer
 import ch.epfl.pop.model.objects.Channel
-import ch.epfl.pop.pubsub.ClientActor._
-import ch.epfl.pop.pubsub.PubSubMediator._
-import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.pubsub.ClientActor.*
+import ch.epfl.pop.pubsub.PubSubMediator.*
+import ch.epfl.pop.pubsub.graph.{GraphMessage, compactPrinter, prettyPrinter}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.storage.DbActor
 
@@ -83,7 +83,7 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
       connectionMediatorRef ! ConnectionMediator.NewServerConnected(self, greetServer)
 
     case clientAnswer @ ClientAnswer(_) =>
-      log.info(s"Sending an answer back to client $wsHandle: $clientAnswer")
+      log.info(s"Sending an answer back to ${if isServer then "server" else "client"} ${wsHandle.get.path.name}: $clientAnswer")
       messageWsHandle(clientAnswer)
 
     case m @ _ => m match {
@@ -135,7 +135,9 @@ object ClientActor {
   sealed trait ClientActorMessage
 
   // answer to be sent to the client represented by the client actor
-  final case class ClientAnswer(graphMessage: GraphMessage) extends ClientActorMessage
+  final case class ClientAnswer(graphMessage: GraphMessage) extends ClientActorMessage {
+    override def toString: String = compactPrinter(graphMessage)
+  }
 
   sealed trait Event
 
