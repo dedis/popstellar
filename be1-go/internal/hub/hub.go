@@ -80,6 +80,7 @@ type RumorSender interface {
 
 type RumorStateSender interface {
 	SendRumorState() error
+	SendRumorStateTo(socket socket.Socket) error
 }
 
 type Hub struct {
@@ -235,6 +236,10 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 
 func (h *Hub) NotifyNewServer(socket socket.Socket) {
 	h.sockets.Upsert(socket)
+	err := h.rumorStateSender.SendRumorStateTo(socket)
+	if err != nil {
+		h.log.Error().Err(err).Send()
+	}
 }
 
 func (h *Hub) Start() {
