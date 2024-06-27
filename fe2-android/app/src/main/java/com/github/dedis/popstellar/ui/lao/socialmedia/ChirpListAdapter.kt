@@ -102,6 +102,7 @@ class ChirpListAdapter(
       val reactionDisposable =
           socialMediaViewModel
               .getReactions(
+                  chirp.laoId,
                   chirp.id) // Each time the observable changes the counter and the selection is
               // notified
               .subscribe(

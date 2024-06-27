@@ -338,9 +338,10 @@ class ChirpListFragmentTest {
         private const val TEXT_2 = "text2"
         private const val TIMESTAMP_1: Long = 1632204910
         private const val TIMESTAMP_2: Long = 1632204900
-        private val CHIRP_1 = Chirp(MESSAGE_ID_1, SENDER_1, TEXT_1, TIMESTAMP_1, MessageID(""))
+        private val CHIRP_1 =
+                Chirp(MESSAGE_ID_1, SENDER_1, TEXT_1, TIMESTAMP_1, MessageID(""), LAO_ID)
         private val CHIRP_2 =
-                Chirp(MESSAGE_ID_2, SENDER_2, TEXT_2, TIMESTAMP_2, MessageID("")).deleted()
+                Chirp(MESSAGE_ID_2, SENDER_2, TEXT_2, TIMESTAMP_2, MessageID(""), LAO_ID).deleted()
         private val TIMESTAMP = Instant.now().epochSecond
 
         private fun createChirpList(): List<Chirp> {

@@ -84,8 +84,10 @@ class SocialMediaDatabaseTest {
     private val CHIRP1_ID = Base64DataUtils.generateMessageID()
     private val CHIRP2_ID = Base64DataUtils.generateMessageID()
     private const val EMOJI = "\uD83D\uDC4D"
-    private val CHIRP_1 = Chirp(CHIRP1_ID, SENDER, "This is a chirp !", 1001, MessageID(""))
-    private val CHIRP_2 = Chirp(CHIRP2_ID, SENDER, "This is another chirp !", 1003, MessageID(""))
+    private val CHIRP_1 =
+            Chirp(CHIRP1_ID, SENDER, "This is a chirp !", 1001, MessageID(""), LAO_ID)
+    private val CHIRP_2 =
+            Chirp(CHIRP2_ID, SENDER, "This is another chirp !", 1003, MessageID(""), LAO_ID)
     private val REACTION_1 =
       Reaction(
         Base64DataUtils.generateMessageID(),
