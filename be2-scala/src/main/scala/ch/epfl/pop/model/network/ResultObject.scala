@@ -62,10 +62,10 @@ class ResultObject(val result: Option[ResultType]) {
 
   override def toString: String = {
     result.get match
-      case ResultInt(result) => result.toString
+      case ResultInt(result)     => result.toString
       case ResultMessage(result) => result.toString()
-      case ResultMap(result) => result.toString()
-      case ResultRumor(result) => result.toString()
-      case ResultEmptyList() => List.empty.toString()
+      case ResultMap(result)     => result.toString()
+      case ResultRumor(result)   => result.toString()
+      case ResultEmptyList()     => List.empty.toString()
   }
 }
