@@ -27,7 +27,7 @@ class TokensExchange
     MessageValidator.verify()
         .isNotEmptyBase64(laoId, "lao_id")
         .isBase64(rollCallId, "roll_call_id")
-        .areNotEmptyBase64(*tokens, field = "tokens")
+        .arrayElementsNotEmptyBase64(tokens, field = "tokens")
         .validPastTimes(timestamp)
   }
 

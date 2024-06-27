@@ -162,6 +162,19 @@ object MessageValidator {
       return this
     }
 
+    /**
+     * Helper method to ensure all strings in an Array are valid, not-empty URL-safe base64
+     * encodings.
+     *
+     * @param inputs the strings to check
+     * @param field the name of the field (to print in case of error)
+     * @throws IllegalArgumentException if any string is empty or not a URL-safe base64 encoding
+     */
+    fun arrayElementsNotEmptyBase64(inputs: Array<String>, field: String): MessageValidatorBuilder {
+      inputs.forEach { input -> isNotEmptyBase64(input, field) }
+      return this
+    }
+
     fun isNotNull(input: Any?, field: String): MessageValidatorBuilder {
       requireNotNull(input) { "$field cannot be null" }
       return this
