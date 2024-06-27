@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.repository
 
+import android.app.Application
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral
 import com.github.dedis.popstellar.model.network.method.message.data.federation.Challenge
 import com.github.dedis.popstellar.model.network.method.message.data.federation.FederationResult
@@ -16,6 +17,7 @@ import org.mockito.Mockito
 import java.time.Instant
 
 class LinkedOrganizationsRepositoryTest {
+
     @Test
     fun repoFlushTest() {
         REPO.flush()
@@ -165,22 +167,23 @@ class LinkedOrganizationsRepositoryTest {
         private val CREATION = Instant.now().epochSecond
         private const val NAME = "Lao name"
         private val LAO_ID = Lao.generateLaoId(ORGANIZER, CREATION, NAME)
-        private val LAO_ID_2 = "id2"
-        private val LAO_ID_3 = "id3"
-        private val LAO_ID_4 = "id4"
-        private val LAO_ID_5 = "id5"
-        private val LAO_ID_6 = "id6"
-        private val LAO_ID_7 = "id7"
+        private val LAO_ID_2 = "aWQy"
+        private val LAO_ID_3 = "aWQz"
+        private val LAO_ID_4 = "aWQ0"
+        private val LAO_ID_5 = "aWQ1"
+        private val LAO_ID_6 = "aWQ2"
+        private val LAO_ID_7 = "aWQ3"
         private val TIMESTAMP = Instant.now().epochSecond
         private const val SERVER_ADDRESS = "wss://1.1.1.1:9000/client"
         private const val CHALLENGE_VALUE = "1feb2a2c7c739ea25f2568d056cc82d11be65d361511872cd35e4abd1a20f3d4"
-        private val TOKENS_ARRAY_1 = arrayOf("token1", "token2")
-        private val TOKENS_ARRAY_2 = arrayOf("token7", "token8", "token9")
+        private val TOKENS_ARRAY_1 = arrayOf("dG9rZW4x", "dG9rZW4y")
+        private val TOKENS_ARRAY_2 = arrayOf("dG9rZW43", "dG9rZW44", "dG9rZW45")
         private val CHALLENGE = Challenge(CHALLENGE_VALUE, TIMESTAMP)
         private val MG_CHALLENGE = MessageGeneral(Base64DataUtils.generateKeyPair(), CHALLENGE, Gson())
-        private val RESULT_SUCCESS = FederationResult("success", publicKey = "PK", challenge = MG_CHALLENGE)
+        private val RESULT_SUCCESS = FederationResult("success", publicKey = "UEs=", challenge = MG_CHALLENGE)
         private val RESULT_FAILURE = FederationResult("failure", reason = "fail", challenge = MG_CHALLENGE)
         private val TOKENS_EXCHANGE = TokensExchange(LAO_ID_3, "rollCall", TOKENS_ARRAY_1, TIMESTAMP)
-        private val REPO = LinkedOrganizationsRepository()
+        private val application = Application()
+        private val REPO = LinkedOrganizationsRepository(application)
     }
 }

@@ -25,18 +25,7 @@ class FederationResult
 ) : Data {
 
   init {
-    when (status) {
-      FAILURE -> {
-        require(reason != null) { "Reason must be provided for $FAILURE status." }
-        require(publicKey == null) { "Public key must be null for $FAILURE status." }
-      }
-      SUCCESS -> {
-        require(publicKey != null) { "Public key must be provided for $SUCCESS status." }
-        require(reason == null) { "Reason must be null for $SUCCESS status." }
-      }
-      else -> throw IllegalArgumentException("Status must be either '$FAILURE' or '$SUCCESS'.")
-    }
-    MessageValidator.verify().validMessage(challenge)
+    MessageValidator.verify().isValidFederationResult(status, reason, publicKey, challenge)
   }
 
   override val `object`: String
@@ -78,7 +67,7 @@ class FederationResult
   }
 
   companion object {
-    private const val SUCCESS = "success"
-    private const val FAILURE = "failure"
+    const val SUCCESS = "success"
+    const val FAILURE = "failure"
   }
 }

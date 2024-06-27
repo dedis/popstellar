@@ -24,8 +24,11 @@ class TokensExchange
 ) : Data {
 
   init {
-    MessageValidator.verify().isBase64(rollCallId, "rollCallId")
-    MessageValidator.verify().validPastTimes(timestamp)
+    MessageValidator.verify()
+        .isNotEmptyBase64(laoId, "lao_id")
+        .isBase64(rollCallId, "roll_call_id")
+        .areNotEmptyBase64(*tokens, field = "tokens")
+        .validPastTimes(timestamp)
   }
 
   override val `object`: String

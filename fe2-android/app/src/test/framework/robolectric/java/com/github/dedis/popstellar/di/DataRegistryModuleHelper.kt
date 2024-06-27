@@ -64,7 +64,7 @@ object DataRegistryModuleHelper {
       keyManager,
       ServerRepository(),
       consensusRepository,
-      LinkedOrganizationsRepository()
+      LinkedOrganizationsRepository(application)
     )
   }
 
@@ -86,7 +86,7 @@ object DataRegistryModuleHelper {
       keyManager,
       ServerRepository(),
       ConsensusRepository(),
-      LinkedOrganizationsRepository()
+      LinkedOrganizationsRepository(application)
     )
   }
 
@@ -109,7 +109,7 @@ object DataRegistryModuleHelper {
       keyManager,
       ServerRepository(),
       ConsensusRepository(),
-      LinkedOrganizationsRepository()
+      LinkedOrganizationsRepository(application)
     )
   }
 
@@ -132,7 +132,7 @@ object DataRegistryModuleHelper {
       keyManager,
       ServerRepository(),
       ConsensusRepository(),
-      LinkedOrganizationsRepository()
+      LinkedOrganizationsRepository(application)
     )
   }
 
@@ -163,7 +163,7 @@ object DataRegistryModuleHelper {
       keyManager,
       ServerRepository(),
       ConsensusRepository(),
-      LinkedOrganizationsRepository()
+      LinkedOrganizationsRepository(application)
     )
   }
 
@@ -187,7 +187,7 @@ object DataRegistryModuleHelper {
       keyManager,
       ServerRepository(),
       ConsensusRepository(),
-      LinkedOrganizationsRepository()
+      LinkedOrganizationsRepository(application)
     )
   }
 
@@ -219,7 +219,7 @@ object DataRegistryModuleHelper {
       keyManager,
       ServerRepository(),
       ConsensusRepository(),
-      LinkedOrganizationsRepository()
+      LinkedOrganizationsRepository(application)
     )
   }
 
@@ -243,7 +243,7 @@ object DataRegistryModuleHelper {
       keyManager,
       serverRepo,
       ConsensusRepository(),
-      LinkedOrganizationsRepository()
+      LinkedOrganizationsRepository(application)
     )
   }
 
@@ -271,7 +271,7 @@ object DataRegistryModuleHelper {
       keyManager,
       ServerRepository(),
       ConsensusRepository(),
-      LinkedOrganizationsRepository()
+      LinkedOrganizationsRepository(application)
     )
   }
 

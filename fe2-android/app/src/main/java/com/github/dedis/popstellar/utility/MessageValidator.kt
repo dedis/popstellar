@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.utility
 import android.net.Uri
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral
 import com.github.dedis.popstellar.model.network.method.message.data.election.Vote
+import com.github.dedis.popstellar.model.network.method.message.data.federation.FederationResult
 import com.github.dedis.popstellar.model.objects.Lao
 import com.github.dedis.popstellar.model.objects.Meeting
 import com.github.dedis.popstellar.model.objects.Reaction
@@ -366,6 +367,30 @@ object MessageValidator {
       val laoHint = uri.getQueryParameter(PoPCHAQRCode.FIELD_LOGIN_HINT)
       require(laoHint == laoId) { "Invalid LAO ID $laoHint" }
 
+      return this
+    }
+
+    fun isValidFederationResult(
+        status: String,
+        reason: String? = null,
+        publicKey: String? = null,
+        challenge: MessageGeneral
+    ): MessageValidatorBuilder {
+      val success = FederationResult.SUCCESS
+      val failure = FederationResult.FAILURE
+      when (status) {
+        failure -> {
+          require(reason != null) { "Reason must be provided for $failure status." }
+          require(publicKey == null) { "Public key must be null for $failure status." }
+        }
+        success -> {
+          require(publicKey != null) { "Public key must be provided for $success status." }
+          require(reason == null) { "Reason must be null for $success status." }
+          verify().isNotEmptyBase64(publicKey, "public_key")
+        }
+        else -> throw IllegalArgumentException("Status must be either '$failure' or '$success'.")
+      }
+      verify().validMessage(challenge)
       return this
     }
 
