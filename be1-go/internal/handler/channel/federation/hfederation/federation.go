@@ -55,6 +55,10 @@ type RumorStateSender interface {
 	SendRumorStateTo(socket socket.Socket) error
 }
 
+type GreetServerSender interface {
+	SendGreetServer(socket socket.Socket) error
+}
+
 type Repository interface {
 	// HasMessage returns true if the message already exists.
 	HasMessage(messageID string) (bool, error)
@@ -90,13 +94,14 @@ type Handler struct {
 	conf    Config
 	db      Repository
 	rumors  RumorStateSender
+	greets  GreetServerSender
 	schema  *validation.SchemaValidator
 	log     zerolog.Logger
 }
 
 func New(hub Hub, subs Subscribers, sockets Sockets, conf Config,
-	db Repository, rumors RumorStateSender, schema *validation.SchemaValidator,
-	log zerolog.Logger) *Handler {
+	db Repository, rumors RumorStateSender, greets GreetServerSender,
+	schema *validation.SchemaValidator, log zerolog.Logger) *Handler {
 	return &Handler{
 		hub:     hub,
 		subs:    subs,
@@ -104,6 +109,7 @@ func New(hub Hub, subs Subscribers, sockets Sockets, conf Config,
 		conf:    conf,
 		db:      db,
 		rumors:  rumors,
+		greets:  greets,
 		schema:  schema,
 		log:     log.With().Str("module", "federation").Logger(),
 	}
@@ -544,6 +550,11 @@ func (h *Handler) connectTo(serverAddress string) (socket.Socket, error) {
 
 	go server.WritePump()
 	go server.ReadPump()
+
+	err = h.greets.SendGreetServer(server)
+	if err != nil {
+		return nil, err
+	}
 
 	return server, h.rumors.SendRumorStateTo(server)
 }
