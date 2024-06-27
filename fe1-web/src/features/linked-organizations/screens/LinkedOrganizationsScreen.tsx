@@ -53,7 +53,7 @@ const LinkedOrganizationsScreen = () => {
     const fetchData = async (linkedLaoId: Hash) => {
       await subscribeToChannel(linkedLaoId, dispatch, '/root/' + linkedLaoId.valueOf());
       await catchup('/root/' + linkedLaoId.valueOf());
-      await catchup('/root/' + linkedLaoId.valueOf() + '/roll_call');
+      await new Promise(f => setTimeout(f, 1000));
       setLinkedLaoId(linkedLaoId);
     };
     if (
