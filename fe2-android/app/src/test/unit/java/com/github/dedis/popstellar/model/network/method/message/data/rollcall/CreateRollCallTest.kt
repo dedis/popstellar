@@ -114,12 +114,12 @@ class CreateRollCallTest {
   }
 
   @Test
-  fun constructorSucceedsWithValidData() {
+  fun constructor2SucceedsWithValidData() {
     val createRollCall = CreateRollCall(ID, NAME, NOW, NOW, END, LOCATION, null)
     assertNotNull(createRollCall)
   }
 
-  fun constructorSucceedsWithValidDataDescription() {
+  fun constructor2SucceedsWithValidDataDescription() {
     CreateRollCall(ID, NAME, NOW, NOW, END, LOCATION, "super cool description")
   }
 
