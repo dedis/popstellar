@@ -5,13 +5,15 @@ import com.github.dedis.popstellar.model.network.JsonTestUtils.testData
 import com.github.dedis.popstellar.model.network.method.message.data.Action
 import com.github.dedis.popstellar.model.network.method.message.data.Objects
 import com.github.dedis.popstellar.model.objects.event.EventType
+import com.github.dedis.popstellar.model.objects.security.Base64URLData
 import com.github.dedis.popstellar.utility.security.HashSHA256.hash
-import java.time.Instant
+import junit.framework.TestCase.assertNotNull
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.time.Instant
 
 @RunWith(AndroidJUnit4::class)
 class CreateRollCallTest {
@@ -62,6 +64,107 @@ class CreateRollCallTest {
   }
 
   @Test
+  fun constructor1SucceedsWithValidData() {
+    val createRollCall = CreateRollCall(NAME, NOW, NOW, END, LOCATION, null, LAO_ID)
+    assertNotNull(createRollCall)
+  }
+
+  fun constructor1SucceedsWithValidDataDescription() {
+    CreateRollCall(NAME, NOW, NOW, END, LOCATION, "super cool description", LAO_ID)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructor1FailsWhenNameEmpty() {
+    CreateRollCall("", NOW, NOW, END, LOCATION, null, LAO_ID)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructor1FailsWhenLAOIdEmpty() {
+    CreateRollCall(NAME, NOW, NOW, END, LOCATION, null, EMPTY_B64)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructor1FailsWhenLAOIdNotB64() {
+    CreateRollCall(NAME, NOW, NOW, END, LOCATION, null, INVALID_B64)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructor1FailsWhenCreationNegative() {
+    CreateRollCall(NAME, -1, NOW, END, LOCATION, null, LAO_ID)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructor1FailsWhenProposedStartNegative() {
+    CreateRollCall(NAME, NOW, -1, END, LOCATION, null, LAO_ID)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructor1FailsWhenProposedEndNegative() {
+    CreateRollCall(NAME, NOW, NOW, -1, LOCATION, null, LAO_ID)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructor1FailsWhenLocationEmpty() {
+    CreateRollCall(NAME, NOW, NOW, END, EMPTY_STRING, null, LAO_ID)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructor1FailsWhenDescriptionEmpty() {
+    CreateRollCall(NAME, NOW, NOW, END, LOCATION, EMPTY_STRING, LAO_ID)
+  }
+
+  @Test
+  fun constructorSucceedsWithValidData() {
+    val createRollCall = CreateRollCall(ID, NAME, NOW, NOW, END, LOCATION, null)
+    assertNotNull(createRollCall)
+  }
+
+  fun constructorSucceedsWithValidDataDescription() {
+    CreateRollCall(ID, NAME, NOW, NOW, END, LOCATION, "super cool description")
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructor2FailsWhenNameEmpty() {
+    CreateRollCall(ID, "", NOW, NOW, END, LOCATION, null)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructor2FailsWhenIdEmpty() {
+    CreateRollCall(EMPTY_B64, NAME, NOW, NOW, END, LOCATION, null)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructor2FailsWhenIdNotB64() {
+    CreateRollCall(INVALID_B64, NAME, NOW, NOW, END, LOCATION, null)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructor2FailsWhenCreationNegative() {
+    CreateRollCall(ID, NAME, -1, NOW, END, LOCATION, null)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructor2FailsWhenProposedStartNegative() {
+    CreateRollCall(ID, NAME, NOW, -1, END, LOCATION, null)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructor2FailsWhenProposedEndNegative() {
+    CreateRollCall(ID, NAME, NOW, NOW, -1, LOCATION, null)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructor2FailsWhenLocationEmpty() {
+    CreateRollCall(ID, NAME, NOW, NOW, END, EMPTY_STRING, null)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructor2FailsWhenDescriptionEmpty() {
+    CreateRollCall(ID, NAME, NOW, NOW, END, LOCATION, EMPTY_STRING)
+  }
+
+
+  @Test
   fun jsonValidationTest() {
     testData(CREATE_ROLL_CALL)
   }
@@ -88,6 +191,9 @@ class CreateRollCallTest {
     private val NOW = Instant.now().epochSecond
     private val END = NOW + 30L
     private const val LOCATION = "Location"
+    private const val EMPTY_STRING = ""
+    private val INVALID_B64 = "invalidBase64String"
+    private val EMPTY_B64 = Base64URLData("".toByteArray()).encoded
     private val CREATE_ROLL_CALL = CreateRollCall(NAME, NOW, NOW, END, LOCATION, null, LAO_ID)
     private val ID = hash(EventType.ROLL_CALL.suffix, LAO_ID, NOW.toString(), NAME)
   }
