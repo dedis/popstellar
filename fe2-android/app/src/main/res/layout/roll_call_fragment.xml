@@ -83,13 +83,33 @@
       style="@style/text_medium_title"
       app:layout_constraintTop_toBottomOf="@+id/roll_call_pk_qr_code" />
 
-    <TextView
-      android:id="@+id/roll_call_pop_token_text"
+    <LinearLayout
+      android:id="@+id/lao_properties_identifier_container"
       android:layout_width="wrap_content"
-      android:layout_height="0dp"
-      app:layout_constraintEnd_toEndOf="parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/roll_call_pop_token_username" />
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/roll_call_pop_token_username">
+
+      <TextView
+        android:id="@+id/roll_call_pop_token_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textIsSelectable="true"
+        app:layout_constraintTop_toBottomOf="@+id/roll_call_pop_token_username" />
+
+      <ImageButton
+        android:id="@+id/roll_call_pop_token_text_copy_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_content_copy"
+        android:layout_gravity="bottom"
+        android:contentDescription="@string/copy_to_clipboard_lao_id"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:layout_marginStart="8dp"/>
+    </LinearLayout>
+
 
     <TextView
       android:id="@+id/roll_call_fragment_title"
