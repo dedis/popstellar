@@ -189,7 +189,8 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	rumorStateHandler := hrumorstate.New(queries, sockets, &db, log)
 
 	// Create the federation handler
-	federationHandler := hfederation.New(hubParams, subs, sockets, conf, &db, schemaValidator, log)
+	federationHandler := hfederation.New(hubParams, subs, sockets, conf, &db,
+		rumorStateHandler, schemaValidator, log)
 
 	// Create the query handler
 	methodHandlers := make(hquery.MethodHandlers)
