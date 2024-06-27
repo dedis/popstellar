@@ -48,7 +48,7 @@ class TokensExchangeTest {
         Assert.assertEquals(TK_EXCHANGE.hashCode().toLong(), tokensExchange2.hashCode().toLong())
 
         val tokensExchange3 = TokensExchange(Lao.generateLaoId(ORGANIZER, CREATION, "LAO2"), ROLL_CALL_ID, TOKENS, TIMESTAMP)
-        val tokensExchange4 = TokensExchange(LAO_ID, "RC2", TOKENS, TIMESTAMP)
+        val tokensExchange4 = TokensExchange(LAO_ID, "UkMy", TOKENS, TIMESTAMP)
         val tokensExchange5 = TokensExchange(LAO_ID, ROLL_CALL_ID, arrayOf("token1"), TIMESTAMP)
         Assert.assertNotEquals(TK_EXCHANGE, tokensExchange3)
         Assert.assertNotEquals(TK_EXCHANGE, tokensExchange4)
@@ -69,7 +69,7 @@ class TokensExchangeTest {
         private val CREATION = Instant.now().epochSecond
         private const val NAME = "Lao name"
         private val LAO_ID = Lao.generateLaoId(ORGANIZER, CREATION, NAME)
-        private val ROLL_CALL_ID = "RC1"
+        private val ROLL_CALL_ID = "UkMx"
         private val TOKENS = arrayOf("token1", "token2", "token3")
         private val TIMESTAMP = Instant.now().epochSecond
         private val TK_EXCHANGE = TokensExchange(LAO_ID, ROLL_CALL_ID, TOKENS, TIMESTAMP)

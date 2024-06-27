@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.federation
 import com.github.dedis.popstellar.model.network.method.message.data.Action
 import com.github.dedis.popstellar.model.network.method.message.data.Data
 import com.github.dedis.popstellar.model.network.method.message.data.Objects
+import com.github.dedis.popstellar.utility.MessageValidator
 import com.google.gson.annotations.SerializedName
 
 /** Token exchange to be broadcast in the LAO */
@@ -21,6 +22,12 @@ class TokensExchange
     val tokens: Array<String>,
     val timestamp: Long
 ) : Data {
+
+  init {
+    MessageValidator.verify().isBase64(rollCallId, "rollCallId")
+    MessageValidator.verify().validPastTimes(timestamp)
+  }
+
   override val `object`: String
     get() = Objects.FEDERATION.`object`
 

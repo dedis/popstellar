@@ -4,6 +4,7 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral
 import com.github.dedis.popstellar.model.network.method.message.data.Action
 import com.github.dedis.popstellar.model.network.method.message.data.Data
 import com.github.dedis.popstellar.model.network.method.message.data.Objects
+import com.github.dedis.popstellar.utility.MessageValidator
 import com.google.gson.annotations.SerializedName
 
 /** Informs about the result of the authentication procedure */
@@ -35,6 +36,7 @@ class FederationResult
       }
       else -> throw IllegalArgumentException("Status must be either '$FAILURE' or '$SUCCESS'.")
     }
+    MessageValidator.verify().validMessage(challenge)
   }
 
   override val `object`: String
