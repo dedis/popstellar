@@ -5,6 +5,10 @@ import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.Lifecycle
 import com.github.dedis.popstellar.model.objects.security.Base64URLData
+import com.github.dedis.popstellar.utility.Constants.DEFAULT_USERNAME
+import com.github.dedis.popstellar.utility.Constants.EMPTY_USERNAME
+import com.github.dedis.popstellar.utility.Constants.MNEMONIC_USERNAME_WORDS
+import com.github.dedis.popstellar.utility.Constants.USERNAME_DIGITS
 import io.github.novacrypto.bip39.MnemonicGenerator
 import io.github.novacrypto.bip39.wordlists.English
 import java.security.MessageDigest
@@ -74,7 +78,7 @@ object GeneralUtils {
    *
    * @param input base64 string
    * @param numberOfWords number of mnemonic words we want to generate
-   * @return two mnemonic words
+   * @return numberOfWords mnemonic words
    */
   @JvmStatic
   fun generateMnemonicWordFromBase64(input: String, numberOfWords: Int): String {
@@ -106,14 +110,48 @@ object GeneralUtils {
         sb.append(s)
       }
 
-      sb.toString().split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+      sb.toString().split(" ").dropLastWhile { it.isEmpty() }.toTypedArray()
     } catch (e: NoSuchAlgorithmException) {
       Timber.tag(TAG)
-          .e(
-              e,
-              "Error generating the mnemonic for the base64 string %s",
-              Base64URLData(data).encoded)
+          .e(e, "Error generating mnemonic for base64 string %s", Base64URLData(data).encoded)
       emptyArray()
     }
+  }
+
+  /**
+   * This function generates a unique and memorable username from a base64 string. The username is
+   * composed of two words and a 4 digits number. The result is deterministic. The 4 digits number
+   * is the first 4 digits found in the base64 string, starting from the left.
+   *
+   * @param input base64 string.
+   * @return a username composed of two words and a 4 digits number.
+   */
+  @JvmStatic
+  fun generateUsernameFromBase64(input: String): String {
+    if (input.isEmpty()) {
+      Timber.tag(TAG).w("Empty input for username generation")
+      return EMPTY_USERNAME
+    }
+
+    val number = getFirstNumberDigits(input)
+    val words = generateMnemonicWordFromBase64(input, MNEMONIC_USERNAME_WORDS)
+    if (words.isEmpty()) {
+      Timber.tag(TAG).w("Empty words for username generation for base64 string %s", input)
+      return "$DEFAULT_USERNAME$number"
+    }
+
+    val (word1, word2) = words.split(" ")
+    val capitalizedWord1 =
+        word1.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+    val capitalizedWord2 =
+        word2.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+
+    return "$capitalizedWord1$capitalizedWord2$number"
+  }
+
+  /** Filters the digits from a base64 string and returns the first n digits. */
+  private fun getFirstNumberDigits(b64: String, nbDigits: Int = USERNAME_DIGITS): String {
+    val digits = b64.filter { it.isDigit() }
+    return digits.take(nbDigits).padStart(nbDigits, '0')
   }
 }

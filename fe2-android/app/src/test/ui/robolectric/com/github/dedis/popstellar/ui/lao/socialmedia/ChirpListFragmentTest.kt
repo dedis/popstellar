@@ -236,7 +236,7 @@ class ChirpListFragmentTest {
             // Check the user is matching correctly
             val user = view1.findViewById<TextView>(R.id.social_media_username)
             Assert.assertNotNull(user)
-            Assert.assertEquals(SENDER_1.encoded, user.text.toString())
+            Assert.assertEquals(SENDER_1.getLabel(), user.text.toString())
 
             // Check the time is matching correctly
             val time = view1.findViewById<TextView>(R.id.social_media_time)

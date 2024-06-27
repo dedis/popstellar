@@ -61,4 +61,16 @@ object Constants {
 
   /** Orientation down along the x axis */
   const val ORIENTATION_DOWN = 180f
+
+  /** Number of Digits in a Mnemonic Username */
+  const val USERNAME_DIGITS = 4
+
+  /** Number of Words in a Mnemonic Username */
+  const val MNEMONIC_USERNAME_WORDS = 2
+
+  /** Empty Username Placeholder */
+  const val EMPTY_USERNAME = "emptyBase64"
+
+  /** Default Username Placeholder */
+  const val DEFAULT_USERNAME = "defaultUsername"
 }

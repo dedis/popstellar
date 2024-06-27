@@ -40,7 +40,6 @@ import io.reactivex.Single
 import java.nio.charset.StandardCharsets
 import java.security.GeneralSecurityException
 import java.util.Collections
-import java.util.stream.Collectors
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -69,7 +68,7 @@ constructor(
   private val postTransactionEvent = MutableLiveData<SingleEvent<Boolean>>()
 
   /* Update the receipt after sending a transaction */
-  private val updateReceiptAddressEvent = MutableLiveData<SingleEvent<String>>()
+  private val updateReceiptAddressEvent = MutableLiveData<SingleEvent<PublicKey>>()
   private val updateReceiptAmountEvent = MutableLiveData<SingleEvent<String>>()
 
   fun getPostTransactionEvent(): LiveData<SingleEvent<Boolean>> {
@@ -80,11 +79,11 @@ constructor(
     postTransactionEvent.postValue(SingleEvent(true))
   }
 
-  fun getUpdateReceiptAddressEvent(): LiveData<SingleEvent<String>> {
+  fun getUpdateReceiptAddressEvent(): LiveData<SingleEvent<PublicKey>> {
     return updateReceiptAddressEvent
   }
 
-  fun updateReceiptAddressEvent(address: String?) {
+  fun updateReceiptAddressEvent(address: PublicKey?) {
     updateReceiptAddressEvent.postValue(SingleEvent(address))
   }
 
@@ -237,9 +236,8 @@ constructor(
     get() = lao.organizer
 
   @get:Throws(NoRollCallException::class)
-  val attendeesFromTheRollCallList: List<String>
-    get() =
-        attendeesFromLastRollCall.stream().map(Base64URLData::encoded).collect(Collectors.toList())
+  val attendeesFromTheRollCallList: List<PublicKey>
+    get() = attendeesFromLastRollCall.toList()
 
   @get:Throws(UnknownLaoException::class)
   val lao: LaoView
