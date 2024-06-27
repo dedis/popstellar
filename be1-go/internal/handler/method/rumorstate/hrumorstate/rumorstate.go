@@ -71,10 +71,10 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 	return nil, nil
 }
 
-func (h *Handler) SendRumorState() error {
+func (h *Handler) createRumorState() ([]byte, error) {
 	timestamp, err := h.db.GetRumorTimestamp()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	id := h.queries.GetNextID()
@@ -94,14 +94,34 @@ func (h *Handler) SendRumorState() error {
 
 	buf, err := json.Marshal(rumorStateMessage)
 	if err != nil {
-		return errors.NewJsonMarshalError(err.Error())
+		return nil, errors.NewJsonMarshalError(err.Error())
 	}
 
 	err = h.queries.AddRumorState(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return buf, nil
+}
+
+func (h *Handler) SendRumorState() error {
+	buf, err := h.createRumorState()
 	if err != nil {
 		return err
 	}
 
 	h.sockets.SendToRandom(buf)
+	return nil
+}
+
+func (h *Handler) SendRumorStateTo(socket socket.Socket) error {
+	buf, err := h.createRumorState()
+	if err != nil {
+		return err
+	}
+
+	socket.Send(buf)
+
 	return nil
 }
