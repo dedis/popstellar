@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/rs/zerolog"
 	"popstellar/internal/errors"
+	"popstellar/internal/handler/channel"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/publish/mpublish"
 	"popstellar/internal/logger"
@@ -26,19 +27,26 @@ type MessageHandler interface {
 	Handle(channelPath string, msg mmessage.Message, fromRumor bool) error
 }
 
-type Handler struct {
-	hub            Hub
-	db             Repository
-	messageHandler MessageHandler
-	log            zerolog.Logger
+type FederationHandler interface {
+	Handle(channelPath string, msg mmessage.Message, socket socket.Socket) error
 }
 
-func New(hub Hub, db Repository, messageHandler MessageHandler, log zerolog.Logger) *Handler {
+type Handler struct {
+	hub               Hub
+	db                Repository
+	messageHandler    MessageHandler
+	federationHandler FederationHandler
+	log               zerolog.Logger
+}
+
+func New(hub Hub, db Repository, messageHandler MessageHandler,
+	federationHandler FederationHandler, log zerolog.Logger) *Handler {
 	return &Handler{
-		hub:            hub,
-		db:             db,
-		messageHandler: messageHandler,
-		log:            log.With().Str("module", "publish").Logger(),
+		hub:               hub,
+		db:                db,
+		messageHandler:    messageHandler,
+		federationHandler: federationHandler,
+		log:               log.With().Str("module", "publish").Logger(),
 	}
 }
 
@@ -49,16 +57,24 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 		return nil, errors.NewJsonUnmarshalError(err.Error())
 	}
 
+	// The federation handler need to have access to the socket and are not
+	// using rumors
+	if strings.Contains(publish.Params.Channel, channel.Federation) {
+		err = h.federationHandler.Handle(publish.Params.Channel, publish.Params.Message, socket)
+		if err != nil {
+			return &publish.ID, err
+		}
+
+		socket.SendResult(publish.ID, nil, nil)
+		return nil, nil
+	}
+
 	err = h.messageHandler.Handle(publish.Params.Channel, publish.Params.Message, false)
 	if err != nil {
 		return &publish.ID, err
 	}
 
 	socket.SendResult(publish.ID, nil, nil)
-
-	if strings.Contains(publish.Params.Channel, "federation") {
-		return nil, nil
-	}
 
 	logger.Logger.Debug().Msgf("sender rumor need to add message %s", publish.Params.Message.MessageID)
 	nbMessagesInsideRumor, err := h.db.AddMessageToMyRumor(publish.Params.Message.MessageID)

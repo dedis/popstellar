@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/method/rumor/mrumor"
+	"sort"
 	"sync"
 	"time"
 )
@@ -12,27 +13,35 @@ const bufferEntryLifeTime = 3 * time.Second
 
 type buffer struct {
 	sync.Mutex
-	values map[string]mrumor.Rumor
+	queue     []mrumor.ParamsRumor
+	senderIDs map[string]struct{}
 }
 
 func newBuffer() *buffer {
 	return &buffer{
-		values: make(map[string]mrumor.Rumor),
+		queue:     make([]mrumor.ParamsRumor, 0),
+		senderIDs: make(map[string]struct{}),
 	}
 }
 
-func (b *buffer) insert(rumor mrumor.Rumor) error {
+func (b *buffer) insert(params mrumor.ParamsRumor) error {
 	b.Lock()
 	defer b.Unlock()
 
-	ID := fmt.Sprintf("%s:%d", rumor.Params.SenderID, rumor.Params.RumorID)
+	ID := fmt.Sprintf("%s:%d", params.SenderID, params.RumorID)
 
-	_, ok := b.values[ID]
+	_, ok := b.senderIDs[ID]
 	if ok {
 		return errors.NewDuplicateResourceError("rumor %s is already inside the buffer", ID)
 	}
 
-	b.values[ID] = rumor
+	b.queue = append(b.queue, params)
+
+	sort.Slice(b.queue, func(i, j int) bool {
+		return b.queue[i].Timestamp.IsBefore(b.queue[j].Timestamp)
+	})
+
+	b.senderIDs[ID] = struct{}{}
 
 	go b.deleteWithDelay(ID)
 
@@ -47,20 +56,32 @@ func (b *buffer) deleteWithDelay(ID string) {
 	b.Lock()
 	defer b.Unlock()
 
-	delete(b.values, ID)
+	b.deleteEntry(ID)
 }
 
-func (b *buffer) getNextRumor(senderID string, rumorID int) (mrumor.Rumor, bool) {
+func (b *buffer) getNextRumorParams(state mrumor.RumorTimestamp) (mrumor.ParamsRumor, bool) {
 	b.Lock()
 	defer b.Unlock()
 
-	ID := fmt.Sprintf("%s:%d", senderID, rumorID+1)
-	rumor, ok := b.values[ID]
-	if !ok {
-		return mrumor.Rumor{}, false
+	for _, param := range b.queue {
+		if state.IsValid(param.Timestamp) {
+			b.deleteEntry(fmt.Sprintf("%s:%d", param.SenderID, param.RumorID))
+			return param, true
+		}
 	}
 
-	delete(b.values, ID)
+	return mrumor.ParamsRumor{}, false
+}
 
-	return rumor, true
+func (b *buffer) deleteEntry(ID string) {
+	for i, param := range b.queue {
+		if fmt.Sprintf("%s:%d", param.SenderID, param.RumorID) == ID {
+			queue := make([]mrumor.ParamsRumor, 0)
+			queue = append(queue, b.queue[:i]...)
+			queue = append(queue, b.queue[i+1:]...)
+			b.queue = queue
+		}
+	}
+
+	delete(b.senderIDs, ID)
 }

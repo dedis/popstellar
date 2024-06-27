@@ -28,6 +28,7 @@ import (
 	"popstellar/internal/handler/method/publish/hpublish"
 	"popstellar/internal/handler/method/rumor/hrumor"
 	"popstellar/internal/handler/method/rumor/mrumor"
+	"popstellar/internal/handler/method/rumorstate/hrumorstate"
 	"popstellar/internal/handler/method/subscribe/hsubscribe"
 	"popstellar/internal/handler/method/unsubscribe/hunsubscribe"
 	"popstellar/internal/handler/query/hquery"
@@ -40,8 +41,9 @@ import (
 )
 
 const (
-	heartbeatDelay = time.Second * 30
-	rumorDelay     = time.Second * 5
+	heartbeatDelay  = time.Second * 30
+	rumorDelay      = time.Second * 5
+	rumorStateDelay = time.Second * 10
 )
 
 type Subscribers interface {
@@ -57,9 +59,11 @@ type Sockets interface {
 
 type Repository interface {
 	// GetAndIncrementMyRumor return false if the last rumor is empty otherwise returns the new rumor to send and create the next rumor
-	GetAndIncrementMyRumor() (bool, mrumor.Rumor, error)
+	GetAndIncrementMyRumor() (bool, mrumor.ParamsRumor, error)
 
 	GetParamsHeartbeat() (map[string][]string, error)
+
+	GetRumorTimestamp() (mrumor.RumorTimestamp, error)
 }
 
 type JsonRpcHandler interface {
@@ -71,7 +75,11 @@ type GreetServerSender interface {
 }
 
 type RumorSender interface {
-	SendRumor(socket socket.Socket, rumor mrumor.Rumor)
+	SendRumor(socket socket.Socket, rumor mrumor.ParamsRumor)
+}
+
+type RumorStateSender interface {
+	SendRumorState() error
 }
 
 type Hub struct {
@@ -92,6 +100,7 @@ type Hub struct {
 	jsonRpcHandler    JsonRpcHandler
 	greetserverSender GreetServerSender
 	rumorSender       RumorSender
+	rumorStateSender  RumorStateSender
 
 	log zerolog.Logger
 }
@@ -165,7 +174,6 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	channelHandlers[channel.ChirpObject] = hchirp.New(conf, subs, &db, schemaValidator, log)
 	channelHandlers[channel.ReactionObject] = hreaction.New(subs, &db, schemaValidator, log)
 	channelHandlers[channel.CoinObject] = hcoin.New(subs, &db, schemaValidator, log)
-	channelHandlers[channel.FederationObject] = hfederation.New(hubParams, subs, &db, schemaValidator, log)
 
 	// Create the message handler
 	msgHandler := hmessage.New(&db, channelHandlers, log)
@@ -176,23 +184,30 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	// Create the rumor handler
 	rumorHandler := hrumor.New(queries, sockets, &db, msgHandler, log)
 
+	// Create the rumor state handler
+	rumorStateHandler := hrumorstate.New(queries, sockets, &db, log)
+
+	// Create the federation handler
+	federationHandler := hfederation.New(hubParams, subs, sockets, conf, &db, schemaValidator, log)
+
 	// Create the query handler
 	methodHandlers := make(hquery.MethodHandlers)
 	methodHandlers[mquery.MethodCatchUp] = hcatchup.New(&db, log)
 	methodHandlers[mquery.MethodGetMessagesById] = hgetmessagesbyid.New(&db, log)
 	methodHandlers[mquery.MethodGreetServer] = greetserverHandler
 	methodHandlers[mquery.MethodHeartbeat] = hheartbeat.New(queries, &db, log)
-	methodHandlers[mquery.MethodPublish] = hpublish.New(hubParams, &db, msgHandler, log)
+	methodHandlers[mquery.MethodPublish] = hpublish.New(hubParams, &db, msgHandler, federationHandler, log)
 	methodHandlers[mquery.MethodSubscribe] = hsubscribe.New(subs, log)
 	methodHandlers[mquery.MethodUnsubscribe] = hunsubscribe.New(subs, log)
 	methodHandlers[mquery.MethodRumor] = rumorHandler
+	methodHandlers[mquery.MethodRumorState] = rumorStateHandler
 
 	qHandler := hquery.New(methodHandlers, log)
 
 	// Create the answer handler
 	aHandler := hanswer.New(queries, hanswer.Handlers{
 		MessageHandler: msgHandler,
-		RumorSender:    rumorHandler,
+		RumorHandler:   rumorHandler,
 	}, log)
 
 	// Create the json rpc handler
@@ -211,6 +226,7 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 		jsonRpcHandler:    jsonRpcHandler,
 		greetserverSender: greetserverHandler,
 		rumorSender:       rumorHandler,
+		rumorStateSender:  rumorStateHandler,
 		log:               log.With().Str("module", "hub").Logger(),
 	}
 
@@ -222,10 +238,11 @@ func (h *Hub) NotifyNewServer(socket socket.Socket) {
 }
 
 func (h *Hub) Start() {
-	h.wg.Add(3)
+	h.wg.Add(4)
 	go h.runHeartbeat()
 	go h.runRumorSender()
 	go h.runMessageReceiver()
+	go h.runRumorState()
 }
 
 func (h *Hub) Stop() {
@@ -297,14 +314,14 @@ func (h *Hub) runRumorSender() {
 			h.log.Debug().Msgf("sender rumor trigerred")
 			err := h.tryToSendRumor()
 			if err != nil {
-				h.log.Error().Err(err)
+				h.log.Error().Err(err).Msg("")
 			}
 		case <-h.resetRumorSender:
 			h.log.Debug().Msgf("sender rumor reset")
 			ticker.Reset(rumorDelay)
 			err := h.tryToSendRumor()
 			if err != nil {
-				h.log.Error().Err(err)
+				h.log.Error().Err(err).Msg("")
 			}
 		case <-h.stop:
 			return
@@ -313,8 +330,9 @@ func (h *Hub) runRumorSender() {
 }
 
 func (h *Hub) tryToSendRumor() error {
-	ok, r, err := h.db.GetAndIncrementMyRumor()
+	ok, params, err := h.db.GetAndIncrementMyRumor()
 	if err != nil {
+		h.log.Err(err).Msg("")
 		return err
 	}
 	if !ok {
@@ -322,7 +340,7 @@ func (h *Hub) tryToSendRumor() error {
 		return nil
 	}
 
-	h.rumorSender.SendRumor(nil, r)
+	h.rumorSender.SendRumor(nil, params)
 
 	return nil
 }
@@ -340,7 +358,7 @@ func (h *Hub) runHeartbeat() {
 		case <-ticker.C:
 			err := h.sendHeartbeat()
 			if err != nil {
-				h.log.Error().Err(err)
+				h.log.Error().Err(err).Msg("")
 			}
 		case <-h.stop:
 			return
@@ -368,4 +386,25 @@ func (h *Hub) sendHeartbeat() error {
 	h.sockets.SendToAll(buf)
 
 	return nil
+}
+
+func (h *Hub) runRumorState() {
+	ticker := time.NewTicker(rumorStateDelay)
+	defer ticker.Stop()
+	defer h.wg.Done()
+	defer h.log.Info().Msg("stopping rumor state sender")
+
+	h.log.Info().Msg("starting rumor state sender")
+
+	for {
+		select {
+		case <-ticker.C:
+			err := h.rumorStateSender.SendRumorState()
+			if err != nil {
+				h.log.Error().Err(err).Msg("")
+			}
+		case <-h.stop:
+			return
+		}
+	}
 }

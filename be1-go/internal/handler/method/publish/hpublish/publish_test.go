@@ -14,9 +14,10 @@ func Test_Handle(t *testing.T) {
 
 	hub := mocks.NewHub(t)
 	messageHandler := mocks.NewMessageHandler(t)
+	fHandler := mocks.NewFederationHandler(t)
 	db := mocks.NewRepository(t)
 
-	publishHandler := New(hub, db, messageHandler, log)
+	publishHandler := New(hub, db, messageHandler, fHandler, log)
 
 	socket := mocks2.NewFakeSocket("0")
 
@@ -49,7 +50,8 @@ func Test_Handle(t *testing.T) {
 	channelPath = "/root/laoID/federation"
 	publishBuf = generator.NewPublishQuery(t, queryID, channelPath, msg)
 
-	messageHandler.On("Handle", channelPath, msg, false).Return(nil).Once()
+	//messageHandler.On("Handle", channelPath, msg, false).Return(nil).Once()
+	fHandler.On("Handle", channelPath, msg, socket).Return(nil).Once()
 
 	id, err = publishHandler.Handle(socket, publishBuf)
 	require.Nil(t, id)

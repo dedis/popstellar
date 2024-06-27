@@ -13,7 +13,7 @@ type QueryHandler interface {
 }
 
 type AnswerHandler interface {
-	Handle(msg []byte) error
+	Handle(socket socket.Socket, msg []byte) error
 }
 
 type Handler struct {
@@ -49,7 +49,7 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) error {
 		err = h.queryHandler.Handle(socket, msg)
 
 	case mjsonrpc.RPCTypeAnswer:
-		err = h.answerHandler.Handle(msg)
+		err = h.answerHandler.Handle(socket, msg)
 	default:
 		err = errors.NewInvalidMessageFieldError("jsonRPC is of unknown type")
 	}

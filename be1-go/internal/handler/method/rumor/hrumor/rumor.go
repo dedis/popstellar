@@ -3,9 +3,12 @@ package hrumor
 import (
 	"encoding/json"
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"popstellar/internal/errors"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
 	"popstellar/internal/handler/message/mmessage"
 	"popstellar/internal/handler/method/rumor/mrumor"
+	"popstellar/internal/handler/query/mquery"
 	"popstellar/internal/network/socket"
 	"sort"
 )
@@ -14,7 +17,7 @@ const maxRetry = 10
 
 type Queries interface {
 	GetNextID() int
-	AddRumorQuery(id int, query mrumor.Rumor)
+	AddRumor(id int, query mrumor.Rumor) error
 }
 
 type Sockets interface {
@@ -23,13 +26,16 @@ type Sockets interface {
 
 type Repository interface {
 	// CheckRumor returns true if the rumor already exists
-	CheckRumor(senderID string, rumorID int) (valid, alreadyHas bool, err error)
+	CheckRumor(senderID string, rumorID int, timestamp mrumor.RumorTimestamp) (valid, alreadyHas bool, err error)
 
 	// StoreRumor stores the new rumor with its processed and unprocessed messages
-	StoreRumor(rumorID int, sender string, unprocessed map[string][]mmessage.Message, processed []string) error
+	StoreRumor(rumorID int, sender string, timestamp mrumor.RumorTimestamp, unprocessed map[string][]mmessage.Message, processed []string) error
 
 	// GetUnprocessedMessagesByChannel returns all the unprocessed messages by channel
 	GetUnprocessedMessagesByChannel() (map[string][]mmessage.Message, error)
+
+	// GetRumorTimestamp returns the rumor state
+	GetRumorTimestamp() (mrumor.RumorTimestamp, error)
 }
 
 type MessageHandler interface {
@@ -65,8 +71,9 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 
 	h.log.Debug().Msgf("received rumor %s-%d from query %d", rumor.Params.SenderID, rumor.Params.RumorID, rumor.ID)
 
-	ok, alreadyHas, err := h.db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID)
+	ok, alreadyHas, err := h.db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID, rumor.Params.Timestamp)
 	if err != nil {
+		h.log.Error().Err(err)
 		return &rumor.ID, err
 	}
 	if alreadyHas {
@@ -75,7 +82,7 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 	}
 	if !ok {
 		h.log.Debug().Msgf("Trying to insert into buffer rumor %s:%d", rumor.Params.SenderID, rumor.Params.RumorID)
-		err = h.buf.insert(rumor)
+		err = h.buf.insert(rumor.Params)
 		if err != nil {
 			return &rumor.ID, err
 		}
@@ -87,15 +94,16 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 
 	socket.SendResult(rumor.ID, nil, nil)
 
-	return nil, h.handleAndPropagate(socket, rumor)
+	return nil, h.handleAndPropagate(socket, rumor.Params)
 }
 
-func (h *Handler) handleAndPropagate(socket socket.Socket, rumor mrumor.Rumor) error {
-	h.SendRumor(socket, rumor)
+func (h *Handler) handleAndPropagate(socket socket.Socket, params mrumor.ParamsRumor) error {
 
-	processedMsgs := h.tryHandlingMessagesByChannel(rumor.Params.Messages)
+	h.SendRumor(socket, params)
 
-	err := h.db.StoreRumor(rumor.Params.RumorID, rumor.Params.SenderID, rumor.Params.Messages, processedMsgs)
+	processedMsgs := h.tryHandlingMessagesByChannel(params.Messages)
+
+	err := h.db.StoreRumor(params.RumorID, params.SenderID, params.Timestamp, params.Messages, processedMsgs)
 	if err != nil {
 		return err
 	}
@@ -107,12 +115,17 @@ func (h *Handler) handleAndPropagate(socket socket.Socket, rumor mrumor.Rumor) e
 
 	_ = h.tryHandlingMessagesByChannel(messages)
 
-	nextRumor, ok := h.buf.getNextRumor(rumor.Params.SenderID, rumor.Params.RumorID)
+	state, err := h.db.GetRumorTimestamp()
+	if err != nil {
+		return err
+	}
+
+	nextParams, ok := h.buf.getNextRumorParams(state)
 	if !ok {
 		return nil
 	}
 
-	return h.handleNextRumor(nextRumor)
+	return h.handleNextRumor(nextParams)
 }
 
 func (h *Handler) tryHandlingMessagesByChannel(unprocessedMsgsByChannel map[string][]mmessage.Message) []string {
@@ -179,11 +192,25 @@ func (h *Handler) sortChannels(msgsByChannel map[string][]mmessage.Message) []st
 	return sortedChannelIDs
 }
 
-func (h *Handler) SendRumor(socket socket.Socket, rumor mrumor.Rumor) {
-	id := h.queries.GetNextID()
-	rumor.ID = id
+func (h *Handler) SendRumor(socket socket.Socket, rumorParams mrumor.ParamsRumor) {
 
-	h.queries.AddRumorQuery(id, rumor)
+	id := h.queries.GetNextID()
+	rumor := mrumor.Rumor{
+		Base: mquery.Base{
+			JSONRPCBase: mjsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "rumor",
+		},
+		ID:     id,
+		Params: rumorParams,
+	}
+
+	err := h.queries.AddRumor(id, rumor)
+	if err != nil {
+		h.log.Error().Err(err)
+		return
+	}
 
 	buf, err := json.Marshal(rumor)
 	if err != nil {
@@ -195,8 +222,8 @@ func (h *Handler) SendRumor(socket socket.Socket, rumor mrumor.Rumor) {
 	h.sockets.SendRumor(socket, rumor.Params.SenderID, rumor.Params.RumorID, buf)
 }
 
-func (h *Handler) handleNextRumor(rumor mrumor.Rumor) error {
-	ok, _, err := h.db.CheckRumor(rumor.Params.SenderID, rumor.Params.RumorID)
+func (h *Handler) handleNextRumor(params mrumor.ParamsRumor) error {
+	ok, _, err := h.db.CheckRumor(params.SenderID, params.RumorID, params.Timestamp)
 	if err != nil {
 		return err
 	}
@@ -204,5 +231,27 @@ func (h *Handler) handleNextRumor(rumor mrumor.Rumor) error {
 		return nil
 	}
 
-	return h.handleAndPropagate(nil, rumor)
+	return h.handleAndPropagate(nil, params)
+}
+
+func (h *Handler) HandleRumorStateAnswer(socket socket.Socket, params mrumor.ParamsRumor) error {
+	ok, alreadyHas, err := h.db.CheckRumor(params.SenderID, params.RumorID, params.Timestamp)
+	if err != nil {
+		return err
+	}
+	if alreadyHas {
+		return errors.NewDuplicateResourceError("rumor %s:%d already exists", params.SenderID, params.RumorID)
+	}
+
+	if !ok {
+		log.Debug().Msgf("Trying to insert into buffer rumor %s:%d", params.SenderID, params.RumorID)
+		err = h.buf.insert(params)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	return h.handleAndPropagate(socket, params)
 }

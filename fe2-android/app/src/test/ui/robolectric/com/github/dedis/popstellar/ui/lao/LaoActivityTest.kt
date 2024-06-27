@@ -12,6 +12,8 @@ import com.github.dedis.popstellar.testutils.Base64DataUtils
 import com.github.dedis.popstellar.testutils.BundleBuilder
 import com.github.dedis.popstellar.testutils.IntentUtils
 import com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject
+import com.github.dedis.popstellar.utility.GeneralUtils.generateMnemonicWordFromBase64
+import com.github.dedis.popstellar.utility.GeneralUtils.generateUsernameFromBase64
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import java.time.Instant

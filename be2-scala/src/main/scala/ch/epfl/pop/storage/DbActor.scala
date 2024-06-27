@@ -1,7 +1,7 @@
 package ch.epfl.pop.storage
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Status}
-import akka.event.LoggingReceive
+import akka.event.{Logging, LoggingReceive}
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.json.MessageDataProtocol
@@ -42,7 +42,6 @@ final case class DbActor(
     storage.close()
     super.postStop()
   }
-
   private val duration: FiniteDuration = Duration(1, TimeUnit.SECONDS)
   /* --------------- Functions handling messages DbActor may receive --------------- */
 
@@ -89,7 +88,7 @@ final case class DbActor(
         storage.write((storage.DATA_KEY + storage.SETUP_ELECTION_KEY + channel.toString, message.message_id.toString()))
         writeAndPropagate(mainLaoChan, message)
 
-      case _ => log.info("Error: Trying to write an ElectionSetup message on an invalid channel")
+      case _ => log.error(s"Trying to write an ElectionSetup message on an invalid channel ${channel.channel}. Not writing message ${message.message_id} in memory")
     }
   }
 
@@ -105,7 +104,7 @@ final case class DbActor(
         }
 
       case _ =>
-        log.info("Error: Trying to read an ElectionSetup message from an invalid channel")
+        log.error(s"Trying to read an ElectionSetup message from an invalid channel ${channel.channel}.")
         None
     }
   }
@@ -121,7 +120,7 @@ final case class DbActor(
             val builder = registry.getBuilder(_object, action).get
             Some(msg.copy(decodedData = Some(builder(data))))
           case Failure(ex) =>
-            log.error(s"Unable to decode message data: $ex")
+            log.error(s"Unable to parse header. Therefore unable to decode message data: $ex")
             Some(msg)
         }
       case Success(None) => None
@@ -217,7 +216,7 @@ final case class DbActor(
 
     }
 
-    val noCreateLAOMessageError = "Critical error encountered: no create_lao message was found in the db"
+    val noCreateLAOMessageError = "No create_lao message was found in the db."
 
     val laoID = channel.decodeChannelLaoId match {
       case Some(id) => id
@@ -233,7 +232,7 @@ final case class DbActor(
 
       case None =>
         if (reactionsChannel.isMainLaoChannel) {
-          log.error(noCreateLAOMessageError)
+          log.error(s"$noCreateLAOMessageError")
         }
         buildCatchupList(reactionsChannelData.messages, Nil, reactionsChannel)
     }
@@ -253,7 +252,7 @@ final case class DbActor(
 
       case None =>
         if (reactionsChannel.isMainLaoChannel) {
-          log.error(noCreateLAOMessageError)
+          log.error(s"$noCreateLAOMessageError")
         }
         buildCatchupList(reactionsChannelDataIDs, Nil, reactionsChannel)
     }
@@ -414,7 +413,7 @@ final case class DbActor(
           Try(read(fromChannel, head)).recover(_ => None) match {
             case Success(Some(msg)) => buildCatchupList(tail, msg :: acc, fromChannel)
             case _ =>
-              log.error(s"/!\\ Critical error encountered: message_id '$head' is listed in channel '$fromChannel' but not stored in db")
+              log.error(s"message_id '$head' is listed in channel '$fromChannel' but not stored in db. This entry will be ignored.")
               buildCatchupList(tail, acc, fromChannel)
           }
       }
@@ -463,7 +462,7 @@ final case class DbActor(
 
         case None =>
           if (channel.isMainLaoChannel) {
-            log.error("Critical error encountered: no create_lao message was found in the db")
+            log.error("No create_lao message was found in the db")
           }
           buildCatchupList(channelData.messages, Nil, channel)
       }
@@ -486,7 +485,7 @@ final case class DbActor(
           Try(read(channelToPage, head)).recover(_ => None) match {
             case Success(Some(msg)) => buildPagedCatchupList(tail, msg :: acc, channelToPage)
             case _ =>
-              log.error(s"/!\\ Critical error encountered: message_id '$head' is listed in channel '$channelToPage' but not stored in db")
+              log.error(s"Critical error encountered: message_id '$head' is listed in channel '$channelToPage' but not stored in db. This entry will be ignored.")
               buildPagedCatchupList(tail, acc, channelToPage)
           }
       }
@@ -682,7 +681,7 @@ final case class DbActor(
       case Success(Some(msg)) =>
         msg.addWitnessSignature(WitnessSignaturePair(msg.sender, signature))
       case Success(None) =>
-        log.error(s"Actor $self (db) encountered a problem while reading the message having as id '$messageId'")
+        log.error(s"Encountered a problem while reading the message having as id '$messageId'. Signature $signature was not added to message $messageId.")
         throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Could not read message of message id $messageId")
       case Failure(ex) => throw ex
     }
@@ -693,7 +692,7 @@ final case class DbActor(
     channel.decodeChannelLaoId match {
       case Some(data) => storage.DATA_KEY + s"${Channel.ROOT_CHANNEL_PREFIX}$data$LAO_DATA_LOCATION"
       case None =>
-        log.error(s"Actor $self (db) encountered a problem while decoding LAO channel from '$channel'")
+        log.error(s"Encountered a problem while decoding LAO channel from '$channel'. LAO data key for channel ${channel.channel} was not generated.")
         throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Could not extract the LAO id for channel $channel")
     }
   }
@@ -936,105 +935,105 @@ final case class DbActor(
 
   override def receive: Receive = LoggingReceive {
     case Write(channel, message) =>
-      log.info(s"Actor $self (db) received a WRITE request on channel '$channel'")
+      log.info(s"Received a WRITE request on channel '$channel' for message ${message.message_id}")
       Try(write(channel, message)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
     case Read(channel, messageId) =>
-      log.info(s"Actor $self (db) received a READ request for message_id '$messageId' from channel '$channel'")
+      log.info(s"Received a READ request for message_id '$messageId' from channel '$channel'")
       Try(read(channel, messageId)) match {
         case Success(opt) => sender() ! DbActorReadAck(opt)
         case failure      => sender() ! failure.recover(Status.Failure(_))
       }
 
     case ReadChannelData(channel) =>
-      log.info(s"Actor $self (db) received a ReadChannelData request from channel '$channel'")
+      log.info(s"Received a ReadChannelData request for channel '$channel'")
       Try(readChannelData(channel)) match {
         case Success(channelData) => sender() ! DbActorReadChannelDataAck(channelData)
         case failure              => sender() ! failure.recover(Status.Failure(_))
       }
 
     case ReadElectionData(laoId, electionId) =>
-      log.info(s"Actor $self (db) received a ReadElectionData request for election '$electionId'")
+      log.info(s"Received a ReadElectionData request for election '$electionId' in lao_id $laoId")
       Try(readElectionData(laoId, electionId)) match {
         case Success(electionData) => sender() ! DbActorReadElectionDataAck(electionData)
         case failure               => sender() ! failure.recover(Status.Failure(_))
       }
 
     case ReadLaoData(channel) =>
-      log.info(s"Actor $self (db) received a ReadLaoData request")
+      log.info(s"Received a ReadLaoData request for channel ${channel.channel}")
       Try(readLaoData(channel)) match {
         case Success(laoData) => sender() ! DbActorReadLaoDataAck(laoData)
         case failure          => sender() ! failure.recover(Status.Failure(_))
       }
 
     case WriteLaoData(channel, message, address) =>
-      log.info(s"Actor $self (db) received a WriteLaoData request for channel $channel")
+      log.info(s"Received a WriteLaoData request for channel $channel and message_id ${message.message_id}")
       Try(writeLaoData(channel, message, address)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
     case WriteCreateLaoMessage(channel, message) =>
-      log.info(s"Actor $self (db) received a WriteCreateLaoMessage request")
+      log.info(s"Received a WriteCreateLaoMessage request for channel ${channel.channel} and message_id ${message.message_id}")
       Try(writeCreateLao(channel, message)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
     case WriteSetupElectionMessage(channel, message) =>
-      log.info(s"Actor $self (db) received a WriteSetupElectionMessage request")
+      log.info(s"Received a WriteSetupElectionMessage request on channel ${channel.channel} and message_id ${message.message_id}")
       Try(writeSetupElectionMessage(channel, message)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
     case ReadSetupElectionMessage(channel) =>
-      log.info(s"Actor $self (db) received a ReadSetupElectionMessage request")
+      log.info(s"Received a ReadSetupElectionMessage request on channel ${channel.channel}")
       Try(readSetupElectionMessage(channel)) match {
         case Success(msg) => sender() ! DbActorReadAck(msg)
         case failure      => sender() ! failure.recover(Status.Failure(_))
       }
 
     case Catchup(channel) =>
-      log.info(s"Actor $self (db) received a CATCHUP request for channel '$channel'")
+      log.info(s"Received a CATCHUP request for channel '$channel'")
       Try(catchupChannel(channel)) match {
         case Success(messages) => sender() ! DbActorCatchupAck(messages)
         case failure           => sender() ! failure.recover(Status.Failure(_))
       }
 
     case PagedCatchup(channel, numberOfMessages, beforeMessageID) =>
-      log.info(s"Actor $self (db) received a PagedCatchup request for channel '$channel' for '$numberOfMessages' messages before message ID: '$beforeMessageID")
+      log.info(s"Received a PagedCatchup request for channel '$channel' for '$numberOfMessages' messages before message ID: '$beforeMessageID")
       Try(pagedCatchupChannel(channel, numberOfMessages, beforeMessageID)) match {
         case Success(messages) => sender() ! DbActorCatchupAck(messages)
         case failure           => sender() ! failure.recover(Status.Failure(_))
       }
 
     case GetAllChannels() =>
-      log.info(s"Actor $self (db) receveid a GetAllChannels request")
+      log.info(s"Received a GetAllChannels request")
       Try(getAllChannels) match {
         case Success(setOfChannels) => sender() ! DbActorGetAllChannelsAck(setOfChannels)
         case failure                => sender() ! failure.recover(Status.Failure(_))
       }
 
     case WriteAndPropagate(channel, message) =>
-      log.info(s"Actor $self (db) received a WriteAndPropagate request on channel '$channel'")
+      log.info(s"Received a WriteAndPropagate request on channel '$channel' for message_id ${message.message_id}")
       Try(writeAndPropagate(channel, message)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
     case CreateChannel(channel, objectType) =>
-      log.info(s"Actor $self (db) received an CreateChannel request for channel '$channel' of type '$objectType'")
+      log.info(s"Received an CreateChannel request for channel '$channel' of type '$objectType'")
       Try(createChannel(channel, objectType)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
     case CreateElectionData(laoId, id, keyPair) =>
-      log.info(s"Actor $self (db) received an CreateElection request for election '$id'" +
+      log.info(s"Received an CreateElection request for election '$id'" +
         s"\n\tprivate key = ${keyPair.privateKey.toString}" +
         s"\n\tpublic key = ${keyPair.publicKey.toString}")
       Try(createElectionData(laoId, id, keyPair)) match {
@@ -1043,14 +1042,14 @@ final case class DbActor(
       }
 
     case CreateChannelsFromList(list) =>
-      log.info(s"Actor $self (db) received a CreateChannelsFromList request for list $list")
+      log.info(s"Received a CreateChannelsFromList request for list $list")
       Try(createChannels(list)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
     case ChannelExists(channel) =>
-      log.info(s"Actor $self (db) received an ChannelExists request for channel '$channel'")
+      log.info(s"Received an ChannelExists request for channel '$channel'")
       if (checkChannelExistence(channel)) {
         sender() ! DbActorAck()
       } else {
@@ -1058,7 +1057,7 @@ final case class DbActor(
       }
 
     case AssertChannelMissing(channel) =>
-      log.info(s"Actor $self (db) received an AssertChannelMissing request for channel '$channel'")
+      log.info(s"Received an AssertChannelMissing request for channel '$channel'")
       if (checkChannelExistence(channel)) {
         sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"channel '$channel' already exists in db"))
       } else {
@@ -1066,35 +1065,35 @@ final case class DbActor(
       }
 
     case AddWitnessSignature(channel, messageId, signature) =>
-      log.info(s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'")
+      log.info(s"Received an AddWitnessSignature request for message_id '$messageId' on channel ${channel.channel} with signature ${signature.toString}")
       Try(addWitnessSignature(channel, messageId, signature)) match {
         case Success(witnessMessage) => sender() ! DbActorAddWitnessSignatureAck(witnessMessage)
         case failure                 => sender() ! failure.recover(Status.Failure(_))
       }
 
     case ReadRollCallData(laoId) =>
-      log.info(s"Actor $self (db) received an ReadRollCallData request for RollCall '$laoId'")
+      log.info(s"Received an ReadRollCallData request for RollCall '$laoId'")
       Try(readRollCallData(laoId)) match {
         case Success(rollcallData) => sender() ! DbActorReadRollCallDataAck(rollcallData)
         case failure               => sender() ! failure.recover(Status.Failure(_))
       }
 
     case WriteRollCallData(laoId, message) =>
-      log.info(s"Actor $self (db) received a WriteRollCallData request for RollCall id $laoId")
+      log.info(s"Received a WriteRollCallData request for RollCall id $laoId and message_id ${message.message_id}")
       Try(writeRollCallData(laoId, message)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
     case WriteUserAuthenticated(popToken, clientId, user) =>
-      log.info(s"Actor $self (db) received a WriteUserAuthenticated request for user $user, id $popToken and clientId $clientId")
+      log.info(s"Received a WriteUserAuthenticated request for user $user, id $popToken and clientId $clientId")
       Try(storage.write(generateAuthenticatedKey(popToken, clientId) -> user.base64Data.toString())) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
     case ReadUserAuthenticated(popToken, clientId) =>
-      log.info(s"Actor $self (db) received a ReadUserAuthenticated request for pop token $popToken and clientId $clientId")
+      log.info(s"Received a ReadUserAuthenticated request for pop token $popToken and clientId $clientId")
       Try(storage.read(generateAuthenticatedKey(popToken, clientId))) match {
         case Success(Some(id)) => sender() ! DbActorReadUserAuthenticationAck(Some(PublicKey(Base64Data(id))))
         case Success(None)     => sender() ! DbActorReadUserAuthenticationAck(None)
@@ -1102,56 +1101,56 @@ final case class DbActor(
       }
 
     case ReadServerPublicKey() =>
-      log.info(s"Actor $self (db) received a ReadServerPublicKey request")
+      log.info(s"Received a ReadServerPublicKey request")
       Try(readServerPublicKey()) match {
         case Success(publicKey) => sender() ! DbActorReadServerPublicKeyAck(publicKey)
         case failure            => sender() ! failure.recover(Status.Failure(_))
       }
 
     case ReadServerPrivateKey() =>
-      log.info(s"Actor $self (db) received a ReadServerPrivateKey request")
+      log.info(s"Received a ReadServerPrivateKey request")
       Try(readServerPrivateKey()) match {
         case Success(privateKey) => sender() ! DbActorReadServerPrivateKeyAck(privateKey)
         case failure             => sender() ! failure.recover(Status.Failure(_))
       }
 
     case GenerateHeartbeat() =>
-      log.info(s"Actor $self (db) received a GenerateHeartbeat request")
+      log.info(s"Received a GenerateHeartbeat request")
       Try(generateHeartbeat()) match {
         case Success(heartbeat) => sender() ! DbActorGenerateHeartbeatAck(heartbeat)
         case failure            => sender() ! failure.recover(Status.Failure(_))
       }
 
     case WriteRumor(rumor) =>
-      log.info(s"Actor $self (db) received a WriteRumor request")
+      log.info(s"Received a WriteRumor request")
       Try(writeRumor(rumor)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
     case ReadRumor(desiredRumor) =>
-      log.info(s"Actor $self (db) received a ReadRumor request")
+      log.info(s"Received a ReadRumor request for rumor $desiredRumor")
       Try(readRumor(desiredRumor)) match {
         case Success(foundRumor) => sender() ! DbActorReadRumor(foundRumor)
         case failure             => sender() ! failure.recover(Status.Failure(_))
       }
 
     case ReadRumorData(senderPk) =>
-      log.info(s"Actor $self (db) received a ReadRumorData request")
+      log.info(s"Received a ReadRumorData request for sender_pk $senderPk")
       Try(readRumorData(senderPk)) match {
         case Success(foundRumorIds) => sender() ! DbActorReadRumorData(foundRumorIds)
         case failure                => sender() ! failure.recover(Status.Failure(_))
       }
 
     case GenerateRumorStateAns(rumorState: RumorState) =>
-      log.info(s"Actor $self (db) received a GenerateRumorStateAns request")
+      log.info(s"Received a GenerateRumorStateAns request based on rumor_state ${rumorState.state}")
       Try(generateRumorStateAns(rumorState)) match {
         case Success(rumorList) => sender() ! DbActorGenerateRumorStateAns(rumorList)
         case failure            => sender() ! failure.recover(Status.Failure(_))
       }
 
     case GetRumorState() =>
-      log.info(s"Actor $self (db) received a GetRumorState request")
+      log.info(s"Received a GetRumorState request")
       Try(getRumorState) match
         case Success(rumorState) => sender() ! DbActorGetRumorStateAck(rumorState)
         case failure             => sender() ! failure.recover(Status.Failure(_))
@@ -1223,7 +1222,7 @@ final case class DbActor(
       }
 
     case m =>
-      log.info(s"Actor $self (db) received an unknown message")
+      log.warning(s"Received an unknown message $m")
       sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"database actor received a message '$m' that it could not recognize"))
   }
 }

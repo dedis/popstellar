@@ -17,4 +17,15 @@ package object graph {
       case Left(pipelineError) => pipelineError.toString
     }
   }
+
+  def compactPrinter(graphMessage: GraphMessage): String = {
+    graphMessage match {
+      case Right(jsonRpcMessage: JsonRpcMessage) =>
+        jsonRpcMessage match {
+          case jsonRpcRequest: JsonRpcRequest   => HighLevelProtocol.jsonRpcRequestFormat.write(jsonRpcRequest).compactPrint
+          case jsonRpcResponse: JsonRpcResponse => HighLevelProtocol.jsonRpcResponseFormat.write(jsonRpcResponse).compactPrint
+        }
+      case Left(pipelineError) => pipelineError.toString
+    }
+  }
 }
