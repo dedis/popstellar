@@ -1,7 +1,7 @@
 package sqlite
 
 import (
-	"popstellar/internal/handler/message"
+	"popstellar/internal/handler/channel"
 )
 
 const (
@@ -9,31 +9,27 @@ const (
 )
 
 var channelTypeToID = map[string]string{
-	message.RootType:         "1",
-	message.LaoType:          "2",
-	message.ElectionType:     "3",
-	message.ChirpType:        "4",
-	message.ReactionType:     "5",
-	message.ConsensusType:    "6",
-	message.PopChaType:       "7",
-	message.CoinType:         "8",
-	message.AuthType:         "9",
-	message.GeneralChirpType: "10",
-	message.FederationType:   "11",
+	channel.RootObject:       "1",
+	channel.LAOObject:        "2",
+	channel.ElectionObject:   "3",
+	channel.ChirpObject:      "4",
+	channel.ReactionObject:   "5",
+	channel.ConsensusObject:  "6",
+	channel.CoinObject:       "7",
+	channel.AuthObject:       "8",
+	channel.FederationObject: "9",
 }
 
 var channelTypes = []string{
-	message.RootType,
-	message.LaoType,
-	message.ElectionType,
-	message.ChirpType,
-	message.ReactionType,
-	message.ConsensusType,
-	message.PopChaType,
-	message.CoinType,
-	message.AuthType,
-	message.GeneralChirpType,
-	message.FederationType,
+	channel.RootObject,
+	channel.LAOObject,
+	channel.ElectionObject,
+	channel.ChirpObject,
+	channel.ReactionObject,
+	channel.ConsensusObject,
+	channel.CoinObject,
+	channel.AuthObject,
+	channel.FederationObject,
 }
 
 const foreignKeyOff = `PRAGMA foreign_keys = OFF;`
@@ -87,7 +83,8 @@ const (
 	createRumor = `
 	CREATE TABLE IF NOT EXISTS rumor ( 
     			ID INTEGER, 
-    			sender TEXT, 
+    			sender TEXT,
+    			timestamp TEXT,
     			PRIMARY KEY (ID, sender) 
                 )`
 
@@ -128,7 +125,7 @@ const (
 	insertChannelType              = `INSERT INTO channelType (type) VALUES (?)`
 	insertKeys                     = `INSERT INTO key (channelPath, publicKey, secretKey) VALUES (?, ?, ?)`
 	insertPublicKey                = `INSERT INTO key (channelPath, publicKey) VALUES (?, ?)`
-	insertRumor                    = `INSERT INTO rumor (ID, sender) VALUES (?, ?)`
+	insertRumor                    = `INSERT INTO rumor (ID, sender, timestamp) VALUES (?, ?, ?)`
 	insertUnprocessedMessage       = `INSERT INTO unprocessedMessage (messageID, channelPath, message) VALUES (?, ?, ?)`
 	insertUnprocessedMessageRumor  = `INSERT INTO unprocessedMessageRumor (messageID, rumorID, sender) VALUES (?, ?, ?)`
 	insertMessageRumor             = `INSERT INTO messageRumor (messageID, rumorID, sender) VALUES (?, ?, ?)`
@@ -144,7 +141,7 @@ const (
             )
     LIMIT 1`
 
-	insertFirstRumor = `INSERT OR IGNORE INTO rumor (ID, sender) SELECT ?, publicKey FROM key WHERE channelPath = ?`
+	insertFirstRumor = `INSERT OR IGNORE INTO rumor (ID, sender, timestamp) VALUES (?, ?, ?)`
 )
 
 const (
@@ -165,7 +162,7 @@ const (
     FROM message 
     JOIN channelMessage ON message.messageID = channelMessage.messageID
     WHERE channelMessage.channelPath = ?
-    ORDER BY message.storedTime DESC`
+    ORDER BY message.storedTime`
 
 	selectChannelPath = `SELECT channelPath FROM channel WHERE channelPath = ?`
 
@@ -214,7 +211,6 @@ const (
         WHERE channelPath = ?
     )
 `
-
 	selectLastElectionMessage = `
     SELECT json_extract(messageData, '$.action')
     FROM message
@@ -319,8 +315,6 @@ const (
     FROM message 
     WHERE messageID = ?`
 
-	selectAnyRumor = `SELECT ID FROM rumor WHERE sender = ?`
-
 	selectAllUnprocessedMessages = `SELECT channelPath, message FROM unprocessedMessage`
 
 	selectCountMyRumor = `SELECT count(*) FROM messageRumor WHERE rumorID = (SELECT max(ID) FROM rumor WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?))`
@@ -335,8 +329,20 @@ const (
 		       WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?) AND rumorID = (SELECT max(ID) FROM rumor 
 		                                       WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?)))`
 
+	selectRumorMessages = `
+	SELECT channelPath, message
+	FROM message JOIN channelMessage ON message.messageID = channelMessage.messageID
+	WHERE isBaseChannel = ? AND message.messageID IN
+	                            		(SELECT messageID
+	                            		 FROM messageRumor
+	                            		 WHERE sender = ?
+	                            		 AND rumorID = ?)`
+
+	selectAllRumors = `SELECT ID, sender, timestamp FROM rumor `
+
 	selectMyRumorInfos = `SELECT max(ID), sender FROM rumor WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?)`
-	selectLastRumor    = `SELECT max(ID) FROM rumor WHERE sender = ?`
+
+	selectRumorState = `SELECT max(ID), sender FROM rumor GROUP BY sender`
 
 	selectValidFederationChallenges = `
 	SELECT messageData
@@ -382,4 +388,8 @@ const (
 const (
 	deleteUnprocessedMessage      = `DELETE FROM unprocessedMessage WHERE messageID = ?`
 	deleteUnprocessedMessageRumor = `DELETE FROM unprocessedMessageRumor WHERE messageID = ?`
+)
+
+const (
+	updateRumorTimestamp = `UPDATE rumor SET timestamp = ? WHERE ID = ? AND sender = ?`
 )

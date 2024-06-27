@@ -2,11 +2,15 @@ package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.objects._
+import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.federation.{FederationChallenge, FederationExpect, FederationInit, FederationResult}
+import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, PublishSubscribe}
+import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.Read
 
+import java.time.Instant
 import scala.concurrent.Await
 import scala.util.Success
 import scala.util.matching.Regex
@@ -201,5 +205,87 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     */
   final def validateWitnessSignatures(witnessesKeyPairs: List[WitnessSignaturePair], data: Hash): Boolean =
     witnessesKeyPairs.forall(wsp => wsp.verify(data))
+
+  private def validateChallenge(rpcMessage: JsonRpcRequest, actualChallenge: FederationChallenge, expectedChallenge: FederationChallenge, error: PipelineError): GraphMessage = {
+    if (actualChallenge.value.equals(expectedChallenge.value) && actualChallenge.validUntil == expectedChallenge.validUntil)
+      Right(rpcMessage)
+    else
+      Left(error)
+  }
+
+  private def extractData(rpcMessage: JsonRpcRequest, message: Message): (FederationChallenge, Channel, Hash) = {
+    val challenge = FederationChallenge.buildFromJson(message.data.decodeToString())
+    val channel = rpcMessage.getParamsChannel
+    val laoId = rpcMessage.extractLaoId
+    (challenge, channel, laoId)
+  }
+
+  /** Checks if the challenge in the federationExpect message is the same challenge stored in the db
+    * @param rpcMessage
+    *   the rpcMessage to validate
+    * @param federationExpect
+    *   the federationExpect from which we will extract the challenge
+    * @param dbActor
+    *   the dbActor to ask
+    * @param error
+    *   the error to forward in case of invalid challenge
+    * @return
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
+    */
+  final def checkExpectChallenge(rpcMessage: JsonRpcRequest, federationExpect: FederationExpect, dbActor: AskableActorRef, error: PipelineError): GraphMessage = {
+    val (challengeExpect, channel, laoId) = extractData(rpcMessage, federationExpect.challenge)
+    val ask = dbActor ? DbActor.ReadFederationChallenge(channel, laoId)
+    Await.ready(ask, duration).value.get match {
+      case Success(DbActor.DbActorReadAck(Some(message))) =>
+        val challenge = FederationChallenge.buildFromJson(message.data.decodeToString())
+        validateChallenge(rpcMessage, challenge, challengeExpect, error)
+
+      case Success(DbActor.DbActorReadAck(None)) => Left(error)
+      case _                                     => Left(error)
+    }
+  }
+
+  /** Checks if the challenge in the federationResult message matches the challenge in the federationInit message
+    * @param rpcMessage
+    *   rpcMessage to validate
+    * @param federationResult
+    *   the federationResult from which we will extract the challenge
+    * @param dbActor
+    *   the dbActor to ask
+    * @param error
+    *   the error to forward in case of invalid challenge
+    * @return
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
+    */
+  final def checkInitChallenge(rpcMessage: JsonRpcRequest, federationResult: FederationResult, dbActor: AskableActorRef, error: PipelineError): GraphMessage = {
+    val (challengeResult, channel, laoId) = extractData(rpcMessage, federationResult.challenge)
+    val ask = dbActor ? DbActor.ReadFederationInit(channel, laoId)
+    Await.ready(ask, duration).value.get match {
+      case Success(DbActor.DbActorReadAck(Some(message))) =>
+        val init = FederationInit.buildFromJson(message.data.decodeToString())
+        val challenge = FederationChallenge.buildFromJson(init.challenge.data.decodeToString())
+        validateChallenge(rpcMessage, challenge, challengeResult, error)
+
+      case Success(DbActor.DbActorReadAck(None)) => Left(error)
+      case _                                     => Left(error)
+    }
+  }
+
+  /** Checks if the challenge is still valid and can be used
+    * @param rpcMessage
+    *   rpcMessage to validate
+    * @param validUntil
+    *   the timestamp to verify
+    * @param error
+    *   the error to forward in case of invalid challenge
+    * @return
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
+    */
+  final def checkValidUntil(rpcMessage: JsonRpcRequest, validUntil: Timestamp, error: PipelineError): GraphMessage = {
+    if (Instant.now().getEpochSecond < validUntil.time)
+      Right(rpcMessage)
+    else
+      Left(error)
+  }
 
 }

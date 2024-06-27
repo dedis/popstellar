@@ -59,6 +59,7 @@ final case class ConnectionMediator(
       // Tell monitor to stop scheduling heartbeats since there is no one to receive them
       if (serverMap.isEmpty)
         monitorRef ! Monitor.NoServerConnected
+        gossipManagerRef ! Monitor.NoServerConnected
 
     case ConnectionMediator.ReadPeersClientAddress() =>
       if (serverMap.isEmpty)
@@ -69,6 +70,7 @@ final case class ConnectionMediator(
     case ConnectionMediator.NewServerConnected(serverRef, greetServer) =>
       if (serverMap.isEmpty) {
         monitorRef ! Monitor.AtLeastOneServerConnected
+        gossipManagerRef ! Monitor.AtLeastOneServerConnected
       }
       serverMap += ((serverRef, greetServer))
 
@@ -95,6 +97,16 @@ final case class ConnectionMediator(
           val randomKey = serverRefs(Random.nextInt(serverRefs.size))
           sender() ! ConnectionMediator.GetRandomPeerAck(randomKey, serverMap(randomKey))
 
+    case ConnectionMediator.GetFederationServer(serverAddress) =>
+      if (serverMap.isEmpty)
+        sender() ! ConnectionMediator.NoPeer()
+      else
+        val serverNeeded = serverMap.filter((_, greetServer) => greetServer.clientAddress.equals(serverAddress))
+        if (serverNeeded.isEmpty)
+          sender() ! ConnectionMediator.NoPeer()
+        else
+          sender() ! ConnectionMediator.GetFederationServerAck(serverNeeded.keys.head)
+
   }
 }
 
@@ -110,9 +122,11 @@ object ConnectionMediator {
   final case class Ping() extends Event
   final case class ReadPeersClientAddress() extends Event
   final case class GetRandomPeer(excludes: Set[ActorRef] = Set.empty) extends Event
+  final case class GetFederationServer(serverAddress: String) extends Event
 
   sealed trait ConnectionMediatorMessage
   final case class ReadPeersClientAddressAck(list: List[String]) extends ConnectionMediatorMessage
   final case class GetRandomPeerAck(serverRef: ActorRef, greetServer: GreetServer) extends ConnectionMediatorMessage
   final case class NoPeer() extends ConnectionMediatorMessage
+  final case class GetFederationServerAck(federationServerRef: ActorRef) extends ConnectionMediatorMessage
 }

@@ -2,7 +2,7 @@ package ch.epfl.pop.json
 
 import ch.epfl.pop.IOHelper
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.{GreetServer, ParamsWithChannel, ParamsWithMap, ParamsWithMessage, Rumor, RumorState}
+import ch.epfl.pop.model.network.method.{GreetServer, ParamsWithChannel, ParamsWithMap, ParamsWithMessage, Rumor, RumorState, PagedCatchup}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultMessage, ResultObject, ResultRumor}
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
@@ -218,6 +218,21 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     catchupFromJson.id should equal(id)
   }
 
+  test("parse correctly catchup for top chirps") {
+
+    val chan1 = Channel("/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/top_chirps")
+    val id = Some(5)
+
+    val catchupJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.catchup, new ParamsWithChannel(chan1), id))
+    val catchupFromJson = JsonRpcRequest.buildFromJson(catchupJsValue.prettyPrint)
+
+    // Test
+    catchupFromJson.jsonrpc should equal(RpcValidator.JSON_RPC_VERSION)
+    catchupFromJson.method should equal(MethodType.catchup)
+    catchupFromJson.getParams.asInstanceOf[ParamsWithChannel].channel should equal(chan1)
+    catchupFromJson.id should equal(id)
+  }
+
   test("parse correctly broadcast") {
 
     // Setup
@@ -257,7 +272,7 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
 
     val rpcId: Option[Int] = Some(1)
 
-    val rumorJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.rumor, new Rumor(serverPk, rumorId, messages), rpcId))
+    val rumorJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.rumor, Rumor(serverPk, rumorId, messages), rpcId))
     val rumorFromJson = JsonRpcRequest.buildFromJson(rumorJsValue.prettyPrint)
 
     // Test
@@ -300,6 +315,44 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
       PublicKey(Base64Data("CfG2ByLhtLJH--T2BL9hZ6eGm11tpkE-5KuvysSCY0I=")) -> 1,
       PublicKey(Base64Data("r8cG9HyJ1FGBke_5IblCdH19mvy39MvLFSArVmY3FpY=")) -> 10
     )
+  }
+
+  test("parse correctly pagedCatchup message") {
+    val chan1 = Channel("/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=")
+    val rpcId = Some(5)
+    val numberOfMessages: Int = 10
+    val beforeMessageId: Option[String] = Some("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE=")
+
+    val pagedCatchupJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.paged_catchup, new PagedCatchup(chan1, numberOfMessages, beforeMessageId), rpcId))
+    val pagedCatchupFromJson = JsonRpcRequest.buildFromJson(pagedCatchupJsValue.prettyPrint)
+
+    // Test
+    pagedCatchupFromJson.jsonrpc should equal(RpcValidator.JSON_RPC_VERSION)
+    pagedCatchupFromJson.method should equal(MethodType.paged_catchup)
+    pagedCatchupFromJson.getParams.asInstanceOf[PagedCatchup].channel should equal(chan1)
+    pagedCatchupFromJson.getParams.asInstanceOf[PagedCatchup].numberOfMessages should equal(numberOfMessages)
+    pagedCatchupFromJson.getParams.asInstanceOf[PagedCatchup].beforeMessageID should equal(beforeMessageId)
+    pagedCatchupFromJson.id should equal(rpcId)
+  }
+
+  test("parse jsonRPC correctly to pagedCatchup") {
+    val jsonPagedCatchup = IOHelper.readJsonFromPath("src/test/scala/util/examples/json/paged_catchup/paged_catchup.json")
+    val jsonRpcRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(jsonPagedCatchup)
+    val pagedCatchup: PagedCatchup = jsonRpcRequest.getParams.asInstanceOf[PagedCatchup]
+
+    pagedCatchup.channel should equal(Channel("/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/social/chirps/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw="))
+    pagedCatchup.numberOfMessages should equal(10)
+    pagedCatchup.beforeMessageID should equal(Some("DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="))
+  }
+
+  test("parse pagedCatchup jsonRPC fails on missing channel") {
+    val jsonPagedCatchup = IOHelper.readJsonFromPath("src/test/scala/util/examples/json/paged_catchup/wrong_paged_catchup_missing_channel.json")
+    an[IllegalArgumentException] should be thrownBy JsonRpcRequest.buildFromJson(jsonPagedCatchup)
+  }
+
+  test("parse pagedCatchup jsonRPC fails on missing number of messages") {
+    val jsonPagedCatchup = IOHelper.readJsonFromPath("src/test/scala/util/examples/json/paged_catchup/wrong_paged_catchup_missing_number_of_messages.json")
+    an[IllegalArgumentException] should be thrownBy JsonRpcRequest.buildFromJson(jsonPagedCatchup)
   }
 
   test("parse correctly get_messages_by_id answers") {

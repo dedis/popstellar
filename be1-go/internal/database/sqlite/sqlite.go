@@ -9,7 +9,7 @@ import (
 	_ "modernc.org/sqlite"
 	"popstellar/internal/crypto"
 	poperrors "popstellar/internal/errors"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/handler/message/mmessage"
 	"strings"
 	"time"
 )
@@ -88,7 +88,7 @@ func (s *SQLite) insertMessageHelper(tx *sql.Tx, messageID string, msg, messageD
 	return nil
 }
 
-func (s *SQLite) StoreMessageAndData(channelPath string, msg message.Message) error {
+func (s *SQLite) StoreMessageAndData(channelPath string, msg mmessage.Message) error {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
@@ -126,81 +126,6 @@ func (s *SQLite) StoreMessageAndData(channelPath string, msg message.Message) er
 	return nil
 }
 
-// GetMessagesByID returns a set of messages by their IDs.
-func (s *SQLite) GetMessagesByID(IDs []string) (map[string]message.Message, error) {
-	dbLock.Lock()
-	defer dbLock.Unlock()
-
-	if len(IDs) == 0 {
-		return make(map[string]message.Message), nil
-	}
-
-	IDsInterface := make([]interface{}, len(IDs))
-	for i, v := range IDs {
-		IDsInterface[i] = v
-	}
-	rows, err := s.database.Query("SELECT messageID, message "+
-		"FROM message "+
-		"WHERE messageID IN ("+strings.Repeat("?,", len(IDs)-1)+"?"+")", IDsInterface...)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return nil, poperrors.NewDatabaseSelectErrorMsg("messages: %v", err)
-	} else if errors.Is(err, sql.ErrNoRows) {
-		return make(map[string]message.Message), nil
-	}
-	defer rows.Close()
-
-	messagesByID := make(map[string]message.Message, len(IDs))
-	for rows.Next() {
-		var messageID string
-		var messageByte []byte
-		if err = rows.Scan(&messageID, &messageByte); err != nil {
-			return nil, poperrors.NewDatabaseScanErrorMsg(err.Error())
-		}
-
-		var msg message.Message
-		if err = json.Unmarshal(messageByte, &msg); err != nil {
-			return nil, poperrors.NewJsonUnmarshalError(err.Error())
-		}
-		messagesByID[messageID] = msg
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, poperrors.NewDatabaseIteratorErrorMsg("messages: %v", err)
-	}
-	return messagesByID, nil
-}
-
-// GetMessageByID returns a message by its ID.
-func (s *SQLite) GetMessageByID(ID string) (message.Message, error) {
-	dbLock.Lock()
-	defer dbLock.Unlock()
-
-	var messageByte []byte
-	err := s.database.QueryRow(selectMessage, ID).Scan(&messageByte)
-	if err != nil {
-		return message.Message{}, poperrors.NewDatabaseSelectErrorMsg(err.Error())
-	}
-
-	var msg message.Message
-	if err = json.Unmarshal(messageByte, &msg); err != nil {
-		return message.Message{}, poperrors.NewJsonUnmarshalError(err.Error())
-	}
-	return msg, nil
-}
-
-// StoreChannel mainly used for testing purposes.
-func (s *SQLite) StoreChannel(channelPath, channelType, laoPath string) error {
-	dbLock.Lock()
-	defer dbLock.Unlock()
-
-	_, err := s.database.Exec(insertChannel, channelPath, channelTypeToID[channelType], laoPath)
-
-	if err != nil {
-		return poperrors.NewDatabaseInsertErrorMsg("channel %s: %v", channelPath, err)
-	}
-	return nil
-}
-
 func (s *SQLite) HasMessage(messageID string) (bool, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
@@ -214,4 +139,92 @@ func (s *SQLite) HasMessage(messageID string) (bool, error) {
 	} else {
 		return true, nil
 	}
+}
+
+func (s *SQLite) GetParamsHeartbeat() (map[string][]string, error) {
+	return nil, nil
+}
+
+func (s *SQLite) GetMessagesByIDUtil(IDs []string) (map[string]mmessage.Message, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	if len(IDs) == 0 {
+		return make(map[string]mmessage.Message), nil
+	}
+
+	IDsInterface := make([]interface{}, len(IDs))
+	for i, v := range IDs {
+		IDsInterface[i] = v
+	}
+	rows, err := s.database.Query("SELECT messageID, message "+
+		"FROM message "+
+		"WHERE messageID IN ("+strings.Repeat("?,", len(IDs)-1)+"?"+")", IDsInterface...)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return nil, poperrors.NewDatabaseSelectErrorMsg("messages: %v", err)
+	} else if errors.Is(err, sql.ErrNoRows) {
+		return make(map[string]mmessage.Message), nil
+	}
+	defer rows.Close()
+
+	messagesByID := make(map[string]mmessage.Message, len(IDs))
+	for rows.Next() {
+		var messageID string
+		var messageByte []byte
+		if err = rows.Scan(&messageID, &messageByte); err != nil {
+			return nil, poperrors.NewDatabaseScanErrorMsg(err.Error())
+		}
+
+		var msg mmessage.Message
+		if err = json.Unmarshal(messageByte, &msg); err != nil {
+			return nil, poperrors.NewJsonUnmarshalError(err.Error())
+		}
+		messagesByID[messageID] = msg
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, poperrors.NewDatabaseIteratorErrorMsg("messages: %v", err)
+	}
+	return messagesByID, nil
+}
+
+// GetMessageByIDUtil returns a message by its ID.
+func (s *SQLite) GetMessageByIDUtil(ID string) (mmessage.Message, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	var messageByte []byte
+	err := s.database.QueryRow(selectMessage, ID).Scan(&messageByte)
+	if err != nil {
+		return mmessage.Message{}, poperrors.NewDatabaseSelectErrorMsg(err.Error())
+	}
+
+	var msg mmessage.Message
+	if err = json.Unmarshal(messageByte, &msg); err != nil {
+		return mmessage.Message{}, poperrors.NewJsonUnmarshalError(err.Error())
+	}
+	return msg, nil
+}
+
+func (s *SQLite) StoreChannelUtil(channelPath, channelType, laoPath string) error {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	_, err := s.database.Exec(insertChannel, channelPath, channelTypeToID[channelType], laoPath)
+
+	if err != nil {
+		return poperrors.NewDatabaseInsertErrorMsg("channel %s: %v", channelPath, err)
+	}
+	return nil
+}
+
+func (s *SQLite) StorePubKeyUtil(keyPath string, key []byte) error {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	_, err := s.database.Exec(insertKeys, keyPath, base64.URLEncoding.EncodeToString(key), nil)
+	if err != nil {
+		return poperrors.NewDatabaseInsertErrorMsg("key %s: %v", keyPath, err)
+	}
+	return nil
 }

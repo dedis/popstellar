@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"errors"
 	poperrors "popstellar/internal/errors"
-	"popstellar/internal/handler/messagedata/root"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/handler/channel"
+	"popstellar/internal/handler/message/mmessage"
 	"time"
 )
 
@@ -15,7 +15,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	channels map[string]string,
 	laoPath string,
 	organizerPubBuf []byte,
-	msg, laoGreetMsg message.Message) error {
+	msg, laoGreetMsg mmessage.Message) error {
 
 	dbLock.Lock()
 	defer dbLock.Unlock()
@@ -45,10 +45,10 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 
 	storedTime := time.Now().UnixNano()
 
-	for channel, channelType := range channels {
-		_, err = tx.Exec(insertChannel, channel, channelTypeToID[channelType], laoPath)
+	for channelPath, channelType := range channels {
+		_, err = tx.Exec(insertChannel, channelPath, channelTypeToID[channelType], laoPath)
 		if err != nil {
-			return poperrors.NewDatabaseInsertErrorMsg("channel %s: %v", channel, err)
+			return poperrors.NewDatabaseInsertErrorMsg("channel %s: %v", channelPath, err)
 		}
 	}
 
@@ -56,7 +56,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(insertChannelMessage, root.Root, msg.MessageID, true)
+	_, err = tx.Exec(insertChannelMessage, channel.Root, msg.MessageID, true)
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("relation lao create message and root channel: %v", err)
 	}
@@ -87,12 +87,12 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	return nil
 }
 
-func (s *SQLite) HasChannel(channelPath string) (bool, error) {
+func (s *SQLite) HasChannel(channel string) (bool, error) {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
-	var channel string
-	err := s.database.QueryRow(selectChannelPath, channelPath).Scan(&channel)
+	var channelPath string
+	err := s.database.QueryRow(selectChannelPath, channel).Scan(&channelPath)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	} else if err != nil && !errors.Is(err, sql.ErrNoRows) {

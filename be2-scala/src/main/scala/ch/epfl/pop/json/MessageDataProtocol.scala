@@ -597,6 +597,8 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
     override def write(obj: FederationResult): JsValue = {
       val fields = scala.collection.mutable.Map[String, JsValue]()
+      fields += PARAM_OBJECT -> JsString(obj._object.toString)
+      fields += PARAM_ACTION -> JsString(obj.action.toString)
       fields += PARAM_STATUS -> obj.status.toJson
       fields += PARAM_CHALLENGE -> obj.challenge.toJson
 
@@ -605,6 +607,21 @@ object MessageDataProtocol extends DefaultJsonProtocol {
       JsObject(fields.toMap)
 
     }
+  }
+
+  implicit object NumberOfChirpsReactionsDataFormat extends JsonFormat[NumberOfChirpsReactionsData] {
+    final private val PARAM_NUMBER_OF_CHIRPS_REACTIONS: String = "numberOfChirpsReactions"
+
+    override def read(json: JsValue): NumberOfChirpsReactionsData = json.asJsObject().getFields(PARAM_NUMBER_OF_CHIRPS_REACTIONS) match {
+      case Seq(numberOfChirpsReactions @ JsNumber(_)) => NumberOfChirpsReactionsData(
+          numberOfChirpsReactions.convertTo[Int]
+        )
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a NumberOfChirpsReactionsData object")
+    }
+
+    override def write(obj: NumberOfChirpsReactionsData): JsValue = JsObject(
+      PARAM_NUMBER_OF_CHIRPS_REACTIONS -> obj.numberOfChirpsReactions.toJson
+    )
   }
 
 }

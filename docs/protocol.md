@@ -197,6 +197,9 @@ and its arguments (`params`).
         },
         {
             "$ref": "method/rumor_state.json"
+        },
+        {
+            "$ref": "method/paged_catchup.json"
         }
     ],
 
@@ -309,8 +312,6 @@ communication simple, it is assumed that channel “/root” always exists, and 
 the server is allowed to subscribe to it. Clients can then publish on channel
 "/root" to create and bootstrap their Local Autonomous Organizer (LAO) (cf
 High-level communication).
-
-To request top chirps, a subscribe message should be sent to the subchannel `/root/{lao_id}/social/top_chirps`. The server should respond with the top 3 chirps they have sorted by reactions. After receiving these top chirps, the user sends an unsubscibe message to this subchannel. This process repeats upon a new request for top chirps.
 
 RPC 
 
@@ -680,6 +681,8 @@ A server can also execute a catchup action, and ask another server to receive
 For now it happens when two servers are connected to each other on the root, and
 when a server cause the creation of a channel on another server.
 
+To request top chirps, a catchup message should be sent to the subchannel `/root/{lao_id}/social/top_chirps`, where the server responds with the top 3 chirps among those that it has ranked by reactions. The definition of the catchup message's use is extended for this particular use case since the functionality here is to get the current top chirps and not the history of top chirps that were sent to clients.
+
 RPC 
 
 ```json5
@@ -982,6 +985,12 @@ RPC
     "params": {
         "sender_id": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
         "rumor_id": 1,
+        "timestamp" : {
+            "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=": 1,
+            "RZOPi59Iy5gkpS2mkpfQJNl44HKc2jVbF0iTGm0RvfU=": 5,
+            "CfG2ByLhtLJH--T2BL9hZ6eGm11tpkE-5KuvysSCY0I=": 1,
+            "r8cG9HyJ1FGBke_5IblCdH19mvy39MvLFSArVmY3FpY=": 10
+        },
         "messages": {
             "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=": [
                 {
@@ -1072,6 +1081,10 @@ RPC
       "description": "[Integer] ID of the rumor",
       "type": "integer"
     },
+    "timestamp" : {
+      "description": "Rumor state in which this message has been sent",
+      "$ref": "./rumor_state.json"
+    },
     "messages": {
       "description": "Key-value of channels and messages per channel",
       "type": "object",
@@ -1081,7 +1094,8 @@ RPC
   "required": [
     "sender_id",
     "rumor_id",
-    "messages"
+    "messages",
+    "timestamp"
   ]
 }
 
@@ -1127,6 +1141,12 @@ Response in case of success
     {
       "sender_id": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
       "rumor_id": 1,
+      "timestamp" : {
+        "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=": 1,
+        "RZOPi59Iy5gkpS2mkpfQJNl44HKc2jVbF0iTGm0RvfU=": 5,
+        "CfG2ByLhtLJH--T2BL9hZ6eGm11tpkE-5KuvysSCY0I=": 1,
+        "r8cG9HyJ1FGBke_5IblCdH19mvy39MvLFSArVmY3FpY=": 9
+      },
       "messages": {
         "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=": [
           {
@@ -1142,6 +1162,12 @@ Response in case of success
     {
       "sender_id": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
       "rumor_id": 2,
+      "timestamp" : {
+        "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=": 2,
+        "RZOPi59Iy5gkpS2mkpfQJNl44HKc2jVbF0iTGm0RvfU=": 5,
+        "CfG2ByLhtLJH--T2BL9hZ6eGm11tpkE-5KuvysSCY0I=": 1,
+        "r8cG9HyJ1FGBke_5IblCdH19mvy39MvLFSArVmY3FpY=": 10
+      },
       "messages": {
         "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=": [
           {
@@ -1231,7 +1257,7 @@ by paging when a new client joins the LAO instead of getting all the chirps at o
 to denote a separate paging subchannel for each user to be consistent with the publish/subscribe model. This paging is 
 done in an effort to reduce network traffic at catchup.
 
-This message is also to be used to retrieve chirps of a specific user profile from a subchannel `/root/{lao_id}/social/profile/{profile_public_key}/{sender_public_key}`  where `sender_public_key` is the same as before and `profile_public_key` is the public key of the user whose messages the client wants to retrieve. Paging is not deemed necessary for retrieving top chirps for now and can be done with the subscribe message to a subchannel `/root/{lao_id}/social/top_chirps`. More information on that can be found in the [Subscribing to a channel](#subscribing-to-a-channel) section.
+This message is also to be used to retrieve chirps of a specific user profile from a subchannel `/root/{lao_id}/social/profile/{profile_public_key}/{sender_public_key}`  where `sender_public_key` is the same as before and `profile_public_key` is the public key of the user whose messages the client wants to retrieve. Paging is not deemed necessary for retrieving top chirps for now and can be done with the catchup message to a subchannel `/root/{lao_id}/social/top_chirps`. More information on that can be found in the [Catching up on past messages on a channel](#catching-up-on-past-messages-on-a-channel) section.
 
 This may serve as a starting point for the paging of messages in other channels as a future optimization.
 
@@ -1273,8 +1299,7 @@ Response (in case of success)
             "signature": "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==",
             "message_id": "2mAAevx61TZJi4groVGqqkeLEQq0e-qM6PGmTWuShyY=",
             "witness_signatures": []
-        },
-        // ...9 other messages
+        }
     ]
 }
 

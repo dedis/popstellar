@@ -2,18 +2,19 @@ package ch.epfl.pop.pubsub
 
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.coin.PostTransaction
-import ch.epfl.pop.model.network.method.message.data.election._
+import ch.epfl.pop.model.network.method.message.data.election.*
+import ch.epfl.pop.model.network.method.message.data.federation.{FederationChallenge, FederationChallengeRequest, FederationExpect, FederationInit, FederationResult}
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao, UpdateLao}
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
 import ch.epfl.pop.model.network.method.message.data.popcha.Authenticate
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
-import ch.epfl.pop.model.network.method.message.data.socialMedia._
+import ch.epfl.pop.model.network.method.message.data.socialMedia.*
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.pubsub.MessageRegistry.RegisterEntry
 import ch.epfl.pop.pubsub.graph.SchemaVerifier.createSchemaVerifier
-import ch.epfl.pop.pubsub.graph.handlers._
-import ch.epfl.pop.pubsub.graph.validators._
+import ch.epfl.pop.pubsub.graph.handlers.*
+import ch.epfl.pop.pubsub.graph.validators.*
 import ch.epfl.pop.pubsub.graph.{GraphMessage, JsonString}
 
 import scala.util.Try
@@ -241,6 +242,47 @@ object MessageRegistry {
       Authenticate.buildFromJson,
       PopchaValidator.validateAuthenticateRequest,
       PopchaHandler.handleAuthentication
+    )
+
+    // data federation
+    register.add(
+      (ObjectType.federation, ActionType.challenge),
+      createSchemaVerifier("dataFederationChallenge.json"),
+      FederationChallenge.buildFromJson,
+      FederationValidator.validateFederationChallenge,
+      FederationHandler.handleFederationChallenge
+    )
+
+    register.add(
+      (ObjectType.federation, ActionType.challenge_request),
+      createSchemaVerifier("dataFederationChallengeRequest.json"),
+      FederationChallengeRequest.buildFromJson,
+      FederationValidator.validateFederationChallengeRequest,
+      FederationHandler.handleFederationChallengeRequest
+    )
+
+    register.add(
+      (ObjectType.federation, ActionType.init),
+      createSchemaVerifier("dataFederationInit.json"),
+      FederationInit.buildFromJson,
+      FederationValidator.validateFederationInit,
+      FederationHandler.handleFederationInit
+    )
+
+    register.add(
+      (ObjectType.federation, ActionType.expect),
+      createSchemaVerifier("dataFederationExpect.json"),
+      FederationExpect.buildFromJson,
+      FederationValidator.validateFederationExpect,
+      FederationHandler.handleFederationExpect
+    )
+
+    register.add(
+      (ObjectType.federation, ActionType.result),
+      createSchemaVerifier("dataFederationResult.json"),
+      FederationResult.buildFromJson,
+      FederationValidator.validateFederationResult,
+      FederationHandler.handleFederationResult
     )
 
     new MessageRegistry(register.get)

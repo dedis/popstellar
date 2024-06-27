@@ -3,17 +3,16 @@ package socket
 import (
 	"encoding/json"
 	"errors"
-	"sync"
-	"time"
-
 	"github.com/gorilla/websocket"
 	"github.com/rs/xid"
 	"github.com/rs/zerolog"
-
 	poperror "popstellar/internal/errors"
-	jsonrpc "popstellar/internal/message"
-	"popstellar/internal/message/answer"
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/handler/answer/manswer"
+	"popstellar/internal/handler/jsonrpc/mjsonrpc"
+	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/method/rumor/mrumor"
+	"sync"
+	"time"
 )
 
 // SocketType represents different socket types
@@ -83,15 +82,14 @@ func (s *baseSocket) ReadPump() {
 		_, message, err := s.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				s.log.Err(err).
-					Str("socket", s.conn.RemoteAddr().String()).
-					Msg("connection dropped unexpectedly")
+				s.log.Err(err).Msg("connection dropped unexpectedly")
 			} else {
 				s.log.Info().Msg("closing the read pump")
 			}
 			break
 		}
 
+		s.log.Info().RawJSON("received", message).Msg("")
 		msg := IncomingMessage{
 			Socket:  s,
 			Message: message,
@@ -136,6 +134,7 @@ func (s *baseSocket) WritePump() {
 			}
 
 			w.Write(message)
+			s.log.Info().RawJSON("sent", message).Msg("")
 
 			if err := w.Close(); err != nil {
 				s.log.Err(err).Msg("failed to close writer")
@@ -157,24 +156,20 @@ func (s *baseSocket) WritePump() {
 
 // Send allows sending a serialized message to the socket.
 func (s *baseSocket) Send(msg []byte) {
-	s.log.Info().
-		Str("to", s.conn.RemoteAddr().String()).
-		Str("msg", string(msg)).
-		Msg("send generic msg")
 	s.send <- msg
 }
 
 // SendError is a utility method that allows sending an `error` as a
 // `message.Error` message to the socket.
 func (s *baseSocket) SendError(id *int, err error) {
-	msgError := &answer.Error{}
+	msgError := &manswer.Error{}
 
 	if !errors.As(err, &msgError) {
-		msgError = answer.NewError(-6, err.Error())
+		msgError = manswer.NewError(-6, err.Error())
 	}
 
-	answer := answer.Answer{
-		JSONRPCBase: jsonrpc.JSONRPCBase{
+	answer := manswer.Answer{
+		JSONRPCBase: mjsonrpc.JSONRPCBase{
 			JSONRPC: "2.0",
 		},
 		ID:    id,
@@ -187,11 +182,6 @@ func (s *baseSocket) SendError(id *int, err error) {
 		return
 	}
 
-	s.log.Info().
-		Str("to", s.conn.RemoteAddr().String()).
-		Str("msg", string(answerBuf)).
-		Msg("send error")
-
 	s.send <- answerBuf
 }
 
@@ -201,16 +191,18 @@ func (s *baseSocket) SendPopError(id *int, err error) {
 	popError := &poperror.PopError{}
 
 	if !errors.As(err, &popError) {
-		popError = poperror.NewPopError(-6, err.Error())
+		popError = poperror.NewPopError(poperror.InternalServerErrorCode, err.Error())
 	}
 
-	msgError := answer.Error{
+	description := popError.Error() + "\n" + popError.StackTraceString()
+
+	msgError := manswer.Error{
 		Code:        popError.Code(),
-		Description: popError.StackTraceString(),
+		Description: description,
 	}
 
-	answer := answer.Answer{
-		JSONRPCBase: jsonrpc.JSONRPCBase{
+	answer := manswer.Answer{
+		JSONRPCBase: mjsonrpc.JSONRPCBase{
 			JSONRPC: "2.0",
 		},
 		ID:    id,
@@ -223,17 +215,12 @@ func (s *baseSocket) SendPopError(id *int, err error) {
 		return
 	}
 
-	s.log.Info().
-		Str("to", s.conn.RemoteAddr().String()).
-		Str("msg", string(answerBuf)).
-		Msg("send error")
-
 	s.send <- answerBuf
 }
 
 // SendResult is a utility method that allows sending a `message.Result` to the
 // socket.
-func (s *baseSocket) SendResult(id int, res []message.Message, missingMessagesByChannel map[string][]message.Message) {
+func (s *baseSocket) SendResult(id int, res []mmessage.Message, missingMessagesByChannel map[string][]mmessage.Message) {
 	var answer interface{}
 
 	if res != nil && missingMessagesByChannel != nil {
@@ -252,21 +239,21 @@ func (s *baseSocket) SendResult(id int, res []message.Message, missingMessagesBy
 	} else if res != nil {
 		for _, r := range res {
 			if r.WitnessSignatures == nil {
-				r.WitnessSignatures = []message.WitnessSignature{}
+				r.WitnessSignatures = []mmessage.WitnessSignature{}
 			}
 		}
 		answer = struct {
-			JSONRPC string            `json:"jsonrpc"`
-			ID      int               `json:"id"`
-			Result  []message.Message `json:"result"`
+			JSONRPC string             `json:"jsonrpc"`
+			ID      int                `json:"id"`
+			Result  []mmessage.Message `json:"result"`
 		}{
 			"2.0", id, res,
 		}
 	} else if missingMessagesByChannel != nil {
 		answer = struct {
-			JSONRPC string                       `json:"jsonrpc"`
-			ID      int                          `json:"id"`
-			Result  map[string][]message.Message `json:"result"`
+			JSONRPC string                        `json:"jsonrpc"`
+			ID      int                           `json:"id"`
+			Result  map[string][]mmessage.Message `json:"result"`
 		}{
 			"2.0", id, missingMessagesByChannel,
 		}
@@ -278,10 +265,36 @@ func (s *baseSocket) SendResult(id int, res []message.Message, missingMessagesBy
 		return
 	}
 
-	s.log.Info().
-		Str("to", s.id).
-		Str("msg", string(answerBuf)).
-		Msg("send result")
+	s.send <- answerBuf
+}
+
+func (s *baseSocket) SendRumorStateAnswer(id int, params []mrumor.ParamsRumor) {
+	var answer interface{}
+
+	if params == nil {
+		answer = struct {
+			JSONRPC string `json:"jsonrpc"`
+			ID      int    `json:"id"`
+			Result  int    `json:"result"`
+		}{
+			"2.0", id, 0,
+		}
+	} else {
+		answer = struct {
+			JSONRPC string               `json:"jsonrpc"`
+			ID      int                  `json:"id"`
+			Result  []mrumor.ParamsRumor `json:"result"`
+		}{
+			"2.0", id, params,
+		}
+	}
+
+	answerBuf, err := json.Marshal(&answer)
+	if err != nil {
+		s.log.Err(err).Msg("failed to marshal result")
+		return
+	}
+
 	s.send <- answerBuf
 }
 
@@ -289,8 +302,18 @@ func newBaseSocket(socketType SocketType, receiver chan<- IncomingMessage,
 	closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup,
 	done chan struct{}, log zerolog.Logger,
 ) *baseSocket {
+	id := xid.New().String()
+
+	if conn != nil {
+		log = log.With().Dict("socket", zerolog.Dict().
+			Str("ID", id).
+			Str("IP", conn.RemoteAddr().String())).Logger()
+	} else {
+		log = log.With().Str("socketID", id).Logger()
+	}
+
 	return &baseSocket{
-		id:            xid.New().String(),
+		id:            id,
 		socketType:    socketType,
 		receiver:      receiver,
 		closedSockets: closedSockets,
@@ -312,8 +335,6 @@ func NewClientSocket(receiver chan<- IncomingMessage,
 	closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup,
 	done chan struct{}, log zerolog.Logger,
 ) *ClientSocket {
-	log = log.With().Str("role", "client socket").Logger()
-
 	return &ClientSocket{
 		baseSocket: newBaseSocket(ClientSocketType, receiver, closedSockets,
 			conn, wg, done, log),
@@ -330,8 +351,6 @@ func NewServerSocket(receiver chan<- IncomingMessage,
 	closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup,
 	done chan struct{}, log zerolog.Logger,
 ) *ServerSocket {
-	log = log.With().Str("role", "server socket").Logger()
-
 	return &ServerSocket{
 		baseSocket: newBaseSocket(ServerSocketType, receiver, closedSockets,
 			conn, wg, done, log),

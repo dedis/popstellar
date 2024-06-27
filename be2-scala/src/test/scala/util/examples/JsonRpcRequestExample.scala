@@ -21,6 +21,11 @@ import util.examples.socialMedia.AddChirpExamples.*
 import util.examples.socialMedia.AddReactionExamples.*
 import util.examples.socialMedia.DeleteChirpExamples.*
 import util.examples.socialMedia.DeleteReactionExamples.*
+import util.examples.Federation.FederationChallengeExample.*
+import util.examples.Federation.FederationInitExample.*
+import util.examples.Federation.FederationResultExample.*
+import util.examples.Federation.FederationExpectExample.*
+import util.examples.Federation.FederationChallengeRequestExample.*
 
 /** Holds json rpc response examples of various kinds for testing purpose in validators' test suites
   */
@@ -240,6 +245,72 @@ object JsonRpcRequestExample {
   final val RESULT_ELECTION_RPC_WRONG: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithNegativeNumberOfVotesResultElection, id)
   final val RESULT_ELECTION_RPC_TOO_MUCH_VOTES: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithTooMuchVotesResultElection, id)
   final val RESULT_ELECTION_RPC_WRONG_ID: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithWrongIdResultElection, id)
+
+  // for FederationChallengeRequest Testing
+  private final val rightFederationChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.FEDERATION_CHANNEL_PREFIX)
+  private final val wrongFederationChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.CHANNEL_SEPARATOR + "wrong")
+  private final val paramsWithChallengeRequest: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, CHALLENGE_REQUEST_MESSAGE)
+  private final val paramsWithChallengeRequestWrongTimestamp: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, CHALLENGE_REQUEST_WRONG_TIMESTAMP_MESSAGE)
+  private final val paramsWithChallengeRequestWrongChannel: ParamsWithMessage = new ParamsWithMessage(wrongFederationChannel, CHALLENGE_REQUEST_MESSAGE)
+  private final val paramsWithChallengeRequestWrongSender: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, CHALLENGE_REQUEST_WRONG_SENDER_MESSAGE)
+  final val CHALLENGE_REQUEST_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithChallengeRequest, id)
+  final val CHALLENGE_REQUEST_WRONG_TIMESTAMP_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithChallengeRequestWrongTimestamp, id)
+  final val CHALLENGE_REQUEST_WRONG_CHANNEL_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithChallengeRequestWrongChannel, id)
+  final val CHALLENGE_REQUEST_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithChallengeRequestWrongSender, id)
+
+  // for FederationExpect Testing
+  private final val paramsWithExpect: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, EXPECT_MESSAGE)
+  private final val paramsWithExpectWrongServerAddress: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, EXPECT_WRONG_SERVER_ADDRESS_MESSAGE)
+  private final val paramsWithExpectWrongSender: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, EXPECT_WRONG_SENDER_MESSAGE)
+  private final val paramsWithExpectWrongChannel: ParamsWithMessage = new ParamsWithMessage(wrongFederationChannel, EXPECT_MESSAGE)
+  private final val paramsWithExpectWrongChallenge: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, EXPECT_WRONG_CHALLENGE_MESSAGE)
+  private final val paramsWithExpectWrongChallengeSender: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, EXPECT_WRONG_CHALLENGE_SENDER_MESSAGE)
+  final val EXPECT_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithExpect, id)
+  final val EXPECT_WRONG_SERVER_ADDRESS_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithExpectWrongServerAddress, id)
+  final val EXPECT_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithExpectWrongSender, id)
+  final val EXPECT_WRONG_CHANNEL_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithExpectWrongChannel, id)
+  final val EXPECT_WRONG_CHALLENGE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithExpectWrongChallenge, id)
+  final val EXPECT_WRONG_CHALLENGE_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithExpectWrongChallengeSender, id)
+
+  // for FederationInit Testing
+  private final val paramsWithInit: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, INIT_MESSAGE)
+  private final val paramsWithInitWrongServerAddress: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, INIT_WRONG_SERVER_ADDRESS_MESSAGE)
+  private final val paramsWithInitWrongSender: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, INIT_WRONG_SENDER_MESSAGE)
+  private final val paramsWithInitWrongChannel: ParamsWithMessage = new ParamsWithMessage(wrongFederationChannel, INIT_MESSAGE)
+  private final val paramsWithInitWrongChallenge: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, INIT_WRONG_CHALLENGE_MESSAGE)
+  private final val paramsWithInitWrongChallengeSender: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, INIT_WRONG_CHALLENGE_SENDER_MESSAGE)
+  final val INIT_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithInit, id)
+  final val INIT_WRONG_SERVER_ADDRESS_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithInitWrongServerAddress, id)
+  final val INIT_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithInitWrongSender, id)
+  final val INIT_WRONG_CHANNEL_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithInitWrongChannel, id)
+  final val INIT_WRONG_CHALLENGE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithInitWrongChallenge, id)
+  final val INIT_WRONG_CHALLENGE_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithInitWrongChallengeSender, id)
+
+  // for FederationChallenge Testing
+  private final val paramsWithChallenge: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, CHALLENGE_MESSAGE)
+  private final val paramsWithChallengeWrongTimestamp: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, CHALLENGE_WRONG_TIMESTAMP_MESSAGE)
+  private final val paramsWithChallengeWrongSender: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, CHALLENGE_WRONG_SENDER_MESSAGE)
+  private final val paramsWithChallengeWrongChannel: ParamsWithMessage = new ParamsWithMessage(wrongFederationChannel, CHALLENGE_MESSAGE)
+  private final val paramsWithChallengeWrongValue: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, CHALLENGE_WRONG_VALUE_MESSAGE)
+  final val CHALLENGE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithChallenge, id)
+  final val CHALLENGE_WRONG_TIMESTAMP_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithChallengeWrongTimestamp, id)
+  final val CHALLENGE_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithChallengeWrongSender, id)
+  final val CHALLENGE_WRONG_CHANNEL: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithChallengeWrongChannel, id)
+  final val CHALLENGE_WRONG_VALUE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithChallengeWrongValue, id)
+
+  // for FederationResult Testing
+  private final val paramsWithResult: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, RESULT_1_MESSAGE)
+  private final val paramsWithResultWrongStatus: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, RESULT_WRONG_STATUS_MESSAGE)
+  private final val paramsWithResultWrongChannel: ParamsWithMessage = new ParamsWithMessage(wrongFederationChannel, RESULT_1_MESSAGE)
+  private final val paramsWithResultWrongChallenge: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, RESULT_WRONG_CHALLENGE_MESSAGE)
+  private final val paramsWithResultWrongChallengeSender: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, RESULT_WRONG_CHALLENGE_SENDER_MESSAGE)
+  private final val paramswWithResultWrongPublicKey: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, RESULT_WRONG_PUBLIC_KEY_MESSAGE)
+  final val RESULT_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithResult, id)
+  final val RESULT_WRONG_STATUS_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithResultWrongStatus, id)
+  final val RESULT_WRONG_CHANNEL_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithResultWrongChannel, id)
+  final val RESULT_WRONG_CHALLENGE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithResultWrongChallenge, id)
+  final val RESULT_WRONG_CHALLENGE_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithResultWrongChallengeSender, id)
+  final val RESULT_WRONG_PUBLIC_KEY_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramswWithResultWrongPublicKey, id)
 
   // for WitnessMessage testing
   private final val paramsWithWitnessMessage: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_WITNESS_MESSAGE_WORKING)

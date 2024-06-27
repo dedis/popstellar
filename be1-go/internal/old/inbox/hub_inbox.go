@@ -1,7 +1,7 @@
 package inbox
 
 import (
-	"popstellar/internal/message/query/method/message"
+	"popstellar/internal/handler/message/mmessage"
 	state "popstellar/internal/old/hub/standard_hub/hub_state"
 	"sync"
 )
@@ -15,7 +15,7 @@ type HubInbox struct {
 	// messageIdsByChannel stores all the message ids and the corresponding channel ids
 	// to help servers determine in which channel the message ids go
 	messageIdsByChannel state.MessageIds
-	rootMessages        []message.Message
+	rootMessages        []mmessage.Message
 }
 
 // NewHubInbox creates a new HubInbox
@@ -23,12 +23,12 @@ func NewHubInbox(channelID string) *HubInbox {
 	return &HubInbox{
 		Inbox:               *NewInbox(channelID),
 		messageIdsByChannel: state.NewMessageIdsMap(),
-		rootMessages:        make([]message.Message, 0),
+		rootMessages:        make([]mmessage.Message, 0),
 	}
 }
 
 // StoreMessage stores a message inside the inbox and adds the message id to the map
-func (i *HubInbox) StoreMessage(channel string, msg message.Message) {
+func (i *HubInbox) StoreMessage(channel string, msg mmessage.Message) {
 	i.Lock()
 	defer i.Unlock()
 	if channel == rootChannel {
@@ -53,10 +53,10 @@ func (i *HubInbox) GetIDsTable() map[string][]string {
 }
 
 // GetRootMessages returns the root messages
-func (i *HubInbox) GetRootMessages() []message.Message {
+func (i *HubInbox) GetRootMessages() []mmessage.Message {
 	i.RLock()
 	defer i.RUnlock()
-	res := make([]message.Message, len(i.rootMessages))
+	res := make([]mmessage.Message, len(i.rootMessages))
 	copy(res, i.rootMessages)
 	return res
 }

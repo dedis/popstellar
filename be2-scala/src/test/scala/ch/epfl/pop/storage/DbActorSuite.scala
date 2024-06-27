@@ -6,6 +6,7 @@ import akka.testkit.{ImplicitSender, TestKit}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
+import ch.epfl.pop.model.network.method.{Rumor, RumorState}
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.model.objects.Channel.ROOT_CHANNEL_PREFIX
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
@@ -15,15 +16,15 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike
 import org.scalatest.matchers.should.Matchers
+import util.examples.Federation.FederationExpectExample.EXPECT_MESSAGE
+import util.examples.Federation.FederationChallengeExample.CHALLENGE_MESSAGE
 import util.examples.MessageExample
 import util.examples.RollCall.{CreateRollCallExamples, OpenRollCallExamples}
 import util.examples.Rumor.RumorExample
-import ch.epfl.pop.model.network.method.{Rumor, RumorState}
 
 import scala.collection.immutable.HashMap
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
-
 class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with FunSuiteLike with ImplicitSender with Matchers with ScalaFutures with BeforeAndAfterAll with AskPatternConstants {
 
   final val mediatorRef: ActorRef = system.actorOf(PubSubMediator.props)
@@ -34,7 +35,6 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
   val ELECTION_ID: Hash = Hash(Base64Data.encode("electionId"))
   val ELECTION_DATA_KEY: String = "Data:" + s"$ROOT_CHANNEL_PREFIX${LAO_ID.toString}/private/${ELECTION_ID.toString}"
   val KEYPAIR: KeyPair = KeyPair()
-
   private val timeout = 3.second
 
   override def afterAll(): Unit = {
@@ -500,6 +500,162 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     list.size should equal(2)
     list should contain(MESSAGE)
+    list should contain(message2)
+  }
+
+  test("catchup works for top chirps") {
+    // arrange
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    var message = MessageExample.MESSAGE_ADDCHIRP
+    message = message.copy(message_id = Hash(Base64Data("RmFrZSBtZXNzYWdlX2lkIDopIE5vIGVhc3RlciBlZ2cgcmlnaHQgdGhlcmUhIA==")))
+    val message2 = message.copy(message_id = Hash(Base64Data("RmFrZSBtZXNzYWdlX2lkIDopIE5vIGVhc3RlciBlZ2cgcmlnaHQgdGhlcmUhIC0tIE5pY29sYXMgUmF1bGlu")))
+    val message3 = message.copy(message_id = Hash(Base64Data("RmFrZSBtZXNzYWdlX2lkIDopIE5vIGVhc3RlciBlZ2cgcmlnaHQgdGhlcmUhIC0tIE9tYXIgTWFqem91Yg==")))
+    val listIds: List[Hash] = message.message_id :: message2.message_id :: message3.message_id :: Nil
+    val channelData: ChannelData = ChannelData(ObjectType.chirp, listIds)
+    var channelName = "/root/89zterjThplXCrimBjyNfxvXKNS4QdW5QN-bEtHL00Y=/social/chirps"
+    val reactionsChannelName = "/root/89zterjThplXCrimBjyNfxvXKNS4QdW5QN-bEtHL00Y=/social/reactions"
+    val reactionsChannelData: ChannelData = ChannelData(ObjectType.chirp, List())
+
+    initialStorage.write(
+      (initialStorage.CHANNEL_DATA_KEY + channelName, channelData.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName${Channel.DATA_SEPARATOR}${message2.message_id}", message2.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName${Channel.DATA_SEPARATOR}${message3.message_id}", message3.toJsonString),
+      (initialStorage.CHANNEL_DATA_KEY + reactionsChannelName, reactionsChannelData.toJsonString)
+    )
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    // act
+    channelName = "/root/89zterjThplXCrimBjyNfxvXKNS4QdW5QN-bEtHL00Y=/social/top_chirps"
+    val ask = dbActor ? DbActor.Catchup(Channel(channelName))
+    val answer = Await.result(ask, duration)
+
+    // assert
+    answer shouldBe a[DbActor.DbActorCatchupAck]
+
+    val list: List[Message] = answer.asInstanceOf[DbActor.DbActorCatchupAck].messages
+
+    list.size should equal(3)
+    list should contain(message)
+    list should contain(message2)
+    list should contain(message3)
+  }
+
+  test("PagedCatchup() reads correctly from /root/lao_id/social/chirps channels") {
+    // arrange
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    val message = MessageExample.MESSAGE_ADDCHIRP
+    val message2 = message.copy(message_id = Hash(Base64Data("RmFrZSBtZXNzYWdlX2lkIDopIE5vIGVhc3RlciBlZ2cgcmlnaHQgdGhlcmUhIC0tIE5pY29sYXMgUmF1bGlu")))
+    val listIds: List[Hash] = message.message_id :: message2.message_id :: Nil
+    val channelData: ChannelData = ChannelData(ObjectType.chirp, listIds)
+    var channelName = "/root/89zterjThplXCrimBjyNfxvXKNS4QdW5QN-bEtHL00Y=/social/chirps"
+    initialStorage.write(
+      (initialStorage.CHANNEL_DATA_KEY + channelName, channelData.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName${Channel.DATA_SEPARATOR}${message2.message_id}", message2.toJsonString)
+    )
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    // act
+    channelName = "/root/89zterjThplXCrimBjyNfxvXKNS4QdW5QN-bEtHL00Y=/social/chirps/hYzX2BeT1juKnxymB0aK3VlTA8r7JSrGThc7Mby45aA="
+    val ask = dbActor ? DbActor.PagedCatchup(Channel(channelName), 2)
+    val answer = Await.result(ask, duration)
+
+    // assert
+    answer shouldBe a[DbActor.DbActorCatchupAck]
+
+    val list: List[Message] = answer.asInstanceOf[DbActor.DbActorCatchupAck].messages
+
+    list.size should equal(2)
+    list should contain(message)
+    list should contain(message2)
+  }
+
+  test("PagedCatchup() reads correctly from /root/lao_id/social/chirps channels with beforeMessageID") {
+    // arrange
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    val message = MessageExample.MESSAGE_ADDCHIRP
+    val message2 = message.copy(message_id = Hash(Base64Data("RmFrZSBtZXNzYWdlX2lkIDopIE5vIGVhc3RlciBlZ2cgcmlnaHQgdGhlcmUhIC0tIE5pY29sYXMgUmF1bGlu")))
+    val listIds: List[Hash] = message.message_id :: message2.message_id :: Nil
+    val channelData: ChannelData = ChannelData(ObjectType.chirp, listIds)
+    var channelName = "/root/89zterjThplXCrimBjyNfxvXKNS4QdW5QN-bEtHL00Y=/social/chirps"
+    initialStorage.write(
+      (initialStorage.CHANNEL_DATA_KEY + channelName, channelData.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName${Channel.DATA_SEPARATOR}${message2.message_id}", message2.toJsonString)
+    )
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    // act
+    channelName = "/root/89zterjThplXCrimBjyNfxvXKNS4QdW5QN-bEtHL00Y=/social/chirps/hYzX2BeT1juKnxymB0aK3VlTA8r7JSrGThc7Mby45aA="
+    val ask = dbActor ? DbActor.PagedCatchup(Channel(channelName), 1, Some(message.message_id.toString))
+    val answer = Await.result(ask, duration)
+
+    // assert
+    answer shouldBe a[DbActor.DbActorCatchupAck]
+
+    val list: List[Message] = answer.asInstanceOf[DbActor.DbActorCatchupAck].messages
+
+    list.size should equal(1)
+    list should contain(message2)
+  }
+
+  test("PagedCatchup() reads correctly from /root/lao_id/social/profile channels") {
+    // arrange
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    val message = MessageExample.MESSAGE_ADDCHIRP
+    val message2 = message.copy(message_id = Hash(Base64Data("RmFrZSBtZXNzYWdlX2lkIDopIE5vIGVhc3RlciBlZ2cgcmlnaHQgdGhlcmUhIC0tIE5pY29sYXMgUmF1bGlu")))
+    val listIds: List[Hash] = message.message_id :: message2.message_id :: Nil
+    val channelData: ChannelData = ChannelData(ObjectType.chirp, listIds)
+    var channelName = "/root/89zterjThplXCrimBjyNfxvXKNS4QdW5QN-bEtHL00Y=/social/q3aTm5LBfvnZDIeReNjL9pxDhem894qbJMGVY8ZC3fw="
+    initialStorage.write(
+      (initialStorage.CHANNEL_DATA_KEY + channelName, channelData.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName${Channel.DATA_SEPARATOR}${message2.message_id}", message2.toJsonString)
+    )
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    // act
+    channelName = "/root/89zterjThplXCrimBjyNfxvXKNS4QdW5QN-bEtHL00Y=/social/profile/q3aTm5LBfvnZDIeReNjL9pxDhem894qbJMGVY8ZC3fw=/hYzX2BeT1juKnxymB0aK3VlTA8r7JSrGThc7Mby45aA="
+    val ask = dbActor ? DbActor.PagedCatchup(Channel(channelName), 2)
+    val answer = Await.result(ask, duration)
+
+    // assert
+    answer shouldBe a[DbActor.DbActorCatchupAck]
+
+    val list: List[Message] = answer.asInstanceOf[DbActor.DbActorCatchupAck].messages
+
+    list.size should equal(2)
+    list should contain(message)
+    list should contain(message2)
+  }
+
+  test("PagedCatchup() reads correctly from /root/lao_id/social/profile channels with beforeMessageID") {
+    // arrange
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    val message = MessageExample.MESSAGE_ADDCHIRP
+    val message2 = message.copy(message_id = Hash(Base64Data("RmFrZSBtZXNzYWdlX2lkIDopIE5vIGVhc3RlciBlZ2cgcmlnaHQgdGhlcmUhIC0tIE5pY29sYXMgUmF1bGlu")))
+    val listIds: List[Hash] = message.message_id :: message2.message_id :: Nil
+    val channelData: ChannelData = ChannelData(ObjectType.chirp, listIds)
+    var channelName = "/root/89zterjThplXCrimBjyNfxvXKNS4QdW5QN-bEtHL00Y=/social/q3aTm5LBfvnZDIeReNjL9pxDhem894qbJMGVY8ZC3fw="
+    initialStorage.write(
+      (initialStorage.CHANNEL_DATA_KEY + channelName, channelData.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName${Channel.DATA_SEPARATOR}${message2.message_id}", message2.toJsonString)
+    )
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    // act
+    channelName = "/root/89zterjThplXCrimBjyNfxvXKNS4QdW5QN-bEtHL00Y=/social/profile/q3aTm5LBfvnZDIeReNjL9pxDhem894qbJMGVY8ZC3fw=/hYzX2BeT1juKnxymB0aK3VlTA8r7JSrGThc7Mby45aA="
+    val ask = dbActor ? DbActor.PagedCatchup(Channel(channelName), 1, Some(message.message_id.toString))
+    val answer = Await.result(ask, duration)
+
+    // assert
+    answer shouldBe a[DbActor.DbActorCatchupAck]
+
+    val list: List[Message] = answer.asInstanceOf[DbActor.DbActorCatchupAck].messages
+
+    list.size should equal(1)
     list should contain(message2)
   }
 
@@ -1025,6 +1181,87 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
       PublicKey(Base64Data.encode("publicKey")) -> 5
     )))
     Await.result(generateRumorState, duration) shouldBe DbActorGenerateRumorStateAns(List.empty)
+  }
+
+  test("writeFederationExpect successfully adds the message to the db") {
+    val initialStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+    val laoId: Hash = Hash(Base64Data("lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA="))
+    val channel = Channel("/root/" + laoId.toString + "/federation")
+
+    val message: Message = EXPECT_MESSAGE
+    val writeAsk = dbActor ? DbActor.WriteFederationExpect(channel, laoId, message)
+    val writeAnswer = Await.result(writeAsk, duration)
+
+    writeAnswer shouldBe a[DbActor.DbActorAck]
+
+    val successReadAsk = dbActor ? DbActor.Read(channel.extractLaoChannel.get, message.message_id)
+    val failingReadAsk = dbActor ? DbActor.Read(channel, message.message_id)
+
+    val successAnswer = Await.result(successReadAsk, duration)
+    val failingAnswer = Await.result(failingReadAsk, duration)
+
+    val successMessage = successAnswer.asInstanceOf[DbActor.DbActorReadAck].message
+    val failingMessage = failingAnswer.asInstanceOf[DbActor.DbActorReadAck].message
+
+    successMessage should equal(Some(message))
+    failingMessage should equal(None)
+  }
+
+  test("can read and write a federation message correctly") {
+    val initialStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+    val laoId: Hash = Hash(Base64Data("lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA="))
+    val channel = Channel("/root/" + laoId.toString + "/federation")
+
+    val failingReadAsk = dbActor ? DbActor.ReadFederationInit(channel, laoId)
+    val failingReadAnswer = Await.result(failingReadAsk, duration)
+
+    failingReadAnswer shouldBe a[DbActor.DbActorReadAck]
+
+    val failingMessage: Option[Message] = failingReadAnswer.asInstanceOf[DbActor.DbActorReadAck].message
+
+    failingMessage should equal(None)
+
+    val message: Message = EXPECT_MESSAGE
+    val writeAsk = dbActor ? DbActor.WriteFederationExpect(channel, laoId, message)
+    val writeAnswer = Await.result(writeAsk, duration)
+
+    writeAnswer shouldBe a[DbActor.DbActorAck]
+
+    val readAsk = dbActor ? DbActor.ReadFederationExpect(channel, laoId)
+    val readAnswer = Await.result(readAsk, duration)
+
+    val readMessage = readAnswer.asInstanceOf[DbActor.DbActorReadAck].message
+
+    readMessage should equal(Some(message))
+
+  }
+
+  test("deleteFederationChallenge successfully deletes the message from the db") {
+    val initialStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+    val channel = Channel("/root/" + LAO_ID.toString + "/federation")
+
+    val writeAsk = dbActor ? DbActor.WriteFederationChallenge(channel, LAO_ID, CHALLENGE_MESSAGE)
+    val writeAnswer = Await.result(writeAsk, duration)
+
+    writeAnswer shouldBe a[DbActor.DbActorAck]
+
+    val deleteAsk = dbActor ? DbActor.DeleteFederationChallenge(channel, LAO_ID)
+    val deleteAnswer = Await.result(deleteAsk, duration)
+
+    deleteAnswer shouldBe a[DbActor.DbActorAck]
+
+    val askAgain = dbActor ? DbActor.ReadFederationChallenge(channel, LAO_ID)
+    val answer = Await.result(askAgain, duration)
+
+    answer shouldBe a[DbActor.DbActorReadAck]
+
+    val message: Option[Message] = answer.asInstanceOf[DbActor.DbActorReadAck].message
+
+    message should equal(None)
+
   }
 
 }
