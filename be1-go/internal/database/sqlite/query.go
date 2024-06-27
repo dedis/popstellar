@@ -504,16 +504,18 @@ func (s *SQLite) GetRumorParamsHelper(tx *sql.Tx, rows *sql.Rows,
 	if err := json.Unmarshal(timestampByte, &timestamp); err != nil {
 		return mrumor.ParamsRumor{}, poperrors.NewInternalServerError("failed to unmarshal timestamp: %v", err)
 	}
+
 	messages := make(map[string][]mmessage.Message)
 
 	args := []interface{}{true, sender, rumorID}
-	err := s.GetMessagesFromRumorHelper(tx, rumorID, args, selectRumorProcessedMessages, messages)
 
+	err := s.GetMessagesFromRumorHelper(tx, rumorID, args, selectRumorProcessedMessages, messages)
 	if err != nil {
 		return mrumor.ParamsRumor{}, err
 	}
 
 	args = []interface{}{sender, rumorID}
+
 	err = s.GetMessagesFromRumorHelper(tx, rumorID, args, selectRumorUnprocessedMessages, messages)
 	if err != nil {
 		return mrumor.ParamsRumor{}, err
