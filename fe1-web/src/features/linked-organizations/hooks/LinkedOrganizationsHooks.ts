@@ -31,6 +31,16 @@ export namespace LinkedOrganizationsHooks {
   export const useCurrentLao = () => useLinkedOrganizationsContext().useCurrentLao();
 
   /**
+   * Gets the function to retrieve a lao by its id
+   */
+  export const useGetLaoById = (laoId: Hash) => useLinkedOrganizationsContext().getLaoById(laoId);
+
+    /**
+   * Gets the function to retrieve a rollcall by its id
+   */
+    export const useGetRollCallById = (id: Hash) => useLinkedOrganizationsContext().getRollCallById(id);
+
+  /**
    * Gets whether the current user is organizer of the given lao
    */
   export const useIsLaoOrganizer = (laoId: Hash) =>
