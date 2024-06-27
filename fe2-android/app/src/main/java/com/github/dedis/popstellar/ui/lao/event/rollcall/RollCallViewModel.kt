@@ -104,7 +104,13 @@ constructor(
 
     val createRollCall =
         CreateRollCall(
-            title, creation, proposedStart, proposedEnd, location, description, laoView.id)
+            title,
+            creation,
+            proposedStart,
+            proposedEnd,
+            location,
+            description?.ifEmpty { null },
+            laoView.id)
 
     return networkManager.messageSender
         .publish(keyManager.mainKeyPair, laoView.channel, createRollCall)

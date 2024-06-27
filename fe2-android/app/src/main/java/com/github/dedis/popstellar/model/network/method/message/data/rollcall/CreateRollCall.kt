@@ -5,6 +5,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action
 import com.github.dedis.popstellar.model.network.method.message.data.Data
 import com.github.dedis.popstellar.model.network.method.message.data.Objects
 import com.github.dedis.popstellar.model.objects.RollCall
+import com.github.dedis.popstellar.utility.MessageValidator
 import com.google.gson.annotations.SerializedName
 import java.util.Optional
 
@@ -41,6 +42,8 @@ class CreateRollCall : Data {
       description: String?,
       laoId: String
   ) {
+    validate(laoId, "laoId", name, creation, proposedStart, proposedEnd, location, description)
+        .let { if (description != null) it.stringNotEmpty(description, "description") else it }
     this.name = name
     this.creation = creation
     this.proposedStart = proposedStart
@@ -63,6 +66,8 @@ class CreateRollCall : Data {
       location: String,
       description: String?
   ) {
+    validate(id, "id", name, creation, proposedStart, proposedEnd, location, description)
+
     this.id = id
     this.name = name
     this.creation = creation
@@ -107,5 +112,25 @@ class CreateRollCall : Data {
   override fun toString(): String {
     return "CreateRollCall{id='$id', name='$name', creation=$creation, proposedStart=$proposedStart, " +
         "proposedEnd=$proposedEnd, location='$location', description='$description'}"
+  }
+
+  private fun validate(
+      id: String,
+      idLabel: String,
+      name: String,
+      creation: Long,
+      proposedStart: Long,
+      proposedEnd: Long,
+      location: String,
+      description: String?
+  ): MessageValidator.MessageValidatorBuilder {
+    return MessageValidator.verify()
+        .isNotEmptyBase64(id, idLabel)
+        .stringNotEmpty(name, "name")
+        .greaterOrEqualThan(creation, 0, "creation")
+        .greaterOrEqualThan(proposedStart, 0, "proposedStart")
+        .greaterOrEqualThan(proposedEnd, 0, "proposedEnd")
+        .stringNotEmpty(location, "location")
+        .let { if (description != null) it.stringNotEmpty(description, "description") else it }
   }
 }

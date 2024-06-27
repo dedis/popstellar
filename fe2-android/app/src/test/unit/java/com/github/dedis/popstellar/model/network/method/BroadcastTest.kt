@@ -5,9 +5,10 @@ import com.github.dedis.popstellar.model.network.method.message.data.rollcall.Cr
 import com.github.dedis.popstellar.model.objects.Channel.Companion.fromString
 import com.github.dedis.popstellar.testutils.Base64DataUtils
 import com.google.gson.Gson
-import java.util.Objects
 import org.junit.Assert
 import org.junit.Test
+import java.time.Instant
+import java.util.Objects
 
 class BroadcastTest {
   @Test
@@ -59,8 +60,19 @@ class BroadcastTest {
 
   companion object {
     private val CHANNEL = fromString("root/stuff")
-    private const val ID = 42
-    private val DATA = CreateRollCall("title", 0, 1, 2, "EPFL", "rc", "an id")
+    private const val LAO_ID = "fEvAfdtNrykd9NPYl9ReHLX-6IP6SFLKTZJLeGUHZ_U="
+    private const val NAME = "NAME"
+    private val NOW = Instant.now().epochSecond
+    private val END = NOW + 30L
+    private const val LOCATION = "Location"
+    private val DATA = CreateRollCall(
+      NAME,
+      NOW,
+      NOW,
+      END,
+      LOCATION, null,
+      LAO_ID
+    )
     private val KEYPAIR = Base64DataUtils.generateKeyPair()
     private val MESSAGE_GENERAL = MessageGeneral(KEYPAIR, DATA, Gson())
     private val BROADCAST = Broadcast(CHANNEL, MESSAGE_GENERAL)
