@@ -174,7 +174,6 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	channelHandlers[channel.ChirpObject] = hchirp.New(conf, subs, &db, schemaValidator, log)
 	channelHandlers[channel.ReactionObject] = hreaction.New(subs, &db, schemaValidator, log)
 	channelHandlers[channel.CoinObject] = hcoin.New(subs, &db, schemaValidator, log)
-	channelHandlers[channel.FederationObject] = hfederation.New(hubParams, subs, &db, schemaValidator, log)
 
 	// Create the message handler
 	msgHandler := hmessage.New(&db, channelHandlers, log)
@@ -188,13 +187,16 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	// Create the rumor state handler
 	rumorStateHandler := hrumorstate.New(queries, sockets, &db, log)
 
+	// Create the federation handler
+	federationHandler := hfederation.New(hubParams, subs, sockets, conf, &db, schemaValidator, log)
+
 	// Create the query handler
 	methodHandlers := make(hquery.MethodHandlers)
 	methodHandlers[mquery.MethodCatchUp] = hcatchup.New(&db, log)
 	methodHandlers[mquery.MethodGetMessagesById] = hgetmessagesbyid.New(&db, log)
 	methodHandlers[mquery.MethodGreetServer] = greetserverHandler
 	methodHandlers[mquery.MethodHeartbeat] = hheartbeat.New(queries, &db, log)
-	methodHandlers[mquery.MethodPublish] = hpublish.New(hubParams, &db, msgHandler, log)
+	methodHandlers[mquery.MethodPublish] = hpublish.New(hubParams, &db, msgHandler, federationHandler, log)
 	methodHandlers[mquery.MethodSubscribe] = hsubscribe.New(subs, log)
 	methodHandlers[mquery.MethodUnsubscribe] = hunsubscribe.New(subs, log)
 	methodHandlers[mquery.MethodRumor] = rumorHandler
