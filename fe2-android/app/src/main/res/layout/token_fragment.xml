@@ -16,6 +16,16 @@
       android:contentDescription="@string/qr_code_token_content" />
 
     <TextView
+        android:id="@+id/token_text_username_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/text_medium_title"
+        android:layout_marginHorizontal="@dimen/margin_text"
+        android:layout_marginTop="@dimen/margin_text_small"
+        android:layout_gravity="center"
+        android:gravity="center" />
+
+    <TextView
       android:id="@+id/token_text_view"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"

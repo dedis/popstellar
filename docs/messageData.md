@@ -3364,6 +3364,7 @@ This message is sent by both organizers to their servers to be broadcast. The me
 
 ```json5
 // ../protocol/examples/messageData/federation_tokens_exchange/federation_tokens_exchange.json
+
 {
   "object": "federation",
   "action": "tokens_exchange",
@@ -3372,11 +3373,13 @@ This message is sent by both organizers to their servers to be broadcast. The me
   "tokens": ["M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="],
   "timestamp": 1712854874
 }
+
 ```
 </details>
 
 ```json5
 // ../protocol/query/method/message/data/dataFederationTokensExchange.json
+
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationTokensExchange.json",

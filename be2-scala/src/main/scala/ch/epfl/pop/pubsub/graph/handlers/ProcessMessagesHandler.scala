@@ -63,7 +63,7 @@ object ProcessMessagesHandler extends AskPatternConstants {
             processedRumors = processedRumors.prepended(rumor)
           }
           if !successful then
-            system.log.info(s"Failed to process all rumors from rumorStateAnswer $jsonId. Processed rumors where ${processedRumors.map(rumor => (rumor.senderPk, rumor.rumorId)).tail}")
+            system.log.info(s"Failed to process all rumors from rumorStateAnswer $jsonId. Processed rumors where ${processedRumors.map(rumor => (rumor.senderPk, rumor.rumorId)).tail}. Unprocessed rumors not written in memory.")
             Left(PipelineError(
               ErrorCodes.SERVER_ERROR.id,
               s"Rumor state handler was not able to process all rumors from $msg",

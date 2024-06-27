@@ -1,6 +1,9 @@
 package com.github.dedis.popstellar.model.objects.security
 
 import com.github.dedis.popstellar.testutils.MockitoKotlinHelpers
+import com.github.dedis.popstellar.utility.Constants.EMPTY_USERNAME
+import com.github.dedis.popstellar.utility.Constants.USERNAME_DIGITS
+import com.github.dedis.popstellar.utility.GeneralUtils
 import java.security.GeneralSecurityException
 import net.i2p.crypto.eddsa.Utils
 import org.junit.Assert
@@ -48,6 +51,27 @@ class KeyPairTest {
     // Tested with value in keypair.json (see #1042)
     val pk = PublicKey("oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=")
     Assert.assertEquals("SGnNfF533PBEUMYPMqBSQY83z5U=", pk.computeHash())
+  }
+
+  @Test
+  fun pubKeyUsernameDigits() {
+    val pk = PublicKey("oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=")
+    val digits = "3877"
+    // last 4 characters of the hash are the 4 first numerical digits of the hash
+    Assert.assertEquals(digits, pk.getLabel().substring(pk.getLabel().length - USERNAME_DIGITS))
+  }
+
+  @Test
+  fun pubKeyUsernameHashContainsLessDigits() {
+    val pk = PublicKey("oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJmhmms=")
+    val digits = "0387"
+    // If the Hash contains less than 4 digits, the username will be padded with 0
+    Assert.assertEquals(digits, pk.getLabel().substring(pk.getLabel().length - USERNAME_DIGITS))
+  }
+
+  @Test
+  fun generateUsernameFromBase64EmptyInput() {
+    Assert.assertEquals(EMPTY_USERNAME, GeneralUtils.generateUsernameFromBase64(""))
   }
 
   companion object {

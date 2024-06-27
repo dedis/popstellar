@@ -8,9 +8,9 @@ import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.network.method.GreetServer
 import ch.epfl.pop.model.objects.Channel
-import ch.epfl.pop.pubsub.ClientActor._
-import ch.epfl.pop.pubsub.PubSubMediator._
-import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.pubsub.ClientActor.*
+import ch.epfl.pop.pubsub.PubSubMediator.*
+import ch.epfl.pop.pubsub.graph.{GraphMessage, compactPrinter, prettyPrinter}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.storage.DbActor
 
@@ -65,15 +65,15 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
       }
     case message: PubSubMediatorMessage => message match {
         case SubscribeToAck(channel) =>
-          log.info(s"Actor $self received ACK mediator $mediator for the subscribe to channel '$channel' request")
+          log.info(s"Received ACK from Mediator to subscribe request on channel '$channel'")
           subscribedChannels += channel
         case UnsubscribeFromAck(channel) =>
-          log.info(s"Actor $self received ACK mediator $mediator for the unsubscribe from channel '$channel' request")
+          log.info(s"Received ACK from Mediator to unsubscribe request on channel '$channel' request")
           subscribedChannels -= channel
         case SubscribeToNAck(channel, reason) =>
-          log.info(s"Actor $self received NACK mediator $mediator for the subscribe to channel '$channel' request for reason: $reason")
+          log.info(s"Received NACK from Mediator to subscribe request on channel '$channel'  for reason: $reason")
         case UnsubscribeFromNAck(channel, reason) =>
-          log.info(s"Actor $self received NACK mediator $mediator for the unsubscribe from channel '$channel' request for reason: $reason")
+          log.info(s"Received NACK from Mediator for unsubscribe request on channel '$channel' for reason: $reason")
         case PropagateAck() => // Nothing to do.
       }
     case greetServer: GreetServer =>
@@ -83,7 +83,7 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
       connectionMediatorRef ! ConnectionMediator.NewServerConnected(self, greetServer)
 
     case clientAnswer @ ClientAnswer(_) =>
-      log.info(s"Sending an answer back to client $wsHandle: $clientAnswer")
+      log.info(s"Sending an answer back to ${if isServer then "server" else "client"} ${wsHandle.get.path.name}: $clientAnswer")
       messageWsHandle(clientAnswer)
 
     case m @ _ => m match {
@@ -114,7 +114,7 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
     }
 
     if (publicKey.isDefined) {
-      log.info("Sending greet")
+      log.info("Sending greetServer")
       val greetServer = GreetServer(publicKey.get, clientAddress, serverAddress)
       messageWsHandle(ClientAnswer(Right(JsonRpcRequest(
         RpcValidator.JSON_RPC_VERSION,
@@ -135,7 +135,9 @@ object ClientActor {
   sealed trait ClientActorMessage
 
   // answer to be sent to the client represented by the client actor
-  final case class ClientAnswer(graphMessage: GraphMessage) extends ClientActorMessage
+  final case class ClientAnswer(graphMessage: GraphMessage) extends ClientActorMessage {
+    override def toString: String = compactPrinter(graphMessage)
+  }
 
   sealed trait Event
 

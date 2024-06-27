@@ -11,6 +11,7 @@ import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.SingleEvent
 import com.github.dedis.popstellar.databinding.DigitalCashSendFragmentBinding
 import com.github.dedis.popstellar.model.objects.security.PublicKey
+import com.github.dedis.popstellar.model.objects.security.PublicKey.Companion.findPublicKeyFromUsername
 import com.github.dedis.popstellar.ui.lao.LaoActivity.Companion.obtainDigitalCashViewModel
 import com.github.dedis.popstellar.ui.lao.LaoActivity.Companion.obtainViewModel
 import com.github.dedis.popstellar.ui.lao.LaoActivity.Companion.setCurrentFragment
@@ -60,15 +61,20 @@ class DigitalCashSendFragment : Fragment() {
       val event = booleanEvent.contentIfNotHandled
       if (event != null) {
         val currentAmount = binding.digitalCashSendAmount.text.toString()
-        val currentPublicKeySelected = binding.digitalCashSendSpinner.editText?.text.toString()
+        val currentPublicKeySelected =
+            findPublicKeyFromUsername(
+                binding.digitalCashSendSpinner.editText?.text.toString(),
+                digitalCashViewModel.attendeesFromTheRollCallList,
+                digitalCashViewModel.validToken.publicKey)
 
         if (digitalCashViewModel.canPerformTransaction(
-            currentAmount, currentPublicKeySelected, -1)) {
+            currentAmount, currentPublicKeySelected.encoded, -1)) {
           try {
             val token = digitalCashViewModel.validToken
             if (canPostTransaction(token.publicKey, currentAmount.toInt())) {
               laoViewModel.addDisposable(
-                  postTransaction(Collections.singletonMap(currentPublicKeySelected, currentAmount))
+                  postTransaction(
+                          Collections.singletonMap(currentPublicKeySelected.encoded, currentAmount))
                       .subscribe(
                           {
                             digitalCashViewModel.updateReceiptAddressEvent(currentPublicKeySelected)
@@ -124,7 +130,8 @@ class DigitalCashSendFragment : Fragment() {
     /* Roll Call attendees to which we can send */
     var myArray: MutableList<String>
     try {
-      myArray = digitalCashViewModel.attendeesFromTheRollCallList.toMutableList()
+      myArray =
+          digitalCashViewModel.attendeesFromTheRollCallList.map { it.getLabel() }.toMutableList()
     } catch (e: NoRollCallException) {
       Timber.tag(TAG).d(e)
       Toast.makeText(
@@ -155,7 +162,7 @@ class DigitalCashSendFragment : Fragment() {
    */
   private fun removeOwnToken(members: MutableList<String>) {
     try {
-      members.remove(digitalCashViewModel.validToken.publicKey.encoded)
+      members.remove(digitalCashViewModel.validToken.publicKey.getLabel())
     } catch (e: KeyException) {
       Timber.tag(TAG).e(e, resources.getString(R.string.error_retrieve_own_token))
     }

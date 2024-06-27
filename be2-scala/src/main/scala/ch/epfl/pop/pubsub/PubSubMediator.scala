@@ -31,41 +31,41 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
           // if we have people already subscribed to said channel
           case Some(set) =>
             if (set.contains(clientActorRef)) {
-              log.info(s"$clientActorRef already subscribed to '$channel'")
+              log.warning(s"client $clientActorRef already subscribed to '$channel'")
               Future(SubscribeToAck(channel))
             } else {
-              log.info(s"Subscribing $clientActorRef to channel '$channel'")
+              log.info(s"Subscribing client $clientActorRef to channel '$channel'")
               set += clientActorRef
               Future(SubscribeToAck(channel))
             }
 
           // if we have no one subscribed to said channel
           case _ =>
-            log.info(s"Subscribing $clientActorRef to channel '$channel'")
+            log.info(s"Subscribing client $clientActorRef to channel '$channel'")
             channelMap = channelMap ++ List(channel -> mutable.Set(clientActorRef))
             Future(SubscribeToAck(channel))
         }
 
       // db doesn't recognize the channel, thus mediator cannot subscribe anyone to a non existing channel
       case _ =>
-        val reason: String = s"Channel '$channel' doesn't exist in db"
-        log.info(reason)
+        val reason: String = s"Channel '$channel' doesn't exist in db."
+        log.warning(s"$reason. Mediator cannot subscribe to non-existing channel")
         Future(SubscribeToNAck(channel, reason))
     }
   }
 
   private def unsubscribeFrom(channel: Channel, clientActorRef: ActorRef): PubSubMediatorMessage = channelMap.get(channel) match {
     case Some(set) if set.contains(clientActorRef) =>
-      log.info(s"Unsubscribing $clientActorRef from channel '$channel'")
+      log.info(s"Unsubscribing client $clientActorRef from channel '$channel'")
       set -= clientActorRef
       UnsubscribeFromAck(channel)
     case Some(_) =>
-      val reason: String = s"Actor $clientActorRef is not subscribed to channel '$channel'"
-      log.info(reason)
+      val reason: String = s"Client $clientActorRef is not subscribed to channel '$channel'"
+      log.warning(reason)
       UnsubscribeFromNAck(channel, reason)
     case _ =>
       val reason: String = s"Channel '$channel' does not exist in the system"
-      log.info(reason)
+      log.warning(reason)
       UnsubscribeFromNAck(channel, reason)
   }
 
@@ -79,11 +79,11 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
 
     channelMap.get(channel) match {
       case Some(clientRefs: mutable.Set[ActorRef]) =>
-        log.info(s"Actor $self (PubSubMediator) is propagating a message to ${clientRefs.size} clients")
+        log.info(s"Propagating a message to ${clientRefs.size} clients")
         clientRefs.foreach(clientRef => clientRef ! ClientActor.ClientAnswer(generateAnswer()))
 
       case _ =>
-        log.info(s"Actor $self (PubSubMediator) did not propagate any message since no client is subscribed to channel $channel")
+        log.warning(s"Did not propagate any message since no client is subscribed to channel $channel")
     }
   }
 
@@ -102,7 +102,7 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
       sender() ! PropagateAck()
 
     case m @ _ =>
-      log.error(s"PubSubMediator received an unknown message : $m")
+      log.warning(s"Received an unknown message : $m. Message is ignored.")
   }
 }
 
