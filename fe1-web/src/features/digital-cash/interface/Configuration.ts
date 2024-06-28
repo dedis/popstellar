@@ -91,6 +91,12 @@ export interface DigitalCashCompositionConfiguration {
    * @returns the RollCallToken or undefined if not found in the roll call
    */
   useRollCallTokenByRollCallId: (laoId: Hash, rollCallId?: Hash) => RollCallToken | undefined;
+
+  /**
+   * Gets the current lao
+   * @returns The current lao
+   */
+  useCurrentLao: () => DigitalCashFeature.Lao;
 }
 
 /**
@@ -102,6 +108,7 @@ export type DigitalCashReactContext = Pick<
   | 'useCurrentLaoId'
   | 'useIsLaoOrganizer'
   | 'useConnectedToLao'
+  | 'useCurrentLao'
 
   /* roll call */
   | 'useRollCallById'

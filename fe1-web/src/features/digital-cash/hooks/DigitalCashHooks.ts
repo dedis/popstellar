@@ -65,6 +65,11 @@ export namespace DigitalCashHooks {
     useDigitalCashContext().useRollCallsByLaoId(laoId);
 
   /**
+   * Gets the current lao , throws an error if there is none
+   */
+  export const useCurrentLao = () => useDigitalCashContext().useCurrentLao();
+
+  /**
    * Gets the list of all transactions that happened in this LAO
    * To use only in a React component
    * @param laoId the id of the LAO

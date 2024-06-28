@@ -1,4 +1,4 @@
-import { mockKeyPair, mockLaoId } from '__tests__/utils';
+import { mockKeyPair, mockLao, mockLaoId } from '__tests__/utils';
 import { Hash, PopToken, RollCallToken } from 'core/objects';
 import { COINBASE_HASH, SCRIPT_TYPE } from 'resources/const';
 
@@ -26,6 +26,7 @@ export const mockDigitalCashContextValue = (isOrganizer: boolean) => ({
     }),
     useRollCallTokensByLaoId: () => [mockRollCallToken],
     useRollCallTokenByRollCallId: () => mockRollCallToken,
+    useCurrentLao: () => mockLao,
   } as DigitalCashReactContext,
 });
 

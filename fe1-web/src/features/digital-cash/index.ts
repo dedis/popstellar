@@ -31,6 +31,7 @@ export function compose(
       useRollCallById: configuration.useRollCallById,
       useCurrentLaoId: configuration.useCurrentLaoId,
       useConnectedToLao: configuration.useConnectedToLao,
+      useCurrentLao: configuration.useCurrentLao,
       useIsLaoOrganizer: configuration.useIsLaoOrganizer,
       useRollCallTokensByLaoId: configuration.useRollCallTokensByLaoId,
       useRollCallTokenByRollCallId: configuration.useRollCallTokenByRollCallId,

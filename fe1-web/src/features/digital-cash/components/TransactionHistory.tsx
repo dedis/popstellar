@@ -8,7 +8,6 @@ import ModalHeader from 'core/components/ModalHeader';
 import { generateUsernameFromBase64 } from 'core/functions/Mnemonic';
 import { Hash, RollCallToken } from 'core/objects';
 import { List, ModalStyles, Typography } from 'core/styles';
-import { getCurrentLao } from 'features/lao/functions';
 import { COINBASE_HASH } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -25,6 +24,8 @@ const TransactionHistory = ({ laoId, rollCallTokens }: IPropTypes) => {
 
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
+
+  const currentLao = DigitalCashHooks.useCurrentLao();
 
   // If we want to show all transactions, just use DigitalCashHooks.useTransactions(laoId)
   const transactions: Transaction[] = DigitalCashHooks.useTransactionsByRollCallTokens(
@@ -137,7 +138,7 @@ const TransactionHistory = ({ laoId, rollCallTokens }: IPropTypes) => {
                         <ListItem.Title
                           style={[Typography.base, Typography.code]}
                           numberOfLines={1}>
-                          {input.script.publicKey.valueOf() === getCurrentLao().organizer.valueOf()
+                          {input.script.publicKey.valueOf() === currentLao.organizer.valueOf()
                             ? input.script.publicKey.valueOf() +
                               STRINGS.digital_cash_wallet_transaction_history_organizer
                             : generateUsernameFromBase64(input.script.publicKey.valueOf())}
