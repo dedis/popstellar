@@ -54,7 +54,7 @@ const LinkedOrganizationsScreen = () => {
       await catchup(channel);
       // sometimes there are erros without the extra waiting time - temporary fix
       await new Promise((f) => setTimeout(f, 1000));
-      setLinkedLaoId(linkedLaoId);
+      setLinkedLaoId(linkedOrgId);
     };
     if (
       recvChallengeState &&
@@ -115,7 +115,7 @@ const LinkedOrganizationsScreen = () => {
             </ListItem>
           ))}
         </View>
-        {linkedLaoId && isOrganizer && <BroadcastLinkedOrgInfo linkedLaoId={linkedLaoId} />}
+        {linkedLaoId && <BroadcastLinkedOrgInfo linkedLaoId={linkedLaoId} />}
       </ScreenWrapper>
     </View>
   );
