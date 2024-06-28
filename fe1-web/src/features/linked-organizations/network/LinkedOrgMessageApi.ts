@@ -4,6 +4,7 @@ import { getFederationChannel, Hash, PublicKey, Timestamp } from 'core/objects';
 
 import { Challenge } from '../objects/Challenge';
 import { ChallengeRequest, ChallengeMessage, FederationExpect, FederationInit } from './messages';
+import { TokensExchange } from './messages/TokensExchange';
 
 /**
  * Contains all functions to send social media related messages.
@@ -72,5 +73,25 @@ export async function expectFederation(
     public_key: public_key,
     challenge: messageChallenge,
   });
+  return publish(channel, message);
+}
+
+/**
+ * Sends a query to the server to exchange tokens
+ *
+ */
+export async function tokensExchange(
+  lao_id: Hash,
+  linked_lao_id: Hash,
+  roll_call_id: Hash,
+  tokens: PublicKey[],
+): Promise<void> {
+  const message = new TokensExchange({
+    lao_id: linked_lao_id,
+    roll_call_id: roll_call_id,
+    tokens: tokens,
+    timestamp: Timestamp.EpochNow(),
+  });
+  const channel = getFederationChannel(lao_id);
   return publish(channel, message);
 }

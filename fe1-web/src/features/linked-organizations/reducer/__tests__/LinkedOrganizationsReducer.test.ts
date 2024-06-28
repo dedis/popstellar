@@ -215,7 +215,7 @@ describe('makeLinkedOrganizationsSelector', () => {
           },
         } as LinkedOrganizationReducerState,
       }),
-    ).toEqual([mockOrganizationState]);
+    ).toEqual([serializedMockLaoId]);
   });
 
   it('returns empty array if the linked organization  is not in the store', () => {

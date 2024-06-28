@@ -66,6 +66,32 @@ const linkedOrganizationSlice = createSlice({
         state.byLaoId[laoId].byLinkedLaoId[linkedOrganization.lao_id] = linkedOrganization;
       },
     },
+    addLinkedLaoId: {
+      prepare(laoId: Hash, linkedLaoId: Hash) {
+        return {
+          payload: {
+            laoId: laoId.valueOf(),
+            linkedLaoId: linkedLaoId.valueOf(),
+          },
+        };
+      },
+      reducer(state, action: PayloadAction<{ laoId: string; linkedLaoId: string }>) {
+        const { laoId, linkedLaoId } = action.payload;
+
+        if (state.byLaoId[laoId] === undefined) {
+          state.byLaoId[laoId] = {
+            allLaoIds: [],
+            byLinkedLaoId: {},
+            allLaos: [],
+            allScannedLaos: [],
+          };
+        }
+
+        if (!state.byLaoId[laoId].allLaoIds.includes(linkedLaoId.valueOf())) {
+          state.byLaoId[laoId].allLaoIds.push(linkedLaoId);
+        }
+      },
+    },
     addScannedLinkedOrganization: {
       prepare(laoId: Hash, linkedOrganization: LinkedOrganizationState) {
         return {
@@ -131,6 +157,7 @@ export const {
   addLinkedOrganization,
   addScannedLinkedOrganization,
   removeScannedLinkedOrganization,
+  addLinkedLaoId,
 } = linkedOrganizationSlice.actions;
 
 export const getLinkedOrganizationState = (state: any): LinkedOrganizationReducerState =>
@@ -157,16 +184,16 @@ export const makeSingleLinkedOrganizationSelector = (laoId: Hash, linked_lao_id:
 };
 
 /**
- * Retrives all linked organization state by lao id
+ * Retrives all linked organization ids by lao id
  * @param laoId The id of the lao
- * @returns A list of linked organization state
+ * @returns A list of linked organization ids
  */
 export const makeLinkedOrganizationSelector = (laoId: Hash) => {
   return createSelector(
-    // First input: a map containing all linked organizations
+    // First input: a map containing all linked organization ids
     (state: any) => getLinkedOrganizationState(state),
-    // Selector: returns the linked organization for a specific lao and linked_lao_id
-    (linkedOrganizationState: LinkedOrganizationReducerState): LinkedOrganizationState[] | [] => {
+    // Selector: returns the linked organization ids for a specific lao and linked_lao_id
+    (linkedOrganizationState: LinkedOrganizationReducerState): string[] | [] => {
       const serializedLaoId = laoId.valueOf();
       if (!linkedOrganizationState) {
         return [];
@@ -174,7 +201,7 @@ export const makeLinkedOrganizationSelector = (laoId: Hash) => {
       if (!linkedOrganizationState.byLaoId[serializedLaoId]) {
         return [];
       }
-      return linkedOrganizationState.byLaoId[serializedLaoId].allLaos;
+      return linkedOrganizationState.byLaoId[serializedLaoId].allLaoIds;
     },
   );
 };

@@ -51,7 +51,6 @@ export function storeMessage(msg: ExtendedMessage) {
 }
 
 export function handleExtendedRpcRequests(req: ExtendedJsonRpcRequest) {
-  console.log(req);
   if (req.request.method === JsonRpcMethod.BROADCAST) {
     const broadcastParams = req.request.params as Broadcast;
 

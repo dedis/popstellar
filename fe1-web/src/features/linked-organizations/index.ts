@@ -13,7 +13,8 @@ import { challengeReducer, linkedOrganizationsReducer } from './reducer';
 export function configure(
   configuration: LinkedOrganizationsConfiguration,
 ): LinkedOrganizationsInterface {
-  const { useCurrentLao, useCurrentLaoId, useIsLaoOrganizer, getLaoById, getRollCallById } = configuration;
+  const { useCurrentLao, useCurrentLaoId, useIsLaoOrganizer, getLaoById, getRollCallById } =
+    configuration;
   configureNetwork(configuration);
   return {
     identifier: LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER,

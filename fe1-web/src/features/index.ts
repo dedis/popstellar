@@ -16,7 +16,6 @@ import * as rollCall from './rollCall';
 import * as social from './social';
 import * as wallet from './wallet';
 import * as witness from './witness';
-import { getRollCallById } from './rollCall/functions/RollCall';
 
 export function configureFeatures() {
   const messageRegistry = new MessageRegistry();
