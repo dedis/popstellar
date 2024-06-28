@@ -48,10 +48,10 @@ class FederationInitTest {
         Assert.assertEquals(INIT, INIT)
         Assert.assertEquals(INIT.hashCode().toLong(), init2.hashCode().toLong())
 
-        val challenge2 = Challenge("aaa", TIMESTAMP)
+        val challenge2 = Challenge("YmJi", TIMESTAMP)
         val mg = MessageGeneral(Base64DataUtils.generateKeyPair(), challenge2, Gson())
         Assert.assertNotEquals(INIT, FederationInit(LAO_ID, SERVER_ADDRESS, ORGANIZER.encoded, mg))
-        Assert.assertNotEquals(INIT, FederationInit("bbb", SERVER_ADDRESS, ORGANIZER.encoded, MG_CHALLENGE))
+        Assert.assertNotEquals(INIT, FederationInit("YWFh", SERVER_ADDRESS, ORGANIZER.encoded, MG_CHALLENGE))
         Assert.assertNotEquals(INIT, null)
     }
 
@@ -62,6 +62,19 @@ class FederationInitTest {
                         "public_key='${ORGANIZER.encoded}', challenge='$MG_CHALLENGE'}",
                 INIT.toString()
         )
+    }
+
+    @Test
+    fun invalidInitTest() {
+        Assert.assertThrows(IllegalArgumentException::class.java) {
+            FederationInit("aaa", SERVER_ADDRESS, ORGANIZER.encoded, MG_CHALLENGE)
+        }
+        Assert.assertThrows(IllegalArgumentException::class.java) {
+            FederationInit(LAO_ID, "", ORGANIZER.encoded, MG_CHALLENGE)
+        }
+        Assert.assertThrows(IllegalArgumentException::class.java) {
+            FederationInit(LAO_ID, SERVER_ADDRESS, "aaa", MG_CHALLENGE)
+        }
     }
 
     companion object {

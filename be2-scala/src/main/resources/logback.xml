@@ -1,14 +1,20 @@
 <!--Configuration for ch.qos.logback-->
 <!--Set debug to true to show debug logs on STDOUT-->
 <configuration debug="false" scan="true" scanPeriod="15 seconds">
+  <akkaProperty name="AKKA_LOGLEVEL" path="akka.loglevel" />
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>%d{HH:mm:ss.SSS} - %highlight(%-5level) : %logger{0} > %msg%n</pattern>
     </encoder>
   </appender>
 
+  <logger name="ch.epfl.pop" level="INFO" additivity="false">
+      <appender-ref ref="STDOUT" />
+  </logger>
+
 <!--Set root(general) logs level to INFO/DEBUG on STDOUT-->
   <root level="INFO">
     <appender-ref ref="STDOUT"/>
   </root>
+
 </configuration>

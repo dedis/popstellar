@@ -45,7 +45,7 @@ class FederationDetailsTest {
         private val LAO_ID = Lao.generateLaoId(SENDER, CREATION_TIME, LAO_NAME)
         private const val ADDRESS = "localhost:9100"
         private const val CHALLENGE_VALUE =
-                "frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA"
+                "RGlkIHlvdSBrbm93IHRoYXQgdGhpcyBpcyBhbiBhd3NvbWUgY2hhbGxlbmdlIHZhbHVlID8="
         private val CHALLENGE = Challenge(CHALLENGE_VALUE, CREATION_TIME)
 
         private val FEDERATION_DETAILS1 = FederationDetails(LAO_ID, ADDRESS, SENDER_KEY.publicKey.encoded)

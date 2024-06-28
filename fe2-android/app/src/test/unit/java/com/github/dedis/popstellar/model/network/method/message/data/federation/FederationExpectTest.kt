@@ -48,10 +48,10 @@ class FederationExpectTest {
         Assert.assertEquals(EXPECT, EXPECT)
         Assert.assertEquals(EXPECT.hashCode().toLong(), expect2.hashCode().toLong())
 
-        val challenge2 = Challenge("aaa", TIMESTAMP)
+        val challenge2 = Challenge("YmJi", TIMESTAMP)
         val mg = MessageGeneral(Base64DataUtils.generateKeyPair(), challenge2, Gson())
         Assert.assertNotEquals(EXPECT, FederationExpect(LAO_ID, SERVER_ADDRESS, ORGANIZER.encoded, mg))
-        Assert.assertNotEquals(EXPECT, FederationExpect("bbb", SERVER_ADDRESS, ORGANIZER.encoded, MG_CHALLENGE))
+        Assert.assertNotEquals(EXPECT, FederationExpect("YWFh", SERVER_ADDRESS, ORGANIZER.encoded, MG_CHALLENGE))
         Assert.assertNotEquals(EXPECT, null)
     }
 
@@ -62,6 +62,19 @@ class FederationExpectTest {
                         "public_key='${ORGANIZER.encoded}', challenge='$MG_CHALLENGE'}",
                 EXPECT.toString()
         )
+    }
+
+    @Test
+    fun invalidExpectTest() {
+        Assert.assertThrows(IllegalArgumentException::class.java) {
+            FederationExpect("aaa", SERVER_ADDRESS, ORGANIZER.encoded, MG_CHALLENGE)
+        }
+        Assert.assertThrows(IllegalArgumentException::class.java) {
+            FederationExpect(LAO_ID, "", ORGANIZER.encoded, MG_CHALLENGE)
+        }
+        Assert.assertThrows(IllegalArgumentException::class.java) {
+            FederationExpect(LAO_ID, SERVER_ADDRESS, "aaa", MG_CHALLENGE)
+        }
     }
 
     companion object {
