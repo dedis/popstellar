@@ -20,8 +20,18 @@
       android:layout_height="match_parent">
 
       <TextView
-        android:id="@+id/lao_card_text_view"
+        android:id="@+id/lao_card_title_text_view"
         style="@style/card_view_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="?attr/colorOnSurface"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+      <TextView
+        android:id="@+id/lao_card_role_text_view"
+        style="@style/explication_text_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="?attr/colorOnSurface"
