@@ -39,11 +39,9 @@ class LAOListAdapter(private val homeViewModel: HomeViewModel, private val activ
     }
 
     val laoTitle = holder.laoTitle
-    val laoRole = holder.laoRole
     try {
       val laoView = homeViewModel.getLaoView(laoId)
       laoTitle.text = laoView.name
-        //laoRole.text = laoView.role.toString()
     } catch (e: UnknownLaoException) {
       Timber.tag(TAG).e(e)
       error("Lao with id $laoId is supposed to be present")
@@ -61,12 +59,10 @@ class LAOListAdapter(private val homeViewModel: HomeViewModel, private val activ
   class LAOListItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val cardView: CardView
     val laoTitle: TextView
-    val laoRole: TextView
 
     init {
       cardView = itemView.findViewById(R.id.lao_card_view)
-      laoTitle = itemView.findViewById(R.id.lao_card_title_text_view)
-      laoRole = itemView.findViewById(R.id.lao_card_role_text_view)
+      laoTitle = itemView.findViewById(R.id.lao_card_text_view)
     }
   }
 
