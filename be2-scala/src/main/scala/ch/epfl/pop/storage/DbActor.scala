@@ -1197,11 +1197,11 @@ final case class DbActor(
       }
 
     case ReadFederationTokensExchange(channel, laoId) =>
-      log.info(s"Actor $self (db) received a ReadFederationResult request")
+      log.info(s"Actor $self (db) received a ReadFederationTokensExchange request")
       Try(readFederationResult(channel, laoId)) match {
         case Success(message) => sender() ! DbActorReadAck(message)
         case failure          => sender() ! failure.recover(Status.Failure(_))
-      }  
+      }
 
     case WriteFederationChallenge(channel, laoId, message) =>
       log.info(s"Actor $self (db) received a WriteFederationChallenge request")
@@ -1236,7 +1236,7 @@ final case class DbActor(
       Try(writeFederationTokensExchange(channel, laoId, message)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
-      }  
+      }
 
     case DeleteFederationChallenge(channel, laoId) =>
       log.info(s"Actor $self (db) received a DeleteFederationChallenge request")
@@ -1533,11 +1533,12 @@ object DbActor {
     */
   final case class ReadFederationResult(channel: Channel, laoId: Hash) extends Event
 
-  /**
-   * Requests the Db for the federationTokensExchange message 
-   * @param channel the channel in which the federationTokensExchange is being sent
-   * @param laoId the id of the lao in which the federationTokensExchange message is
-   */
+  /** Requests the Db for the federationTokensExchange message
+    * @param channel
+    *   the channel in which the federationTokensExchange is being sent
+    * @param laoId
+    *   the id of the lao in which the federationTokensExchange message is
+    */
   final case class ReadFederationTokensExchange(channel: Channel, laoId: Hash) extends Event
 
   /** Requests the Db to write the challenge
@@ -1583,12 +1584,14 @@ object DbActor {
     */
   final case class WriteFederationResult(channel: Channel, laoId: Hash, message: Message) extends Event
 
-  /**
-   * Requests the Db to write the federationTokensExchange
-   * @param channel the channel in which the federationTokensExchange is being sent
-   * @param laoId the id of the lao in which the federationTokensExchange message is
-   * @param message the federationTokensExchange message
-   */
+  /** Requests the Db to write the federationTokensExchange
+    * @param channel
+    *   the channel in which the federationTokensExchange is being sent
+    * @param laoId
+    *   the id of the lao in which the federationTokensExchange message is
+    * @param message
+    *   the federationTokensExchange message
+    */
   final case class WriteFederationTokensExchange(channel: Channel, laoId: Hash, message: Message) extends Event
 
   /** Requests the Db to delete the challenge

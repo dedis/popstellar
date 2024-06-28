@@ -244,7 +244,7 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
         val combined = for {
           _ <- mediator ? PubSubMediator.Propagate(rpcMessage.getParamsChannel, message)
           // store the message in the db
-          _ <- dbActor ? DbActor.WriteFederationTokensExchange(federationChannel,laoId, message)
+          _ <- dbActor ? DbActor.WriteFederationTokensExchange(federationChannel, laoId, message)
         } yield ()
 
         Await.ready(combined, duration).value match {
@@ -313,7 +313,7 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
         Await.result(getServer, duration) match {
           case ConnectionMediator.GetFederationServerAck(federationServerRef) =>
             constructAndSendRpc(remoteFederationChannel, resultMessage, federationServerRef)
-            
+
             val federationChannel: Channel = rpcMessage.getParamsChannel
             val laoId: Hash = rpcMessage.extractLaoId
             // we store the result in the db, delete the challenge and broadcast the result in the lao

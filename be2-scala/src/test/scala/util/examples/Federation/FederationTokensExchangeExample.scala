@@ -11,6 +11,8 @@ import ch.epfl.pop.model.network.method.message.Message
 object FederationTokensExchangeExample {
 
   final val SENDER: PublicKey = PublicKey(Base64Data("VHfxTlbM3nTnLQuKnKfs1fGP2cwVT8KJkc-sRGs_2KM="))
+  final val WRONG_SENDER: PublicKey = PublicKey(Base64Data.encode("wrongSender"))
+
   final val SIGNATURE: Signature = Signature(Base64Data("BILYwYkT5tOBL4rCD7yvhBkhAYqRXOI3ajQ2uJ1gAk-g6nRc38vMMnlHShuNCQ3dQFXYZPn37cCFelhWGjY8Bg=="))
   final val MESSAGE_ID: Hash = Hash(Base64Data("sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI="))
 
@@ -28,6 +30,15 @@ object FederationTokensExchangeExample {
   final val TOKENS_EXCHANGE_MESSAGE: Message = Message(
     DATA_TOKENS_EXCHANGE_MESSAGE.base64Data,
     SENDER,
+    SIGNATURE,
+    MESSAGE_ID,
+    List.empty,
+    Some(TOKENS_EXCHANGE)
+  )
+
+  final val TOKENS_EXCHANGE_WRONG_SENDER_MESSAGE: Message = Message(
+    DATA_TOKENS_EXCHANGE_MESSAGE.base64Data,
+    WRONG_SENDER,
     SIGNATURE,
     MESSAGE_ID,
     List.empty,

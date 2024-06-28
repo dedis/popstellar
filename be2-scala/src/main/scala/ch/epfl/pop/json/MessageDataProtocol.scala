@@ -609,7 +609,6 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     }
   }
 
-
   implicit object FederationTokensExchangeFormat extends JsonFormat[FederationTokensExchange] {
     final private val PARAM_LAO_ID = "lao_id"
     final private val PARAM_ROLL_CALL_ID = "roll_call_id"
@@ -617,7 +616,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     final private val PARAM_TIMESTAMP = "timestamp"
 
     override def read(json: JsValue): FederationTokensExchange = json.asJsObject().getFields(PARAM_LAO_ID, PARAM_ROLL_CALL_ID, PARAM_TOKENS, PARAM_TIMESTAMP) match {
-      case Seq(laoId@JsString(_), rollCallId@JsString(_), JsArray(tokens), timestamp@JsNumber(_)) =>
+      case Seq(laoId @ JsString(_), rollCallId @ JsString(_), JsArray(tokens), timestamp @ JsNumber(_)) =>
         FederationTokensExchange(
           laoId.convertTo[Hash],
           rollCallId.convertTo[Hash],
