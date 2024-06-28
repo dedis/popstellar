@@ -87,7 +87,10 @@ const linkedOrganizationSlice = createSlice({
           };
         }
 
-        if (!state.byLaoId[laoId].allLaoIds.includes(linkedLaoId.valueOf())) {
+        if (
+          !state.byLaoId[laoId].allLaoIds.includes(linkedLaoId.valueOf()) &&
+          linkedLaoId.valueOf() !== laoId.valueOf()
+        ) {
           state.byLaoId[laoId].allLaoIds.push(linkedLaoId);
         }
       },
