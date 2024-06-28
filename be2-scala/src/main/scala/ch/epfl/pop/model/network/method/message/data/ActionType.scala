@@ -31,4 +31,3 @@ enum ActionType(val action: String):
   case challenge_request extends ActionType("challenge_request")
   case challenge extends ActionType("challenge")
   case tokens_exchange extends ActionType("tokens_exchange")
-  case federation_result extends ActionType("result")

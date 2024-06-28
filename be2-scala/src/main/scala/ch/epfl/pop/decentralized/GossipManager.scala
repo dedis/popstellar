@@ -232,7 +232,7 @@ object GossipManager extends AskPatternConstants {
   def props(dbActorRef: AskableActorRef, pullRate: FiniteDuration = 15.seconds): Props =
     Props(new GossipManager(dbActorRef, pullRate = pullRate))
 
-  final private val IGNORED_ACTIONS = List(ActionType.init, ActionType.expect, ActionType.challenge, ActionType.challenge_request, ActionType.federation_result)
+  final private val IGNORED_ACTIONS = List(ActionType.init, ActionType.expect, ActionType.challenge, ActionType.challenge_request)
 
   /** When receiving a rumor, gossip manager handles the rumor by relaying
     *

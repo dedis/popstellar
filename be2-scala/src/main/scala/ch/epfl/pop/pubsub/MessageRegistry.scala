@@ -278,7 +278,7 @@ object MessageRegistry {
     )
 
     register.add(
-      (ObjectType.federation, ActionType.federation_result),
+      (ObjectType.federation, ActionType.result),
       createSchemaVerifier("dataFederationResult.json"),
       FederationResult.buildFromJson,
       FederationValidator.validateFederationResult,

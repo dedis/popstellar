@@ -213,7 +213,7 @@ object HighLevelMessageGenerator {
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        case (ObjectType.federation, ActionType.federation_result) =>
+        case (ObjectType.federation, ActionType.result) =>
           messageData = FederationResult.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
