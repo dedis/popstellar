@@ -195,7 +195,9 @@ class ChirpListAdapter(
     itemText.text = text
 
     // Changes the color of the profile if the chirps comes from another LAO
-    if (chirp.laoId != laoViewModel.laoId) {
+    if (chirp.laoId == laoViewModel.laoId) {
+      itemProfile.imageTintList = context.getColorStateList(R.color.colorAccent)
+    } else {
       itemProfile.imageTintList = context.getColorStateList(R.color.gray)
     }
 

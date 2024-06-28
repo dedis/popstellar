@@ -333,10 +333,10 @@ class ChirpListAdapterTest {
       val view1 = chirpListAdapter.getView(0, null, layout)
       Assert.assertNotNull(view1)
 
-      // The chirp of our LAO should have an unmodified color (null in this case)
+      // The chirp of our LAO should be blue
       val profile1 = view1.findViewById<ImageView>(R.id.social_media_profile)
       Assert.assertNotNull(profile1)
-      Assert.assertNull(profile1.imageTintList)
+      Assert.assertEquals(context.getColor(R.color.colorAccent), profile1.imageTintList?.defaultColor)
 
       // Get the view for the second chirp in the list.
       val view2 = chirpListAdapter.getView(1, null, layout)
