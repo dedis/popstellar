@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.socialmedia
 
+import android.content.Context
 import android.text.format.DateUtils
 import android.view.View
 import android.widget.ImageButton
@@ -8,6 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.FragmentActivity
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.dedis.popstellar.R
@@ -319,6 +321,7 @@ class ChirpListAdapterTest {
       val viewModel = obtainViewModel(activity)
       val chirpListAdapter =
               createChirpListAdapter(activity, viewModel, socialMediaViewModel, chirps)
+      val context = ApplicationProvider.getApplicationContext<Context>()
 
       // Use a non null ViewGroup to inflate the card
       val layout = LinearLayout(activity.applicationContext)
@@ -342,7 +345,7 @@ class ChirpListAdapterTest {
       // The chirp of the other LAO should be gray
       val profile2 = view2.findViewById<ImageView>(R.id.social_media_profile)
       Assert.assertNotNull(profile2)
-      Assert.assertEquals(-8355712, profile2.imageTintList?.defaultColor)
+      Assert.assertEquals(context.getColor(R.color.gray), profile2.imageTintList?.defaultColor)
     }
   }
 
