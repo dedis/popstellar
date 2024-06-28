@@ -57,13 +57,12 @@ object ProcessMessagesHandler extends AskPatternConstants {
         case Some(rumorList) =>
           val orderedRumors = rumorList.sortBy(_.timestamp)
           var processedRumors: List[Rumor] = List.empty
-          var successful = true
-          for rumor <- orderedRumors if successful do {
-            successful = rumorHandler(messageRegistry, rumor) && writeRumorInDb(dbActorRef, rumor)
-            processedRumors = processedRumors.prepended(rumor)
+          for rumor <- orderedRumors do {
+            if writeRumorInDb(dbActorRef, rumor) && rumorHandler(messageRegistry, rumor) then
+              processedRumors = processedRumors.prepended(rumor)
           }
-          if !successful then
-            system.log.info(s"Failed to process all rumors from rumorStateAnswer $jsonId. Processed rumors where ${processedRumors.map(rumor => (rumor.senderPk, rumor.rumorId)).tail}. Unprocessed rumors not written in memory.")
+          if processedRumors.size != orderedRumors.size then
+            system.log.info(s"Failed to process all rumors from rumorStateAnswer $jsonId. Processed rumors where ${if processedRumors.nonEmpty then processedRumors.map(rumor => (rumor.senderPk, rumor.rumorId)).tail else processedRumors}. Unprocessed rumors not written in memory.")
             Left(PipelineError(
               ErrorCodes.SERVER_ERROR.id,
               s"Rumor state handler was not able to process all rumors from $msg",
