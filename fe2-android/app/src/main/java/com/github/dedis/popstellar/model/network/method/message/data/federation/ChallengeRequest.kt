@@ -17,7 +17,9 @@ class ChallengeRequest
 (val timestamp: Long) : Data {
 
   init {
-    MessageValidator.verify().validPastTimes(timestamp)
+    MessageValidator.verify()
+        .validPastTimes(timestamp)
+        .greaterOrEqualThan(timestamp, 0, "timestamp")
   }
 
   override val `object`: String

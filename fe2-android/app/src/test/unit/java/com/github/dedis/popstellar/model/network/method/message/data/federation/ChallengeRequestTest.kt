@@ -46,6 +46,9 @@ class ChallengeRequestTest {
         Assert.assertThrows(IllegalArgumentException::class.java) {
             ChallengeRequest(TIMESTAMP + 2000)
         }
+        Assert.assertThrows(IllegalArgumentException::class.java) {
+            ChallengeRequest(-1)
+        }
     }
 
     companion object {

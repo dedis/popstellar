@@ -58,7 +58,7 @@ class ChallengeTest {
     @Test
     fun testInvalidChallenge() {
         Assert.assertThrows(IllegalArgumentException::class.java) {
-            Challenge("aaa", TIMESTAMP)
+            Challenge("", TIMESTAMP)
         }
     }
 

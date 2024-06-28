@@ -19,8 +19,8 @@ class Challenge
   @SerializedName("valid_until") val validUntil: Long
 
   init {
+    MessageValidator.verify().stringNotEmpty(value, "challenge").validFutureTimes(validUntil)
     this.validUntil = max(0L, validUntil)
-    MessageValidator.verify().isNotEmptyBase64(value, "challenge").validFutureTimes(this.validUntil)
   }
 
   override val `object`: String
