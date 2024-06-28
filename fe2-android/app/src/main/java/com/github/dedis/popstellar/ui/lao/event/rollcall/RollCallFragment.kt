@@ -153,7 +153,7 @@ class RollCallFragment : AbstractEventFragment {
     clipboardManager.setupCopyButton(
         binding.rollCallPopTokenTextCopyButton, binding.rollCallPopTokenText, "PoP Token Hash")
 
-      binding.rollCallPopTokenTextCopyButton.visibility = View.GONE
+    binding.rollCallPopTokenTextCopyButton.visibility = View.GONE
     return binding.root
   }
 
@@ -310,12 +310,12 @@ class RollCallFragment : AbstractEventFragment {
       binding.rollCallPopTokenText.text = pk
       binding.rollCallPkQrCode.visibility = View.VISIBLE
       binding.rollCallPopTokenText.visibility = View.VISIBLE
-        binding.rollCallPopTokenTextCopyButton.visibility = View.VISIBLE
+      binding.rollCallPopTokenTextCopyButton.visibility = View.VISIBLE
     } else {
-        binding.rollCallPopTokenUsername.visibility = View.INVISIBLE
-        binding.rollCallPkQrCode.visibility = View.INVISIBLE
-        binding.rollCallPopTokenText.visibility = View.INVISIBLE
-        binding.rollCallPopTokenTextCopyButton.visibility = View.INVISIBLE
+      binding.rollCallPopTokenUsername.visibility = View.INVISIBLE
+      binding.rollCallPkQrCode.visibility = View.INVISIBLE
+      binding.rollCallPopTokenText.visibility = View.INVISIBLE
+      binding.rollCallPopTokenTextCopyButton.visibility = View.INVISIBLE
     }
 
     // Don't lose time generating the QR code if it's not visible
