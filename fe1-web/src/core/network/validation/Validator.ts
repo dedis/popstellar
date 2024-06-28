@@ -80,6 +80,7 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
     [ActionType.FEDERATION_INIT]: 'dataFederationInit',
     [ActionType.FEDERATION_EXPECT]: 'dataFederationExpect',
     [ActionType.FEDERATION_RESULT]: 'dataFederationResult',
+    [ActionType.TOKENS_EXCHANGE]: 'dataFederationTokensExchange',
   },
 };
 

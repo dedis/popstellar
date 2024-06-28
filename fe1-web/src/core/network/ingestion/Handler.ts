@@ -51,7 +51,6 @@ export function storeMessage(msg: ExtendedMessage) {
 }
 
 export function handleExtendedRpcRequests(req: ExtendedJsonRpcRequest) {
-  console.log(req);
   if (req.request.method === JsonRpcMethod.BROADCAST) {
     const broadcastParams = req.request.params as Broadcast;
 
@@ -63,9 +62,7 @@ export function handleExtendedRpcRequests(req: ExtendedJsonRpcRequest) {
       ),
     );
   } else if (req.request.method === JsonRpcMethod.PUBLISH) {
-    console.log("Here!");
     const publishParams = req.request.params as Publish;
-    console.log(publishParams.message)
     storeMessage(
       ExtendedMessage.fromMessage(publishParams.message, req.receivedFrom, publishParams.channel),
     );

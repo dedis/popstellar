@@ -11,7 +11,7 @@ import QrCodeScanOverlay from 'core/components/QrCodeScanOverlay';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
-import { Channel } from 'core/objects';
+import { Channel, getFederationChannel } from 'core/objects';
 import { Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -164,6 +164,7 @@ const ConnectScan = () => {
       );
 
       await connectToLaoAndSubscribe(connectToLao, laoChannel);
+      await subscribeToChannel(connectToLao.lao, dispatch, getFederationChannel(connectToLao.lao));
 
       isProcessingScan.current = false;
       setIsConnecting(false);

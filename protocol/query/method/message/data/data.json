@@ -68,6 +68,9 @@
             "$ref": "dataFederationResult.json"
         },
         {
+            "$ref": "dataFederationTokensExchange.json"
+        },
+        {
             "$ref": "dataWitnessMessage.json"
         },
         {

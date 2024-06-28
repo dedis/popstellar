@@ -46,7 +46,7 @@ export class Challenge {
   public static fromJson(obj: any): Challenge {
     return new Challenge({
       value: new Hash(obj.value),
-      valid_until: obj.valid_until,
+      valid_until: new Timestamp(obj.valid_until),
     });
   }
 

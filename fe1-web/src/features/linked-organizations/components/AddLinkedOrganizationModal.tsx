@@ -54,6 +54,7 @@ const AddLinkedOrganizationModal = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
   const laoId = LinkedOrganizationsHooks.useCurrentLaoId();
+  const isOrganizer = LinkedOrganizationsHooks.useIsLaoOrganizer(laoId);
   const lao = LinkedOrganizationsHooks.useCurrentLao();
   const challengeSelector = useMemo(() => makeChallengeSelector(laoId), [laoId]);
   const challengeState = useSelector(challengeSelector);
@@ -121,6 +122,7 @@ const AddLinkedOrganizationModal = () => {
             console.log('Expect Federation successfull');
           })
           .catch((err) => {
+            console.log(err);
             toast.show(`Could not expect Federation, error: ${err}`, {
               type: 'danger',
               placement: 'bottom',
@@ -139,6 +141,7 @@ const AddLinkedOrganizationModal = () => {
           console.log('Init Federation successfull');
         })
         .catch((err) => {
+          console.log(err);
           toast.show(`Could not init Federation, error: ${err}`, {
             type: 'danger',
             placement: 'bottom',
@@ -180,7 +183,7 @@ const AddLinkedOrganizationModal = () => {
   };
 
   useEffect(() => {
-    if (challengeState) {
+    if (challengeState && isOrganizer) {
       const challenge = Challenge.fromState(challengeState);
       const jsonObj = {
         lao_id: laoId,
@@ -193,7 +196,7 @@ const AddLinkedOrganizationModal = () => {
       };
       setQRCodeData(JSON.stringify(jsonObj));
     }
-  }, [challengeState, laoId, lao.organizer, lao.server_addresses]);
+  }, [challengeState, laoId, lao.organizer, lao.server_addresses, isOrganizer]);
 
   return (
     <>
