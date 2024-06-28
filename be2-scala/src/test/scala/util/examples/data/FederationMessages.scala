@@ -44,7 +44,7 @@ object FederationChallengeMessages extends FederationMessagesTrait {
 }
 object FederationResultMessages extends FederationMessagesTrait {
 
-  override val action: ActionType = ActionType.result
+  override val action: ActionType = ActionType.federation_result
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("result_channel"))
 
   final val federationResult: JsonRpcRequest = getJsonRPCRequestFromFile("federation_result/federation_result.json")()

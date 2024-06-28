@@ -1232,8 +1232,8 @@ final case class DbActor(
       }
 
     case WriteFederationTokensExchange(channel, laoId, message) =>
-      log.info(s"Actor $self (db) received a WriteFederationResult request")
-      Try(writeFederationResult(channel, laoId, message)) match {
+      log.info(s"Actor $self (db) received a WriteFederationTokensExchange request")
+      Try(writeFederationTokensExchange(channel, laoId, message)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }  

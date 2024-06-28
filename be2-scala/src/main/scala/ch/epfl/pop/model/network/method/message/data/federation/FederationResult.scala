@@ -16,7 +16,7 @@ final case class FederationResult(
   def this(status: String, publicKey: PublicKey, challenge: Message) = this(status, None, Some(publicKey), challenge)
   def this(status: String, reason: String, challenge: Message) = this(status, Some(reason), None, challenge)
   override val _object: ObjectType = ObjectType.federation
-  override val action: ActionType = ActionType.result
+  override val action: ActionType = ActionType.federation_result
 }
 
 object FederationResult extends Parsable {

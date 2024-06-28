@@ -15,13 +15,13 @@ class ResultSuite extends FunSuite with Matchers {
     RESULT_1.publicKey should equal(Some(PUBLIC_KEY))
     RESULT_1.challenge should equal(CHALLENGE)
     RESULT_1._object should equal(ObjectType.federation)
-    RESULT_1.action should equal(ActionType.result)
+    RESULT_1.action should equal(ActionType.federation_result)
 
     RESULT_2.status should equal(STATUS_2)
     RESULT_2.reason should equal(Some(REASON))
     RESULT_2.challenge should equal(CHALLENGE)
     RESULT_2._object should equal(ObjectType.federation)
-    RESULT_2.action should equal(ActionType.result)
+    RESULT_2.action should equal(ActionType.federation_result)
 
   }
   test("BuildFromJson for Result works as expected") {
