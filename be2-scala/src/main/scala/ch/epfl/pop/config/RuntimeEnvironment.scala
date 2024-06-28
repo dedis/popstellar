@@ -25,12 +25,13 @@ object RuntimeEnvironment {
   private val securityParam = "scala.security"
   private val dbPathParam = "scala.db"
   private val peerListParam = "scala.peerlist"
+  private val appConfParam = "scala.appConf"
   private val dbFolder = "database"
   private val testParam = "test"
 
   private lazy val sp = new SystemProperties()
   private lazy val confDir: String = getConfDir(cleanParam, configParam)
-  private lazy val appConfFile = confDir + File.separator + "application.conf"
+  private lazy val appConfFile = getAppConf
 
   lazy val dbPath: String = getDbDirectory(dbPathParam, dbFolder)
   lazy val securityPath: String = getRequiredDirectory(securityParam)
@@ -101,12 +102,20 @@ object RuntimeEnvironment {
   private def getPeerListPath(): String = {
     val path = sp(peerListParam)
     if (path != null && path.trim.nonEmpty) {
-      path.trim
+      confDir + File.separator + path.trim
     } else if (isTestMode) {
       confDir + File.separator + "server-peers-list-mock.conf"
     } else {
       confDir + File.separator + "server-peers-list.conf"
     }
+  }
+
+  private def getAppConf: String = {
+    val path = sp(appConfParam)
+    if path != null && path.trim.nonEmpty then
+      confDir + File.separator + path.trim
+    else
+      confDir + File.separator + "application.conf"
   }
 
   private def testMode(testParam: String): Boolean = {
