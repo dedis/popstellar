@@ -53,7 +53,7 @@ class LinkedOrganizationsRepositoryTest {
 
     @Test
     fun repoCallbackTest() {
-        var c = Challenge("test", 0L)
+        var c = Challenge("dGVzdA==", TIMESTAMP + 200)
         var changed = false
         REPO.flush()
         REPO.setOnChallengeUpdatedCallback { challenge: Challenge ->
@@ -175,7 +175,7 @@ class LinkedOrganizationsRepositoryTest {
         private val LAO_ID_7 = "aWQ3"
         private val TIMESTAMP = Instant.now().epochSecond
         private const val SERVER_ADDRESS = "wss://1.1.1.1:9000/client"
-        private const val CHALLENGE_VALUE = "1feb2a2c7c739ea25f2568d056cc82d11be65d361511872cd35e4abd1a20f3d4"
+        private const val CHALLENGE_VALUE = "Y2hhbGxlbmdldmFsdWU="
         private val TOKENS_ARRAY_1 = arrayOf("dG9rZW4x", "dG9rZW4y")
         private val TOKENS_ARRAY_2 = arrayOf("dG9rZW43", "dG9rZW44", "dG9rZW45")
         private val CHALLENGE = Challenge(CHALLENGE_VALUE, TIMESTAMP)

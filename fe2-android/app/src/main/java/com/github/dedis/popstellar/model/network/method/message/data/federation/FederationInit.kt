@@ -4,6 +4,7 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral
 import com.github.dedis.popstellar.model.network.method.message.data.Action
 import com.github.dedis.popstellar.model.network.method.message.data.Data
 import com.github.dedis.popstellar.model.network.method.message.data.Objects
+import com.github.dedis.popstellar.utility.MessageValidator
 import com.google.gson.annotations.SerializedName
 
 /** Initiates a federation link */
@@ -22,6 +23,14 @@ class FederationInit
     @SerializedName("public_key") val publicKey: String,
     val challenge: MessageGeneral
 ) : Data {
+
+  init {
+    MessageValidator.verify()
+        .isNotEmptyBase64(laoId, "lao_id")
+        .stringNotEmpty(serverAddress, "server_address")
+        .isNotEmptyBase64(publicKey, "public_key")
+        .validMessage(challenge)
+  }
 
   override val `object`: String
     get() = Objects.FEDERATION.`object`

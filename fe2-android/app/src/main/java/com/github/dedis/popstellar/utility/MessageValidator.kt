@@ -112,6 +112,22 @@ object MessageValidator {
     }
 
     /**
+     * Helper method to check that times are about now or in the future. The time values provided
+     * are assumed to be in Unix epoch time (UTC).
+     *
+     * @param times time values to be checked
+     * @throws IllegalArgumentException if times are in the past
+     */
+    fun validFutureTimes(vararg times: Long): MessageValidatorBuilder {
+      val currentTime = Instant.now().epochSecond - VALID_FUTURE_DELAY
+
+      for (time in times) {
+        require(time >= currentTime) { "Time cannot be in the past" }
+      }
+      return this
+    }
+
+    /**
      * Helper method to check that times in a Data are ordered. The time values provided are assumed
      * to be in Unix epoch time (UTC).
      *

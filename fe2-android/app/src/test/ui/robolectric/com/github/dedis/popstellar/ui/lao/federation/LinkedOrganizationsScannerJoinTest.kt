@@ -124,7 +124,7 @@ class LinkedOrganizationsScannerJoinTest {
         private val laoSubject = BehaviorSubject.createDefault(LaoView(LAO))
         private val CREATION_TIME = Instant.now().epochSecond
         private const val CHALLENGE_VALUE =
-                "frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA"
+                "ZnJYZ05sLUl4SlB6c05pYTA3Zl8zeVYwRUNZbFdPYjJSWEdfU0d2QVRLY0o3LXMwTHRobWJvVHJuTXFsUVMxUm56bVY5aFcwaXVtdV81TndBcVh3R0E="
         private val CHALLENGE = Challenge(CHALLENGE_VALUE, CREATION_TIME)
     }
 }
