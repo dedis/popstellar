@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.lao.event.rollcall
 
+import android.content.ClipboardManager
+import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
@@ -36,6 +38,7 @@ import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.subjects.BehaviorSubject
+import junit.framework.TestCase
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
@@ -556,6 +559,23 @@ class RollCallFragmentTest {
       )
 
     UITestUtils.assertToastIsDisplayedWithText(R.string.roll_call_attendees_list_not_sorted)
+  }
+
+  @Test
+  fun copyTokenButtonCopiesCorrectText() {
+
+    fakeClientLao()
+    rollCallRepo.updateRollCall(LAO_ID, openRollCall(ROLL_CALL))
+    RollCallFragmentPageObject.rollCallPopTokenTextCopyButton().perform(ViewActions.click())
+
+    val clipboard = InstrumentationRegistry.getInstrumentation().targetContext.getSystemService(
+      Context.CLIPBOARD_SERVICE) as ClipboardManager
+    TestCase.assertTrue(clipboard.hasPrimaryClip())
+    val clipData = clipboard.primaryClip
+    TestCase.assertNotNull(clipData)
+    val copiedText = clipData!!.getItemAt(0).text.toString()
+    RollCallFragmentPageObject.rollCallPopTokenText().check(ViewAssertions.matches(ViewMatchers.withText(copiedText)))
+
   }
 
   /** Utility function to create a LAO when the user is not the organizer */

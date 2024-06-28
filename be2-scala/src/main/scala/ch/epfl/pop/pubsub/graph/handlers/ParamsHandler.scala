@@ -76,6 +76,8 @@ object ParamsHandler extends AskPatternConstants {
   // Catchup requests are treated at the AnswerGenerator stage since it generates a JsonRpcResponse directly
   def catchupHandler(clientActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map(m => m)
 
+  // pagedCatchup requests are treated at the AnswerGenerator stage since it generates a JsonRpcResponse directly
+  def pagedCatchupHandler(clientActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map(m => m)
   def greetServerHandler(clientActorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcMessage: JsonRpcRequest) =>
       jsonRpcMessage.method match {
@@ -123,7 +125,7 @@ object ParamsHandler extends AskPatternConstants {
           system.log.info(s"All messages from rumor ${rumor.rumorId} were processed correctly")
           return Right(jsonRpcMessage)
     }
-    system.log.info(s"Some messages from rumor ${rumor.rumorId} were not processed")
+    system.log.warning(s"Some messages from rumor ${rumor.rumorId} were not processed. Unprocessed rumor not written in memory")
     Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Some messages from Rumor ${rumor.rumorId} with jsonRpcId : ${jsonRpcMessage.id} couldn't be processed", jsonRpcMessage.id))
   }
 

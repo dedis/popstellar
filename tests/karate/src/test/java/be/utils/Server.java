@@ -250,6 +250,15 @@ public abstract class Server implements Runnable {
    */
   public abstract String getDir();
 
+  /**
+   * Get the ws client URL of the server
+   *
+   * @return ws client URL of the server
+   */
+  public String getWsClientURL() {
+    return "ws://" + host + ":" + clientPort + "/client";
+  }
+
   public static boolean isWindowsOS() {
     return System.getProperty("os.name").toLowerCase().contains("windows");
   }

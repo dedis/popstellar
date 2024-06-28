@@ -196,7 +196,14 @@ class SocialMediaHomeFragmentTest {
       val socialMediaViewModel =
         LaoActivity.obtainSocialMediaViewModel(activity, LAO_ID)
 
-      val chirp = Chirp(Base64DataUtils.generateMessageID(), SENDER_1, "text", Instant.now().epochSecond,  MessageID(""))
+      val chirp = Chirp(
+              Base64DataUtils.generateMessageID(),
+              SENDER_1,
+              "text",
+              Instant.now().epochSecond,
+              MessageID(""),
+              LAO_ID
+      )
       socialMediaViewModel.sendChirp(chirp.text, chirp.parentId, chirp.timestamp)
 
       socialMediaViewModel.sendReaction(Reaction.ReactionEmoji.UPVOTE.code, chirp.id, Instant.now().epochSecond)

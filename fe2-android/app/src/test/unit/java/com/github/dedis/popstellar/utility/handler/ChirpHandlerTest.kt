@@ -122,7 +122,7 @@ class ChirpHandlerTest {
     private const val TEXT = "textOfTheChirp"
     private val PARENT_ID = Base64DataUtils.generateMessageID()
     private val CHIRP_ID = Base64DataUtils.generateMessageID()
-    private val CHIRP = Chirp(CHIRP_ID, SENDER, TEXT, CREATION_TIME, PARENT_ID)
+    private val CHIRP = Chirp(CHIRP_ID, SENDER, TEXT, CREATION_TIME, PARENT_ID, LAO_ID)
     private val ADD_CHIRP = AddChirp(TEXT, PARENT_ID, CREATION_TIME)
     private val DELETE_CHIRP = DeleteChirp(CHIRP_ID, DELETION_TIME)
   }

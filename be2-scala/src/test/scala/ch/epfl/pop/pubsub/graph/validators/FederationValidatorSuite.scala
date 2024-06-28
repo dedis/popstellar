@@ -9,7 +9,6 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
-import ch.epfl.pop.storage.DbActor.DbActorReadFederationMessageAck
 import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike
@@ -59,12 +58,12 @@ class FederationValidatorSuite extends TestKit(ActorSystem("FederationValidatorT
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
-        case DbActor.ReadFederationMessage("challenge") =>
-          sender() ! DbActorReadFederationMessageAck(Some(CHALLENGE))
-        case DbActor.ReadFederationMessage("expect") =>
-          sender() ! DbActorReadFederationMessageAck(Some(EXPECT_MESSAGE))
-        case DbActor.ReadFederationMessage("init") =>
-          sender() ! DbActorReadFederationMessageAck(Some(INIT_MESSAGE))
+        case DbActor.ReadFederationChallenge(_, _) =>
+          sender() ! DbActor.DbActorReadAck(Some(CHALLENGE))
+        case DbActor.ReadFederationExpect(_, _) =>
+          sender() ! DbActor.DbActorReadAck(Some(EXPECT_MESSAGE))
+        case DbActor.ReadFederationInit(_, _) =>
+          sender() ! DbActor.DbActorReadAck(Some(INIT_MESSAGE))
       }
 
     })
@@ -78,12 +77,12 @@ class FederationValidatorSuite extends TestKit(ActorSystem("FederationValidatorT
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
-        case DbActor.ReadFederationMessage("challenge") =>
-          sender() ! DbActorReadFederationMessageAck(Some(CHALLENGE))
-        case DbActor.ReadFederationMessage("expect") =>
-          sender() ! DbActorReadFederationMessageAck(Some(EXPECT_MESSAGE))
-        case DbActor.ReadFederationMessage("init") =>
-          sender() ! DbActorReadFederationMessageAck(Some(INIT_MESSAGE))
+        case DbActor.ReadFederationChallenge(_, _) =>
+          sender() ! DbActor.DbActorReadAck(Some(CHALLENGE))
+        case DbActor.ReadFederationExpect(_, _) =>
+          sender() ! DbActor.DbActorReadAck(Some(EXPECT_MESSAGE))
+        case DbActor.ReadFederationInit(_, _) =>
+          sender() ! DbActor.DbActorReadAck(Some(INIT_MESSAGE))
       }
     })
     system.actorOf(dbActorMock)

@@ -3,7 +3,6 @@ package hheartbeat
 import (
 	"encoding/json"
 	"github.com/rs/zerolog"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 	"io"
@@ -63,7 +62,7 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	db.On("GetParamsForGetMessageByID", heartbeatMsgIDs1).Return(expected1, nil)
 	queries.On("GetNextID").Return(1)
-	queries.On("AddQuery", 1, mock.AnythingOfType("mgetmessagesbyid.GetMessagesById"))
+	queries.On("AddGetMessagesByID", 1).Return(nil)
 
 	args = append(args, input{
 		name:     "Test 1",

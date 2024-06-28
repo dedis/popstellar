@@ -36,6 +36,9 @@ class LinkedOrganizationsFragmentNonOrganizerTest {
     lateinit var laoRepository: LAORepository
 
     @BindValue @Mock
+    lateinit var linkedOrganizationsViewModel: LinkedOrganizationsViewModel
+
+    @BindValue @Mock
     lateinit var keyManager: KeyManager
 
     @JvmField @Rule var rule = InstantTaskExecutorRule()
@@ -54,6 +57,7 @@ class LinkedOrganizationsFragmentNonOrganizerTest {
                     laoRepository.updateLao(LAO)
                     Mockito.`when`(keyManager.mainKeyPair).thenReturn(KEY_PAIR)
                     Mockito.`when`(keyManager.mainPublicKey).thenReturn(POP_TOKEN.publicKey)
+                    Mockito.`when`(linkedOrganizationsViewModel.getLinkedLaosMap()).thenReturn(mutableMapOf(LAO_ID to arrayOf()))
                 }
             }
 
@@ -73,6 +77,18 @@ class LinkedOrganizationsFragmentNonOrganizerTest {
     fun testButtonVisibilityForNonOrganizerRole() {
         LinkedOrganizationsFragmentPageObject.createLinkButton()
                 .check(matches(withEffectiveVisibility(Visibility.GONE)))
+    }
+
+    @Test
+    fun testLAOTextDisplayed() {
+        LinkedOrganizationsFragmentPageObject.listOrganizationsText().check(matches(isDisplayed()))
+        LinkedOrganizationsFragmentPageObject.noOrganizationsText().check(matches(withEffectiveVisibility(Visibility.GONE)))
+    }
+
+    @Test
+    fun testLAOTextIsCorrect() {
+        val validText = "List of linked organizations :\n\n$LAO_ID"
+        LinkedOrganizationsFragmentPageObject.listOrganizationsText().check(matches(withText(validText)))
     }
 
     companion object {

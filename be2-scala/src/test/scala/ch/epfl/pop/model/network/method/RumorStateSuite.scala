@@ -56,4 +56,38 @@ class RumorStateSuite extends FunSuite with Matchers {
     val diffResult = rumorState1.isMissingRumorsFrom(rumorState2)
     diffResult shouldBe Map.empty
   }
+
+  test("comparator works") {
+    val rumorState1: RumorState = RumorState(Map(
+      PublicKey(Base64Data.encode("1")) -> 3,
+      PublicKey(Base64Data.encode("2")) -> 5,
+      PublicKey(Base64Data.encode("3")) -> 3
+    ))
+
+    val rumorState2: RumorState = RumorState(Map(
+      PublicKey(Base64Data.encode("1")) -> 1,
+      PublicKey(Base64Data.encode("2")) -> 2
+    ))
+
+    rumorState1 > rumorState2 shouldBe true
+
+    val rumorState3: RumorState = RumorState(Map(
+      PublicKey(Base64Data.encode("1")) -> 4,
+      PublicKey(Base64Data.encode("2")) -> 6,
+      PublicKey(Base64Data.encode("3")) -> 3
+    ))
+
+    rumorState1 < rumorState3 shouldBe true
+
+    val rumorState4: RumorState = RumorState(Map(
+      PublicKey(Base64Data.encode("1")) -> 2,
+      PublicKey(Base64Data.encode("2")) -> 6,
+      PublicKey(Base64Data.encode("3")) -> 3
+    ))
+
+    rumorState1 < rumorState4 shouldBe false
+    rumorState1 > rumorState4 shouldBe false
+
+    List(rumorState1, rumorState2, rumorState3, rumorState4).sorted shouldBe List(rumorState2, rumorState1, rumorState4, rumorState3)
+  }
 }

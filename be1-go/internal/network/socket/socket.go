@@ -8,6 +8,7 @@ package socket
 
 import (
 	"popstellar/internal/handler/message/mmessage"
+	"popstellar/internal/handler/method/rumor/mrumor"
 	"time"
 )
 
@@ -62,6 +63,9 @@ type Socket interface {
 	// associating a channel to a slice of messages. In case both are nil
 	// it sends the "0" return value. You can either send res or missingMessagesByChannel, not both.
 	SendResult(id int, res []mmessage.Message, missingMessagesByChannel map[string][]mmessage.Message)
+
+	// SendRumorStateAnswer is used to send either an error or list of rumors to the sender
+	SendRumorStateAnswer(id int, params []mrumor.ParamsRumor)
 }
 
 // IncomingMessage wraps the raw message from the websocket connection and pairs

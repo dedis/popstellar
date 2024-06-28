@@ -23,6 +23,8 @@ object FederationValidator extends MessageDataContentValidator {
 
   def validateFederationResult(rpcMessage: JsonRpcRequest): GraphMessage = federationValidator.validateFederationResult(rpcMessage)
 
+  def validateFederationTokensExchange(rpcMessage: JsonRpcRequest): GraphMessage = federationValidator.validateFederationTokensExchange(rpcMessage)
+
 }
 
 sealed class FederationValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator {

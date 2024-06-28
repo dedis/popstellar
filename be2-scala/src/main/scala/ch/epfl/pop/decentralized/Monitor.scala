@@ -59,7 +59,7 @@ final case class Monitor(
       timers.cancelAll()
 
     case Monitor.TriggerHeartbeat =>
-      log.info("triggering a heartbeat")
+      log.info("Triggering a heartbeat")
       timers.cancel(singleHbKey)
 
       val askForHeartbeat = dbActorRef ? DbActor.GenerateHeartbeat()

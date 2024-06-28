@@ -32,4 +32,12 @@ public class LinkedOrganizationsFragmentPageObject {
     public static ViewInteraction nextQrScannerFragment() {
         return onView(withId(R.id.fragment_qr_scanner));
     }
+
+    public static ViewInteraction noOrganizationsText() {
+        return onView(withId(R.id.no_organizations_text));
+    }
+
+    public static ViewInteraction listOrganizationsText() {
+        return onView(withId(R.id.list_organizations_text));
+    }
 }

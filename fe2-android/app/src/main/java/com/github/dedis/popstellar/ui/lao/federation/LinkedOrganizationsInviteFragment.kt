@@ -106,6 +106,7 @@ class LinkedOrganizationsInviteFragment(createsInvitation: Boolean) : Fragment()
   }
 
   private fun createInvitationSetup(binding: LinkedOrganizationsInviteFragmentBinding) {
+    // Setup buttons
     binding.nextStepButton.setText(R.string.next_step)
     binding.nextStepButton.visibility = View.GONE
     binding.nextStepButton.setOnClickListener { openScanner() }
@@ -113,6 +114,11 @@ class LinkedOrganizationsInviteFragment(createsInvitation: Boolean) : Fragment()
     binding.loadingText.visibility = View.VISIBLE
     binding.linkedOrganizationsNameTitle.visibility = View.GONE
     binding.linkedOrganizationsServerTitle.visibility = View.GONE
+
+    // Starts with a clean repository
+    linkedOrganizationsViewModel.flushRepository()
+
+    // Sends the challenge request
     laoViewModel.addDisposable(
         linkedOrganizationsViewModel
             .sendChallengeRequest(Instant.now().epochSecond)

@@ -1,9 +1,12 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.Output
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.ScriptOutput
@@ -44,10 +47,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Completable
 import io.reactivex.subjects.BehaviorSubject
-import java.nio.charset.StandardCharsets
-import java.security.GeneralSecurityException
-import java.util.Collections
-import javax.inject.Inject
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
@@ -57,6 +56,10 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoTestRule
+import java.nio.charset.StandardCharsets
+import java.security.GeneralSecurityException
+import java.util.Collections
+import javax.inject.Inject
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -179,15 +182,15 @@ class DigitalCashActivityTest {
     DigitalCashPageObject.sendButton().perform(ViewActions.click())
     LaoActivityPageObject.fragmentContainer()
       .check(
-        ViewAssertions.matches(
-          ViewMatchers.withChild(ViewMatchers.withId(SendPageObject.fragmentDigitalCashSendId()))
+        matches(
+          ViewMatchers.withChild(withId(SendPageObject.fragmentDigitalCashSendId()))
         )
       )
     SendPageObject.sendButtonToReceipt().perform(ViewActions.click())
     LaoActivityPageObject.fragmentContainer()
       .check(
-        ViewAssertions.matches(
-          ViewMatchers.withChild(ViewMatchers.withId(SendPageObject.fragmentDigitalCashSendId()))
+        matches(
+          ViewMatchers.withChild(withId(SendPageObject.fragmentDigitalCashSendId()))
         )
       )
   }
@@ -197,12 +200,36 @@ class DigitalCashActivityTest {
     DigitalCashPageObject.historyButton().perform(ViewActions.click())
     LaoActivityPageObject.fragmentContainer()
       .check(
-        ViewAssertions.matches(
+        matches(
           ViewMatchers.withChild(
-            ViewMatchers.withId(HistoryPageObject.fragmentDigitalCashHistoryId())
+            withId(HistoryPageObject.fragmentDigitalCashHistoryId())
           )
         )
       )
+  }
+
+  @Test
+  fun historyElementsAreExpandable() {
+    // Ensure the Digital Cash screen is displayed
+    DigitalCashPageObject.historyButton().perform(ViewActions.click())
+
+    // Click on the first transaction
+    onView(withId(HistoryPageObject.transactionCardView()))
+      .perform(ViewActions.click())
+
+    // Check if the transaction details are displayed
+    onView(withId(HistoryPageObject.transactionProvenanceTitle())
+    )
+      .check(matches(isDisplayed()))
+    onView(withId(HistoryPageObject.transactionProvenanceValue())
+    )
+      .check(matches(isDisplayed()))
+    onView(withId(HistoryPageObject.transactionIdValue())
+    )
+      .check(matches(isDisplayed()))
+    onView(withId(HistoryPageObject.transactionIdTitle())
+    )
+      .check(matches(isDisplayed()))
   }
 
   @Test
@@ -210,10 +237,32 @@ class DigitalCashActivityTest {
     DigitalCashPageObject.issueButton().perform(ViewActions.click())
     LaoActivityPageObject.fragmentContainer()
       .check(
-        ViewAssertions.matches(
-          ViewMatchers.withChild(ViewMatchers.withId(IssuePageObject.fragmentDigitalCashIssueId()))
+        matches(
+          ViewMatchers.withChild(withId(IssuePageObject.fragmentDigitalCashIssueId()))
         )
       )
+  }
+
+  @Test
+  fun issueButtonsWork(){
+    DigitalCashPageObject.issueButton().perform(ViewActions.click())
+    LaoActivityPageObject.fragmentContainer()
+      .check(
+        matches(
+          ViewMatchers.withChild(withId(IssuePageObject.fragmentDigitalCashIssueId()))
+        )
+      )
+
+    // open the spinner
+    IssuePageObject.spinner().perform(ViewActions.click())
+    //close the spinner
+    IssuePageObject.spinner().perform(ViewActions.click())
+    // select the radio button
+    IssuePageObject.radioButtonAttendees().perform(ViewActions.click())
+    // input amount
+    IssuePageObject.issueAmount().perform(ViewActions.typeText("500"))
+    // click issue button
+    IssuePageObject.issueButton().perform(ViewActions.click())
   }
 
   @Test
@@ -221,9 +270,9 @@ class DigitalCashActivityTest {
     DigitalCashPageObject.receiveButton().perform(ViewActions.click())
     LaoActivityPageObject.fragmentContainer()
       .check(
-        ViewAssertions.matches(
+        matches(
           ViewMatchers.withChild(
-            ViewMatchers.withId(ReceivePageObject.fragmentDigitalCashReceiveId())
+            withId(ReceivePageObject.fragmentDigitalCashReceiveId())
           )
         )
       )
@@ -235,9 +284,9 @@ class DigitalCashActivityTest {
     DigitalCashPageObject.historyButton().perform(ViewActions.click())
     LaoActivityPageObject.fragmentContainer()
       .check(
-        ViewAssertions.matches(
+        matches(
           ViewMatchers.withChild(
-            ViewMatchers.withId(DigitalCashPageObject.fragmentDigitalCashHomeId())
+            withId(DigitalCashPageObject.fragmentDigitalCashHomeId())
           )
         )
       )

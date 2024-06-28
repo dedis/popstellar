@@ -114,6 +114,10 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 	case channel.ElectionObject + "#" + channel.ElectionActionSetup:
 		storeMessage = false
 		err = h.handleElectionSetup(msg, channelPath)
+	case channel.MeetingObject + "#" + channel.MeetingActionCreate:
+		err = nil
+	case channel.MeetingObject + "#" + channel.MeetingActionState:
+		err = nil
 	default:
 		err = errors.NewInvalidMessageFieldError("failed to Handle %s#%s, invalid object#action", object, action)
 	}

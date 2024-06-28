@@ -30,6 +30,7 @@ import com.github.dedis.popstellar.utility.ActivityUtils.getQRCodeColor
 import com.github.dedis.popstellar.utility.ActivityUtils.handleExpandArrow
 import com.github.dedis.popstellar.utility.Constants.ID_NULL
 import com.github.dedis.popstellar.utility.Constants.ROLL_CALL_ID
+import com.github.dedis.popstellar.utility.UIUtils
 import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException
@@ -55,6 +56,8 @@ class RollCallFragment : AbstractEventFragment {
 
   private val deAnonymizationWarned = MutableLiveData(false)
 
+  private lateinit var clipboardManager: UIUtils.ClipboardUtil
+
   constructor()
 
   override fun onCreateView(
@@ -67,7 +70,7 @@ class RollCallFragment : AbstractEventFragment {
 
     laoViewModel = obtainViewModel(requireActivity())
     rollCallViewModel = obtainRollCallViewModel(requireActivity(), laoViewModel.laoId)
-
+    clipboardManager = UIUtils.ClipboardUtil(requireActivity())
     rollCall =
         try {
           rollCallRepo.getRollCallWithPersistentId(
@@ -146,6 +149,9 @@ class RollCallFragment : AbstractEventFragment {
                 }))
 
     handleBackNav(TAG)
+
+    clipboardManager.setupCopyButton(
+        binding.rollCallPopTokenTextCopyButton, binding.rollCallPopTokenText, "PoP Token Hash")
 
     return binding.root
   }
@@ -248,7 +254,7 @@ class RollCallFragment : AbstractEventFragment {
     binding.rollCallAttendeesText.visibility = visibility
     binding.listViewAttendees.visibility = visibility
 
-    var attendeesList: List<String>? = null
+    var attendeesList: List<PublicKey>? = null
     if (isOrganizer && rollCall.isOpen) {
       // Show the list of all time scanned attendees if the roll call is opened
       // and the user is the organizer
@@ -256,8 +262,7 @@ class RollCallFragment : AbstractEventFragment {
           rollCallViewModel
               .getAttendees()
               .stream()
-              .map(PublicKey::encoded)
-              .sorted(compareBy(String::toString))
+              .sorted(compareBy { it.encoded })
               .collect(Collectors.toList())
 
       binding.rollCallAttendeesText.text =
@@ -266,7 +271,7 @@ class RollCallFragment : AbstractEventFragment {
               rollCallViewModel.getAttendees().size)
     } else if (rollCall.isClosed) {
       val orderedAttendees: MutableSet<PublicKey> = LinkedHashSet(rollCall.attendees)
-      attendeesList = orderedAttendees.stream().map(PublicKey::encoded).collect(Collectors.toList())
+      attendeesList = orderedAttendees.stream().collect(Collectors.toList())
 
       // Show the list of attendees if the roll call has ended
       binding.rollCallAttendeesText.text =
@@ -295,10 +300,12 @@ class RollCallFragment : AbstractEventFragment {
   private fun retrieveAndDisplayPublicKey() {
     val popToken = popToken ?: return
     val pk = popToken.publicKey.encoded
+    val pkUsername = popToken.publicKey.getLabel()
     Timber.tag(TAG).d("key displayed is %s", pk)
 
     // Set the QR visible only if the rollcall is opened and the user isn't the organizer
     if (rollCall.isOpen) {
+      binding.rollCallPopTokenUsername.text = pkUsername
       binding.rollCallPopTokenText.text = pk
       binding.rollCallPkQrCode.visibility = View.VISIBLE
       binding.rollCallPopTokenText.visibility = View.VISIBLE

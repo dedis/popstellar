@@ -105,6 +105,12 @@ class LinkedOrganizationsFragmentOrganizerTest {
         LinkedOrganizationsFragmentPageObject.nextQrScannerFragment().check(matches(isDisplayed()))
     }
 
+    @Test
+    fun testNoLAOTextDisplayed() {
+        LinkedOrganizationsFragmentPageObject.noOrganizationsText().check(matches(isDisplayed()))
+        LinkedOrganizationsFragmentPageObject.listOrganizationsText().check(matches(withEffectiveVisibility(Visibility.GONE)))
+    }
+
     companion object {
         private val KEY_PAIR = Base64DataUtils.generateKeyPair()
         private const val LAO_NAME = "LAO"

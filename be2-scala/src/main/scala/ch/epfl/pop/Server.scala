@@ -50,7 +50,7 @@ object Server {
 
       // Create necessary actors for server-server communications
       val monitorRef: ActorRef = system.actorOf(Monitor.props(dbActorRef))
-      val gossipManagerRef: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef))
+      val gossipManagerRef: ActorRef = system.actorOf(GossipManager.props(dbActorRef))
       val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, gossipManagerRef, messageRegistry))
 
       // Setup routes
@@ -100,11 +100,11 @@ object Server {
 
       bindingFuture.onComplete {
         case Success(_) =>
-          println(f"[Client] ch.epfl.pop.Server online at $ownClientAddress")
-          println(f"[Server] ch.epfl.pop.Server online at $ownServerAddress")
-          println(f"[Server] ch.epfl.pop.Server auth server online at $ownAuthAddress")
-          println(f"[Server] ch.epfl.pop.Server auth ws server online at $ownResponseAddress")
-          println(f"[Server] ch.epfl.pop.Server public key available at $ownPublicKeyAddress")
+          logger.info(f"[Client] online at $ownClientAddress")
+          logger.info(f"[Server] online at $ownServerAddress")
+          logger.info(f"[Server] auth server online at $ownAuthAddress")
+          logger.info(f"[Server] auth ws server online at $ownResponseAddress")
+          logger.info(f"[Server] public key available at $ownPublicKeyAddress")
 
         case Failure(_) =>
           logger.error(

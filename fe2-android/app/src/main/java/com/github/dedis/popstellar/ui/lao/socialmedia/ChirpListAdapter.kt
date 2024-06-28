@@ -83,6 +83,7 @@ class ChirpListAdapter(
     previousDisposable?.dispose()
 
     val sender = chirp.sender
+    val senderUsername = sender.getLabel()
     val timestamp = chirp.timestamp
     val text: String
     val itemUsername = view.findViewById<TextView>(R.id.social_media_username)
@@ -101,6 +102,7 @@ class ChirpListAdapter(
       val reactionDisposable =
           socialMediaViewModel
               .getReactions(
+                  chirp.laoId,
                   chirp.id) // Each time the observable changes the counter and the selection is
               // notified
               .subscribe(
@@ -186,7 +188,7 @@ class ChirpListAdapter(
       text = chirp.text
     }
 
-    itemUsername.text = sender.encoded
+    itemUsername.text = senderUsername
     itemTime.text = DateUtils.getRelativeTimeSpanString(timestamp * 1000)
     itemText.text = text
 

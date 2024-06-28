@@ -17,6 +17,9 @@ import com.github.dedis.popstellar.ui.lao.event.LaoDetailAnimation.showIn
 import com.github.dedis.popstellar.ui.lao.event.LaoDetailAnimation.showOut
 import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * A simple [Fragment] subclass. Use the [LinkedOrganizationsFragment.newInstance] factory method to
@@ -41,9 +44,6 @@ class LinkedOrganizationsFragment : Fragment() {
     linkedOrganizationsViewModel =
         obtainLinkedOrganizationsViewModel(requireActivity(), laoViewModel.laoId)
 
-    // Starts from a clean repository
-    linkedOrganizationsViewModel.flushRepository()
-
     // Sets the text and the button depending on the user's role
     laoViewModel.role.observe(viewLifecycleOwner) { role: Role ->
       if (role == Role.ORGANIZER) {
@@ -59,6 +59,19 @@ class LinkedOrganizationsFragment : Fragment() {
     binding.inviteOtherOrganization.setOnClickListener(invitationPage)
     binding.joinOtherOrganizationInvitation.setOnClickListener(joinButton)
 
+    // Displaying the linked organizations
+    val laos = linkedOrganizationsViewModel.getLinkedLaosMap().keys
+    displayLinkedOrganizations(laos)
+    linkedOrganizationsViewModel.doWhenLinkedLaosIsUpdated { laoId, laoMap ->
+      if (laoId == laoViewModel.laoId) {
+        CoroutineScope(Dispatchers.Main).launch {
+          val currentLaos = laoMap.keys
+          displayLinkedOrganizations(currentLaos)
+        }
+      }
+    }
+
+    linkedOrganizationsViewModel.setLinkedLaosNotifyFunction()
     handleBackNav()
 
     return binding.root
@@ -97,12 +110,26 @@ class LinkedOrganizationsFragment : Fragment() {
 
   private var joinButton =
       View.OnClickListener {
+        linkedOrganizationsViewModel.flushRepository()
         laoViewModel.setIsTab(false)
         linkedOrganizationsViewModel.manager = parentFragmentManager
         LaoActivity.setCurrentFragment(parentFragmentManager, R.id.fragment_qr_scanner) {
           QrScannerFragment.newInstance(ScanningAction.FEDERATION_JOIN)
         }
       }
+
+  private fun displayLinkedOrganizations(laos: Set<String>) {
+    if (laos.isNotEmpty()) {
+      val laosText = laos.joinToString(separator = "\n\n")
+      val textToDisplay = context?.getString(R.string.list_organizations, laosText)
+      binding.noOrganizationsText.visibility = View.GONE
+      binding.listOrganizationsText.visibility = View.VISIBLE
+      binding.listOrganizationsText.text = textToDisplay
+    } else {
+      binding.listOrganizationsText.visibility = View.GONE
+      binding.noOrganizationsText.visibility = View.VISIBLE
+    }
+  }
 
   private fun handleBackNav() {
     LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), viewLifecycleOwner, TAG)

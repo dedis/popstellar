@@ -31,12 +31,11 @@ constructor(
     val senderPk = context.senderPk
     Timber.tag(TAG).d("handleAddReaction: channel: %s, chirp id: %s", channel, addReaction.chirpId)
 
-    val laoView = laoRepo.getLaoViewByChannel(channel)
     val reaction =
         Reaction(
             messageId, senderPk, addReaction.codepoint, addReaction.chirpId, addReaction.timestamp)
 
-    if (!socialMediaRepo.addReaction(laoView.id, reaction)) {
+    if (!socialMediaRepo.addReaction(channel.extractLaoId(), reaction)) {
       throw InvalidMessageIdException(addReaction, addReaction.chirpId)
     }
   }
@@ -53,8 +52,7 @@ constructor(
     Timber.tag(TAG)
         .d("handleDeleteReaction: channel: %s, reaction id: %s", channel, deleteReaction.reactionID)
 
-    val laoView = laoRepo.getLaoViewByChannel(channel)
-    if (!socialMediaRepo.deleteReaction(laoView.id, deleteReaction.reactionID)) {
+    if (!socialMediaRepo.deleteReaction(channel.extractLaoId(), deleteReaction.reactionID)) {
       throw InvalidMessageIdException(deleteReaction, deleteReaction.reactionID)
     }
   }

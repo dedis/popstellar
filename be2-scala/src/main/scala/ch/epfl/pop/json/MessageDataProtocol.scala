@@ -597,6 +597,8 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
     override def write(obj: FederationResult): JsValue = {
       val fields = scala.collection.mutable.Map[String, JsValue]()
+      fields += PARAM_OBJECT -> JsString(obj._object.toString)
+      fields += PARAM_ACTION -> JsString(obj.action.toString)
       fields += PARAM_STATUS -> obj.status.toJson
       fields += PARAM_CHALLENGE -> obj.challenge.toJson
 
@@ -607,6 +609,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     }
   }
 
+
   implicit object FederationTokensExchangeFormat extends JsonFormat[FederationTokensExchange] {
     final private val PARAM_LAO_ID = "lao_id"
     final private val PARAM_ROLL_CALL_ID = "roll_call_id"
@@ -614,7 +617,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     final private val PARAM_TIMESTAMP = "timestamp"
 
     override def read(json: JsValue): FederationTokensExchange = json.asJsObject().getFields(PARAM_LAO_ID, PARAM_ROLL_CALL_ID, PARAM_TOKENS, PARAM_TIMESTAMP) match {
-      case Seq(laoId @ JsString(_), rollCallId @ JsString(_), JsArray(tokens), timestamp @ JsNumber(_)) =>
+      case Seq(laoId@JsString(_), rollCallId@JsString(_), JsArray(tokens), timestamp@JsNumber(_)) =>
         FederationTokensExchange(
           laoId.convertTo[Hash],
           rollCallId.convertTo[Hash],
@@ -635,6 +638,22 @@ object MessageDataProtocol extends DefaultJsonProtocol {
       )
       JsObject(jsObjectContent)
     }
+  }
+
+  implicit object NumberOfChirpsReactionsDataFormat extends JsonFormat[NumberOfChirpsReactionsData] {
+    final private val PARAM_NUMBER_OF_CHIRPS_REACTIONS: String = "numberOfChirpsReactions"
+
+    override def read(json: JsValue): NumberOfChirpsReactionsData = json.asJsObject().getFields(PARAM_NUMBER_OF_CHIRPS_REACTIONS) match {
+      case Seq(numberOfChirpsReactions @ JsNumber(_)) => NumberOfChirpsReactionsData(
+          numberOfChirpsReactions.convertTo[Int]
+        )
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a NumberOfChirpsReactionsData object")
+    }
+
+    override def write(obj: NumberOfChirpsReactionsData): JsValue = JsObject(
+      PARAM_NUMBER_OF_CHIRPS_REACTIONS -> obj.numberOfChirpsReactions.toJson
+    )
+
   }
 
 }

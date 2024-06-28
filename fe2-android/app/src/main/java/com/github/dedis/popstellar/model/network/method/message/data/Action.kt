@@ -44,6 +44,7 @@ enum class Action
   CHALLENGE("challenge"),
   INIT("init"),
   EXPECT("expect"),
+  TOKENS_EXCHANGE("tokens_exchange"),
   RUMOR("rumor");
 
   /**
