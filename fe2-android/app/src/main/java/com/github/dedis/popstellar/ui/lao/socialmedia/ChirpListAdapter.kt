@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.DrawableRes
@@ -89,6 +90,7 @@ class ChirpListAdapter(
     val itemUsername = view.findViewById<TextView>(R.id.social_media_username)
     val itemTime = view.findViewById<TextView>(R.id.social_media_time)
     val itemText = view.findViewById<TextView>(R.id.social_media_text)
+    val itemProfile = view.findViewById<ImageView>(R.id.social_media_profile)
     val deleteChirp = view.findViewById<ImageButton>(R.id.delete_chirp_button)
     val upvoteChirp = view.findViewById<ImageButton>(R.id.upvote_button)
     val downvoteChirp = view.findViewById<ImageButton>(R.id.downvote_button)
@@ -191,6 +193,13 @@ class ChirpListAdapter(
     itemUsername.text = senderUsername
     itemTime.text = DateUtils.getRelativeTimeSpanString(timestamp * 1000)
     itemText.text = text
+
+    // Changes the color of the profile if the chirps comes from another LAO
+    if (chirp.laoId == laoViewModel.laoId) {
+      itemProfile.imageTintList = context.getColorStateList(R.color.colorAccent)
+    } else {
+      itemProfile.imageTintList = context.getColorStateList(R.color.gray)
+    }
 
     return view
   }
