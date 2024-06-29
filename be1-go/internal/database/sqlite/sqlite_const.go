@@ -126,7 +126,7 @@ const (
 	insertKeys                     = `INSERT INTO key (channelPath, publicKey, secretKey) VALUES (?, ?, ?)`
 	insertPublicKey                = `INSERT INTO key (channelPath, publicKey) VALUES (?, ?)`
 	insertRumor                    = `INSERT INTO rumor (ID, sender, timestamp) VALUES (?, ?, ?)`
-	insertUnprocessedMessage       = `INSERT INTO unprocessedMessage (messageID, channelPath, message) VALUES (?, ?, ?)`
+	insertUnprocessedMessage       = `INSERT OR IGNORE INTO unprocessedMessage (messageID, channelPath, message) VALUES (?, ?, ?)`
 	insertUnprocessedMessageRumor  = `INSERT INTO unprocessedMessageRumor (messageID, rumorID, sender) VALUES (?, ?, ?)`
 	insertMessageRumor             = `INSERT INTO messageRumor (messageID, rumorID, sender) VALUES (?, ?, ?)`
 	tranferUnprocessedMessageRumor = `INSERT INTO messageRumor (messageID, rumorID, sender) SELECT messageID, rumorID, sender FROM unprocessedMessageRumor WHERE messageID = ?`
