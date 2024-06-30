@@ -702,8 +702,14 @@ func Test_handleFederationChallenge(t *testing.T) {
 	laoID := "lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA="
 	laoID2 := "OWY4NmQwODE4ODRjN2Q2NTlhMmZlYWEwYzU1YWQwMQ=="
 	laoPath := fmt.Sprintf("/root/%s", laoID)
+	laoPath2 := fmt.Sprintf("/root/%s", laoID2)
 	channelPath := fmt.Sprintf("/root/%s/federation", laoID)
 	channelPath2 := fmt.Sprintf("/root/%s/federation", laoID2)
+
+	err = subs.AddChannel(laoPath)
+	require.NoError(t, err)
+	err = subs.AddChannel(laoPath2)
+	require.NoError(t, err)
 
 	err = subs.AddChannel(channelPath)
 	require.NoError(t, err)
@@ -715,8 +721,6 @@ func Test_handleFederationChallenge(t *testing.T) {
 	require.NoError(t, err)
 
 	fakeSocket2 := mock2.FakeSocket{Id: "2"}
-	err = subs.Subscribe(channelPath2, &fakeSocket2)
-	require.NoError(t, err)
 
 	rumors.On("SendRumorStateTo", &fakeSocket2).Return(nil)
 
@@ -770,10 +774,9 @@ func Test_handleFederationChallenge(t *testing.T) {
 	err = json.Unmarshal(fakeSocket2.Msg, &publishMsg)
 	require.NoError(t, err)
 	require.Equal(t, mquery.MethodPublish, publishMsg.Method)
-	require.Equal(t, broadcastMsg.Params.Message, publishMsg.Params.Message)
 
 	var resultMsg mfederation.FederationResult
-	err = broadcastMsg.Params.Message.UnmarshalData(&resultMsg)
+	err = publishMsg.Params.Message.UnmarshalData(&resultMsg)
 	require.NoError(t, err)
 
 	// it should contain the challenge from organizer, not organizer2
@@ -814,6 +817,9 @@ func Test_handleFederationResult(t *testing.T) {
 	laoID := "lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA="
 	laoPath := fmt.Sprintf("/root/%s", laoID)
 	channelPath := fmt.Sprintf("/root/%s/federation", laoID)
+
+	err = subs.AddChannel(laoPath)
+	require.NoError(t, err)
 
 	err = subs.AddChannel(channelPath)
 	require.NoError(t, err)
