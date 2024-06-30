@@ -562,7 +562,7 @@ func (h *Handler) isOnSameServer(address string) bool {
 func (h *Handler) connectTo(serverAddress string) (socket.Socket, error) {
 	h.log.Warn().Msgf("Server Address before transformation = %s", serverAddress)
 
-	if strings.Contains(serverAddress, "8001") || strings.Contains(serverAddress, "8001") {
+	if strings.Contains(serverAddress, "8") {
 		serverAddress, _ = strings.CutSuffix(serverAddress, "/client")
 		serverAddress = fmt.Sprintf("%s%s", serverAddress, "/server")
 	}
