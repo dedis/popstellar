@@ -365,7 +365,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     val response = Right(JsonRpcResponse(
       RpcValidator.JSON_RPC_VERSION,
       ResultObject(0),
-      Some(1)
+      Some(4)
     ))
 
     // by processing the reponse, gossipManager should send again a rumor to a new peer
