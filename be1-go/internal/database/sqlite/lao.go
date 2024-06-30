@@ -18,10 +18,12 @@ func (s *SQLite) GetRollCallState(channelPath string) (string, error) {
 	defer dbLock.Unlock()
 
 	var state string
+
 	err := s.database.QueryRow(selectLastRollCallMessage, channel.RollCallObject, channelPath).Scan(&state)
 	if err != nil {
 		return "", poperrors.NewDatabaseSelectErrorMsg(err.Error())
 	}
+
 	return state, nil
 }
 
@@ -44,17 +46,21 @@ func (s *SQLite) CheckPrevOpenOrReopenID(channelPath, nextID string) (bool, erro
 	switch lastAction {
 	case channel.RollCallActionOpen:
 		var rollCallOpen mlao.RollCallOpen
+
 		err = json.Unmarshal(lastMsg, &rollCallOpen)
 		if err != nil {
 			return false, poperrors.NewInternalServerError("failed to unmarshal last roll call open message: %v", err)
 		}
+
 		return rollCallOpen.UpdateID == nextID, nil
 	case channel.RollCallActionReOpen:
 		var rollCallReOpen mlao.RollCallReOpen
+
 		err = json.Unmarshal(lastMsg, &rollCallReOpen)
 		if err != nil {
 			return false, poperrors.NewInternalServerError("failed to unmarshal last roll call re open message: %v", err)
 		}
+
 		return rollCallReOpen.UpdateID == nextID, nil
 	}
 
@@ -80,17 +86,21 @@ func (s *SQLite) CheckPrevCreateOrCloseID(channelPath, nextID string) (bool, err
 	switch lastAction {
 	case channel.RollCallActionCreate:
 		var rollCallCreate mlao.RollCallCreate
+
 		err = json.Unmarshal(lastMsg, &rollCallCreate)
 		if err != nil {
 			return false, poperrors.NewInternalServerError("failed to unmarshal last roll call create message: %v", err)
 		}
+
 		return rollCallCreate.ID == nextID, nil
 	case channel.RollCallActionClose:
 		var rollCallClose mlao.RollCallClose
+
 		err = json.Unmarshal(lastMsg, &rollCallClose)
 		if err != nil {
 			return false, poperrors.NewInternalServerError("failed to unmarshal last roll call close message: %v", err)
 		}
+
 		return rollCallClose.UpdateID == nextID, nil
 	}
 
@@ -102,12 +112,14 @@ func (s *SQLite) GetLaoWitnesses(laoPath string) (map[string]struct{}, error) {
 	defer dbLock.Unlock()
 
 	var witnesses []string
+
 	err := s.database.QueryRow(selectLaoWitnesses, laoPath, channel.LAOObject, channel.LAOActionCreate).Scan(&witnesses)
 	if err != nil {
 		return nil, poperrors.NewDatabaseSelectErrorMsg("lao witnesses: %v", err)
 	}
 
 	var witnessesMap = make(map[string]struct{})
+
 	for _, witness := range witnesses {
 		witnessesMap[witness] = struct{}{}
 	}
@@ -123,6 +135,7 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg mmess
 	if err != nil {
 		return poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
 	}
+
 	defer tx.Rollback()
 
 	messageData, err := base64.URLEncoding.DecodeString(msg.Data)
@@ -139,6 +152,7 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg mmess
 	if err != nil {
 		return err
 	}
+
 	_, err = tx.Exec(insertChannelMessage, laoPath, msg.MessageID, true)
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("relation roll call close message and lao channel: %v", err)
@@ -158,12 +172,13 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg mmess
 			return poperrors.NewDatabaseInsertErrorMsg("channel %s: %v", channelPath, err)
 		}
 	}
+
 	err = tx.Commit()
 	if err != nil {
 		return poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 	}
-	return nil
 
+	return nil
 }
 
 func (s *SQLite) storeElectionHelper(
@@ -178,6 +193,7 @@ func (s *SQLite) storeElectionHelper(
 	if err != nil {
 		return poperrors.NewJsonMarshalError("election create message: %v", err)
 	}
+
 	messageData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return poperrors.NewDecodeStringError("election create message data: %v", err)
@@ -187,6 +203,7 @@ func (s *SQLite) storeElectionHelper(
 	if err != nil {
 		return poperrors.NewKeyMarshalError("election public key: %v", err)
 	}
+
 	electionSecretBuf, err := electionSecretKey.MarshalBinary()
 	if err != nil {
 		return poperrors.NewKeyMarshalError("election secret key: %v", err)
@@ -196,18 +213,22 @@ func (s *SQLite) storeElectionHelper(
 	if err != nil {
 		return err
 	}
+
 	_, err = tx.Exec(insertChannelMessage, laoPath, msg.MessageID, true)
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("relation election create message and lao channel: %v", err)
 	}
+
 	_, err = tx.Exec(insertChannel, electionPath, channelTypeToID[channel.ElectionObject], laoPath)
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("election channel: %v", err)
 	}
+
 	_, err = tx.Exec(insertChannelMessage, electionPath, msg.MessageID, false)
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("relation election create message and election channel: %v", err)
 	}
+
 	_, err = tx.Exec(insertKeys, electionPath, electionPubBuf, electionSecretBuf)
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("election keys: %v", err)
@@ -229,6 +250,7 @@ func (s *SQLite) StoreElection(
 	if err != nil {
 		return poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
 	}
+
 	defer tx.Rollback()
 
 	storedTime := time.Now().UnixNano()
@@ -242,6 +264,7 @@ func (s *SQLite) StoreElection(
 	if err != nil {
 		return poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 	}
+
 	return nil
 }
 
@@ -258,6 +281,7 @@ func (s *SQLite) StoreElectionWithElectionKey(
 	if err != nil {
 		return poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
 	}
+
 	defer tx.Rollback()
 
 	storedTime := time.Now().UnixNano()
@@ -271,6 +295,7 @@ func (s *SQLite) StoreElectionWithElectionKey(
 	if err != nil {
 		return poperrors.NewDecodeStringError("failed to decode election key message data: %v", err)
 	}
+
 	electionKeyMsgBytes, err := json.Marshal(electionKeyMsg)
 	if err != nil {
 		return poperrors.NewInternalServerError("failed to marshal election key message: %v", err)
@@ -280,6 +305,7 @@ func (s *SQLite) StoreElectionWithElectionKey(
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("election key message: %v", err)
 	}
+
 	_, err = tx.Exec(insertChannelMessage, electionPath, electionKeyMsg.MessageID, false)
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("relation election key message and election channel: %v", err)
@@ -289,5 +315,6 @@ func (s *SQLite) StoreElectionWithElectionKey(
 	if err != nil {
 		return poperrors.NewDatabaseTransactionCommitErrorMsg(err.Error())
 	}
+
 	return nil
 }

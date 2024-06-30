@@ -22,32 +22,39 @@ func (s *SQLite) StoreChirpMessages(channelPath, generalChannel string, msg, gen
 	if err != nil {
 		return errors.NewJsonMarshalError("chirp message: %v", err)
 	}
+
 	messageData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return errors.NewDecodeStringError("chirp message data: %v", err)
 	}
+
 	generalMsgBytes, err := json.Marshal(generalMsg)
 	if err != nil {
 		return errors.NewInternalServerError("failed to marshal general chirp message: %v", err)
 	}
+
 	generalMessageData, err := base64.URLEncoding.DecodeString(generalMsg.Data)
 	if err != nil {
 		return errors.NewInternalServerError("failed to decode general chirp message data: %v", err)
 	}
+
 	storedTime := time.Now().UnixNano()
 
 	err = s.insertMessageHelper(tx, msg.MessageID, msgBytes, messageData, storedTime)
 	if err != nil {
 		return err
 	}
+
 	_, err = tx.Exec(insertChannelMessage, channelPath, msg.MessageID, true)
 	if err != nil {
 		return errors.NewDatabaseInsertErrorMsg("relation chirp message and chirp channel: %v", err)
 	}
+
 	_, err = tx.Exec(insertMessage, generalMsg.MessageID, generalMsgBytes, generalMessageData, storedTime)
 	if err != nil {
 		return errors.NewDatabaseInsertErrorMsg("general chirp message: %v", err)
 	}
+
 	_, err = tx.Exec(insertChannelMessage, generalChannel, generalMsg.MessageID, false)
 	if err != nil {
 		return errors.NewDatabaseInsertErrorMsg("relation general chirp message and general chirp channel: %v", err)

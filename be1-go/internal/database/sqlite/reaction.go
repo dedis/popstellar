@@ -14,6 +14,7 @@ func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {
 	defer dbLock.Unlock()
 
 	var rollCallCloseBytes []byte
+
 	err := s.database.QueryRow(selectLastRollCallClose,
 		laoPath,
 		channel.RollCallObject,
@@ -25,6 +26,7 @@ func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {
 	}
 
 	var rollCallClose mlao.RollCallClose
+
 	err = json.Unmarshal(rollCallCloseBytes, &rollCallClose)
 	if err != nil {
 		return false, poperrors.NewInternalServerError("failed to unmarshal last roll call close message: %v", err)
@@ -46,6 +48,7 @@ func (s *SQLite) GetReactionSender(messageID string) (string, error) {
 	var sender string
 	var object string
 	var action string
+
 	err := s.database.QueryRow(selectSender, messageID).Scan(&sender, &object, &action)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return "", nil

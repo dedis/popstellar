@@ -29,6 +29,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	if err != nil {
 		return poperrors.NewJsonMarshalError("lao create message: %v", err)
 	}
+
 	laoGreetMsgByte, err := json.Marshal(laoGreetMsg)
 	if err != nil {
 		return poperrors.NewInternalServerError("lao greet message: %v", err)
@@ -38,6 +39,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	if err != nil {
 		return poperrors.NewDecodeStringError("lao create message data in database: %v", err)
 	}
+
 	laoGreetData, err := base64.URLEncoding.DecodeString(laoGreetMsg.Data)
 	if err != nil {
 		return poperrors.NewInternalServerError("failed to decode string: lao greet message data in database: %v", err)
@@ -56,6 +58,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	if err != nil {
 		return err
 	}
+
 	_, err = tx.Exec(insertChannelMessage, channel.Root, msg.MessageID, true)
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("relation lao create message and root channel: %v", err)
@@ -70,10 +73,12 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("lao organizer public key: %v", err)
 	}
+
 	_, err = tx.Exec(insertMessage, laoGreetMsg.MessageID, laoGreetMsgByte, laoGreetData, storedTime)
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("lao greet message: %v", err)
 	}
+
 	_, err = tx.Exec(insertChannelMessage, laoPath, laoGreetMsg.MessageID, false)
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("relation lao greet message lao channel: %v", err)

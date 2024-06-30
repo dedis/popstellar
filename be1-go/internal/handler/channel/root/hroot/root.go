@@ -102,9 +102,7 @@ func (h *Handler) handleLaoCreate(msg mmessage.Message) error {
 		return err
 	}
 
-	laoPath := channel.RootPrefix + laoCreate.ID
-
-	organizerPubBuf, err := h.verifyLaoCreation(msg, laoCreate, laoPath)
+	organizerPubBuf, laoPath, err := h.verifyLaoCreation(msg, laoCreate)
 	if err != nil {
 		return err
 	}
@@ -117,44 +115,46 @@ func (h *Handler) handleLaoCreate(msg mmessage.Message) error {
 	return h.createLaoAndChannels(msg, laoGreetMsg, organizerPubBuf, laoPath)
 }
 
-func (h *Handler) verifyLaoCreation(msg mmessage.Message, laoCreate mroot.LaoCreate, laoPath string) ([]byte, error) {
+func (h *Handler) verifyLaoCreation(msg mmessage.Message, laoCreate mroot.LaoCreate) ([]byte, string, error) {
+
+	laoPath := channel.RootPrefix + laoCreate.ID
 
 	ok, err := h.db.HasChannel(laoPath)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	} else if ok {
-		return nil, errors.NewDuplicateResourceError("duplicate lao path: %s", laoPath)
+		return nil, "", errors.NewDuplicateResourceError("duplicate lao path: %s", laoPath)
 	}
 
 	err = laoCreate.Verify()
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	senderPubBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		return nil, errors.NewInvalidMessageFieldError("failed to decode public key of the sender: %v", err)
+		return nil, "", errors.NewInvalidMessageFieldError("failed to decode public key of the sender: %v", err)
 	}
 
 	senderPubKey := crypto.Suite.Point()
 	err = senderPubKey.UnmarshalBinary(senderPubBuf)
 	if err != nil {
-		return nil, errors.NewInvalidMessageFieldError("failed to unmarshal public key of the sender: %v", err)
+		return nil, "", errors.NewInvalidMessageFieldError("failed to unmarshal public key of the sender: %v", err)
 	}
 
 	organizerPubBuf, err := base64.URLEncoding.DecodeString(laoCreate.Organizer)
 	if err != nil {
-		return nil, errors.NewInvalidMessageFieldError("failed to decode public key of the organizer: %v", err)
+		return nil, "", errors.NewInvalidMessageFieldError("failed to decode public key of the organizer: %v", err)
 	}
 
 	organizerPubKey := crypto.Suite.Point()
 	err = organizerPubKey.UnmarshalBinary(organizerPubBuf)
 	if err != nil {
-		return nil, errors.NewInvalidMessageFieldError("failed to unmarshal public key of the organizer: %v", err)
+		return nil, "", errors.NewInvalidMessageFieldError("failed to unmarshal public key of the organizer: %v", err)
 	}
 	// Check if the sender and organizer fields of the create#lao message are equal
 	if !organizerPubKey.Equal(senderPubKey) {
-		return nil, errors.NewAccessDeniedError("sender's public key does not match the organizer public key: %s != %s",
+		return nil, "", errors.NewAccessDeniedError("sender's public key does not match the organizer public key: %s != %s",
 			senderPubKey, organizerPubKey)
 	}
 
@@ -162,11 +162,11 @@ func (h *Handler) verifyLaoCreation(msg mmessage.Message, laoCreate mroot.LaoCre
 
 	// Check if the sender of the LAO creation message is the owner
 	if ownerPublicKey != nil && !ownerPublicKey.Equal(senderPubKey) {
-		return nil, errors.NewAccessDeniedError("sender's public key does not match the owner public key: %s != %s",
+		return nil, "", errors.NewAccessDeniedError("sender's public key does not match the owner public key: %s != %s",
 			senderPubKey, ownerPublicKey)
 	}
 
-	return organizerPubBuf, nil
+	return organizerPubBuf, laoPath, nil
 }
 
 func (h *Handler) createLaoAndChannels(msg, laoGreetMsg mmessage.Message, organizerPubBuf []byte, laoPath string) error {
