@@ -6,6 +6,7 @@ import { StyleSheet, Text, TextStyle, View } from 'react-native';
 
 import { PoPTextButton, QRCode } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { generateUsernameFromBase64 } from 'core/functions/Mnemonic';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
 import { ScannablePopToken } from 'core/objects/ScannablePopToken';
@@ -19,9 +20,13 @@ type NavigationProps = CompositeScreenProps<
 
 const styles = StyleSheet.create({
   publicKey: {
-    marginVertical: Spacing.x2,
+    marginTop: Spacing.x05,
+    marginBottom: Spacing.x1,
     color: Color.inactive,
     textAlign: 'center',
+  } as TextStyle,
+  username: {
+    marginTop: Spacing.x2,
   } as TextStyle,
 });
 
@@ -41,6 +46,9 @@ const WalletSingleRollCall = () => {
         />
       </View>
 
+      <Text style={[Typography.important, Typography.centered, Typography.code, styles.username]}>
+        {generateUsernameFromBase64(rollCallTokenPublicKey)}
+      </Text>
       <Text style={[Typography.small, styles.publicKey, Typography.code]} selectable>
         {rollCallTokenPublicKey}
       </Text>

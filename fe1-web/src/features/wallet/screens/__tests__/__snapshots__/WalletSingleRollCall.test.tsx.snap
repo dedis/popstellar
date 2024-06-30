@@ -426,6 +426,26 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                               </View>
                             </View>
                             <Text
+                              style={
+                                [
+                                  {
+                                    "fontWeight": "bold",
+                                  },
+                                  {
+                                    "textAlign": "center",
+                                  },
+                                  {
+                                    "fontFamily": "Courier New",
+                                  },
+                                  {
+                                    "marginTop": 32,
+                                  },
+                                ]
+                              }
+                            >
+                              LoyalBorrow3877
+                            </Text>
+                            <Text
                               selectable={true}
                               style={
                                 [
@@ -435,7 +455,8 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                                   },
                                   {
                                     "color": "#8E8E8E",
-                                    "marginVertical": 32,
+                                    "marginBottom": 16,
+                                    "marginTop": 8,
                                     "textAlign": "center",
                                   },
                                   {
@@ -940,6 +961,26 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                               </View>
                             </View>
                             <Text
+                              style={
+                                [
+                                  {
+                                    "fontWeight": "bold",
+                                  },
+                                  {
+                                    "textAlign": "center",
+                                  },
+                                  {
+                                    "fontFamily": "Courier New",
+                                  },
+                                  {
+                                    "marginTop": 32,
+                                  },
+                                ]
+                              }
+                            >
+                              LoyalBorrow3877
+                            </Text>
+                            <Text
                               selectable={true}
                               style={
                                 [
@@ -949,7 +990,8 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                                   },
                                   {
                                     "color": "#8E8E8E",
-                                    "marginVertical": 32,
+                                    "marginBottom": 16,
+                                    "marginTop": 8,
                                     "textAlign": "center",
                                   },
                                   {

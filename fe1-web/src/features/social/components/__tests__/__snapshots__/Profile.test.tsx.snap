@@ -36,7 +36,7 @@ exports[`Profile renders correctly 1`] = `
           ]
         }
       >
-        daughterscrub0000
+        DaughterScrub0000
       </Text>
       <Text
         numberOfLines={1}

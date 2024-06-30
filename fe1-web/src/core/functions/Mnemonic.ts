@@ -104,5 +104,7 @@ export function generateUsernameFromBase64(input: string): string {
     return `defaultUsername${randomInt(0, 10000000).toString().padStart(4, '0')}`;
   }
   const number = getFirstNumberDigits(input, 4);
-  return `${words[0]}${words[1]}${number}`;
+  const word1 = words[0].charAt(0).toUpperCase() + words[0].slice(1);
+  const word2 = words[1].charAt(0).toUpperCase() + words[1].slice(1);
+  return `${word1}${word2}${number}`;
 }

@@ -874,7 +874,7 @@ exports[`EventRollCall render correctly no duplicate attendees opened roll calls
                                         }
                                         testID="attendee_0"
                                       >
-                                        bestdespair0001
+                                        BestDespair0001
                                       </Text>
                                       <Text
                                         accessibilityRole="text"
@@ -1039,7 +1039,7 @@ exports[`EventRollCall render correctly no duplicate attendees opened roll calls
                                         }
                                         testID="attendee_1"
                                       >
-                                        bestdespair0002
+                                        BestDespair0002
                                       </Text>
                                       <Text
                                         accessibilityRole="text"
@@ -1954,7 +1954,7 @@ exports[`EventRollCall render correctly no duplicate attendees re-opened roll ca
                                         }
                                         testID="attendee_0"
                                       >
-                                        bestdespair0001
+                                        BestDespair0001
                                       </Text>
                                       <Text
                                         accessibilityRole="text"
@@ -2119,7 +2119,7 @@ exports[`EventRollCall render correctly no duplicate attendees re-opened roll ca
                                         }
                                         testID="attendee_1"
                                       >
-                                        bestdespair0002
+                                        BestDespair0002
                                       </Text>
                                       <Text
                                         accessibilityRole="text"
@@ -2877,7 +2877,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                         }
                                         testID="attendee_0"
                                       >
-                                        bestdespair0001
+                                        BestDespair0001
                                       </Text>
                                       <Text
                                         accessibilityRole="text"
@@ -3042,7 +3042,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                         }
                                         testID="attendee_1"
                                       >
-                                        bestdespair0002
+                                        BestDespair0002
                                       </Text>
                                       <Text
                                         accessibilityRole="text"
@@ -4383,7 +4383,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                         }
                                         testID="attendee_0"
                                       >
-                                        bestdespair0001
+                                        BestDespair0001
                                       </Text>
                                       <Text
                                         accessibilityRole="text"
@@ -4548,7 +4548,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                         }
                                         testID="attendee_1"
                                       >
-                                        bestdespair0002
+                                        BestDespair0002
                                       </Text>
                                       <Text
                                         accessibilityRole="text"
@@ -5463,7 +5463,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                         }
                                         testID="attendee_0"
                                       >
-                                        bestdespair0001
+                                        BestDespair0001
                                       </Text>
                                       <Text
                                         accessibilityRole="text"
@@ -5628,7 +5628,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                         }
                                         testID="attendee_1"
                                       >
-                                        bestdespair0002
+                                        BestDespair0002
                                       </Text>
                                       <Text
                                         accessibilityRole="text"
@@ -6386,7 +6386,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                         }
                                         testID="attendee_0"
                                       >
-                                        bestdespair0001
+                                        BestDespair0001
                                       </Text>
                                       <Text
                                         accessibilityRole="text"
@@ -6551,7 +6551,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                         }
                                         testID="attendee_1"
                                       >
-                                        bestdespair0002
+                                        BestDespair0002
                                       </Text>
                                       <Text
                                         accessibilityRole="text"
@@ -7867,7 +7867,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                         }
                                         testID="attendee_0"
                                       >
-                                        bestdespair0001
+                                        BestDespair0001
                                       </Text>
                                       <Text
                                         accessibilityRole="text"
@@ -8032,7 +8032,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                         }
                                         testID="attendee_1"
                                       >
-                                        bestdespair0002
+                                        BestDespair0002
                                       </Text>
                                       <Text
                                         accessibilityRole="text"
@@ -8914,7 +8914,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                         }
                                         testID="attendee_0"
                                       >
-                                        bestdespair0001
+                                        BestDespair0001
                                       </Text>
                                       <Text
                                         accessibilityRole="text"
@@ -9079,7 +9079,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                         }
                                         testID="attendee_1"
                                       >
-                                        bestdespair0002
+                                        BestDespair0002
                                       </Text>
                                       <Text
                                         accessibilityRole="text"
