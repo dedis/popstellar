@@ -74,6 +74,8 @@ final case class ConnectionMediator(
       if (serverMap.isEmpty) {
         monitorRef ! Monitor.AtLeastOneServerConnected
         gossipManagerRef ! Monitor.AtLeastOneServerConnected
+      } else {
+        gossipManagerRef ! ConnectionMediator.NewServerConnected(serverRef, greetServer)
       }
       serverMap += ((serverRef, greetServer))
 
