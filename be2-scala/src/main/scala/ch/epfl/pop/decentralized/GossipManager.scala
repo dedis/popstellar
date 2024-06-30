@@ -20,7 +20,7 @@ import ch.epfl.pop.storage.DbActor.{DbActorAck, DbActorGetRumorStateAck, DbActor
 
 import scala.concurrent.Await
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
-import scala.util.Random
+import scala.util.{Random, Success, Try}
 
 /** This class is responsible of managing the gossiping of rumors across the network
   * @param dbActorRef
@@ -33,18 +33,23 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
   private var activeGossipProtocol: Map[JsonRpcRequest, Set[ActorRef]] = Map.empty
   private var rumorMap: Map[PublicKey, Int] = Map.empty
   private var jsonId = 0
-  private var publicKey: Option[PublicKey] = None
+  private var publicKey_ : Option[PublicKey] = None
   private var connectionMediatorRef: AskableActorRef = _
 
   private val periodicRumorStateKey = 0
 
-  publicKey = {
-    val readPk = dbActorRef ? DbActor.ReadServerPublicKey()
-    Await.result(readPk, duration) match
-      case DbActor.DbActorReadServerPublicKeyAck(pk) => Some(pk)
-      case _ =>
-        log.error(s"Will not be able to create rumors because it has no publicKey")
-        None
+  private def publicKey: Option[PublicKey] = {
+    if (publicKey_.isDefined)
+      publicKey_
+    else
+      val readPk = dbActorRef ? DbActor.ReadServerPublicKey()
+      Try(Await.result(readPk, duration)) match
+        case Success(DbActor.DbActorReadServerPublicKeyAck(pk)) =>
+          publicKey_ = Some(pk)
+          publicKey_
+        case _ =>
+          log.error(s"Will not be able to create rumors because it has no publicKey")
+          None
   }
 
   rumorMap =
@@ -214,6 +219,7 @@ final case class GossipManager(dbActorRef: AskableActorRef, stopProbability: Dou
       connectionMediatorRef = sender()
 
     case Monitor.AtLeastOneServerConnected =>
+      sendRumorState()
       timers.startTimerWithFixedDelay(periodicRumorStateKey, TriggerPullState(), pullRate)
 
     case Monitor.NoServerConnected =>
