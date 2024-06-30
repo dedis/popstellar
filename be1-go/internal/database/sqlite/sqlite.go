@@ -20,6 +20,7 @@ func (s *SQLite) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
 
 	var serverPubBuf64 string
 	var serverSecBuf64 string
+
 	err := s.database.QueryRow(selectKeys, serverKeysPath).Scan(&serverPubBuf64, &serverSecBuf64)
 	if err != nil {
 		return nil, nil, poperrors.NewDatabaseSelectErrorMsg("server keys: %v", err)
@@ -40,7 +41,9 @@ func (s *SQLite) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
 	if err != nil {
 		return nil, nil, poperrors.NewKeyMarshalError("server public key: %v", err)
 	}
+
 	serverSecKey := crypto.Suite.Scalar()
+
 	err = serverSecKey.UnmarshalBinary(serverSecBuf)
 	if err != nil {
 		return nil, nil, poperrors.NewKeyMarshalError("server secret key: %v", err)
@@ -54,32 +57,40 @@ func (s *SQLite) GetOrganizerPubKey(laoPath string) (kyber.Point, error) {
 	defer dbLock.Unlock()
 
 	var organizerPubBuf []byte
+
 	err := s.database.QueryRow(selectPublicKey, laoPath).Scan(&organizerPubBuf)
 	if err != nil {
 		return nil, poperrors.NewDatabaseSelectErrorMsg("organizer public key: %v", err)
 	}
+
 	organizerPubKey := crypto.Suite.Point()
+
 	err = organizerPubKey.UnmarshalBinary(organizerPubBuf)
 	if err != nil {
 		return nil, poperrors.NewKeyMarshalError("organizer public key: %v", err)
 	}
+
 	return organizerPubKey, nil
 }
 
 func (s *SQLite) insertMessageHelper(tx *sql.Tx, messageID string, msg, messageData []byte, storedTime int64) error {
 	_, err := tx.Exec(insertMessage, messageID, msg, messageData, storedTime)
+
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg(err.Error())
 
 	}
+
 	_, err = tx.Exec(tranferUnprocessedMessageRumor, messageID)
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("relation message rumor from relation unprocessed message rumor: %v", err)
 	}
+
 	_, err = tx.Exec(deleteUnprocessedMessageRumor, messageID)
 	if err != nil {
 		return poperrors.NewDatabaseDeleteErrorMsg("relation unprocessed message rumor: %v", err)
 	}
+
 	_, err = tx.Exec(deleteUnprocessedMessage, messageID)
 	if err != nil {
 		return poperrors.NewDatabaseDeleteErrorMsg("unprocessed message: %v", err)
@@ -96,6 +107,7 @@ func (s *SQLite) StoreMessageAndData(channelPath string, msg mmessage.Message) e
 	if err != nil {
 		return err
 	}
+
 	defer tx.Rollback()
 
 	messageData, err := base64.URLEncoding.DecodeString(msg.Data)
@@ -104,9 +116,11 @@ func (s *SQLite) StoreMessageAndData(channelPath string, msg mmessage.Message) e
 	}
 
 	msgByte, err := json.Marshal(msg)
+
 	if err != nil {
 		return poperrors.NewJsonMarshalError(err.Error())
 	}
+
 	err = s.insertMessageHelper(tx, msg.MessageID, msgByte, messageData, time.Now().UnixNano())
 	if err != nil {
 		return err
@@ -131,6 +145,7 @@ func (s *SQLite) HasMessage(messageID string) (bool, error) {
 	defer dbLock.Unlock()
 
 	var msgID string
+
 	err := s.database.QueryRow(selectMessageID, messageID).Scan(&msgID)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
@@ -154,37 +169,46 @@ func (s *SQLite) GetMessagesByIDUtil(IDs []string) (map[string]mmessage.Message,
 	}
 
 	IDsInterface := make([]interface{}, len(IDs))
+
 	for i, v := range IDs {
 		IDsInterface[i] = v
 	}
+
 	rows, err := s.database.Query("SELECT messageID, message "+
 		"FROM message "+
 		"WHERE messageID IN ("+strings.Repeat("?,", len(IDs)-1)+"?"+")", IDsInterface...)
+
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return nil, poperrors.NewDatabaseSelectErrorMsg("messages: %v", err)
 	} else if errors.Is(err, sql.ErrNoRows) {
 		return make(map[string]mmessage.Message), nil
 	}
+
 	defer rows.Close()
 
 	messagesByID := make(map[string]mmessage.Message, len(IDs))
+
 	for rows.Next() {
 		var messageID string
 		var messageByte []byte
+
 		if err = rows.Scan(&messageID, &messageByte); err != nil {
 			return nil, poperrors.NewDatabaseScanErrorMsg(err.Error())
 		}
 
 		var msg mmessage.Message
+
 		if err = json.Unmarshal(messageByte, &msg); err != nil {
 			return nil, poperrors.NewJsonUnmarshalError(err.Error())
 		}
+
 		messagesByID[messageID] = msg
 	}
 
 	if err = rows.Err(); err != nil {
 		return nil, poperrors.NewDatabaseIteratorErrorMsg("messages: %v", err)
 	}
+
 	return messagesByID, nil
 }
 
@@ -194,15 +218,18 @@ func (s *SQLite) GetMessageByIDUtil(ID string) (mmessage.Message, error) {
 	defer dbLock.Unlock()
 
 	var messageByte []byte
+
 	err := s.database.QueryRow(selectMessage, ID).Scan(&messageByte)
 	if err != nil {
 		return mmessage.Message{}, poperrors.NewDatabaseSelectErrorMsg(err.Error())
 	}
 
 	var msg mmessage.Message
+
 	if err = json.Unmarshal(messageByte, &msg); err != nil {
 		return mmessage.Message{}, poperrors.NewJsonUnmarshalError(err.Error())
 	}
+
 	return msg, nil
 }
 
@@ -211,10 +238,10 @@ func (s *SQLite) StoreChannelUtil(channelPath, channelType, laoPath string) erro
 	defer dbLock.Unlock()
 
 	_, err := s.database.Exec(insertChannel, channelPath, channelTypeToID[channelType], laoPath)
-
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("channel %s: %v", channelPath, err)
 	}
+
 	return nil
 }
 
@@ -226,5 +253,6 @@ func (s *SQLite) StorePubKeyUtil(keyPath string, key []byte) error {
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("key %s: %v", keyPath, err)
 	}
+
 	return nil
 }

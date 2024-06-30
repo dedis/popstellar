@@ -47,6 +47,7 @@ func NewSQLite(path string, foreignKeyOn bool, log zerolog.Logger) (SQLite, erro
 		db.Close()
 		return SQLite{}, poperrors.NewDatabaseTransactionBeginErrorMsg("%v", err)
 	}
+
 	defer tx.Rollback()
 
 	_, err = tx.Exec(createMessage)
@@ -142,6 +143,7 @@ func (s *SQLite) Close() error {
 	if err != nil {
 		return poperrors.NewDatabaseInternalErrorMsg("close connection: %v", err)
 	}
+
 	return nil
 }
 
@@ -153,12 +155,14 @@ func (s *SQLite) StoreServerKeys(serverPubKey kyber.Point, serverSecretKey kyber
 	if err != nil {
 		return poperrors.NewDatabaseTransactionBeginErrorMsg("%v", err)
 	}
+
 	defer tx.Rollback()
 
 	serverPubBuf, err := serverPubKey.MarshalBinary()
 	if err != nil {
 		return poperrors.NewKeyMarshalError("server public key: %v", err)
 	}
+
 	serverSecBuf, err := serverSecretKey.MarshalBinary()
 	if err != nil {
 		return poperrors.NewKeyMarshalError("server secret key: %v", err)
@@ -166,6 +170,7 @@ func (s *SQLite) StoreServerKeys(serverPubKey kyber.Point, serverSecretKey kyber
 
 	_, err = tx.Exec(insertKeys, serverKeysPath, base64.URLEncoding.EncodeToString(serverPubBuf),
 		base64.URLEncoding.EncodeToString(serverSecBuf))
+
 	if err != nil {
 		return poperrors.NewDatabaseInsertErrorMsg("server keys: %v", err)
 	}
@@ -174,6 +179,7 @@ func (s *SQLite) StoreServerKeys(serverPubKey kyber.Point, serverSecretKey kyber
 	if err != nil {
 		return poperrors.NewDatabaseTransactionCommitErrorMsg("%v", err)
 	}
+
 	return nil
 }
 
@@ -185,15 +191,20 @@ func (s *SQLite) StoreFirstRumor() error {
 	if err != nil {
 		return poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
 	}
+
 	var serverPubKey string
+
 	err = tx.QueryRow(selectPublicKey, serverKeysPath).Scan(&serverPubKey)
 	if err != nil {
 		return poperrors.NewDatabaseSelectErrorMsg("server keys: %v", err)
 	}
 
 	timestamp := make(mrumor.RumorTimestamp)
+
 	timestamp[serverPubKey] = 0
+
 	timestampBuf, err := json.Marshal(timestamp)
+
 	if err != nil {
 		return poperrors.NewJsonMarshalError("rumor timestamp: %v", err)
 	}
@@ -213,6 +224,7 @@ func fillChannelTypes(tx *sql.Tx) error {
 			return poperrors.NewDatabaseInsertErrorMsg("channelType %s: %v", channelType, err)
 		}
 	}
+
 	return nil
 }
 
@@ -224,14 +236,18 @@ func (s *SQLite) GetAllChannels() ([]string, error) {
 	if err != nil {
 		return nil, poperrors.NewDatabaseSelectErrorMsg("all channels: %v", err)
 	}
+
 	defer rows.Close()
 
 	var channels []string
+
 	for rows.Next() {
 		var channelPath string
+
 		if err = rows.Scan(&channelPath); err != nil {
 			return nil, poperrors.NewDatabaseScanErrorMsg("channel: %v", err)
 		}
+
 		channels = append(channels, channelPath)
 	}
 
