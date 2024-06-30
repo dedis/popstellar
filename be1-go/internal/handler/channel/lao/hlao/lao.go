@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/internal/crypto"
 	"popstellar/internal/errors"
 	"popstellar/internal/handler/channel"
@@ -64,6 +65,9 @@ type Repository interface {
 
 	// HasMessage returns true if the message already exists.
 	HasMessage(messageID string) (bool, error)
+
+	// AddWitnessSignature adds a witness signature to a message.
+	AddWitnessSignature(messageID, witness, signature string) error
 }
 
 type Handler struct {
@@ -114,6 +118,7 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 	case channel.ElectionObject + "#" + channel.ElectionActionSetup:
 		storeMessage = false
 		err = h.handleElectionSetup(msg, channelPath)
+	case channel.MessageObject + "#" + channel.MessageActionWitness:
 	case channel.MeetingObject + "#" + channel.MeetingActionCreate:
 		err = nil
 	case channel.MeetingObject + "#" + channel.MeetingActionState:
@@ -134,6 +139,37 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 	}
 
 	return h.subs.BroadcastToAllClients(msg, channelPath)
+}
+
+func (h *Handler) handleMessageWitness(msg mmessage.Message) error {
+	var messageWitness mlao.MessageWitness
+	err := msg.UnmarshalData(&messageWitness)
+	if err != nil {
+		return err
+	}
+
+	senderPkDecoded, err := base64.URLEncoding.DecodeString(msg.Sender)
+	if err != nil {
+		return errors.NewDecodeStringError("sender public key: %v", err)
+	}
+
+	messageIdDecoded, err := base64.URLEncoding.DecodeString(messageWitness.MessageID)
+	if err != nil {
+		return errors.NewDecodeStringError("witness message id in data: %v", err)
+	}
+
+	signatureDecoded, err := base64.URLEncoding.DecodeString(messageWitness.Signature)
+	if err != nil {
+		return errors.NewDecodeStringError("witness signature: %v", err)
+	}
+
+	err = schnorr.VerifyWithChecks(crypto.Suite, senderPkDecoded, messageIdDecoded, signatureDecoded)
+	if err != nil {
+		return errors.NewInvalidMessageFieldError("failed to verify signature: %v", err)
+	}
+
+	err = h.db.AddWitnessSignature(messageWitness.MessageID, msg.Sender, messageWitness.Signature)
+	return err
 }
 
 func (h *Handler) handleRollCallCreate(msg mmessage.Message, channelPath string) error {

@@ -400,5 +400,6 @@ const (
 )
 
 const (
+	updateMsg            = `UPDATE OR IGNORE message SET message = json_insert(message,'$.witness_signatures[#]', json(?)) WHERE messageID = ?`
 	updateRumorTimestamp = `UPDATE rumor SET timestamp = ? WHERE ID = ? AND sender = ?`
 )

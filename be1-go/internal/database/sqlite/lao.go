@@ -291,3 +291,21 @@ func (s *SQLite) StoreElectionWithElectionKey(
 	}
 	return nil
 }
+
+// AddWitnessSignature stores a pending signature inside the SQLite database.
+func (s *SQLite) AddWitnessSignature(messageID, witness, signature string) error {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	witnessSignature, err := json.Marshal(mmessage.WitnessSignature{
+		Witness:   witness,
+		Signature: signature,
+	})
+	if err != nil {
+		return err
+	}
+
+	_, err = s.database.Exec(updateMsg, witnessSignature, messageID)
+
+	return err
+}
