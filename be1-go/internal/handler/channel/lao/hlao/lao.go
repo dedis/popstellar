@@ -119,6 +119,7 @@ func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
 		storeMessage = false
 		err = h.handleElectionSetup(msg, channelPath)
 	case channel.MessageObject + "#" + channel.MessageActionWitness:
+		err = h.handleMessageWitness(msg)
 	case channel.MeetingObject + "#" + channel.MeetingActionCreate:
 		err = nil
 	case channel.MeetingObject + "#" + channel.MeetingActionState:
