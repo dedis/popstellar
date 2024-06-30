@@ -715,8 +715,6 @@ func Test_handleFederationChallenge(t *testing.T) {
 	require.NoError(t, err)
 
 	fakeSocket2 := mock2.FakeSocket{Id: "2"}
-	err = subs.Subscribe(channelPath2, &fakeSocket2)
-	require.NoError(t, err)
 
 	rumors.On("SendRumorStateTo", &fakeSocket2).Return(nil)
 
@@ -770,10 +768,9 @@ func Test_handleFederationChallenge(t *testing.T) {
 	err = json.Unmarshal(fakeSocket2.Msg, &publishMsg)
 	require.NoError(t, err)
 	require.Equal(t, mquery.MethodPublish, publishMsg.Method)
-	require.Equal(t, broadcastMsg.Params.Message, publishMsg.Params.Message)
 
 	var resultMsg mfederation.FederationResult
-	err = broadcastMsg.Params.Message.UnmarshalData(&resultMsg)
+	err = publishMsg.Params.Message.UnmarshalData(&resultMsg)
 	require.NoError(t, err)
 
 	// it should contain the challenge from organizer, not organizer2

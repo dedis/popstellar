@@ -39,6 +39,7 @@ type Hub interface {
 type Subscribers interface {
 	BroadcastToAllClients(msg mmessage.Message, channel string) error
 	AddChannel(channel string) error
+	HasChannel(channel string) bool
 	Subscribe(channel string, socket socket.Socket) error
 	SendToAll(buf []byte, channel string) error
 }
@@ -378,6 +379,7 @@ func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string,
 		// called => broadcast the result to both federation channels directly.
 		_ = h.db.StoreMessageAndData(remoteChannel, resultMsg)
 		_ = h.subs.BroadcastToAllClients(resultMsg, remoteChannel)
+		_ = h.subs.BroadcastToAllClients(resultMsg, channelPath)
 
 		h.log.Info().Msgf("A federation was created with the local LAO %s",
 			federationExpect.LaoId)
@@ -398,10 +400,22 @@ func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string,
 		}
 		h.log.Info().Msgf("A federation was created with the LAO %s from: %s",
 			federationExpect.LaoId, federationExpect.ServerAddress)
+
+		if h.subs.HasChannel(remoteChannel) {
+			// If the server was already sync, no need to add a goroutine
+			return h.subs.BroadcastToAllClients(msg, channelPath)
+		}
+
+		go func() {
+			// wait until the remote channel is available to be subscribed on
+			h.waitSyncOrTimeout(remoteChannel, time.Second*30)
+
+			// broadcast the FederationResult to the local organizer
+			_ = h.subs.BroadcastToAllClients(resultMsg, channelPath)
+		}()
 	}
 
-	// broadcast the FederationResult to the local organizer
-	return h.subs.BroadcastToAllClients(resultMsg, channelPath)
+	return nil
 }
 
 func (h *Handler) handleResult(msg mmessage.Message, channelPath string) error {
@@ -445,7 +459,7 @@ func (h *Handler) handleResult(msg mmessage.Message, channelPath string) error {
 
 	// try to get a matching FederationInit, if found then we know that
 	// the local organizer was waiting this result
-	_, err = h.db.GetFederationInit(organizerPk, result.ChallengeMsg.Sender, federationChallenge, channelPath)
+	federationInit, err := h.db.GetFederationInit(organizerPk, result.ChallengeMsg.Sender, federationChallenge, channelPath)
 	if err != nil {
 		return err
 	}
@@ -455,7 +469,20 @@ func (h *Handler) handleResult(msg mmessage.Message, channelPath string) error {
 		return err
 	}
 
-	return h.subs.BroadcastToAllClients(msg, channelPath)
+	remoteChannel := fmt.Sprintf("/root/%s/federation", federationInit.LaoId)
+	if h.subs.HasChannel(remoteChannel) {
+		// If the server was already sync, no need to add a goroutine
+		return h.subs.BroadcastToAllClients(msg, channelPath)
+	}
+
+	go func() {
+		// wait until the remote channel is available to be subscribed on
+		h.waitSyncOrTimeout(remoteChannel, time.Second*30)
+
+		_ = h.subs.BroadcastToAllClients(msg, channelPath)
+	}()
+
+	return nil
 }
 
 func (h *Handler) handleTokensExchange(msg mmessage.Message, channelPath string) error {
@@ -617,4 +644,19 @@ func (h *Handler) publishTo(msg mmessage.Message, channelPath string,
 
 	socket.Send(publishBytes)
 	return nil
+}
+
+// waitSyncOrTimeout will wait at most maxTime or until the channel is created
+func (h *Handler) waitSyncOrTimeout(channelPath string, maxTime time.Duration) {
+	timeout := time.NewTimer(maxTime)
+	for {
+		select {
+		case <-timeout.C:
+			return
+		case <-time.After(time.Second):
+			if h.subs.HasChannel(channelPath) {
+				return
+			}
+		}
+	}
 }
