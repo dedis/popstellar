@@ -50,3 +50,11 @@ object FederationResultMessages extends FederationMessagesTrait {
   final val federationResult: JsonRpcRequest = getJsonRPCRequestFromFile("federation_result/federation_result.json")()
 
 }
+
+object FederationTokensExchangeMessages extends FederationMessagesTrait {
+
+  override val action: ActionType = ActionType.tokens_exchange
+  override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("tokens_exchange_channel"))
+
+  final val federationTokensExchange: JsonRpcRequest = getJsonRPCRequestFromFile("federation_tokens_exchange/federation_tokens_exchange.json")()
+}

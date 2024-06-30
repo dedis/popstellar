@@ -874,6 +874,24 @@ attendee
                                         }
                                         testID="attendee_0"
                                       >
+                                        BestDespair0001
+                                      </Text>
+                                      <Text
+                                        accessibilityRole="text"
+                                        numberOfLines={1}
+                                        style={
+                                          {
+                                            "backgroundColor": "transparent",
+                                            "color": "#242424",
+                                            "fontFamily": "Courier New",
+                                            "fontSize": 16,
+                                            "lineHeight": 20,
+                                          }
+                                        }
+                                        testID="listItemTitle"
+                                      >
+                                        PoP token:
+                                         
                                         attendee1
                                       </Text>
                                     </View>
@@ -1021,6 +1039,24 @@ attendee
                                         }
                                         testID="attendee_1"
                                       >
+                                        BestDespair0002
+                                      </Text>
+                                      <Text
+                                        accessibilityRole="text"
+                                        numberOfLines={1}
+                                        style={
+                                          {
+                                            "backgroundColor": "transparent",
+                                            "color": "#242424",
+                                            "fontFamily": "Courier New",
+                                            "fontSize": 16,
+                                            "lineHeight": 20,
+                                          }
+                                        }
+                                        testID="listItemTitle"
+                                      >
+                                        PoP token:
+                                         
                                         attendee2
                                       </Text>
                                     </View>
@@ -1918,6 +1954,24 @@ attendee
                                         }
                                         testID="attendee_0"
                                       >
+                                        BestDespair0001
+                                      </Text>
+                                      <Text
+                                        accessibilityRole="text"
+                                        numberOfLines={1}
+                                        style={
+                                          {
+                                            "backgroundColor": "transparent",
+                                            "color": "#242424",
+                                            "fontFamily": "Courier New",
+                                            "fontSize": 16,
+                                            "lineHeight": 20,
+                                          }
+                                        }
+                                        testID="listItemTitle"
+                                      >
+                                        PoP token:
+                                         
                                         attendee1
                                       </Text>
                                     </View>
@@ -2065,6 +2119,24 @@ attendee
                                         }
                                         testID="attendee_1"
                                       >
+                                        BestDespair0002
+                                      </Text>
+                                      <Text
+                                        accessibilityRole="text"
+                                        numberOfLines={1}
+                                        style={
+                                          {
+                                            "backgroundColor": "transparent",
+                                            "color": "#242424",
+                                            "fontFamily": "Courier New",
+                                            "fontSize": 16,
+                                            "lineHeight": 20,
+                                          }
+                                        }
+                                        testID="listItemTitle"
+                                      >
+                                        PoP token:
+                                         
                                         attendee2
                                       </Text>
                                     </View>
@@ -2805,6 +2877,24 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                         }
                                         testID="attendee_0"
                                       >
+                                        BestDespair0001
+                                      </Text>
+                                      <Text
+                                        accessibilityRole="text"
+                                        numberOfLines={1}
+                                        style={
+                                          {
+                                            "backgroundColor": "transparent",
+                                            "color": "#242424",
+                                            "fontFamily": "Courier New",
+                                            "fontSize": 16,
+                                            "lineHeight": 20,
+                                          }
+                                        }
+                                        testID="listItemTitle"
+                                      >
+                                        PoP token:
+                                         
                                         attendee1
                                       </Text>
                                     </View>
@@ -2952,6 +3042,24 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                         }
                                         testID="attendee_1"
                                       >
+                                        BestDespair0002
+                                      </Text>
+                                      <Text
+                                        accessibilityRole="text"
+                                        numberOfLines={1}
+                                        style={
+                                          {
+                                            "backgroundColor": "transparent",
+                                            "color": "#242424",
+                                            "fontFamily": "Courier New",
+                                            "fontSize": 16,
+                                            "lineHeight": 20,
+                                          }
+                                        }
+                                        testID="listItemTitle"
+                                      >
+                                        PoP token:
+                                         
                                         attendee2
                                       </Text>
                                     </View>
@@ -4275,6 +4383,24 @@ attendee
                                         }
                                         testID="attendee_0"
                                       >
+                                        BestDespair0001
+                                      </Text>
+                                      <Text
+                                        accessibilityRole="text"
+                                        numberOfLines={1}
+                                        style={
+                                          {
+                                            "backgroundColor": "transparent",
+                                            "color": "#242424",
+                                            "fontFamily": "Courier New",
+                                            "fontSize": 16,
+                                            "lineHeight": 20,
+                                          }
+                                        }
+                                        testID="listItemTitle"
+                                      >
+                                        PoP token:
+                                         
                                         attendee1
                                       </Text>
                                     </View>
@@ -4422,6 +4548,24 @@ attendee
                                         }
                                         testID="attendee_1"
                                       >
+                                        BestDespair0002
+                                      </Text>
+                                      <Text
+                                        accessibilityRole="text"
+                                        numberOfLines={1}
+                                        style={
+                                          {
+                                            "backgroundColor": "transparent",
+                                            "color": "#242424",
+                                            "fontFamily": "Courier New",
+                                            "fontSize": 16,
+                                            "lineHeight": 20,
+                                          }
+                                        }
+                                        testID="listItemTitle"
+                                      >
+                                        PoP token:
+                                         
                                         attendee2
                                       </Text>
                                     </View>
@@ -5319,6 +5463,24 @@ attendee
                                         }
                                         testID="attendee_0"
                                       >
+                                        BestDespair0001
+                                      </Text>
+                                      <Text
+                                        accessibilityRole="text"
+                                        numberOfLines={1}
+                                        style={
+                                          {
+                                            "backgroundColor": "transparent",
+                                            "color": "#242424",
+                                            "fontFamily": "Courier New",
+                                            "fontSize": 16,
+                                            "lineHeight": 20,
+                                          }
+                                        }
+                                        testID="listItemTitle"
+                                      >
+                                        PoP token:
+                                         
                                         attendee1
                                       </Text>
                                     </View>
@@ -5466,6 +5628,24 @@ attendee
                                         }
                                         testID="attendee_1"
                                       >
+                                        BestDespair0002
+                                      </Text>
+                                      <Text
+                                        accessibilityRole="text"
+                                        numberOfLines={1}
+                                        style={
+                                          {
+                                            "backgroundColor": "transparent",
+                                            "color": "#242424",
+                                            "fontFamily": "Courier New",
+                                            "fontSize": 16,
+                                            "lineHeight": 20,
+                                          }
+                                        }
+                                        testID="listItemTitle"
+                                      >
+                                        PoP token:
+                                         
                                         attendee2
                                       </Text>
                                     </View>
@@ -6206,6 +6386,24 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                         }
                                         testID="attendee_0"
                                       >
+                                        BestDespair0001
+                                      </Text>
+                                      <Text
+                                        accessibilityRole="text"
+                                        numberOfLines={1}
+                                        style={
+                                          {
+                                            "backgroundColor": "transparent",
+                                            "color": "#242424",
+                                            "fontFamily": "Courier New",
+                                            "fontSize": 16,
+                                            "lineHeight": 20,
+                                          }
+                                        }
+                                        testID="listItemTitle"
+                                      >
+                                        PoP token:
+                                         
                                         attendee1
                                       </Text>
                                     </View>
@@ -6353,6 +6551,24 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                         }
                                         testID="attendee_1"
                                       >
+                                        BestDespair0002
+                                      </Text>
+                                      <Text
+                                        accessibilityRole="text"
+                                        numberOfLines={1}
+                                        style={
+                                          {
+                                            "backgroundColor": "transparent",
+                                            "color": "#242424",
+                                            "fontFamily": "Courier New",
+                                            "fontSize": 16,
+                                            "lineHeight": 20,
+                                          }
+                                        }
+                                        testID="listItemTitle"
+                                      >
+                                        PoP token:
+                                         
                                         attendee2
                                       </Text>
                                     </View>
@@ -7651,6 +7867,24 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                         }
                                         testID="attendee_0"
                                       >
+                                        BestDespair0001
+                                      </Text>
+                                      <Text
+                                        accessibilityRole="text"
+                                        numberOfLines={1}
+                                        style={
+                                          {
+                                            "backgroundColor": "transparent",
+                                            "color": "#242424",
+                                            "fontFamily": "Courier New",
+                                            "fontSize": 16,
+                                            "lineHeight": 20,
+                                          }
+                                        }
+                                        testID="listItemTitle"
+                                      >
+                                        PoP token:
+                                         
                                         attendee1
                                       </Text>
                                     </View>
@@ -7798,6 +8032,24 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                         }
                                         testID="attendee_1"
                                       >
+                                        BestDespair0002
+                                      </Text>
+                                      <Text
+                                        accessibilityRole="text"
+                                        numberOfLines={1}
+                                        style={
+                                          {
+                                            "backgroundColor": "transparent",
+                                            "color": "#242424",
+                                            "fontFamily": "Courier New",
+                                            "fontSize": 16,
+                                            "lineHeight": 20,
+                                          }
+                                        }
+                                        testID="listItemTitle"
+                                      >
+                                        PoP token:
+                                         
                                         attendee2
                                       </Text>
                                     </View>
@@ -8662,6 +8914,24 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                         }
                                         testID="attendee_0"
                                       >
+                                        BestDespair0001
+                                      </Text>
+                                      <Text
+                                        accessibilityRole="text"
+                                        numberOfLines={1}
+                                        style={
+                                          {
+                                            "backgroundColor": "transparent",
+                                            "color": "#242424",
+                                            "fontFamily": "Courier New",
+                                            "fontSize": 16,
+                                            "lineHeight": 20,
+                                          }
+                                        }
+                                        testID="listItemTitle"
+                                      >
+                                        PoP token:
+                                         
                                         attendee1
                                       </Text>
                                     </View>
@@ -8809,6 +9079,24 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                         }
                                         testID="attendee_1"
                                       >
+                                        BestDespair0002
+                                      </Text>
+                                      <Text
+                                        accessibilityRole="text"
+                                        numberOfLines={1}
+                                        style={
+                                          {
+                                            "backgroundColor": "transparent",
+                                            "color": "#242424",
+                                            "fontFamily": "Courier New",
+                                            "fontSize": 16,
+                                            "lineHeight": 20,
+                                          }
+                                        }
+                                        testID="listItemTitle"
+                                      >
+                                        PoP token:
+                                         
                                         attendee2
                                       </Text>
                                     </View>

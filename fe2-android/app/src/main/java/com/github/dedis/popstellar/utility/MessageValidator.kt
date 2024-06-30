@@ -247,6 +247,20 @@ object MessageValidator {
     }
 
     /**
+     * Helper method to check that a value is one of a given list of values
+     *
+     * @param input the value to check
+     * @param field name of the field (to print in case of error)
+     * @param values the list of values to compare to (modular number of arguments)
+     * @throws IllegalArgumentException if the value is not one of the given values
+     */
+    fun elementIsOneOf(input: Any, field: String, vararg values: Any): MessageValidatorBuilder {
+      require(values.isNotEmpty()) { "Values cannot be empty" }
+      require(values.contains(input)) { "$field must be one of $values" }
+      return this
+    }
+
+    /**
      * Helper method to check that a list is not empty.
      *
      * @param list the list to check

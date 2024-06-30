@@ -34,8 +34,8 @@ export class ChallengeMessage implements MessageData {
       throw new ProtocolError(`Invalid challenge\n\n${errors}`);
     }
     return new ChallengeMessage({
-      value: obj.value,
-      valid_until: obj.valid_until,
+      value: new Hash(obj.value),
+      valid_until: new Timestamp(obj.valid_until),
     });
   }
 }

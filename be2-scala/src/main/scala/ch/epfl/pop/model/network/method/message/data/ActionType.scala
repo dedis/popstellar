@@ -30,3 +30,4 @@ enum ActionType(val action: String):
   case expect extends ActionType("expect")
   case challenge_request extends ActionType("challenge_request")
   case challenge extends ActionType("challenge")
+  case tokens_exchange extends ActionType("tokens_exchange")

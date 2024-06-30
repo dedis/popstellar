@@ -8,11 +8,14 @@ import { LinkedOrganizationState } from 'features/linked-organizations/objects/L
 
 import {
   addLinkedOrganization,
+  addScannedLinkedOrganization,
   LinkedOrganizationReducerState,
   LINKEDORGANIZATIONS_REDUCER_PATH,
   linkedOrganizationsReduce,
   makeLinkedOrganizationSelector,
+  makeScannedLinkedOrganizationSelector,
   makeSingleLinkedOrganizationSelector,
+  removeScannedLinkedOrganization,
 } from '../LinkedOrganizationsReducer';
 
 const mockChallenge: Challenge = new Challenge({
@@ -71,6 +74,55 @@ describe('LinkedOrganizationReducer', () => {
           addLinkedOrganization(mockLaoId2, mockOrganizationState),
         ),
       ).toThrow();
+    });
+  });
+
+  describe('addScannedLinkedOrganization', () => {
+    it('adds new scanned linked organization to the state', () => {
+      const serializedMockLaoId2 = mockLaoId2.valueOf();
+      const newState = linkedOrganizationsReduce(
+        {
+          byLaoId: {},
+        } as LinkedOrganizationReducerState,
+        addScannedLinkedOrganization(mockLaoId2, mockOrganizationState),
+      );
+      expect(newState.byLaoId[serializedMockLaoId2].allScannedLaos).toEqual([
+        mockOrganizationState,
+      ]);
+    });
+
+    it('throws an error if the store already contains an linked organization with the same id', () => {
+      const serializedMockLaoId2 = mockLaoId2.valueOf();
+      const newState = linkedOrganizationsReduce(
+        {
+          byLaoId: {},
+        } as LinkedOrganizationReducerState,
+        addLinkedOrganization(mockLaoId2, mockOrganizationState),
+      );
+      expect(newState.byLaoId[serializedMockLaoId2].allLaoIds).toEqual([serializedMockLaoId]);
+      expect(() =>
+        linkedOrganizationsReduce(
+          newState,
+          addScannedLinkedOrganization(mockLaoId2, mockOrganizationState),
+        ),
+      ).toThrow();
+    });
+  });
+
+  describe('removeScannedLinkedOrganization', () => {
+    it('removes new scanned linked organization from the state', () => {
+      const serializedMockLaoId2 = mockLaoId2.valueOf();
+      let newState = linkedOrganizationsReduce(
+        {
+          byLaoId: {},
+        } as LinkedOrganizationReducerState,
+        addScannedLinkedOrganization(mockLaoId2, mockOrganizationState),
+      );
+      newState = linkedOrganizationsReduce(
+        newState,
+        removeScannedLinkedOrganization(mockLaoId2, mockOrganizationState.lao_id),
+      );
+      expect(newState.byLaoId[serializedMockLaoId2].allScannedLaos).toEqual([]);
     });
   });
 });
@@ -163,10 +215,10 @@ describe('makeLinkedOrganizationsSelector', () => {
           },
         } as LinkedOrganizationReducerState,
       }),
-    ).toEqual([mockOrganizationState]);
+    ).toEqual([serializedMockLaoId]);
   });
 
-  it('returns undefined if the linked organization  is not in the store', () => {
+  it('returns empty array if the linked organization  is not in the store', () => {
     const serializedMockLaoId2 = mockLaoId2.valueOf();
     const newState = linkedOrganizationsReduce(
       {
@@ -191,5 +243,61 @@ describe('makeLinkedOrganizationsSelector', () => {
         } as LinkedOrganizationReducerState,
       }),
     ).toEqual([]);
+  });
+
+  describe('makeScannedLinkedOrganizationSelector', () => {
+    it('returns the correct scanned linked organization', () => {
+      const serializedMockLaoId2 = mockLaoId2.valueOf();
+      const newState = linkedOrganizationsReduce(
+        {
+          byLaoId: {},
+        } as LinkedOrganizationReducerState,
+        addScannedLinkedOrganization(mockLaoId2, mockOrganizationState),
+      );
+      expect(newState.byLaoId[serializedMockLaoId2].allScannedLaos).toEqual([
+        mockOrganizationState,
+      ]);
+      expect(
+        makeScannedLinkedOrganizationSelector(mockLaoId2)({
+          [LINKEDORGANIZATIONS_REDUCER_PATH]: {
+            byLaoId: {
+              [serializedMockLaoId2]: {
+                allLaoIds: [],
+                byLinkedLaoId: {},
+                allLaos: [],
+                allScannedLaos: [mockOrganizationState],
+              },
+            },
+          } as LinkedOrganizationReducerState,
+        }),
+      ).toEqual([mockOrganizationState]);
+    });
+
+    it('returns empty array if the scanned linked organization  is not in the store', () => {
+      const serializedMockLaoId2 = mockLaoId2.valueOf();
+      const newState = linkedOrganizationsReduce(
+        {
+          byLaoId: {},
+        } as LinkedOrganizationReducerState,
+        addScannedLinkedOrganization(mockLaoId2, mockOrganizationState),
+      );
+      expect(newState.byLaoId[serializedMockLaoId2].allScannedLaos).toEqual([
+        mockOrganizationState,
+      ]);
+      expect(
+        makeScannedLinkedOrganizationSelector(mockLaoId)({
+          [LINKEDORGANIZATIONS_REDUCER_PATH]: {
+            byLaoId: {
+              [serializedMockLaoId2]: {
+                allLaoIds: [],
+                byLinkedLaoId: {},
+                allLaos: [],
+                allScannedLaos: [mockOrganizationState],
+              },
+            },
+          } as LinkedOrganizationReducerState,
+        }),
+      ).toEqual([]);
+    });
   });
 });

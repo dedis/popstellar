@@ -115,7 +115,34 @@ func New(hub Hub, subs Subscribers, sockets Sockets, conf Config,
 	}
 }
 
-func (h *Handler) Handle(channelPath string, msg mmessage.Message,
+func (h *Handler) Handle(channelPath string, msg mmessage.Message) error {
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return errors.NewInvalidMessageFieldError("failed to decode message data: %v", err)
+	}
+
+	err = h.schema.VerifyJSON(jsonData, validation.Data)
+	if err != nil {
+		return err
+	}
+
+	object, action, err := channel.GetObjectAndAction(jsonData)
+	if err != nil {
+		return err
+	}
+
+	if object != channel.FederationObject {
+		return errors.NewInvalidMessageFieldError("invalid object %v", object)
+	}
+
+	if action != channel.FederationActionTokensExchange {
+		return errors.NewInvalidActionError("invalid action %v", action)
+	}
+
+	return h.handleTokensExchange(msg, channelPath)
+}
+
+func (h *Handler) HandleWithSocket(channelPath string, msg mmessage.Message,
 	socket socket.Socket) error {
 	err := msg.VerifyMessage()
 	if err != nil {

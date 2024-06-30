@@ -36,9 +36,33 @@ exports[`Profile renders correctly 1`] = `
           ]
         }
       >
+        DaughterScrub0000
+      </Text>
+      <Text
+        numberOfLines={1}
+        style={
+          [
+            {
+              "fontSize": 16,
+              "lineHeight": 20,
+            },
+            {
+              "fontFamily": "Courier New",
+            },
+          ]
+        }
+      >
+        PoP token:
+         
         PublicKey
       </Text>
-      <Text>
+      <Text
+        style={
+          {
+            "marginTop": 16,
+          }
+        }
+      >
         0 chirps
       </Text>
     </View>

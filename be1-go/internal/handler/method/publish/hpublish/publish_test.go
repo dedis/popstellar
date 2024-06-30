@@ -51,7 +51,8 @@ func Test_Handle(t *testing.T) {
 	publishBuf = generator.NewPublishQuery(t, queryID, channelPath, msg)
 
 	//messageHandler.On("Handle", channelPath, msg, false).Return(nil).Once()
-	fHandler.On("Handle", channelPath, msg, socket).Return(nil).Once()
+	fHandler.On("HandleWithSocket", channelPath, msg, socket).Return(nil).Once()
+	db.On("AddMessageToMyRumor", msg.MessageID).Return(thresholdMessagesByRumor-1, nil).Once()
 
 	id, err = publishHandler.Handle(socket, publishBuf)
 	require.Nil(t, id)

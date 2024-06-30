@@ -385,7 +385,7 @@ exports[`SendReceive renders correctly 1`] = `
                                 }
                               }
                             >
-                              You can send cash by entering the public key of the beneficiary below and choosing the amount of cash you would like to transfer. To receive money you canshow your PoP token to the sender. To access the QR code of your PoP token, tab the QRcode icon in the top right of this screen.
+                              You can send cash by entering the username of the beneficiary below and choosing the amount of cash you would like to transfer. To receive money you canshow your PoP token to the sender. To access the QR code of your PoP token, tab the QRcode icon in the top right of this screen.
                             </Text>
                             <View
                               style={
@@ -1038,7 +1038,7 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                 }
                               }
                             >
-                              You can send cash by entering the public key of the beneficiary below and choosing the amount of cash you would like to transfer. To receive money you canshow your PoP token to the sender. To access the QR code of your PoP token, tab the QRcode icon in the top right of this screen.
+                              You can send cash by entering the username of the beneficiary below and choosing the amount of cash you would like to transfer. To receive money you canshow your PoP token to the sender. To access the QR code of your PoP token, tab the QRcode icon in the top right of this screen.
                             </Text>
                             <View
                               style={

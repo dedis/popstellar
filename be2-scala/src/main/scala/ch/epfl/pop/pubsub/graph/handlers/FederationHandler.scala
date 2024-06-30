@@ -9,7 +9,7 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.MethodType.publish
 import ch.epfl.pop.model.network.method.ParamsWithMessage
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.federation.{FederationChallenge, FederationExpect, FederationInit, FederationResult}
+import ch.epfl.pop.model.network.method.message.data.federation.{FederationChallenge, FederationExpect, FederationInit, FederationResult, FederationTokensExchange}
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.PubSubMediator
@@ -38,6 +38,8 @@ object FederationHandler extends MessageHandler {
   def handleFederationChallenge(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleFederationChallenge(rpcMessage)
 
   def handleFederationResult(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleFederationResult(rpcMessage)
+
+  def handleFederationTokensExchange(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleFederationTokensExchange(rpcMessage)
 
 }
 
@@ -127,6 +129,7 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
         val askWrite = dbActor ? DbActor.WriteFederationInit(federationChannel, laoId, message)
         Await.ready(askWrite, duration).value match {
           case Some(Success(_)) =>
+            // get the other lao's server ref to send him the challenge
             val getServer = connectionMediator ? GetFederationServer(serverAddress)
             Await.result(getServer, duration) match {
               case ConnectionMediator.GetFederationServerAck(federationServerRef) =>
@@ -164,6 +167,7 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
     Await.ready(ask, duration).value match {
       case Some(Success(DbActor.DbActorReadAck(Some(message)))) =>
         val expect: FederationExpect = FederationExpect.buildFromJson(message.data.decodeToString())
+        // extract the challenge message from the FederationExpect message
         val challengeMessage: Message = expect.challenge
         val expectedChallenge: FederationChallenge = FederationChallenge.buildFromJson(challengeMessage.data.decodeToString())
         val serverAddress = expect.serverAddress
@@ -175,6 +179,7 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
 
         Await.ready(ask, duration).value match {
           case Some(Success(data)) =>
+            // check if the challenge received matches the challenge extracted from FederationExpect message
             if (data.value.equals(expectedChallenge.value) && data.validUntil == expectedChallenge.validUntil)
               federationResult = FederationResult(STATUS._1, expect.publicKey, challengeMessage)
             else
@@ -215,11 +220,40 @@ class FederationHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorR
 
         Await.ready(combined, duration).value match {
           case Some(Success(_)) => Right(rpcMessage)
-          case _                => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleChallengeResult unknown error", rpcMessage.getId))
+          case _                => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleFederationResult unknown error", rpcMessage.getId))
         }
       case _ => Left(PipelineError(
           ErrorCodes.SERVER_ERROR.id,
           s"Couldn't extract federationResult parameters",
+          rpcMessage.getId
+        ))
+
+    }
+  }
+
+  def handleFederationTokensExchange(rpcMessage: JsonRpcRequest): GraphMessage = {
+
+    val ask = for {
+      case (_, message, Some(data)) <- extractParameters[FederationTokensExchange](rpcMessage, serverUnexpectedAnswer)
+    } yield (message, data)
+
+    Await.ready(ask, duration).value match {
+      case Some(Success(message, data)) =>
+        val federationChannel: Channel = rpcMessage.getParamsChannel
+        val laoId: Hash = rpcMessage.extractLaoId
+        val combined = for {
+          _ <- mediator ? PubSubMediator.Propagate(rpcMessage.getParamsChannel, message)
+          // store the message in the db
+          _ <- dbActor ? DbActor.WriteFederationTokensExchange(federationChannel, laoId, message)
+        } yield ()
+
+        Await.ready(combined, duration).value match {
+          case Some(Success(_)) => Right(rpcMessage)
+          case _                => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleTokensExchange unknown error", rpcMessage.getId))
+        }
+      case _ => Left(PipelineError(
+          ErrorCodes.SERVER_ERROR.id,
+          s"Couldn't extract federationTokensExchange parameters",
           rpcMessage.getId
         ))
 

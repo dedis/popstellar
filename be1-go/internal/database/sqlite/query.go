@@ -218,6 +218,7 @@ func (s *SQLite) StoreRumor(rumorID int, sender string, timestamp mrumor.RumorTi
 	if err != nil {
 		return poperrors.NewDatabaseTransactionBeginErrorMsg(err.Error())
 	}
+	defer tx.Rollback()
 
 	timestampBuf, err := json.Marshal(timestamp)
 	if err != nil {
@@ -314,14 +315,14 @@ func (s *SQLite) AddMessageToMyRumor(messageID string) (int, error) {
 
 	defer tx.Rollback()
 
-	_, err = s.database.Exec(insertMessageToMyRumor, messageID, serverKeysPath)
+	_, err = tx.Exec(insertMessageToMyRumor, messageID, serverKeysPath)
 	if err != nil {
 		return -1, poperrors.NewDatabaseInsertErrorMsg("message to the current rumor: %v", err)
 	}
 
 	var count int
 
-	err = s.database.QueryRow(selectCountMyRumor, serverKeysPath).Scan(&count)
+	err = tx.QueryRow(selectCountMyRumor, serverKeysPath).Scan(&count)
 	if err != nil {
 		return -1, poperrors.NewDatabaseSelectErrorMsg("number of messages in the current rumor: %v", err)
 	}
@@ -345,7 +346,7 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, mrumor.ParamsRumor, error) {
 
 	defer tx.Rollback()
 
-	rows, err := s.database.Query(selectMyRumorMessages, true, serverKeysPath, serverKeysPath)
+	rows, err := tx.Query(selectMyRumorMessages, true, serverKeysPath, serverKeysPath)
 	if err != nil {
 		return false, mrumor.ParamsRumor{}, poperrors.NewDatabaseSelectErrorMsg("current rumor params: %v", err)
 	}

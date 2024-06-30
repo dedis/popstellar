@@ -578,6 +578,26 @@ class RollCallFragmentTest {
 
   }
 
+  @Test
+  fun copyTokenButtonIsInvisibleWhenRollCallClosed() {
+    rollCallRepo.updateRollCall(LAO_ID, openRollCall(ROLL_CALL))
+
+    RollCallFragmentPageObject.rollCallPopTokenTextCopyButton()
+      .check(
+        ViewAssertions.matches(
+          ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
+        )
+      )
+
+    rollCallRepo.updateRollCall(LAO_ID, closeRollCall(ROLL_CALL))
+    RollCallFragmentPageObject.rollCallPopTokenTextCopyButton()
+      .check(
+        ViewAssertions.matches(
+          ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)
+        )
+      )
+  }
+
   /** Utility function to create a LAO when the user is not the organizer */
   @Throws(UnknownLaoException::class)
   private fun fakeClientLao() {

@@ -1,7 +1,7 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import * as Clipboard from 'expo-clipboard';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Modal, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import {
   ScrollView,
@@ -21,6 +21,7 @@ import {
 } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { generateUsernameFromBase64 } from 'core/functions/Mnemonic';
 import { KeyPairStore } from 'core/keypair';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { DigitalCashParamList } from 'core/navigation/typing/DigitalCashParamList';
@@ -83,10 +84,25 @@ const SendReceive = () => {
 
   const selectedRollCall = DigitalCashHooks.useRollCallById(selectedRollCallId);
 
-  const [beneficiary, setBeneficiary] = useState('');
+  const [beneficiary, setBeneficiaryState] = useState('');
   const [beneficiaryFocused, setBeneficiaryFocused] = useState(false);
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
+
+  const setBeneficiary = useCallback(
+    (newBeneficiary: string) => {
+      if (rollCall?.attendees) {
+        for (let i = 0; i < rollCall!.attendees!.length; i += 1) {
+          if (generateUsernameFromBase64(rollCall!.attendees![i].valueOf()) === newBeneficiary) {
+            setBeneficiaryState(rollCall!.attendees![i].valueOf());
+            return;
+          }
+        }
+      }
+      setBeneficiaryState(newBeneficiary);
+    },
+    [rollCall],
+  );
 
   const suggestedBeneficiaries = useMemo(() => {
     // do not show any suggestions if no text has been entered
@@ -95,7 +111,7 @@ const SendReceive = () => {
     }
 
     return (rollCall?.attendees || [])
-      .map((key) => key.toString())
+      .map((key) => generateUsernameFromBase64(key.valueOf()))
       .filter((key) => key.startsWith(beneficiary));
   }, [beneficiary, beneficiaryFocused, rollCall]);
 
@@ -123,7 +139,7 @@ const SendReceive = () => {
     if (scannedPoPToken) {
       setBeneficiary(scannedPoPToken);
     }
-  }, [scannedPoPToken]);
+  }, [scannedPoPToken, setBeneficiary]);
 
   const checkBeneficiaryValidity = (): boolean => {
     if (!isCoinbase && beneficiary === '') {
@@ -179,7 +195,6 @@ const SendReceive = () => {
     if (!rollCallToken) {
       throw new Error('The roll call token is not defined');
     }
-
     return requestSendTransaction(
       rollCallToken.token,
       new PublicKey(beneficiary),

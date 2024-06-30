@@ -43,6 +43,8 @@ export enum ActionType {
   CHALLENGE = 'challenge',
   FEDERATION_INIT = 'init',
   FEDERATION_EXPECT = 'expect',
+  FEDERATION_RESULT = 'result',
+  TOKENS_EXCHANGE = 'tokens_exchange',
 }
 
 /** Enumeration of all possible signatures of a message */

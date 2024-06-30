@@ -21,6 +21,8 @@ const mockLinkedOrganizationsContextValue = (isOrganizer: boolean) => ({
     useConnectedToLao: () => true,
     useIsLaoOrganizer: () => isOrganizer,
     useCurrentLao: () => mockLao,
+    getLaoById: () => undefined,
+    getRollCallById: () => undefined,
   } as LinkedOrganizationsReactContext,
 });
 

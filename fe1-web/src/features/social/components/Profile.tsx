@@ -5,8 +5,10 @@ import { FlatList } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 
 import { ProfileIcon } from 'core/components';
+import { generateUsernameFromBase64 } from 'core/functions/Mnemonic';
 import { PublicKey } from 'core/objects';
 import { Border, Color, List, Spacing, Typography } from 'core/styles';
+import STRINGS from 'resources/strings';
 
 import { SocialHooks } from '../hooks';
 import { Chirp } from '../objects';
@@ -51,9 +53,12 @@ const Profile = ({ publicKey }: IPropTypes) => {
         <ProfileIcon publicKey={publicKey} size={8} scale={10} />
         <View style={styles.textView}>
           <Text style={[Typography.base, Typography.important, Typography.code]} numberOfLines={1}>
-            {publicKey.toString()}
+            {generateUsernameFromBase64(publicKey.valueOf())}
           </Text>
-          <Text>{`${userChirpList.length} ${
+          <Text style={[Typography.small, Typography.code]} numberOfLines={1}>
+            {STRINGS.popToken} {publicKey.toString()}
+          </Text>
+          <Text style={styles.textView}>{`${userChirpList.length} ${
             userChirpList.length === 1 ? 'chirp' : 'chirps'
           }`}</Text>
         </View>

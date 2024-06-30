@@ -10,7 +10,7 @@ import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
-import { Hash } from 'core/objects';
+import { getFederationChannel, Hash } from 'core/objects';
 import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
@@ -63,6 +63,7 @@ const ConnectConfirm = () => {
       } else {
         // subscribe to the lao channel on the new connection
         await subscribeToChannel(laoId, dispatch, laoChannel, [connection]);
+        await subscribeToChannel(laoId, dispatch, getFederationChannel(laoId));
       }
 
       navigation.navigate(STRINGS.navigation_app_lao, {

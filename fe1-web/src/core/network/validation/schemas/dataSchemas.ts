@@ -36,6 +36,7 @@ import dataFederationChallengeRequest from 'protocol/query/method/message/data/d
 import dataFederationExpect from 'protocol/query/method/message/data/dataFederationExpect.json';
 import dataFederationInit from 'protocol/query/method/message/data/dataFederationInit.json';
 import dataFederationResult from 'protocol/query/method/message/data/dataFederationResult.json';
+import dataFederationTokensExchange from 'protocol/query/method/message/data/dataFederationTokensExchange.json';
 /* eslint-enable import/order */
 
 const dataSchemas = [
@@ -75,6 +76,7 @@ const dataSchemas = [
   dataFederationExpect,
   dataFederationInit,
   dataFederationResult,
+  dataFederationTokensExchange,
 ];
 
 export default dataSchemas;

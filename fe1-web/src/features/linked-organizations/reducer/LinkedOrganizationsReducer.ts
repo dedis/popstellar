@@ -17,6 +17,7 @@ export interface LinkedOrganizationReducerState {
       byLinkedLaoId: Record<string, LinkedOrganizationState>;
       allLaoIds: string[];
       allLaos: LinkedOrganizationState[];
+      allScannedLaos: LinkedOrganizationState[];
     };
   };
 }
@@ -50,6 +51,7 @@ const linkedOrganizationSlice = createSlice({
             allLaoIds: [],
             byLinkedLaoId: {},
             allLaos: [],
+            allScannedLaos: [],
           };
         }
 
@@ -64,10 +66,102 @@ const linkedOrganizationSlice = createSlice({
         state.byLaoId[laoId].byLinkedLaoId[linkedOrganization.lao_id] = linkedOrganization;
       },
     },
+    addLinkedLaoId: {
+      prepare(laoId: Hash, linkedLaoId: Hash) {
+        return {
+          payload: {
+            laoId: laoId.valueOf(),
+            linkedLaoId: linkedLaoId.valueOf(),
+          },
+        };
+      },
+      reducer(state, action: PayloadAction<{ laoId: string; linkedLaoId: string }>) {
+        const { laoId, linkedLaoId } = action.payload;
+
+        if (state.byLaoId[laoId] === undefined) {
+          state.byLaoId[laoId] = {
+            allLaoIds: [],
+            byLinkedLaoId: {},
+            allLaos: [],
+            allScannedLaos: [],
+          };
+        }
+
+        if (
+          !state.byLaoId[laoId].allLaoIds.includes(linkedLaoId.valueOf()) &&
+          linkedLaoId.valueOf() !== laoId.valueOf()
+        ) {
+          state.byLaoId[laoId].allLaoIds.push(linkedLaoId);
+        }
+      },
+    },
+    addScannedLinkedOrganization: {
+      prepare(laoId: Hash, linkedOrganization: LinkedOrganizationState) {
+        return {
+          payload: {
+            laoId: laoId.valueOf(),
+            linkedOrganization: linkedOrganization,
+          },
+        };
+      },
+      reducer(
+        state,
+        action: PayloadAction<{ laoId: string; linkedOrganization: LinkedOrganizationState }>,
+      ) {
+        const { laoId, linkedOrganization } = action.payload;
+
+        if (state.byLaoId[laoId] === undefined) {
+          state.byLaoId[laoId] = {
+            allLaoIds: [],
+            byLinkedLaoId: {},
+            allLaos: [],
+            allScannedLaos: [],
+          };
+        }
+
+        if (state.byLaoId[laoId].allLaoIds.includes(linkedOrganization.lao_id.valueOf())) {
+          throw new Error(
+            `Tried to store organization with lao id ${linkedOrganization.lao_id} but there already exists one with the same lao id`,
+          );
+        }
+
+        state.byLaoId[laoId].allScannedLaos.push(linkedOrganization);
+      },
+    },
+    removeScannedLinkedOrganization: {
+      prepare(laoId: Hash, linkedLaoId: string) {
+        return {
+          payload: {
+            laoId: laoId.valueOf(),
+            linkedLaoId: linkedLaoId,
+          },
+        };
+      },
+      reducer(state, action: PayloadAction<{ laoId: string; linkedLaoId: string }>) {
+        const { laoId, linkedLaoId } = action.payload;
+
+        if (state.byLaoId[laoId] === undefined) {
+          state.byLaoId[laoId] = {
+            allLaoIds: [],
+            byLinkedLaoId: {},
+            allLaos: [],
+            allScannedLaos: [],
+          };
+        }
+        state.byLaoId[laoId].allScannedLaos = state.byLaoId[laoId].allScannedLaos.filter(
+          (org) => org.lao_id !== linkedLaoId,
+        );
+      },
+    },
   },
 });
 
-export const { addLinkedOrganization } = linkedOrganizationSlice.actions;
+export const {
+  addLinkedOrganization,
+  addScannedLinkedOrganization,
+  removeScannedLinkedOrganization,
+  addLinkedLaoId,
+} = linkedOrganizationSlice.actions;
 
 export const getLinkedOrganizationState = (state: any): LinkedOrganizationReducerState =>
   state[LINKEDORGANIZATIONS_REDUCER_PATH];
@@ -93,11 +187,34 @@ export const makeSingleLinkedOrganizationSelector = (laoId: Hash, linked_lao_id:
 };
 
 /**
- * Retrives all linked organization state by lao id
+ * Retrives all linked organization ids by lao id
+ * @param laoId The id of the lao
+ * @returns A list of linked organization ids
+ */
+export const makeLinkedOrganizationSelector = (laoId: Hash) => {
+  return createSelector(
+    // First input: a map containing all linked organization ids
+    (state: any) => getLinkedOrganizationState(state),
+    // Selector: returns the linked organization ids for a specific lao and linked_lao_id
+    (linkedOrganizationState: LinkedOrganizationReducerState): string[] | [] => {
+      const serializedLaoId = laoId.valueOf();
+      if (!linkedOrganizationState) {
+        return [];
+      }
+      if (!linkedOrganizationState.byLaoId[serializedLaoId]) {
+        return [];
+      }
+      return linkedOrganizationState.byLaoId[serializedLaoId].allLaoIds;
+    },
+  );
+};
+
+/**
+ * Retrives all scanned linked organization state by lao id
  * @param laoId The id of the lao
  * @returns A list of linked organization state
  */
-export const makeLinkedOrganizationSelector = (laoId: Hash) => {
+export const makeScannedLinkedOrganizationSelector = (laoId: Hash) => {
   return createSelector(
     // First input: a map containing all linked organizations
     (state: any) => getLinkedOrganizationState(state),
@@ -110,7 +227,7 @@ export const makeLinkedOrganizationSelector = (laoId: Hash) => {
       if (!linkedOrganizationState.byLaoId[serializedLaoId]) {
         return [];
       }
-      return linkedOrganizationState.byLaoId[serializedLaoId].allLaos;
+      return linkedOrganizationState.byLaoId[serializedLaoId].allScannedLaos;
     },
   );
 };

@@ -5,6 +5,7 @@ import { Hash, PopToken, PublicKey } from 'core/objects';
 export namespace DigitalCashFeature {
   export interface Lao {
     id: Hash;
+    organizer: PublicKey;
   }
 
   export interface LaoScreen extends NavigationDrawerScreen {

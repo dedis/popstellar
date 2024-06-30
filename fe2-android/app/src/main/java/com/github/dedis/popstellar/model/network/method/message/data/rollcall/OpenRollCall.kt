@@ -6,6 +6,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data
 import com.github.dedis.popstellar.model.network.method.message.data.Objects
 import com.github.dedis.popstellar.model.objects.RollCall
 import com.github.dedis.popstellar.model.objects.event.EventState
+import com.github.dedis.popstellar.utility.MessageValidator
 import com.google.gson.annotations.SerializedName
 
 /** Data sent to open a roll call */
@@ -28,6 +29,8 @@ class OpenRollCall : Data {
    * @param state the state in which the roll call is when this instance is created
    */
   constructor(laoId: String, opens: String, openedAt: Long, state: EventState) {
+    validate(laoId, "laoId", opens, openedAt)
+
     this.updateId = RollCall.generateOpenRollCallId(laoId, opens, openedAt)
     this.opens = opens
     this.openedAt = openedAt
@@ -40,7 +43,19 @@ class OpenRollCall : Data {
         }
   }
 
+  /**
+   * Constructor of a data Open Roll-Call
+   *
+   * @param updateId id of the update
+   * @param opens The 'update_id' of the latest roll call close, or in its absence, the 'id' field
+   *   of the roll call creation
+   *     @param openedAt timestamp corresponding to roll call open. Must be one of
+   *       ["open", "reopen"]
+   */
   constructor(updateId: String, opens: String, openedAt: Long, action: String) {
+    validate(updateId, "updateId", opens, openedAt)
+        .elementIsOneOf(action, "action", Action.OPEN.action, Action.REOPEN.action)
+
     this.updateId = updateId
     this.opens = opens
     this.openedAt = openedAt
@@ -70,5 +85,17 @@ class OpenRollCall : Data {
 
   override fun toString(): String {
     return "OpenRollCall{updateId='$updateId', opens='$opens', openedAt=$openedAt, action='$action'}"
+  }
+
+  private fun validate(
+      id: String,
+      idLabel: String,
+      opens: String,
+      openedAt: Long
+  ): MessageValidator.MessageValidatorBuilder {
+    return MessageValidator.verify()
+        .isNotEmptyBase64(id, idLabel)
+        .isNotEmptyBase64(opens, "opens")
+        .greaterOrEqualThan(openedAt, 0, "openedAt")
   }
 }

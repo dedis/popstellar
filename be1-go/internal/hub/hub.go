@@ -167,6 +167,16 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 		return nil, err
 	}
 
+	// Create the greetserver handler
+	greetserverHandler := hgreetserver.New(conf, peers, log)
+
+	// Create the rumor state handler
+	rumorStateHandler := hrumorstate.New(queries, sockets, &db, log)
+
+	// Create the federation handler
+	federationHandler := hfederation.New(hubParams, subs, sockets, conf, &db,
+		rumorStateHandler, greetserverHandler, schemaValidator, log)
+
 	// Create the message channel handlers
 	channelHandlers := make(hmessage.ChannelHandlers)
 	channelHandlers[channel.RootObject] = hroot.New(conf, &db, subs, peers, schemaValidator, log)
@@ -175,22 +185,13 @@ func New(dbPath string, ownerPubKey kyber.Point, clientAddress, serverAddress st
 	channelHandlers[channel.ChirpObject] = hchirp.New(conf, subs, &db, schemaValidator, log)
 	channelHandlers[channel.ReactionObject] = hreaction.New(subs, &db, schemaValidator, log)
 	channelHandlers[channel.CoinObject] = hcoin.New(subs, &db, schemaValidator, log)
+	channelHandlers[channel.FederationObject] = federationHandler
 
 	// Create the message handler
 	msgHandler := hmessage.New(&db, channelHandlers, log)
 
-	// Create the greetserver handler
-	greetserverHandler := hgreetserver.New(conf, peers, log)
-
 	// Create the rumor handler
 	rumorHandler := hrumor.New(queries, sockets, &db, msgHandler, log)
-
-	// Create the rumor state handler
-	rumorStateHandler := hrumorstate.New(queries, sockets, &db, log)
-
-	// Create the federation handler
-	federationHandler := hfederation.New(hubParams, subs, sockets, conf, &db,
-		rumorStateHandler, greetserverHandler, schemaValidator, log)
 
 	// Create the query handler
 	methodHandlers := make(hquery.MethodHandlers)
