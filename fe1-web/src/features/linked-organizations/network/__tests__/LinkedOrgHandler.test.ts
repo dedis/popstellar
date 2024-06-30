@@ -1,7 +1,13 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { mockAddress, mockKeyPair, mockLaoId, mockLaoServerAddress } from '__tests__/utils';
+import {
+  mockAddress,
+  mockKeyPair,
+  mockLaoId,
+  mockLaoId2,
+  mockLaoServerAddress,
+} from '__tests__/utils';
 import { ActionType, Message, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import {
   Base64UrlData,
@@ -14,20 +20,29 @@ import {
 import { dispatch } from 'core/redux';
 import { Challenge } from 'features/linked-organizations/objects/Challenge';
 import { setChallenge } from 'features/linked-organizations/reducer';
+import { mockRollCall } from 'features/rollCall/__tests__/utils';
 
 import {
   handleChallengeMessage,
   handleChallengeRequestMessage,
   handleFederationExpectMessage,
   handleFederationInitMessage,
+  handleTokensExchangeMessage,
 } from '../LinkedOrgHandler';
-import { ChallengeRequest, ChallengeMessage, FederationExpect, FederationInit } from '../messages';
+import {
+  ChallengeRequest,
+  ChallengeMessage,
+  FederationExpect,
+  FederationInit,
+  FederationResult,
+} from '../messages';
+import { TokensExchange } from '../messages/TokensExchange';
 
 jest.mock('core/network/jsonrpc/messages/Message', () => {
   return {
-    Message: jest.fn().mockImplementation(() => {
+    Message: jest.fn().mockImplementation((x) => {
       return {
-        buildMessageData: jest.fn((input) => JSON.stringify(input)),
+        buildMessageData: jest.fn(() => JSON.parse(JSON.stringify(x))),
       };
     }),
   };
@@ -80,6 +95,13 @@ const mockMessageData = {
   message_id: mockMessageId,
   witness_signatures: [],
 };
+
+const mockTokensExchange = new TokensExchange({
+  lao_id: mockLaoId2,
+  roll_call_id: mockRollCall.id,
+  tokens: mockRollCall.attendees,
+  timestamp: TIMESTAMP,
+});
 
 const getCurrentLaoId = () => mockLaoId;
 
@@ -314,6 +336,112 @@ describe('handleFederationExpectMessage', () => {
       handleFederationExpectMessage(getCurrentLaoId)({
         ...mockMessageData,
         messageData: mockFederationExpect,
+      }),
+    ).toBeTrue();
+  });
+});
+
+describe('handleFederationResultMessage', () => {
+  it('should return false if the object type is wrong', () => {
+    expect(
+      handleChallengeMessage()({
+        ...mockMessageData,
+        messageData: {
+          object: ObjectType.MEETING,
+          action: ActionType.FEDERATION_RESULT,
+        },
+      } as ProcessableMessage),
+    ).toBeFalse();
+  });
+
+  it('should return false if the action type is wrong', () => {
+    expect(
+      handleChallengeMessage()({
+        ...mockMessageData,
+        messageData: {
+          object: ObjectType.FEDERATION,
+          action: ActionType.ADD,
+        },
+      } as ProcessableMessage),
+    ).toBeFalse();
+  });
+
+  it('should return false if there is an issue with the message data', () => {
+    expect(
+      handleChallengeMessage()({
+        ...mockMessageData,
+        messageData: {
+          object: ObjectType.FEDERATION,
+          action: ActionType.FEDERATION_RESULT,
+          challenge: undefined as unknown as Message,
+          status: undefined as unknown as string,
+          public_key: undefined as unknown as PublicKey,
+        } as FederationResult,
+      }),
+    ).toBeFalse();
+  });
+  it('should return false if there is both a public key and a reason in the message data', () => {
+    expect(
+      handleChallengeMessage()({
+        ...mockMessageData,
+        messageData: {
+          object: ObjectType.FEDERATION,
+          action: ActionType.FEDERATION_RESULT,
+          challenge: mockChallengMessageData,
+          status: 'success',
+          reason: 'error',
+          public_key: mockSender,
+        } as FederationResult,
+      }),
+    ).toBeFalse();
+  });
+});
+
+describe('handleTokensExchangeMessage', () => {
+  it('should return false if the object type is wrong', () => {
+    expect(
+      handleTokensExchangeMessage(getCurrentLaoId)({
+        ...mockMessageData,
+        messageData: {
+          object: ObjectType.MEETING,
+          action: ActionType.TOKENS_EXCHANGE,
+        },
+      } as ProcessableMessage),
+    ).toBeFalse();
+  });
+
+  it('should return false if the action type is wrong', () => {
+    expect(
+      handleTokensExchangeMessage(getCurrentLaoId)({
+        ...mockMessageData,
+        messageData: {
+          object: ObjectType.FEDERATION,
+          action: ActionType.ADD,
+        },
+      } as ProcessableMessage),
+    ).toBeFalse();
+  });
+
+  it('should return false if there is an issue with the message data', () => {
+    expect(
+      handleTokensExchangeMessage(getCurrentLaoId)({
+        ...mockMessageData,
+        messageData: {
+          object: ObjectType.FEDERATION,
+          action: ActionType.TOKENS_EXCHANGE,
+          lao_id: undefined as unknown as Hash,
+          roll_call_id: undefined as unknown as Hash,
+          tokens: undefined as unknown as PublicKey[],
+          timestamp: undefined as unknown as Timestamp,
+        } as TokensExchange,
+      }),
+    ).toBeFalse();
+  });
+  it('should return false if there is both a public key and a reason in the message data', () => {
+    expect(
+      handleTokensExchangeMessage(getCurrentLaoId)({
+        ...mockMessageData,
+        messageData: mockTokensExchange,
       }),
     ).toBeTrue();
   });

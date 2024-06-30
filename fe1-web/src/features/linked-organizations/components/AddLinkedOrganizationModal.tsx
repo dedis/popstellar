@@ -21,7 +21,7 @@ import { expectFederation, initFederation, requestChallenge } from '../network';
 import { Challenge } from '../objects/Challenge';
 import { LinkedOrganization } from '../objects/LinkedOrganization';
 import { makeChallengeSelector } from '../reducer';
-import { addLinkedOrganization } from '../reducer/LinkedOrganizationsReducer';
+import { addScannedLinkedOrganization } from '../reducer/LinkedOrganizationsReducer';
 import ManualInputModal from './ManualInputModal';
 import QRCodeModal from './QRCodeModal';
 import QRCodeScannerModal from './QRCodeScannerModal';
@@ -54,6 +54,7 @@ const AddLinkedOrganizationModal = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
   const laoId = LinkedOrganizationsHooks.useCurrentLaoId();
+  const isOrganizer = LinkedOrganizationsHooks.useIsLaoOrganizer(laoId);
   const lao = LinkedOrganizationsHooks.useCurrentLao();
   const challengeSelector = useMemo(() => makeChallengeSelector(laoId), [laoId]);
   const challengeState = useSelector(challengeSelector);
@@ -70,6 +71,8 @@ const AddLinkedOrganizationModal = () => {
   const [isInitiatingOrganizer, setIsInitiatingOrganizer] = useState<boolean>(false);
   // this is needed as otherwise the camera may stay turned on
   const [showScanner, setShowScanner] = useState(false);
+
+  const [linkedOrganization, setLinkedOrganization] = useState<LinkedOrganization>();
 
   const onRequestChallenge = useCallback(() => {
     requestChallenge(laoId)
@@ -100,6 +103,14 @@ const AddLinkedOrganizationModal = () => {
   const onFederationExpect = useCallback(
     (org: LinkedOrganization) => {
       if (challengeState) {
+        const linkedorg = new LinkedOrganization({
+          lao_id: org.lao_id,
+          server_address: org.server_address,
+          public_key: org.public_key,
+          challenge: Challenge.fromState(challengeState),
+        });
+        setLinkedOrganization(linkedorg);
+        dispatch(addScannedLinkedOrganization(laoId, linkedorg.toState()));
         expectFederation(
           laoId,
           org.lao_id,
@@ -108,14 +119,10 @@ const AddLinkedOrganizationModal = () => {
           Challenge.fromState(challengeState),
         )
           .then(() => {
-            toast.show(`Success: Expect Federation`, {
-              type: 'success',
-              placement: 'bottom',
-              duration: FOUR_SECONDS,
-            });
-            dispatch(addLinkedOrganization(laoId, org.toState()));
+            console.log('Expect Federation successfull');
           })
           .catch((err) => {
+            console.log(err);
             toast.show(`Could not expect Federation, error: ${err}`, {
               type: 'danger',
               placement: 'bottom',
@@ -131,14 +138,10 @@ const AddLinkedOrganizationModal = () => {
     (org: LinkedOrganization) => {
       initFederation(laoId, org.lao_id, org.server_address, org.public_key, org.challenge!)
         .then(() => {
-          toast.show(`Success: Init Federation`, {
-            type: 'success',
-            placement: 'bottom',
-            duration: FOUR_SECONDS,
-          });
-          dispatch(addLinkedOrganization(laoId, org.toState()));
+          console.log('Init Federation successfull');
         })
         .catch((err) => {
+          console.log(err);
           toast.show(`Could not init Federation, error: ${err}`, {
             type: 'danger',
             placement: 'bottom',
@@ -157,7 +160,8 @@ const AddLinkedOrganizationModal = () => {
       if (isInitiatingOrganizer) {
         requestChallengeAndDisplayQRCode();
         setShowQRCodeModal(true);
-        onFederationInit(scannedLinkedOrganization);
+        dispatch(addScannedLinkedOrganization(laoId, scannedLinkedOrganization.toState()));
+        setLinkedOrganization(scannedLinkedOrganization);
       } else {
         onFederationExpect(scannedLinkedOrganization);
         navigation.navigate(STRINGS.navigation_linked_organizations);
@@ -179,7 +183,7 @@ const AddLinkedOrganizationModal = () => {
   };
 
   useEffect(() => {
-    if (challengeState) {
+    if (challengeState && isOrganizer) {
       const challenge = Challenge.fromState(challengeState);
       const jsonObj = {
         lao_id: laoId,
@@ -192,7 +196,7 @@ const AddLinkedOrganizationModal = () => {
       };
       setQRCodeData(JSON.stringify(jsonObj));
     }
-  }, [challengeState, laoId, lao.organizer, lao.server_addresses]);
+  }, [challengeState, laoId, lao.organizer, lao.server_addresses, isOrganizer]);
 
   return (
     <>
@@ -267,6 +271,7 @@ const AddLinkedOrganizationModal = () => {
             setShowQRScannerModal(true);
             setShowScanner(true);
           } else {
+            onFederationInit(linkedOrganization!);
             navigation.navigate(STRINGS.navigation_linked_organizations);
           }
           setShowQRCodeModal(false);

@@ -140,6 +140,8 @@ export function configureFeatures() {
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
     getLaoOrganizerBackendPublicKey: laoConfiguration.functions.getLaoOrganizerBackendPublicKey,
+    getLaoById: laoConfiguration.functions.getLaoById,
+    getRollCallById: rollCallConfiguration.functions.getRollCallById,
   });
 
   // compose features

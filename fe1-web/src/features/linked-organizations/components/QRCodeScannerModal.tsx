@@ -29,6 +29,14 @@ const styles = StyleSheet.create({
     top: '25%',
     bottom: '50%',
   } as ViewStyle,
+  qrCodeMobile: {
+    scale: 0.65,
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0.5,
+    top: '20%',
+    bottom: '50%',
+  } as ViewStyle,
   scannerTextItems: {
     top: '35%',
   } as ViewStyle,
@@ -68,7 +76,7 @@ const QRCodeScannerModal: React.FC<QRCodeScannerModalProps> = ({
         </Text>
         <QrCodeScanner showCamera={showScanner} handleScan={onScanData}>
           <View>
-            <View style={styles.qrCode}>
+            <View style={window.innerWidth <= 500 ? styles.qrCodeMobile : styles.qrCode}>
               <QrCodeScanOverlay width={300} height={300} />
             </View>
             <View style={styles.scannerTextItems}>

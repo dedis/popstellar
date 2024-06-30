@@ -73,11 +73,11 @@ export class Lao {
 
     this.name = obj.name;
     this.id = obj.id;
+    this.last_roll_call_id = obj.last_roll_call_id;
     this.creation = obj.creation;
     this.last_modified = obj.last_modified;
     this.organizer = obj.organizer;
     this.witnesses = [...obj.witnesses];
-    this.last_roll_call_id = obj.last_roll_call_id;
     this.last_tokenized_roll_call_id = obj.last_tokenized_roll_call_id;
     this.server_addresses = obj.server_addresses || [];
 
@@ -93,11 +93,11 @@ export class Lao {
     return new Lao({
       name: lao.name,
       id: Hash.fromState(lao.id),
+      last_roll_call_id: lao.last_roll_call_id ? Hash.fromState(lao.last_roll_call_id) : undefined,
       creation: Timestamp.fromState(lao.creation),
       last_modified: Timestamp.fromState(lao.last_modified),
       organizer: PublicKey.fromState(lao.organizer),
       witnesses: lao.witnesses.map((w) => PublicKey.fromState(w)),
-      last_roll_call_id: lao.last_roll_call_id ? Hash.fromState(lao.last_roll_call_id) : undefined,
       last_tokenized_roll_call_id: lao.last_tokenized_roll_call_id
         ? Hash.fromState(lao.last_tokenized_roll_call_id)
         : undefined,

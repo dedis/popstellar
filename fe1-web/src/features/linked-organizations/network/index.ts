@@ -6,8 +6,17 @@ import {
   handleChallengeRequestMessage,
   handleFederationExpectMessage,
   handleFederationInitMessage,
+  handleFederationResultMessage,
+  handleTokensExchangeMessage,
 } from './LinkedOrgHandler';
-import { ChallengeRequest, ChallengeMessage, FederationExpect, FederationInit } from './messages';
+import {
+  ChallengeRequest,
+  ChallengeMessage,
+  FederationExpect,
+  FederationInit,
+  FederationResult,
+} from './messages';
+import { TokensExchange } from './messages/TokensExchange';
 
 export * from './LinkedOrgMessageApi';
 
@@ -40,5 +49,17 @@ export function configureNetwork(configuration: LinkedOrganizationsConfiguration
     ActionType.FEDERATION_EXPECT,
     handleFederationExpectMessage(configuration.getCurrentLaoId),
     FederationExpect.fromJson,
+  );
+  configuration.messageRegistry.add(
+    ObjectType.FEDERATION,
+    ActionType.FEDERATION_RESULT,
+    handleFederationResultMessage(configuration.getCurrentLaoId),
+    FederationResult.fromJson,
+  );
+  configuration.messageRegistry.add(
+    ObjectType.FEDERATION,
+    ActionType.TOKENS_EXCHANGE,
+    handleTokensExchangeMessage(configuration.getCurrentLaoId),
+    TokensExchange.fromJson,
   );
 }

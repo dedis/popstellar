@@ -26,6 +26,8 @@ const contextValue = {
     useCurrentLaoId: () => mockLaoId,
     useIsLaoOrganizer: () => false,
     useCurrentLao: () => mockLaoServerAddress,
+    getLaoById: () => undefined,
+    getRollCallById: () => undefined,
   } as LinkedOrganizationsReactContext,
 };
 

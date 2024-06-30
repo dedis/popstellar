@@ -14,11 +14,13 @@ import { publish as mockPublish } from 'core/network/JsonRpcApi';
 import { Hash, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { Challenge, ChallengeState } from 'features/linked-organizations/objects/Challenge';
+import { mockRollCall } from 'features/rollCall/__tests__/utils';
 
 import * as msApi from '../LinkedOrgMessageApi';
 import { ChallengeRequest } from '../messages';
 import { FederationExpect } from '../messages/FederationExpect';
 import { FederationInit } from '../messages/FederationInit';
+import { TokensExchange } from '../messages/TokensExchange';
 
 jest.mock('core/network/JsonRpcApi', () => {
   return {
@@ -67,6 +69,18 @@ const checkDataFederationExpect = (obj: MessageData) => {
   expect(data.challenge).toBeInstanceOf(Message);
 };
 
+const checkDataTokensExchange = (obj: MessageData) => {
+  expect(obj.object).toBe(ObjectType.FEDERATION);
+  expect(obj.action).toBe(ActionType.TOKENS_EXCHANGE);
+
+  const data: TokensExchange = obj as TokensExchange;
+  expect(data).toBeObject();
+  expect(data.lao_id).toBeBase64Url();
+  expect(data.roll_call_id).toBeBase64Url();
+  expect(data.tokens).toBeArray();
+  expect(data.timestamp).toBeNumberObject();
+};
+
 beforeAll(configureTestFeatures);
 
 beforeEach(() => {
@@ -87,7 +101,7 @@ describe('LinkedOrgMessageApi', () => {
   it('should create the correct request for initFederation', async () => {
     const challengeState: ChallengeState = {
       value: VALID_HASH_VALUE.toState(),
-      valid_until: VALID_TIMESTAMP,
+      valid_until: VALID_TIMESTAMP.valueOf(),
     };
     const challenge = Challenge.fromState(challengeState);
     await msApi.initFederation(
@@ -107,7 +121,7 @@ describe('LinkedOrgMessageApi', () => {
   it('should create the correct request for expectFederation', async () => {
     const challengeState: ChallengeState = {
       value: VALID_HASH_VALUE.toState(),
-      valid_until: VALID_TIMESTAMP,
+      valid_until: VALID_TIMESTAMP.valueOf(),
     };
     const challenge = Challenge.fromState(challengeState);
     await msApi.expectFederation(
@@ -122,5 +136,25 @@ describe('LinkedOrgMessageApi', () => {
     const [channel, msgData] = publishMock.mock.calls[0];
     expect(channel).toBe(`/root/${mockLaoId2.valueOf()}/federation`);
     checkDataFederationExpect(msgData);
+  });
+
+  it('should create the correct request for tokenExchange', async () => {
+    const mockTokensExchange = new TokensExchange({
+      lao_id: mockLaoId2,
+      roll_call_id: mockRollCall.id,
+      tokens: mockRollCall.attendees,
+      timestamp: VALID_TIMESTAMP,
+    });
+    await msApi.tokensExchange(
+      mockLaoId,
+      mockTokensExchange.lao_id,
+      mockTokensExchange.roll_call_id,
+      mockTokensExchange.tokens,
+    );
+
+    expect(publishMock).toBeCalledTimes(1);
+    const [channel, msgData] = publishMock.mock.calls[0];
+    expect(channel).toBe(`/root/${mockLaoId.valueOf()}/federation`);
+    checkDataTokensExchange(msgData);
   });
 });

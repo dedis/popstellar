@@ -13,7 +13,7 @@ describe('Challenge object', () => {
     it('does a state round trip correctly', () => {
       const challengeState: ChallengeState = {
         value: VALID_HASH_VALUE.toState(),
-        valid_until: VALID_TIMESTAMP,
+        valid_until: VALID_TIMESTAMP.valueOf(),
       };
       const challenge = Challenge.fromState(challengeState);
       expect(challenge.toState()).toStrictEqual(challengeState);
