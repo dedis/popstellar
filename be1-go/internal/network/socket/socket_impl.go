@@ -127,19 +127,13 @@ func (s *baseSocket) WritePump() {
 				return
 			}
 
-			w, err := s.conn.NextWriter(websocket.TextMessage)
+			err := s.conn.WriteMessage(websocket.TextMessage, message)
 			if err != nil {
-				s.log.Err(err).Msg("failed to retrieve writer")
+				s.log.Error().Err(err).Send()
 				return
 			}
 
-			w.Write(message)
 			s.log.Info().RawJSON("sent", message).Msg("")
-
-			if err := w.Close(); err != nil {
-				s.log.Err(err).Msg("failed to close writer")
-				return
-			}
 		case <-ticker.C:
 			s.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := s.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
