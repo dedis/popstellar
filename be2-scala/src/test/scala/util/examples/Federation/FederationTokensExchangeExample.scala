@@ -16,12 +16,10 @@ object FederationTokensExchangeExample {
   final val SIGNATURE: Signature = Signature(Base64Data("BILYwYkT5tOBL4rCD7yvhBkhAYqRXOI3ajQ2uJ1gAk-g6nRc38vMMnlHShuNCQ3dQFXYZPn37cCFelhWGjY8Bg=="))
   final val MESSAGE_ID: Hash = Hash(Base64Data("sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI="))
 
-  final val LAO_ID: Hash = Hash(Base64Data("lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA="))
-  final val ROLL_CALL_ID: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, LAO_ID.toString, NOT_STALE_CREATION.toString, NAME)
-  final val ATTENDEE_1: PublicKey = PublicKey(Base64Data("zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4="))
-  final val ATTENDEE_2: PublicKey = PublicKey(Base64Data("VHfxTlbM3nTnLQuKnKfs1fGP2cwVT8KJkc-sRGs_2KM="))
-  final val ATTENDEE_3: PublicKey = PublicKey(Base64Data("gUSKTlXcSHfQmHbKYsa0obpotjoc-wwtkeKods9WBcY="))
-  final val TOKENS: List[PublicKey] = List(ATTENDEE_1, ATTENDEE_2, ATTENDEE_3)
+  final val LAO_ID: Hash = Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="))
+  final val ROLL_CALL_ID: Hash = Hash(Base64Data("fEvAfdtNrykd9NPYl9ReHLX-6IP6SFLKTZJLeGUHZ_U="))
+  final val ATTENDEE_1: PublicKey = PublicKey(Base64Data("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="))
+  final val TOKENS: List[PublicKey] = List(ATTENDEE_1)
   final val TIMESTAMP: Timestamp = Timestamp(1712854874)
 
   final val TOKENS_EXCHANGE: FederationTokensExchange = FederationTokensExchange(LAO_ID, ROLL_CALL_ID, TOKENS, TIMESTAMP)
