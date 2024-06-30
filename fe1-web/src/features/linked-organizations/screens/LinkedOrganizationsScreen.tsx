@@ -50,19 +50,24 @@ const LinkedOrganizationsScreen = () => {
   useEffect(() => {
     const fetchData = async (linkedOrgId: Hash) => {
       const channel = channelFromIds(linkedOrgId);
-      let successful = false;
-
-      while (!successful) {
-          try {
-              await subscribeToChannel(linkedOrgId, dispatch, channel);
-              await catchup(channel);
-              successful = true;
-          } catch (error) {
-              
+      let counter = 0;
+      const subscribeAndCatchup = async (): Promise<void> => {
+        try {
+          await subscribeToChannel(linkedOrgId, dispatch, channel);
+          await catchup(channel);
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          setLinkedLaoId(linkedOrgId);
+        } catch (error) {
+          console.log(error);
+          if (counter >= 10) {
+            return;
           }
-      }
-      await new Promise((f) => setTimeout(f, 1000));
-      setLinkedLaoId(linkedOrgId);
+          counter += 1;
+          await new Promise((resolve) => setTimeout(resolve, 5000)); // wait before retrying
+          await subscribeAndCatchup(); // retry by calling the function recursively
+        }
+      };
+      await subscribeAndCatchup();
     };
     if (
       recvChallengeState &&
