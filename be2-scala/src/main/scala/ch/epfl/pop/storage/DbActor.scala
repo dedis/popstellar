@@ -857,15 +857,9 @@ final case class DbActor(
 
   @throws[DbActorNAckException]
   private def readFederationMessages(channel: Channel, key: String): Option[Message] = {
-    channel.extractLaoChannel match {
-      case Some(mainLaoChannel) =>
-        storage.read(storage.DATA_KEY + key + channel.toString) match {
-          case Some(msgId) => read(mainLaoChannel, Hash(Base64Data(msgId)))
-          case _           => None
-        }
-      case _ =>
-        log.info("Error : Trying to read a federationMessage from an invalid channel")
-        None
+    storage.read(storage.DATA_KEY + key + channel.toString) match {
+      case Some(msgId) => read(channel, Hash(Base64Data(msgId)))
+      case _           => None
     }
   }
 
@@ -896,14 +890,10 @@ final case class DbActor(
 
   @throws[DbActorNAckException]
   private def writeFederationMessages(channel: Channel, key: String, message: Message): Unit = {
-    channel.extractLaoChannel match {
-      case Some(mainLaoChannel) =>
-        createChannel(channel, ObjectType.federation)
-        storage.write((storage.DATA_KEY + key + channel.toString, message.message_id.toString()))
-        writeAndPropagate(mainLaoChannel, message)
+    createChannel(channel, ObjectType.federation)
+    storage.write((storage.DATA_KEY + key + channel.toString, message.message_id.toString()))
+    write(channel, message)
 
-      case _ => log.info("Error : Trying to write a federationMessage on an invalid channel")
-    }
   }
 
   @throws[DbActorNAckException]

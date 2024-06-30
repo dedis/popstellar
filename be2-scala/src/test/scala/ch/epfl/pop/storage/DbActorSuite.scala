@@ -1195,17 +1195,13 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     writeAnswer shouldBe a[DbActor.DbActorAck]
 
-    val successReadAsk = dbActor ? DbActor.Read(channel.extractLaoChannel.get, message.message_id)
-    val failingReadAsk = dbActor ? DbActor.Read(channel, message.message_id)
+    val successReadAsk = dbActor ? DbActor.Read(channel, message.message_id)
 
     val successAnswer = Await.result(successReadAsk, duration)
-    val failingAnswer = Await.result(failingReadAsk, duration)
 
     val successMessage = successAnswer.asInstanceOf[DbActor.DbActorReadAck].message
-    val failingMessage = failingAnswer.asInstanceOf[DbActor.DbActorReadAck].message
 
     successMessage should equal(Some(message))
-    failingMessage should equal(None)
   }
 
   test("can read and write a federation message correctly") {
