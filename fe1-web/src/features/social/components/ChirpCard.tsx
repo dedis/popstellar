@@ -11,6 +11,7 @@ import TimeAgo from 'react-timeago';
 import { ProfileIcon, ConfirmModal } from 'core/components';
 import PoPIconButton from 'core/components/PoPIconButton';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
+import { generateUsernameFromBase64 } from 'core/functions/Mnemonic';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { SocialParamList } from 'core/navigation/typing/social';
@@ -49,6 +50,7 @@ type NavigationProps = CompositeScreenProps<
 const styles = StyleSheet.create({
   profileIcon: {
     alignSelf: 'flex-start',
+    width: '165px',
   } as ViewStyle,
   senderPrefix: {
     marginTop: Spacing.x05,
@@ -197,13 +199,12 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
               Typography.base,
               Typography.small,
               Typography.inactive,
-              Typography.centered,
               Typography.code,
               styles.senderPrefix,
             ]}
             numberOfLines={1}
             selectable>
-            {chirp.sender.valueOf().slice(0, 4)}
+            {generateUsernameFromBase64(chirp.sender.valueOf())}
           </Text>
         </View>
       </PoPTouchableOpacity>

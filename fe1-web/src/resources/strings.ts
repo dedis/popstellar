@@ -489,7 +489,7 @@ namespace STRINGS {
     'You as the organizer can create money out of thin air 🧙‍♂️';
 
   export const digital_cash_wallet_transaction_description =
-    'You can send cash by entering the public key of the beneficiary below and ' +
+    'You can send cash by entering the username of the beneficiary below and ' +
     'choosing the amount of cash you would like to transfer. To receive money you can' +
     'show your PoP token to the sender. To access the QR code of your PoP token, tab the QR' +
     'code icon in the top right of this screen.';
@@ -523,6 +523,7 @@ namespace STRINGS {
   export const digital_cash_wallet_issue_all_attendees = 'All attendees of roll call';
   export const digital_cash_wallet_issue_to_every_participants =
     'Issue to every attendee of this roll call';
+  export const digital_cash_wallet_transaction_history_organizer = ' (organizer)';
 
   export const digital_cash_infinity = '∞';
   export const digital_cash_error_rollcall_not_defined =
@@ -614,6 +615,8 @@ namespace STRINGS {
     'porta orci auctor, a vulputate felis suscipit. Aenean vulputate ligula ac commodo ornare.';
 
   export const unused = 'unused';
+
+  export const popToken = 'PoP token:';
 }
 
 export default STRINGS;
