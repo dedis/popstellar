@@ -383,38 +383,39 @@ func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string,
 
 		h.log.Info().Msgf("A federation was created with the local LAO %s",
 			federationExpect.LaoId)
-	} else {
-		// Add the socket to the list of server sockets
-		h.sockets.Upsert(socket)
 
-		// Send the rumor state directly to avoid delay while syncing
-		err = h.rumors.SendRumorStateTo(socket)
-		if err != nil {
-			return err
-		}
-
-		// publish the FederationResult to the other server
-		err = h.publishTo(resultMsg, remoteChannel, socket)
-		if err != nil {
-			return err
-		}
-		h.log.Info().Msgf("A federation was created with the LAO %s from: %s",
-			federationExpect.LaoId, federationExpect.ServerAddress)
-
-		if h.subs.HasChannel(remoteChannel) {
-			// If the server was already sync, no need to add a goroutine
-			return h.subs.BroadcastToAllClients(msg, channelPath)
-		}
-
-		go func() {
-			// wait until the remote channel is available to be subscribed on
-			h.waitSyncOrTimeout(remoteChannel, time.Second*30)
-
-			// broadcast the FederationResult to the local organizer
-			_ = h.subs.BroadcastToAllClients(resultMsg, channelPath)
-		}()
+		return nil
 	}
 
+	// Add the socket to the list of server sockets
+	h.sockets.Upsert(socket)
+
+	// Send the rumor state directly to avoid delay while syncing
+	err = h.rumors.SendRumorStateTo(socket)
+	if err != nil {
+		return err
+	}
+
+	// publish the FederationResult to the other server
+	err = h.publishTo(resultMsg, remoteChannel, socket)
+	if err != nil {
+		return err
+	}
+	h.log.Info().Msgf("A federation was created with the LAO %s from: %s",
+		federationExpect.LaoId, federationExpect.ServerAddress)
+
+	if h.subs.HasChannel(remoteChannel) {
+		// If the server was already sync, no need to add a goroutine
+		return h.subs.BroadcastToAllClients(msg, channelPath)
+	}
+
+	go func() {
+		// wait until the remote channel is available to be subscribed on
+		h.waitSyncOrTimeout(remoteChannel, time.Second*30)
+
+		// broadcast the FederationResult to the local organizer
+		_ = h.subs.BroadcastToAllClients(resultMsg, channelPath)
+	}()
 	return nil
 }
 
