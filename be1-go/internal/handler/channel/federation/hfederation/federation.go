@@ -39,7 +39,6 @@ type Hub interface {
 type Subscribers interface {
 	BroadcastToAllClients(msg mmessage.Message, channel string) error
 	AddChannel(channel string) error
-	HasChannel(channel string) bool
 	Subscribe(channel string, socket socket.Socket) error
 	SendToAll(buf []byte, channel string) error
 }
@@ -367,58 +366,42 @@ func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string,
 		return err
 	}
 
+	err = h.db.StoreMessageAndData(channelPath, resultMsg)
+	if err != nil {
+		return err
+	}
+
 	remoteChannel := fmt.Sprintf(channelPattern, federationExpect.LaoId)
 	if h.isOnSameServer(federationExpect.ServerAddress) || socket == nil {
 		// In the edge case where the two LAOs are on the same server, the
 		// result message would already be stored and handleResult will not be
 		// called => broadcast the result to both federation channels directly.
-		_ = h.db.StoreMessageAndData(channelPath, resultMsg)
 		_ = h.db.StoreMessageAndData(remoteChannel, resultMsg)
 		_ = h.subs.BroadcastToAllClients(resultMsg, remoteChannel)
-		_ = h.subs.BroadcastToAllClients(resultMsg, channelPath)
 
 		h.log.Info().Msgf("A federation was created with the local LAO %s",
 			federationExpect.LaoId)
+	} else {
+		// Add the socket to the list of server sockets
+		h.sockets.Upsert(socket)
 
-		return nil
+		// Send the rumor state directly to avoid delay while syncing
+		err = h.rumors.SendRumorStateTo(socket)
+		if err != nil {
+			return err
+		}
+
+		// publish the FederationResult to the other server
+		err = h.publishTo(resultMsg, remoteChannel, socket)
+		if err != nil {
+			return err
+		}
+		h.log.Info().Msgf("A federation was created with the LAO %s from: %s",
+			federationExpect.LaoId, federationExpect.ServerAddress)
 	}
 
-	// Add the socket to the list of server sockets
-	h.sockets.Upsert(socket)
-
-	// Send the rumor state directly to avoid delay while syncing
-	err = h.rumors.SendRumorStateTo(socket)
-	if err != nil {
-		return err
-	}
-
-	// publish the FederationResult to the other server
-	err = h.publishTo(resultMsg, remoteChannel, socket)
-	if err != nil {
-		return err
-	}
-	h.log.Info().Msgf("A federation was created with the LAO %s from: %s",
-		federationExpect.LaoId, federationExpect.ServerAddress)
-
-	if h.subs.HasChannel(remoteChannel) {
-		_ = h.db.StoreMessageAndData(channelPath, resultMsg)
-
-		// If the server was already sync, no need to add a goroutine
-		return h.subs.BroadcastToAllClients(msg, channelPath)
-	}
-
-	go func() {
-		remoteLaoChannel := fmt.Sprintf("/root/%s", federationExpect.LaoId)
-
-		// wait until the remote channel is available to be subscribed on
-		h.waitSyncOrTimeout(remoteLaoChannel, time.Second*30)
-
-		_ = h.db.StoreMessageAndData(channelPath, resultMsg)
-
-		// broadcast the FederationResult to the local organizer
-		_ = h.subs.BroadcastToAllClients(resultMsg, channelPath)
-	}()
-	return nil
+	// broadcast the FederationResult to the local organizer
+	return h.subs.BroadcastToAllClients(resultMsg, channelPath)
 }
 
 func (h *Handler) handleResult(msg mmessage.Message, channelPath string) error {
@@ -462,29 +445,17 @@ func (h *Handler) handleResult(msg mmessage.Message, channelPath string) error {
 
 	// try to get a matching FederationInit, if found then we know that
 	// the local organizer was waiting this result
-	federationInit, err := h.db.GetFederationInit(organizerPk, result.ChallengeMsg.Sender, federationChallenge, channelPath)
+	_, err = h.db.GetFederationInit(organizerPk, result.ChallengeMsg.Sender, federationChallenge, channelPath)
 	if err != nil {
 		return err
 	}
 
-	remoteLaoChannel := fmt.Sprintf("/root/%s", federationInit.LaoId)
-	if h.subs.HasChannel(remoteLaoChannel) {
-		_ = h.db.StoreMessageAndData(channelPath, msg)
-
-		// If the server was already sync, no need to add a goroutine
-		return h.subs.BroadcastToAllClients(msg, channelPath)
+	err = h.db.StoreMessageAndData(channelPath, msg)
+	if err != nil {
+		return err
 	}
 
-	go func() {
-		// wait until the remote channel is available to be subscribed on
-		h.waitSyncOrTimeout(remoteLaoChannel, time.Second*30)
-
-		_ = h.db.StoreMessageAndData(channelPath, msg)
-
-		_ = h.subs.BroadcastToAllClients(msg, channelPath)
-	}()
-
-	return nil
+	return h.subs.BroadcastToAllClients(msg, channelPath)
 }
 
 func (h *Handler) handleTokensExchange(msg mmessage.Message, channelPath string) error {
@@ -646,20 +617,4 @@ func (h *Handler) publishTo(msg mmessage.Message, channelPath string,
 
 	socket.Send(publishBytes)
 	return nil
-}
-
-// waitSyncOrTimeout will wait at most maxTime or until the channel is created
-func (h *Handler) waitSyncOrTimeout(channelPath string, maxTime time.Duration) {
-	timeout := time.NewTimer(maxTime)
-	for {
-		select {
-		case <-timeout.C:
-			return
-		case <-time.After(time.Second):
-			if h.subs.HasChannel(channelPath) {
-				h.log.Info().Msgf("channel %s exists", channelPath)
-				return
-			}
-		}
-	}
 }
