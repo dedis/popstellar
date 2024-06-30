@@ -309,6 +309,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     // register server
     for (peer <- peers) {
       connectionMediatorRef ? ConnectionMediator.NewServerConnected(peer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+      peer.receiveOne(duration)
     }
     checkPeersWritten(connectionMediatorRef)
 
@@ -317,7 +318,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     Await.result(output, duration)
 
     // include rumor state
-    peers.map(_.receiveOne(duration)).count(_ != null) shouldBe 2
+    peers.map(_.receiveOne(duration)).count(_ != null) shouldBe 1
 
   }
 
@@ -340,6 +341,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     var n = 0
     for (peer <- peers) {
       connectionMediatorRef ? ConnectionMediator.NewServerConnected(peer.ref, GreetServer(PublicKey(Base64Data.encode(s"$n")), "", ""))
+      peer.receiveOne(duration)
       n += 1
     }
     checkPeersWritten(connectionMediatorRef)
