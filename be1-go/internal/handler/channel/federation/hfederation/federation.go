@@ -560,6 +560,15 @@ func (h *Handler) isOnSameServer(address string) bool {
 }
 
 func (h *Handler) connectTo(serverAddress string) (socket.Socket, error) {
+	h.log.Warn().Msgf("Server Address before transformation = %s", serverAddress)
+
+	if strings.Contains(serverAddress, "8001") || strings.Contains(serverAddress, "8001") {
+		serverAddress, _ = strings.CutSuffix(serverAddress, "/client")
+		serverAddress = fmt.Sprintf("%s%s", serverAddress, "/server")
+	}
+
+	h.log.Warn().Msgf("Server Address after transformation = %s", serverAddress)
+
 	ws, _, err := websocket.DefaultDialer.Dial(serverAddress, nil)
 	if err != nil {
 		return nil, errors.NewInternalServerError("failed to connect to server %s: %v", serverAddress, err)
