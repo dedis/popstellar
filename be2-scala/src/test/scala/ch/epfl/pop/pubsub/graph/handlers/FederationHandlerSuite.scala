@@ -13,7 +13,7 @@ import ch.epfl.pop.pubsub.graph.PipelineError
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike
 import util.examples.Federation.FederationExpectExample
-import util.examples.data.{FederationChallengeMessages, FederationChallengeRequestMessages, FederationExpectMessages, FederationInitMessages, FederationResultMessages}
+import util.examples.data.{FederationChallengeMessages, FederationChallengeRequestMessages, FederationExpectMessages, FederationInitMessages, FederationResultMessages, FederationTokensExchangeMessages}
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -91,7 +91,8 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.WriteFederationChallenge(_, _, _) | DbActor.WriteFederationInit(_, _, _)
-            | DbActor.WriteFederationExpect(_, _, _) | DbActor.WriteFederationResult(_, _, _) =>
+            | DbActor.WriteFederationExpect(_, _, _) | DbActor.WriteFederationResult(_, _, _) |
+            DbActor.WriteFederationTokensExchange(_, _, _) =>
           system.log.info("Received a WriteFederationMessage")
           system.log.info("Responding with an Ack")
 
@@ -188,7 +189,8 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
           sender() ! DbActor.DbActorReadServerPrivateKeyAck(PRIVATE_KEY)
 
         case DbActor.WriteFederationChallenge(_, _, _) | DbActor.WriteFederationInit(_, _, _)
-            | DbActor.WriteFederationExpect(_, _, _) | DbActor.WriteFederationResult(_, _, _) =>
+            | DbActor.WriteFederationExpect(_, _, _) | DbActor.WriteFederationResult(_, _, _)
+            | DbActor.WriteFederationTokensExchange(_, _, _) =>
           system.log.info("Received a WriteFederationMessage")
           system.log.info("Responding with a Nack")
 
@@ -316,6 +318,27 @@ class FederationHandlerSuite extends TestKit(ActorSystem("Federation-DB-System")
     rc.handleFederationResult(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
+  }
+
+  test("FederationTokensExchange should succeed if we succeed to store the message in the db") {
+    val mockedDB = mockDbWithAck
+    val rc = new FederationHandler(mockedDB, mockMed, mockConMed)
+    val request = FederationTokensExchangeMessages.federationTokensExchange
+
+    rc.handleFederationTokensExchange(request) should equal(Right(request))
+
+    system.stop(mockedDB.actorRef)
+  }
+
+  test("FederationTokensExchange fail if we fail to store the message in the db") {
+    val mockedDB = mockDbWriteMessagesFailed
+    val rc = new FederationHandler(mockedDB, mockMed, mockConMed)
+    val request = FederationTokensExchangeMessages.federationTokensExchange
+
+    rc.handleFederationTokensExchange(request) shouldBe an[Left[PipelineError, _]]
+
+    system.stop(mockedDB.actorRef)
+
   }
 
 }

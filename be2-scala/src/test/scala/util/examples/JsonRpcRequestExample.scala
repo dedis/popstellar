@@ -26,6 +26,7 @@ import util.examples.Federation.FederationInitExample.*
 import util.examples.Federation.FederationResultExample.*
 import util.examples.Federation.FederationExpectExample.*
 import util.examples.Federation.FederationChallengeRequestExample.*
+import util.examples.Federation.FederationTokensExchangeExample.{TOKENS_EXCHANGE_MESSAGE, TOKENS_EXCHANGE_WRONG_SENDER_MESSAGE}
 
 /** Holds json rpc response examples of various kinds for testing purpose in validators' test suites
   */
@@ -311,6 +312,12 @@ object JsonRpcRequestExample {
   final val RESULT_WRONG_CHALLENGE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithResultWrongChallenge, id)
   final val RESULT_WRONG_CHALLENGE_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithResultWrongChallengeSender, id)
   final val RESULT_WRONG_PUBLIC_KEY_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramswWithResultWrongPublicKey, id)
+
+  // for FederationTokensExchange Testing
+  private final val paramsWithTokensExchange: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, TOKENS_EXCHANGE_MESSAGE)
+  private final val paramsWithTokensExchangeWrongSender: ParamsWithMessage = new ParamsWithMessage(rightFederationChannel, TOKENS_EXCHANGE_WRONG_SENDER_MESSAGE)
+  final val TOKENS_EXCHANGE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithTokensExchange, id)
+  final val TOKENS_EXCHANGE_WRONG_SENDER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithTokensExchangeWrongSender, id)
 
   // for WitnessMessage testing
   private final val paramsWithWitnessMessage: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_WITNESS_MESSAGE_WORKING)

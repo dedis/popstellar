@@ -6,12 +6,14 @@ import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection,
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall}
 import ch.epfl.pop.model.network.method.message.data.socialMedia.*
 import ch.epfl.pop.model.network.method.message.data.coin.*
-import ch.epfl.pop.model.network.method.message.data.federation.{FederationChallenge, FederationChallengeRequest, FederationExpect, FederationInit, FederationResult}
+import ch.epfl.pop.model.network.method.message.data.federation.{FederationChallenge, FederationChallengeRequest, FederationExpect, FederationInit, FederationResult, FederationTokensExchange}
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
+
+import javax.print.attribute.standard.PageRanges
 
 /** Helper object to generate test data
   */
@@ -215,6 +217,11 @@ object HighLevelMessageGenerator {
 
         case (ObjectType.federation, ActionType.result) =>
           messageData = FederationResult.buildFromJson(payload)
+          params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+
+        case (ObjectType.federation, ActionType.tokens_exchange) =>
+          messageData = FederationTokensExchange.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 

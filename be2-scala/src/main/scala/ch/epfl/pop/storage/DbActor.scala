@@ -857,15 +857,9 @@ final case class DbActor(
 
   @throws[DbActorNAckException]
   private def readFederationMessages(channel: Channel, key: String): Option[Message] = {
-    channel.extractLaoChannel match {
-      case Some(mainLaoChannel) =>
-        storage.read(storage.DATA_KEY + key + channel.toString) match {
-          case Some(msgId) => read(mainLaoChannel, Hash(Base64Data(msgId)))
-          case _           => None
-        }
-      case _ =>
-        log.info("Error : Trying to read a federationMessage from an invalid channel")
-        None
+    storage.read(storage.DATA_KEY + key + channel.toString) match {
+      case Some(msgId) => read(channel, Hash(Base64Data(msgId)))
+      case _           => None
     }
   }
 
@@ -890,15 +884,16 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def writeFederationMessages(channel: Channel, key: String, message: Message): Unit = {
-    channel.extractLaoChannel match {
-      case Some(mainLaoChannel) =>
-        createChannel(channel, ObjectType.federation)
-        storage.write((storage.DATA_KEY + key + channel.toString, message.message_id.toString()))
-        writeAndPropagate(mainLaoChannel, message)
+  private def readFederationTokensExchange(channel: Channel, laoId: Hash): Option[Message] = {
+    readFederationMessages(channel, storage.FEDERATION_TOKENS_EXCHANGE_KEY + laoId.toString)
+  }
 
-      case _ => log.info("Error : Trying to write a federationMessage on an invalid channel")
-    }
+  @throws[DbActorNAckException]
+  private def writeFederationMessages(channel: Channel, key: String, message: Message): Unit = {
+    createChannel(channel, ObjectType.federation)
+    storage.write((storage.DATA_KEY + key + channel.toString, message.message_id.toString()))
+    write(channel, message)
+
   }
 
   @throws[DbActorNAckException]
@@ -919,6 +914,11 @@ final case class DbActor(
   @throws[DbActorNAckException]
   private def writeFederationResult(channel: Channel, laoId: Hash, message: Message): Unit = {
     writeFederationMessages(channel, storage.FEDERATION_RESULT_KEY + laoId.toString, message)
+  }
+
+  @throws[DbActorNAckException]
+  private def writeFederationTokensExchange(channel: Channel, laoId: Hash, message: Message): Unit = {
+    writeFederationMessages(channel, storage.FEDERATION_TOKENS_EXCHANGE_KEY + laoId.toString, message)
   }
 
   @throws[DbActorNAckException]
@@ -1186,6 +1186,13 @@ final case class DbActor(
         case failure          => sender() ! failure.recover(Status.Failure(_))
       }
 
+    case ReadFederationTokensExchange(channel, laoId) =>
+      log.info(s"Actor $self (db) received a ReadFederationTokensExchange request")
+      Try(readFederationTokensExchange(channel, laoId)) match {
+        case Success(message) => sender() ! DbActorReadAck(message)
+        case failure          => sender() ! failure.recover(Status.Failure(_))
+      }
+
     case WriteFederationChallenge(channel, laoId, message) =>
       log.info(s"Actor $self (db) received a WriteFederationChallenge request")
       Try(writeFederationChallenge(channel, laoId, message)) match {
@@ -1210,6 +1217,13 @@ final case class DbActor(
     case WriteFederationResult(channel, laoId, message) =>
       log.info(s"Actor $self (db) received a WriteFederationResult request")
       Try(writeFederationResult(channel, laoId, message)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case failure    => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case WriteFederationTokensExchange(channel, laoId, message) =>
+      log.info(s"Actor $self (db) received a WriteFederationTokensExchange request")
+      Try(writeFederationTokensExchange(channel, laoId, message)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
@@ -1509,6 +1523,14 @@ object DbActor {
     */
   final case class ReadFederationResult(channel: Channel, laoId: Hash) extends Event
 
+  /** Requests the Db for the federationTokensExchange message
+    * @param channel
+    *   the channel in which the federationTokensExchange is being sent
+    * @param laoId
+    *   the id of the lao in which the federationTokensExchange message is
+    */
+  final case class ReadFederationTokensExchange(channel: Channel, laoId: Hash) extends Event
+
   /** Requests the Db to write the challenge
     * @param channel
     *   the channel in which the challenge is being sent
@@ -1551,6 +1573,16 @@ object DbActor {
     *   the federationResult message
     */
   final case class WriteFederationResult(channel: Channel, laoId: Hash, message: Message) extends Event
+
+  /** Requests the Db to write the federationTokensExchange
+    * @param channel
+    *   the channel in which the federationTokensExchange is being sent
+    * @param laoId
+    *   the id of the lao in which the federationTokensExchange message is
+    * @param message
+    *   the federationTokensExchange message
+    */
+  final case class WriteFederationTokensExchange(channel: Channel, laoId: Hash, message: Message) extends Event
 
   /** Requests the Db to delete the challenge
     * @param channel

@@ -315,4 +315,33 @@ class FederationValidatorSuite extends TestKit(ActorSystem("FederationValidatorT
     system.stop(dbActorRef.actorRef)
   }
 
+  // FederationTokensExchange
+  test("FederationTokensExchange works as intended") {
+    val dbActorRef = mockDbWorking
+    val message: GraphMessage = new FederationValidator(dbActorRef).validateFederationTokensExchange(TOKENS_EXCHANGE_RPC)
+    message should equal(Right(TOKENS_EXCHANGE_RPC))
+    system.stop(dbActorRef.actorRef)
+  }
+
+  test("FederationTokensExchange with wrong type of channel fails ") {
+    val dbActorRef = mockDbWrongChannel
+    val message: GraphMessage = new FederationValidator(dbActorRef).validateFederationTokensExchange(TOKENS_EXCHANGE_RPC)
+    message shouldBe a[Left[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+
+  test("FederationTokensExchange with wrong sender fails") {
+    val dbActorRef = mockDbWorking
+    val message: GraphMessage = new FederationValidator(dbActorRef).validateFederationTokensExchange(TOKENS_EXCHANGE_WRONG_SENDER_RPC)
+    message shouldBe a[Left[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+
+  test("Validating an RpcMessage without Params does not work in validateFederationTokensExchange") {
+    val dbActorRef = mockDbWorking
+    val message: GraphMessage = new FederationValidator(dbActorRef).validateFederationTokensExchange(RPC_NO_PARAMS)
+    message shouldBe a[Left[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+
 }
