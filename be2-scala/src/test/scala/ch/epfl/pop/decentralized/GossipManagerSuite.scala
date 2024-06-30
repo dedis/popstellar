@@ -317,7 +317,6 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
     Await.result(output, duration)
 
-    // include rumor state
     peers.map(_.receiveOne(duration)).count(_ != null) shouldBe 1
 
   }
