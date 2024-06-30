@@ -50,9 +50,17 @@ const LinkedOrganizationsScreen = () => {
   useEffect(() => {
     const fetchData = async (linkedOrgId: Hash) => {
       const channel = channelFromIds(linkedOrgId);
-      await subscribeToChannel(linkedOrgId, dispatch, channel);
-      await catchup(channel);
-      // sometimes there are erros without the extra waiting time - temporary fix
+      let successful = false;
+
+      while (!successful) {
+          try {
+              await subscribeToChannel(linkedOrgId, dispatch, channel);
+              await catchup(channel);
+              successful = true;
+          } catch (error) {
+              
+          }
+      }
       await new Promise((f) => setTimeout(f, 1000));
       setLinkedLaoId(linkedOrgId);
     };
