@@ -60,8 +60,9 @@ const serverSlice = createSlice({
         }
 
         if (server.address in laoState.byAddress) {
-          updateServer(new Hash(server.laoId), server.address, server);
-          return;
+          throw Error(
+            `${server.address} is already part of laoState.byAddress. Use updateServer() instead of addServer()`,
+          );
         }
 
         laoState.byAddress[server.address] = server;
