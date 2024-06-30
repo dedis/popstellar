@@ -367,16 +367,12 @@ func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string,
 		return err
 	}
 
-	err = h.db.StoreMessageAndData(channelPath, resultMsg)
-	if err != nil {
-		return err
-	}
-
 	remoteChannel := fmt.Sprintf(channelPattern, federationExpect.LaoId)
 	if h.isOnSameServer(federationExpect.ServerAddress) || socket == nil {
 		// In the edge case where the two LAOs are on the same server, the
 		// result message would already be stored and handleResult will not be
 		// called => broadcast the result to both federation channels directly.
+		_ = h.db.StoreMessageAndData(channelPath, resultMsg)
 		_ = h.db.StoreMessageAndData(remoteChannel, resultMsg)
 		_ = h.subs.BroadcastToAllClients(resultMsg, remoteChannel)
 		_ = h.subs.BroadcastToAllClients(resultMsg, channelPath)
@@ -410,8 +406,12 @@ func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string,
 	}
 
 	go func() {
+		remoteLaoChannel := fmt.Sprintf("/root/%s", federationExpect.LaoId)
+
 		// wait until the remote channel is available to be subscribed on
-		h.waitSyncOrTimeout(remoteChannel, time.Second*30)
+		h.waitSyncOrTimeout(remoteLaoChannel, time.Second*30)
+
+		_ = h.db.StoreMessageAndData(channelPath, resultMsg)
 
 		// broadcast the FederationResult to the local organizer
 		_ = h.subs.BroadcastToAllClients(resultMsg, channelPath)
@@ -470,15 +470,15 @@ func (h *Handler) handleResult(msg mmessage.Message, channelPath string) error {
 		return err
 	}
 
-	remoteChannel := fmt.Sprintf("/root/%s/federation", federationInit.LaoId)
-	if h.subs.HasChannel(remoteChannel) {
+	remoteLaoChannel := fmt.Sprintf("/root/%s", federationInit.LaoId)
+	if h.subs.HasChannel(remoteLaoChannel) {
 		// If the server was already sync, no need to add a goroutine
 		return h.subs.BroadcastToAllClients(msg, channelPath)
 	}
 
 	go func() {
 		// wait until the remote channel is available to be subscribed on
-		h.waitSyncOrTimeout(remoteChannel, time.Second*30)
+		h.waitSyncOrTimeout(remoteLaoChannel, time.Second*30)
 
 		_ = h.subs.BroadcastToAllClients(msg, channelPath)
 	}()
@@ -656,6 +656,7 @@ func (h *Handler) waitSyncOrTimeout(channelPath string, maxTime time.Duration) {
 			return
 		case <-time.After(time.Second):
 			if h.subs.HasChannel(channelPath) {
+				h.log.Info().Msgf("channel %s exists", channelPath)
 				return
 			}
 		}
