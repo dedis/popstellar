@@ -401,6 +401,8 @@ func (h *Handler) handleChallenge(msg mmessage.Message, channelPath string,
 		federationExpect.LaoId, federationExpect.ServerAddress)
 
 	if h.subs.HasChannel(remoteChannel) {
+		_ = h.db.StoreMessageAndData(channelPath, resultMsg)
+
 		// If the server was already sync, no need to add a goroutine
 		return h.subs.BroadcastToAllClients(msg, channelPath)
 	}
@@ -465,13 +467,10 @@ func (h *Handler) handleResult(msg mmessage.Message, channelPath string) error {
 		return err
 	}
 
-	err = h.db.StoreMessageAndData(channelPath, msg)
-	if err != nil {
-		return err
-	}
-
 	remoteLaoChannel := fmt.Sprintf("/root/%s", federationInit.LaoId)
 	if h.subs.HasChannel(remoteLaoChannel) {
+		_ = h.db.StoreMessageAndData(channelPath, msg)
+
 		// If the server was already sync, no need to add a goroutine
 		return h.subs.BroadcastToAllClients(msg, channelPath)
 	}
@@ -479,6 +478,8 @@ func (h *Handler) handleResult(msg mmessage.Message, channelPath string) error {
 	go func() {
 		// wait until the remote channel is available to be subscribed on
 		h.waitSyncOrTimeout(remoteLaoChannel, time.Second*30)
+
+		_ = h.db.StoreMessageAndData(channelPath, msg)
 
 		_ = h.subs.BroadcastToAllClients(msg, channelPath)
 	}()

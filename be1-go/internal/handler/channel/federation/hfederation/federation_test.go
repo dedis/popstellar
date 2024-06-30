@@ -702,8 +702,14 @@ func Test_handleFederationChallenge(t *testing.T) {
 	laoID := "lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA="
 	laoID2 := "OWY4NmQwODE4ODRjN2Q2NTlhMmZlYWEwYzU1YWQwMQ=="
 	laoPath := fmt.Sprintf("/root/%s", laoID)
+	laoPath2 := fmt.Sprintf("/root/%s", laoID2)
 	channelPath := fmt.Sprintf("/root/%s/federation", laoID)
 	channelPath2 := fmt.Sprintf("/root/%s/federation", laoID2)
+
+	err = subs.AddChannel(laoPath)
+	require.NoError(t, err)
+	err = subs.AddChannel(laoPath2)
+	require.NoError(t, err)
 
 	err = subs.AddChannel(channelPath)
 	require.NoError(t, err)
@@ -811,6 +817,9 @@ func Test_handleFederationResult(t *testing.T) {
 	laoID := "lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA="
 	laoPath := fmt.Sprintf("/root/%s", laoID)
 	channelPath := fmt.Sprintf("/root/%s/federation", laoID)
+
+	err = subs.AddChannel(laoPath)
+	require.NoError(t, err)
 
 	err = subs.AddChannel(channelPath)
 	require.NoError(t, err)
