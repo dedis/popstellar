@@ -28,7 +28,7 @@ type MessageHandler interface {
 }
 
 type FederationHandler interface {
-	Handle(channelPath string, msg mmessage.Message, socket socket.Socket) error
+	HandleWithSocket(channelPath string, msg mmessage.Message, socket socket.Socket) error
 }
 
 type Handler struct {
@@ -60,7 +60,7 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 	// The federation handler need to have access to the socket and are not
 	// using rumors
 	if strings.Contains(publish.Params.Channel, channel.Federation) {
-		err = h.federationHandler.Handle(publish.Params.Channel, publish.Params.Message, socket)
+		err = h.federationHandler.HandleWithSocket(publish.Params.Channel, publish.Params.Message, socket)
 		if err != nil {
 			return &publish.ID, err
 		}
