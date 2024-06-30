@@ -335,7 +335,7 @@ func Test_handleChannelFederation(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			err = federationHandler.Handle(arg.channelPath, arg.msg, &fakeSocket)
+			err = federationHandler.HandleWithSocket(arg.channelPath, arg.msg, &fakeSocket)
 			if arg.isError {
 				require.Error(t, err, arg.contains)
 			} else {

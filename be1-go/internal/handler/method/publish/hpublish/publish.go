@@ -1,6 +1,7 @@
 package hpublish
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"github.com/rs/zerolog"
 	"popstellar/internal/errors"
@@ -28,7 +29,7 @@ type MessageHandler interface {
 }
 
 type FederationHandler interface {
-	Handle(channelPath string, msg mmessage.Message, socket socket.Socket) error
+	HandleWithSocket(channelPath string, msg mmessage.Message, socket socket.Socket) error
 }
 
 type Handler struct {
@@ -58,23 +59,33 @@ func (h *Handler) Handle(socket socket.Socket, msg []byte) (*int, error) {
 	}
 
 	// The federation handler need to have access to the socket and are not
-	// using rumors
+	// using rumors, except for tokens exchange
 	if strings.Contains(publish.Params.Channel, channel.Federation) {
-		err = h.federationHandler.Handle(publish.Params.Channel, publish.Params.Message, socket)
-		if err != nil {
-			return &publish.ID, err
-		}
-
-		socket.SendResult(publish.ID, nil, nil)
-		return nil, nil
+		err = h.federationHandler.HandleWithSocket(publish.Params.Channel, publish.Params.Message, socket)
+	} else {
+		err = h.messageHandler.Handle(publish.Params.Channel, publish.Params.Message, false)
 	}
 
-	err = h.messageHandler.Handle(publish.Params.Channel, publish.Params.Message, false)
 	if err != nil {
 		return &publish.ID, err
 	}
 
 	socket.SendResult(publish.ID, nil, nil)
+
+	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
+	if err != nil {
+		return &publish.ID, errors.NewInvalidMessageFieldError(
+			"failed to decode message data: %v", err)
+	}
+
+	object, action, err := channel.GetObjectAndAction(jsonData)
+	if err != nil {
+		return &publish.ID, err
+	}
+
+	if object == channel.FederationObject && action != channel.FederationActionTokensExchange {
+		return nil, nil
+	}
 
 	logger.Logger.Debug().Msgf("sender rumor need to add message %s", publish.Params.Message.MessageID)
 	nbMessagesInsideRumor, err := h.db.AddMessageToMyRumor(publish.Params.Message.MessageID)

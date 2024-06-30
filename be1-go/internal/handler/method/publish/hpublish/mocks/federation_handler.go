@@ -15,12 +15,12 @@ type FederationHandler struct {
 	mock.Mock
 }
 
-// Handle provides a mock function with given fields: channelPath, msg, _a2
-func (_m *FederationHandler) Handle(channelPath string, msg mmessage.Message, _a2 socket.Socket) error {
+// HandleWithSocket provides a mock function with given fields: channelPath, msg, _a2
+func (_m *FederationHandler) HandleWithSocket(channelPath string, msg mmessage.Message, _a2 socket.Socket) error {
 	ret := _m.Called(channelPath, msg, _a2)
 
 	if len(ret) == 0 {
-		panic("no return value specified for Handle")
+		panic("no return value specified for HandleWithSocket")
 	}
 
 	var r0 error
