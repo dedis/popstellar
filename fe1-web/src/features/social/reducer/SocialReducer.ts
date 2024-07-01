@@ -99,6 +99,9 @@ const socialSlice = createSlice({
 
         const store = state.byLaoId[laoId];
 
+        console.log("chirp compare");
+        console.log(store.byId[chirp.id]);
+        console.log(chirp);
         // add the chirp to byId or update the chirp state if it's already in byId
         // if the chirp has not been added (didn't receive a delete request before)
         // or if the addChirp and deleteChirp of this chirp.id are sent by different sender
