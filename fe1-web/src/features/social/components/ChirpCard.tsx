@@ -204,7 +204,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
             ]}
             numberOfLines={1}
             selectable>
-            {generateUsernameFromBase64(chirp.sender.valueOf())} {chirp.id}
+            {generateUsernameFromBase64(chirp.sender.valueOf())}
           </Text>
         </View>
       </PoPTouchableOpacity>

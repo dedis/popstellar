@@ -100,8 +100,11 @@ const socialSlice = createSlice({
         const store = state.byLaoId[laoId];
 
         console.log("chirp compare");
-        console.log(store.byId[chirp.id]);
-        console.log(chirp);
+        if (store.byId[chirp.id]) {
+          console.log(store.byId[chirp.id]);
+          console.log(chirp);
+        };
+        
         // add the chirp to byId or update the chirp state if it's already in byId
         // if the chirp has not been added (didn't receive a delete request before)
         // or if the addChirp and deleteChirp of this chirp.id are sent by different sender
@@ -304,11 +307,14 @@ export const makeChirpsList = (laoId?: Hash) =>
       if (!serializedLaoId) {
         return [];
       }
-
       if (chirpList.byLaoId[serializedLaoId]) {
         const store = chirpList.byLaoId[serializedLaoId];
         const allChirps: ChirpState[] = [];
-        store.allIdsInOrder.forEach((id) => allChirps.push(store.byId[id]));
+        store.allIdsInOrder.forEach((id) => {
+          if (!allChirps.some(chirp => chirp.id === id)) {
+            allChirps.push(store.byId[id])}
+          } 
+        );
 
         return allChirps.map(Chirp.fromState);
       }
