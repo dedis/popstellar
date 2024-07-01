@@ -19,4 +19,8 @@ public class QrPageObject {
   public static ViewInteraction privateKey() {
     return onView(withId(R.id.pk_text));
   }
+
+  public static ViewInteraction copyPublicKeyButton() {
+      return onView(withId(R.id.copy_public_key_button));
+  }
 }
