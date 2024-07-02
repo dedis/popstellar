@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <FrameLayout
+    android:id="@+id/networkConnectionContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="2dp"
+    android:background="@color/background_gray">
+
+    <TextView
+      android:id="@+id/statusTextView"
+      style="@style/text_high_emphasis"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      android:text="@string/network_status_connection_fail" />
+
+  </FrameLayout>
+
+</layout>

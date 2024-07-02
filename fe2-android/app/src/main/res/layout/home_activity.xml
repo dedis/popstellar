@@ -22,6 +22,13 @@
         app:navigationIcon="@drawable/home_icon" />
     </com.google.android.material.appbar.AppBarLayout>
 
+    <com.github.dedis.popstellar.ui.NetworkStatusView
+      android:id="@+id/networkStatusView"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/home_bar_layout"
+      app:layout_constraintStart_toStartOf="parent"/>
+
     <FrameLayout
       android:id="@+id/fragment_container_home"
       android:layout_width="match_parent"

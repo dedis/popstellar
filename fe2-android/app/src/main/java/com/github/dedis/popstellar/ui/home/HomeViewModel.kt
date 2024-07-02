@@ -11,10 +11,12 @@ import com.github.dedis.popstellar.model.objects.Wallet
 import com.github.dedis.popstellar.model.objects.view.LaoView
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao.Companion.extractFrom
+import com.github.dedis.popstellar.repository.ConnectivityRepository
 import com.github.dedis.popstellar.repository.LAORepository
 import com.github.dedis.popstellar.repository.database.AppDatabase
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager
 import com.github.dedis.popstellar.ui.PopViewModel
+import com.github.dedis.popstellar.ui.lao.LaoViewModel
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel
 import com.github.dedis.popstellar.utility.ActivityUtils.saveWalletRoutine
 import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
@@ -24,6 +26,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.BackpressureStrategy
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import java.security.GeneralSecurityException
@@ -42,6 +45,7 @@ constructor(
     private val wallet: Wallet,
     private val laoRepository: LAORepository,
     private val networkManager: GlobalNetworkManager,
+    private val connectivityRepository: ConnectivityRepository,
     private val appDatabase: AppDatabase
 ) : AndroidViewModel(application), QRCodeScanningViewModel, PopViewModel {
   /** LiveData objects that represent the state in a fragment */
@@ -55,6 +59,8 @@ constructor(
 
   /** This LiveData boolean is used to indicate whether the HomeFragment is displayed */
   val isHome = MutableLiveData(java.lang.Boolean.TRUE)
+
+  val isInternetConnected = MutableLiveData(java.lang.Boolean.TRUE)
 
   val isWitnessingEnabled = MutableLiveData(java.lang.Boolean.FALSE)
 
@@ -188,6 +194,18 @@ constructor(
     if (java.lang.Boolean.valueOf(isHome) != this.isHome.value) {
       this.isHome.value = isHome
     }
+  }
+
+  fun observeInternetConnection() {
+    addDisposable(
+        connectivityRepository
+            .observeConnectivity()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { isConnected -> isInternetConnected.value = isConnected },
+                { error: Throwable ->
+                  Timber.tag(LaoViewModel.TAG).e(error, "error connection status")
+                }))
   }
 
   /**

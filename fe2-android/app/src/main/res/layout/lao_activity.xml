@@ -31,6 +31,11 @@
           app:navigationIcon="@drawable/menu_icon" />
       </com.google.android.material.appbar.AppBarLayout>
 
+      <com.github.dedis.popstellar.ui.NetworkStatusView
+        android:id="@+id/networkStatusView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
       <FrameLayout
         android:id="@+id/fragment_container_lao"
         android:layout_width="match_parent"

@@ -51,7 +51,11 @@ class HomeActivity : AppCompatActivity() {
     // When back to the home activity set connecting in view model to false
     viewModel.disableConnectingFlag()
 
+    viewModel.observeInternetConnection()
+
     handleTopAppBar()
+
+    observeInternetConnection()
 
     // Load all the json schemas in background when the app is started.
     GlobalScope.launch {
@@ -74,6 +78,12 @@ class HomeActivity : AppCompatActivity() {
           .setMessage(R.string.wallet_init_message)
           .setNeutralButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
           .show()
+    }
+  }
+
+  private fun observeInternetConnection() {
+    viewModel.isInternetConnected.observe(this) {
+      binding.networkStatusView.setIsNetworkConnected(it)
     }
   }
 
