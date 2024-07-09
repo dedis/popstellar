@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>08 Jul 2024, 04:19</td>
+      <td>09 Jul 2024, 04:19</td>
     </tr>
   </tbody>
 </table>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >2</td>
           <td class="total">6</td>
 
-          <td class="duration" data-value="52345193962">52.345</td>
+          <td class="duration" data-value="52319569623">52.319</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.382</span>
+  <span class="lead-duration duration">5.389</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -342,7 +342,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -531,7 +531,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.112</span>
+  <span class="lead-duration duration">0.119</span>
 
 </div>
 
@@ -848,7 +848,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.389</span>
+  <span class="lead-duration duration">5.385</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-7">
@@ -891,7 +891,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -945,7 +945,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.259</span>
+  <span class="lead-duration duration">5.258</span>
 
 </div>
 
@@ -1188,7 +1188,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.121</span>
+  <span class="lead-duration duration">0.119</span>
 
 </div>
 
@@ -1300,7 +1300,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.003</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-10">
@@ -1397,7 +1397,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">def validElectionOpen =</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -1440,7 +1440,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validElectionOpen, newElection.channel)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -1467,7 +1467,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validElectionOpen)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1511,7 +1511,7 @@ $(document).ready(function() {
       <div id="msg-13" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1501377640,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;-6: sql: no rows in result set\nhquery.(*Handler).Handle\n\tquery.go:46\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:283\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1483073709,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;-6: sql: no rows in result set\nhquery.(*Handler).Handle\n\tquery.go:46\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:283\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
@@ -1536,11 +1536,11 @@ classpath:be/features/election/electionOpen.feature:55</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-14" class="collapse collapsable-details">
-        <pre>04:14:53.457 classpath:be/features/election/electionOpen.feature:55
+        <pre>04:14:53.581 classpath:be/features/election/electionOpen.feature:55
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1501377640,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;-6: sql: no rows in result set\nhquery.(*Handler).Handle\n\tquery.go:46\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:283\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1483073709,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;-6: sql: no rows in result set\nhquery.(*Handler).Handle\n\tquery.go:46\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:283\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
@@ -1609,7 +1609,7 @@ classpath:be/features/election/electionOpen.feature:55
 </div>
 
 
-  <span class="lead-duration duration">5.381</span>
+  <span class="lead-duration duration">5.390</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-15">
@@ -1652,7 +1652,7 @@ classpath:be/features/election/electionOpen.feature:55
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -1706,7 +1706,7 @@ classpath:be/features/election/electionOpen.feature:55
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.258</span>
+  <span class="lead-duration duration">5.259</span>
 
 </div>
 
@@ -1949,7 +1949,7 @@ classpath:be/features/election/electionOpen.feature:55
   <span class="keyword indention">*</span>
   <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.114</span>
+  <span class="lead-duration duration">0.121</span>
 
 </div>
 
@@ -2266,7 +2266,7 @@ classpath:be/features/election/electionOpen.feature:55
 </div>
 
 
-  <span class="lead-duration duration">5.384</span>
+  <span class="lead-duration duration">5.381</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-21">
@@ -2363,7 +2363,7 @@ classpath:be/features/election/electionOpen.feature:55
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.258</span>
+  <span class="lead-duration duration">5.259</span>
 
 </div>
 
@@ -2417,7 +2417,7 @@ classpath:be/features/election/electionOpen.feature:55
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -2606,7 +2606,7 @@ classpath:be/features/election/electionOpen.feature:55
   <span class="keyword indention">*</span>
   <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.118</span>
+  <span class="lead-duration duration">0.114</span>
 
 </div>
 
@@ -2902,7 +2902,7 @@ classpath:be/features/election/electionOpen.feature:55
       <div id="msg-27" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1630285424,&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;-5: access denied: sender is not the organizer of the channel\nhelection.(*Handler).verifySenderElection\n\telection.go:330\nhelection.(*Handler).handleElectionOpen\n\telection.go:204\nhelection.(*Handler).Handle\n\telection.go:114\nhmessage.(*Handler).Handle\n\tmessage.go:65\nhpublish.(*Handler).Handle\n\tpublish.go:66\nhquery.(*Handler).Handle\n\tquery.go:43\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:283\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1875325860,&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;-5: access denied: sender is not the organizer of the channel\nhelection.(*Handler).verifySenderElection\n\telection.go:330\nhelection.(*Handler).handleElectionOpen\n\telection.go:204\nhelection.(*Handler).Handle\n\telection.go:114\nhmessage.(*Handler).Handle\n\tmessage.go:65\nhpublish.(*Handler).Handle\n\tpublish.go:66\nhquery.(*Handler).Handle\n\tquery.go:43\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:283\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
@@ -2927,11 +2927,11 @@ classpath:be/features/election/electionOpen.feature:94</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-28" class="collapse collapsable-details">
-        <pre>04:15:09.254 classpath:be/features/election/electionOpen.feature:94
+        <pre>04:15:09.384 classpath:be/features/election/electionOpen.feature:94
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1630285424,&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;-5: access denied: sender is not the organizer of the channel\nhelection.(*Handler).verifySenderElection\n\telection.go:330\nhelection.(*Handler).handleElectionOpen\n\telection.go:204\nhelection.(*Handler).Handle\n\telection.go:114\nhmessage.(*Handler).Handle\n\tmessage.go:65\nhpublish.(*Handler).Handle\n\tpublish.go:66\nhquery.(*Handler).Handle\n\tquery.go:43\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:283\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1875325860,&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;-5: access denied: sender is not the organizer of the channel\nhelection.(*Handler).verifySenderElection\n\telection.go:330\nhelection.(*Handler).handleElectionOpen\n\telection.go:204\nhelection.(*Handler).Handle\n\telection.go:114\nhmessage.(*Handler).Handle\n\tmessage.go:65\nhpublish.(*Handler).Handle\n\tpublish.go:66\nhquery.(*Handler).Handle\n\tquery.go:43\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:283\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
@@ -3000,7 +3000,7 @@ classpath:be/features/election/electionOpen.feature:94
 </div>
 
 
-  <span class="lead-duration duration">5.387</span>
+  <span class="lead-duration duration">5.377</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-29">
@@ -3043,7 +3043,7 @@ classpath:be/features/election/electionOpen.feature:94
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -3340,7 +3340,7 @@ classpath:be/features/election/electionOpen.feature:94
   <span class="keyword indention">*</span>
   <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.118</span>
+  <span class="lead-duration duration">0.108</span>
 
 </div>
 
@@ -3452,7 +3452,7 @@ classpath:be/features/election/electionOpen.feature:94
 </div>
 
 
-  <span class="lead-duration duration">5.004</span>
+  <span class="lead-duration duration">5.002</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-32">
@@ -3565,7 +3565,7 @@ classpath:be/features/election/electionOpen.feature:94
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidElectionOpen)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -3657,7 +3657,7 @@ classpath:be/features/election/electionOpen.feature:94
 </div>
 
 
-  <span class="lead-duration duration">5.389</span>
+  <span class="lead-duration duration">5.367</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-35">
@@ -3754,7 +3754,7 @@ classpath:be/features/election/electionOpen.feature:94
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.259</span>
+  <span class="lead-duration duration">5.258</span>
 
 </div>
 
@@ -3862,7 +3862,7 @@ classpath:be/features/election/electionOpen.feature:94
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -3997,7 +3997,7 @@ classpath:be/features/election/electionOpen.feature:94
   <span class="keyword indention">*</span>
   <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.122</span>
+  <span class="lead-duration duration">0.101</span>
 
 </div>
 
@@ -4109,7 +4109,7 @@ classpath:be/features/election/electionOpen.feature:94
 </div>
 
 
-  <span class="lead-duration duration">5.005</span>
+  <span class="lead-duration duration">5.006</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-38">
@@ -4222,7 +4222,7 @@ classpath:be/features/election/electionOpen.feature:94
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidElectionOpen)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
