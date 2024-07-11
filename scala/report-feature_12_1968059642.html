@@ -41,7 +41,7 @@ $(document).ready(function() {
 
 
 
-<title>Cucumber Reports  - Feature: be/features/election/electionSetup.feature</title>
+<title>Cucumber Reports  - Feature: be/features/rollCall/openRollCall.feature</title>
 
 </head>
 <body>
@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala</td>
-      <td>10 Jul 2024, 04:19</td>
+      <td>11 Jul 2024, 04:18</td>
     </tr>
   </tbody>
 </table>
@@ -126,19 +126,19 @@ $(document).ready(function() {
 
         <tbody>
         <tr>
-          <td class="tagname">be/features/election/electionSetup.feature</td>
-          <td      class="passed"    >78</td>
+          <td class="tagname">be/features/rollCall/openRollCall.feature</td>
+          <td      class="passed"    >76</td>
           <td      class="failed"    >4</td>
-          <td     class="skipped"   >8</td>
+          <td     class="skipped"   >11</td>
           <td >0</td>
           <td >0</td>
-          <td class="total">90</td>
+          <td class="total">91</td>
 
           <td  class="passed"    >1</td>
           <td  class="failed"    >4</td>
           <td class="total">5</td>
 
-          <td class="duration" data-value="44218098649">44.218</td>
+          <td class="duration" data-value="43580261100">43.580</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -175,12 +175,12 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Feature</span>
-  <span class="name">be/features/election/electionSetup.feature</span>
+  <span class="name">be/features/rollCall/openRollCall.feature</span>
 
 
 </div>
 
-        <div class="description indention">Setup an Election</div>
+        <div class="description indention">Roll Call Open</div>
 
         <div class="elements inner-level">
 
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">7.797</span>
+  <span class="lead-duration duration">7.704</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">7.013</span>
+  <span class="lead-duration duration">7.012</span>
 
 </div>
 
@@ -342,7 +342,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -396,7 +396,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.169</span>
+  <span class="lead-duration duration">0.201</span>
 
 </div>
 
@@ -475,63 +475,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">def election = organizer.generateValidElection(lao)</span>
+  <span class="name">call read(createRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def question = election.createQuestion()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read(closeRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
-
-  <span class="lead-duration duration">0.605</span>
+  <span class="lead-duration duration">0.484</span>
 
 </div>
 
@@ -577,14 +523,41 @@ $(document).ready(function() {
       </div>
       <div id="msg-3" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@5b3427c4&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@5275d709&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@21523e1b&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@3609b8f2&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@62dfe32e&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@32dab011&quot;
 }
 </pre>
       </div>
     </div>
   </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def openRollCall = rollCall.open()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -609,19 +582,19 @@ $(document).ready(function() {
 
 <div class="tags indention">
     <b>Tags:</b>
-       <a href="report-tag_712634124.html">@electionSetup1</a>
+       <a href="report-tag_194771883.html">@openRollCall1</a>
        <a href="report-tag_524961969.html">@env=go,scala</a>
 </div>
 
 
-  <span class="lead-duration duration">5.063</span>
+  <span class="lead-duration duration">5.017</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-4">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Setting up a valid election should succeed</span>
+  <span class="name">Open a valid Roll Call</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -653,9 +626,9 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def validElectionSetup =</span>
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">def validOpenRollCall =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -676,24 +649,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-6" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;setup&quot;,
-  &quot;id&quot;: '#(election.id)',
-  &quot;lao&quot;: '#(lao.id)',
-  &quot;name&quot;: '#(election.name)',
-  &quot;version&quot;: '#(election.version)',
-  &quot;created_at&quot;: '#(election.creation)',
-  &quot;start_time&quot;: '#(election.start)',
-  &quot;end_time&quot;: '#(election.end)',
-  &quot;questions&quot;: [
-    {
-      &quot;id&quot;: '#(question.id)',
-      &quot;question&quot;: '#(question.question)',
-      &quot;voting_method&quot;: '#(question.votingMethod)',
-      &quot;ballot_options&quot;: '#(question.ballotOptions)',
-      &quot;write_in&quot;: '#(question.writeIn)',
-    }
-  ]
+  &quot;object&quot;: &quot;roll_call&quot;,
+  &quot;action&quot;: &quot;open&quot;,
+  &quot;update_id&quot;: '#(openRollCall.updateId)',
+  &quot;opens&quot;: '#(openRollCall.opens)',
+  &quot;opened_at&quot;: '#(openRollCall.openedAt)'
 }</pre>
       </div>
     </div>
@@ -711,7 +671,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(validElectionSetup, lao.channel)</span>
+  <span class="name">organizer.publish(validOpenRollCall, lao.channel)</span>
 
   <span class="lead-duration duration">0.001</span>
 
@@ -738,9 +698,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(validElectionSetup)</span>
+  <span class="name">json answer = organizer.getBackendResponse(validOpenRollCall)</span>
 
-  <span class="lead-duration duration">0.061</span>
+  <span class="lead-duration duration">0.015</span>
 
 </div>
 
@@ -832,7 +792,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">7.782</span>
+  <span class="lead-duration duration">7.643</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-7">
@@ -983,7 +943,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1037,7 +997,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.180</span>
+  <span class="lead-duration duration">0.187</span>
 
 </div>
 
@@ -1116,63 +1076,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">def election = organizer.generateValidElection(lao)</span>
+  <span class="name">call read(createRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def question = election.createQuestion()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read(closeRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
-
-  <span class="lead-duration duration">0.586</span>
+  <span class="lead-duration duration">0.438</span>
 
 </div>
 
@@ -1218,14 +1124,41 @@ $(document).ready(function() {
       </div>
       <div id="msg-9" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@6461c673&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@1e11d73c&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@62a09668&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@fca4392&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@747fb4b1&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@6924ff83&quot;
 }
 </pre>
       </div>
     </div>
   </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def openRollCall = rollCall.open()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1250,19 +1183,19 @@ $(document).ready(function() {
 
 <div class="tags indention">
     <b>Tags:</b>
-       <a href="report-tag_712634125.html">@electionSetup2</a>
+       <a href="report-tag_194771884.html">@openRollCall2</a>
        <a href="report-tag_524961969.html">@env=go,scala</a>
 </div>
 
 
-  <span class="lead-duration duration">0.032</span>
+  <span class="lead-duration duration">0.067</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-10">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Setting up an election with invalid election id should fail</span>
+  <span class="name">Opening a Roll Call with non-organizer as sender should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1294,9 +1227,36 @@ $(document).ready(function() {
       <div class="step">
 
 
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">def notOrganizer = call createMockFrontend</span>
+
+  <span class="lead-duration duration">0.024</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionSetup =</span>
+  <span class="name">def validOpenRollCall =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1317,24 +1277,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-12" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;setup&quot;,
-  &quot;id&quot;: '#(random.generateElectionSetupId())',
-  &quot;lao&quot;: '#(lao.id)',
-  &quot;name&quot;: '#(election.name)',
-  &quot;version&quot;: '#(election.version)',
-  &quot;created_at&quot;: '#(election.creation)',
-  &quot;start_time&quot;: '#(election.start)',
-  &quot;end_time&quot;: '#(election.end)',
-  &quot;questions&quot;: [
-    {
-      &quot;id&quot;: '#(question.id)',
-      &quot;question&quot;: '#(question.question)',
-      &quot;voting_method&quot;: '#(question.votingMethod)',
-      &quot;ballot_options&quot;: '#(question.ballotOptions)',
-      &quot;write_in&quot;: '#(question.writeIn)',
-    }
-  ]
+  &quot;object&quot;: &quot;roll_call&quot;,
+  &quot;action&quot;: &quot;open&quot;,
+  &quot;update_id&quot;: '#(openRollCall.updateId)',
+  &quot;opens&quot;: '#(openRollCall.opens)',
+  &quot;opened_at&quot;: '#(openRollCall.openedAt)'
 }</pre>
       </div>
     </div>
@@ -1352,7 +1299,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(invalidElectionSetup, lao.channel)</span>
+  <span class="name">notOrganizer.publish(validCreateRollCall, lao.channel)</span>
 
   <span class="lead-duration duration">0.001</span>
 
@@ -1379,9 +1326,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(invalidElectionSetup)</span>
+  <span class="name">json answer = notOrganizer.getBackendResponse(validCreateRollCall)</span>
 
-  <span class="lead-duration duration">0.030</span>
+  <span class="lead-duration duration">0.041</span>
 
 </div>
 
@@ -1398,13 +1345,13 @@ $(document).ready(function() {
       <div id="msg-13" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(invalidElectionSetup)
+01: notOrganizer.getBackendResponse(validCreateRollCall)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/electionSetup.feature:79</pre>
+classpath:be/features/rollCall/openRollCall.feature:53</pre>
       </div>
     </div>
   </div>
@@ -1418,17 +1365,17 @@ classpath:be/features/election/electionSetup.feature:79</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-14" class="collapse collapsable-details">
-        <pre>04:16:09.625 classpath:be/features/election/electionSetup.feature:79
-And json answer = organizer.getBackendResponse(invalidElectionSetup)
+        <pre>04:17:50.468 classpath:be/features/rollCall/openRollCall.feature:53
+And json answer = notOrganizer.getBackendResponse(validCreateRollCall)
 js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(invalidElectionSetup)
+01: notOrganizer.getBackendResponse(validCreateRollCall)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/electionSetup.feature:79
+classpath:be/features/rollCall/openRollCall.feature:53
 </pre>
       </div>
     </div>
@@ -1473,7 +1420,7 @@ classpath:be/features/election/electionSetup.feature:79
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
+  <span class="name">match notOrganizer.receiveNoMoreResponses() == true</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1513,7 +1460,7 @@ classpath:be/features/election/electionSetup.feature:79
 </div>
 
 
-  <span class="lead-duration duration">7.773</span>
+  <span class="lead-duration duration">7.753</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-15">
@@ -1664,7 +1611,7 @@ classpath:be/features/election/electionSetup.feature:79
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -1718,7 +1665,7 @@ classpath:be/features/election/electionSetup.feature:79
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.179</span>
+  <span class="lead-duration duration">0.194</span>
 
 </div>
 
@@ -1797,63 +1744,9 @@ classpath:be/features/election/electionSetup.feature:79
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">def election = organizer.generateValidElection(lao)</span>
+  <span class="name">call read(createRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def question = election.createQuestion()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read(closeRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
-
-  <span class="lead-duration duration">0.576</span>
+  <span class="lead-duration duration">0.543</span>
 
 </div>
 
@@ -1899,14 +1792,41 @@ classpath:be/features/election/electionSetup.feature:79
       </div>
       <div id="msg-17" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@5232cec1&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@388ad8aa&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@283240b0&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@e19908e&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@5312940c&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@5ac168e3&quot;
 }
 </pre>
       </div>
     </div>
   </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def openRollCall = rollCall.open()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1931,19 +1851,19 @@ classpath:be/features/election/electionSetup.feature:79
 
 <div class="tags indention">
     <b>Tags:</b>
-       <a href="report-tag_712634126.html">@electionSetup3</a>
+       <a href="report-tag_194771885.html">@openRollCall3</a>
        <a href="report-tag_524961969.html">@env=go,scala</a>
 </div>
 
 
-  <span class="lead-duration duration">0.057</span>
+  <span class="lead-duration duration">0.034</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-18">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Setting up an election with invalid question id should fail</span>
+  <span class="name">Opening a Roll Call that was not created on the server returns an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1975,9 +1895,63 @@ classpath:be/features/election/electionSetup.feature:79
       <div class="step">
 
 
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">def newRollCall = organizer.generateValidRollCall(lao)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionSetup =</span>
+  <span class="name">def openNewRollCall = newRollCall.open()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def validOpenRollCall =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1998,24 +1972,11 @@ classpath:be/features/election/electionSetup.feature:79
       </div>
       <div id="msg-20" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;setup&quot;,
-  &quot;id&quot;: '#(election.id)',
-  &quot;lao&quot;: '#(lao.id)',
-  &quot;name&quot;: '#(election.name)',
-  &quot;version&quot;: '#(election.version)',
-  &quot;created_at&quot;: '#(election.creation)',
-  &quot;start_time&quot;: '#(election.start)',
-  &quot;end_time&quot;: '#(election.end)',
-  &quot;questions&quot;: [
-    {
-      &quot;id&quot;: '#(random.generateElectionQuestionId())',
-      &quot;question&quot;: '#(question.question)',
-      &quot;voting_method&quot;: '#(question.votingMethod)',
-      &quot;ballot_options&quot;: '#(question.ballotOptions)',
-      &quot;write_in&quot;: '#(question.writeIn)',
-    }
-  ]
+  &quot;object&quot;: &quot;roll_call&quot;,
+  &quot;action&quot;: &quot;open&quot;,
+  &quot;update_id&quot;: '#(openNewRollCall.updateId)',
+  &quot;opens&quot;: '#(openNewRollCall.opens)',
+  &quot;opened_at&quot;: '#(openNewRollCall.openedAt)'
 }</pre>
       </div>
     </div>
@@ -2033,9 +1994,9 @@ classpath:be/features/election/electionSetup.feature:79
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(invalidElectionSetup, lao.channel)</span>
+  <span class="name">organizer.publish(validOpenRollCall, lao.channel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -2060,9 +2021,9 @@ classpath:be/features/election/electionSetup.feature:79
 
 <div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(invalidElectionSetup)</span>
+  <span class="name">json answer = organizer.getBackendResponse(validOpenRollCall)</span>
 
-  <span class="lead-duration duration">0.055</span>
+  <span class="lead-duration duration">0.029</span>
 
 </div>
 
@@ -2079,13 +2040,13 @@ classpath:be/features/election/electionSetup.feature:79
       <div id="msg-21" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(invalidElectionSetup)
+01: organizer.getBackendResponse(validOpenRollCall)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/electionSetup.feature:111</pre>
+classpath:be/features/rollCall/openRollCall.feature:72</pre>
       </div>
     </div>
   </div>
@@ -2099,17 +2060,17 @@ classpath:be/features/election/electionSetup.feature:111</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-22" class="collapse collapsable-details">
-        <pre>04:16:17.795 classpath:be/features/election/electionSetup.feature:111
-And json answer = organizer.getBackendResponse(invalidElectionSetup)
+        <pre>04:17:58.642 classpath:be/features/rollCall/openRollCall.feature:72
+And json answer = organizer.getBackendResponse(validOpenRollCall)
 js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(invalidElectionSetup)
+01: organizer.getBackendResponse(validOpenRollCall)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/electionSetup.feature:111
+classpath:be/features/rollCall/openRollCall.feature:72
 </pre>
       </div>
     </div>
@@ -2194,7 +2155,7 @@ classpath:be/features/election/electionSetup.feature:111
 </div>
 
 
-  <span class="lead-duration duration">7.829</span>
+  <span class="lead-duration duration">7.645</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-23">
@@ -2345,7 +2306,7 @@ classpath:be/features/election/electionSetup.feature:111
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -2399,7 +2360,7 @@ classpath:be/features/election/electionSetup.feature:111
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.144</span>
+  <span class="lead-duration duration">0.176</span>
 
 </div>
 
@@ -2478,63 +2439,9 @@ classpath:be/features/election/electionSetup.feature:111
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">def election = organizer.generateValidElection(lao)</span>
+  <span class="name">call read(createRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def question = election.createQuestion()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read(closeRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
-
-  <span class="lead-duration duration">0.667</span>
+  <span class="lead-duration duration">0.453</span>
 
 </div>
 
@@ -2580,14 +2487,41 @@ classpath:be/features/election/electionSetup.feature:111
       </div>
       <div id="msg-25" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@4ec78008&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@ac71bd7&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@64e6cdad&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@14574cdf&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@5608233b&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@11fd6f02&quot;
 }
 </pre>
       </div>
     </div>
   </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def openRollCall = rollCall.open()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2612,19 +2546,19 @@ classpath:be/features/election/electionSetup.feature:111
 
 <div class="tags indention">
     <b>Tags:</b>
+       <a href="report-tag_194771886.html">@openRollCall4</a>
        <a href="report-tag_524961969.html">@env=go,scala</a>
-       <a href="report-tag_712634127.html">@electionSetup4</a>
 </div>
 
 
-  <span class="lead-duration duration">0.014</span>
+  <span class="lead-duration duration">0.027</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-26">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Setting up an election with a question containing empty ballot options should return an error</span>
+  <span class="name">Opening a Roll Call with invalid update_id should return an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -2656,9 +2590,9 @@ classpath:be/features/election/electionSetup.feature:111
       <div class="step">
 
 
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionSetup =</span>
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">def invalidOpenRollCall =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2679,24 +2613,11 @@ classpath:be/features/election/electionSetup.feature:111
       </div>
       <div id="msg-28" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;setup&quot;,
-  &quot;id&quot;: '#(election.id)',
-  &quot;lao&quot;: '#(lao.id)',
-  &quot;name&quot;: '#(election.name)',
-  &quot;version&quot;: '#(election.version)',
-  &quot;created_at&quot;: '#(election.creation)',
-  &quot;start_time&quot;: '#(election.start)',
-  &quot;end_time&quot;: '#(election.end)',
-  &quot;questions&quot;: [
-    {
-      &quot;id&quot;: '#(question.id)',
-      &quot;question&quot;: '#(question.question)',
-      &quot;voting_method&quot;: '#(question.votingMethod)',
-      &quot;ballot_options&quot;: [],
-      &quot;write_in&quot;: '#(question.writeIn)',
-    }
-  ]
+  &quot;object&quot;: &quot;roll_call&quot;,
+  &quot;action&quot;: &quot;open&quot;,
+  &quot;update_id&quot;: '#(random.generateOpenRollCallId())',
+  &quot;opens&quot;: '#(openRollCall.opens)',
+  &quot;opened_at&quot;: '#(openRollCall.openedAt)'
 }</pre>
       </div>
     </div>
@@ -2714,7 +2635,7 @@ classpath:be/features/election/electionSetup.feature:111
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(invalidElectionSetup, lao.channel)</span>
+  <span class="name">organizer.publish(invalidOpenRollCall, lao.channel)</span>
 
   <span class="lead-duration duration">0.001</span>
 
@@ -2741,9 +2662,9 @@ classpath:be/features/election/electionSetup.feature:111
 
 <div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(invalidElectionSetup)</span>
+  <span class="name">json answer = organizer.getBackendResponse(invalidOpenRollCall)</span>
 
-  <span class="lead-duration duration">0.012</span>
+  <span class="lead-duration duration">0.025</span>
 
 </div>
 
@@ -2760,13 +2681,13 @@ classpath:be/features/election/electionSetup.feature:111
       <div id="msg-29" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(invalidElectionSetup)
+01: organizer.getBackendResponse(invalidOpenRollCall)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/electionSetup.feature:143</pre>
+classpath:be/features/rollCall/openRollCall.feature:89</pre>
       </div>
     </div>
   </div>
@@ -2780,17 +2701,17 @@ classpath:be/features/election/electionSetup.feature:143</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-30" class="collapse collapsable-details">
-        <pre>04:16:25.982 classpath:be/features/election/electionSetup.feature:143
-And json answer = organizer.getBackendResponse(invalidElectionSetup)
+        <pre>04:18:06.667 classpath:be/features/rollCall/openRollCall.feature:89
+And json answer = organizer.getBackendResponse(invalidOpenRollCall)
 js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(invalidElectionSetup)
+01: organizer.getBackendResponse(invalidOpenRollCall)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/electionSetup.feature:143
+classpath:be/features/rollCall/openRollCall.feature:89
 </pre>
       </div>
     </div>
@@ -2875,7 +2796,7 @@ classpath:be/features/election/electionSetup.feature:143
 </div>
 
 
-  <span class="lead-duration duration">7.840</span>
+  <span class="lead-duration duration">7.661</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-31">
@@ -2972,7 +2893,7 @@ classpath:be/features/election/electionSetup.feature:143
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">7.012</span>
+  <span class="lead-duration duration">7.011</span>
 
 </div>
 
@@ -3026,7 +2947,7 @@ classpath:be/features/election/electionSetup.feature:143
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -3080,7 +3001,7 @@ classpath:be/features/election/electionSetup.feature:143
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.186</span>
+  <span class="lead-duration duration">0.170</span>
 
 </div>
 
@@ -3107,7 +3028,7 @@ classpath:be/features/election/electionSetup.feature:143
   <span class="keyword indention">*</span>
   <span class="name">def lao = organizer.generateValidLao()</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -3159,63 +3080,9 @@ classpath:be/features/election/electionSetup.feature:143
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">def election = organizer.generateValidElection(lao)</span>
+  <span class="name">call read(createRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def question = election.createQuestion()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read(closeRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
-
-  <span class="lead-duration duration">0.633</span>
+  <span class="lead-duration duration">0.474</span>
 
 </div>
 
@@ -3261,14 +3128,41 @@ classpath:be/features/election/electionSetup.feature:143
       </div>
       <div id="msg-33" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@5e6b2641&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@2c5e2a44&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@1ef585bb&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@40aa9bae&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@6eb506d0&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@79b3f1c6&quot;
 }
 </pre>
       </div>
     </div>
   </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def openRollCall = rollCall.open()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3293,19 +3187,19 @@ classpath:be/features/election/electionSetup.feature:143
 
 <div class="tags indention">
     <b>Tags:</b>
+       <a href="report-tag_194771887.html">@openRollCall5</a>
        <a href="report-tag_524961969.html">@env=go,scala</a>
-       <a href="report-tag_712634128.html">@electionSetup5</a>
 </div>
 
 
-  <span class="lead-duration duration">0.025</span>
+  <span class="lead-duration duration">0.024</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-34">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Setting up an election with a non-supported voting method should return an error</span>
+  <span class="name">Opening a Roll Call for which with already received an error should return an error again</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -3339,7 +3233,7 @@ classpath:be/features/election/electionSetup.feature:143
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionSetup =</span>
+  <span class="name">def invalidOpenRollCall =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -3360,24 +3254,11 @@ classpath:be/features/election/electionSetup.feature:143
       </div>
       <div id="msg-36" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;setup&quot;,
-  &quot;id&quot;: '#(election.id)',
-  &quot;lao&quot;: '#(lao.id)',
-  &quot;name&quot;: '#(election.name)',
-  &quot;version&quot;: '#(election.version)',
-  &quot;created_at&quot;: '#(election.creation)',
-  &quot;start_time&quot;: '#(election.start)',
-  &quot;end_time&quot;: '#(election.end)',
-  &quot;questions&quot;: [
-    {
-      &quot;id&quot;: '#(question.id)',
-      &quot;question&quot;: '#(question.question)',
-      &quot;voting_method&quot;: &quot;Random&quot;,
-      &quot;ballot_options&quot;: '#(question.ballotOptions)',
-      &quot;write_in&quot;: '#(question.writeIn)',
-    }
-  ]
+  &quot;object&quot;: &quot;roll_call&quot;,
+  &quot;action&quot;: &quot;open&quot;,
+  &quot;update_id&quot;: '#(random.generateOpenRollCallId())',
+  &quot;opens&quot;: '#(openRollCall.opens)',
+  &quot;opened_at&quot;: '#(openRollCall.openedAt)'
 }</pre>
       </div>
     </div>
@@ -3395,7 +3276,7 @@ classpath:be/features/election/electionSetup.feature:143
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(invalidElectionSetup, lao.channel)</span>
+  <span class="name">organizer.publish(invalidOpenRollCall, lao.channel)</span>
 
   <span class="lead-duration duration">0.001</span>
 
@@ -3422,9 +3303,9 @@ classpath:be/features/election/electionSetup.feature:143
 
 <div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(invalidElectionSetup)</span>
+  <span class="name">json answer = organizer.getBackendResponse(invalidOpenRollCall)</span>
 
-  <span class="lead-duration duration">0.024</span>
+  <span class="lead-duration duration">0.022</span>
 
 </div>
 
@@ -3441,13 +3322,13 @@ classpath:be/features/election/electionSetup.feature:143
       <div id="msg-37" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(invalidElectionSetup)
+01: organizer.getBackendResponse(invalidOpenRollCall)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/electionSetup.feature:175</pre>
+classpath:be/features/rollCall/openRollCall.feature:107</pre>
       </div>
     </div>
   </div>
@@ -3461,17 +3342,17 @@ classpath:be/features/election/electionSetup.feature:175</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-38" class="collapse collapsable-details">
-        <pre>04:16:34.203 classpath:be/features/election/electionSetup.feature:175
-And json answer = organizer.getBackendResponse(invalidElectionSetup)
+        <pre>04:18:14.697 classpath:be/features/rollCall/openRollCall.feature:107
+And json answer = organizer.getBackendResponse(invalidOpenRollCall)
 js failed:
 &gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(invalidElectionSetup)
+01: organizer.getBackendResponse(invalidOpenRollCall)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because the return value of &quot;com.intuit.karate.Json.get(String)&quot; is null
 - common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:88)
 - &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/features/election/electionSetup.feature:175
+classpath:be/features/rollCall/openRollCall.feature:107
 </pre>
       </div>
     </div>
@@ -3489,6 +3370,87 @@ classpath:be/features/election/electionSetup.feature:175
 
 <div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When skipped">
+  <span class="keyword indention">When</span>
+  <span class="name">organizer.publish(invalidOpenRollCall, lao.channel)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = organizer.getBackendResponse(invalidOpenRollCall)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
   <span class="lead-duration duration">0.000</span>
