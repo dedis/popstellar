@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>15 Jul 2024, 04:19</td>
+      <td>16 Jul 2024, 04:19</td>
     </tr>
   </tbody>
 </table>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >1</td>
           <td class="total">5</td>
 
-          <td class="duration" data-value="46551118155">46.551</td>
+          <td class="duration" data-value="46538436555">46.538</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.308</span>
+  <span class="lead-duration duration">5.299</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.261</span>
+  <span class="lead-duration duration">5.260</span>
 
 </div>
 
@@ -396,7 +396,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -477,7 +477,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(createRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.038</span>
+  <span class="lead-duration duration">0.031</span>
 
 </div>
 
@@ -523,9 +523,9 @@ $(document).ready(function() {
       </div>
       <div id="msg-3" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@1a48e48e&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@6c30efc4&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@10847aeb&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@564b86b&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@545ffe1&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@1805b503&quot;
 }
 </pre>
       </div>
@@ -792,7 +792,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.300</span>
+  <span class="lead-duration duration">5.297</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-7">
@@ -889,7 +889,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.259</span>
+  <span class="lead-duration duration">5.258</span>
 
 </div>
 
@@ -1078,7 +1078,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(createRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.033</span>
+  <span class="lead-duration duration">0.031</span>
 
 </div>
 
@@ -1124,9 +1124,9 @@ $(document).ready(function() {
       </div>
       <div id="msg-9" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@cea6297&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@51db8b10&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@3afe1020&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@73b6fbd1&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@5331a22c&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@79a1f55c&quot;
 }
 </pre>
       </div>
@@ -1328,7 +1328,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = notOrganizer.getBackendResponse(validCreateRollCall)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1372,7 +1372,7 @@ $(document).ready(function() {
       <div id="msg-13" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1045342876,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-369039888,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -1390,11 +1390,11 @@ classpath:be/features/rollCall/openRollCall.feature:54</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-14" class="collapse collapsable-details">
-        <pre>04:18:32.228 classpath:be/features/rollCall/openRollCall.feature:54
+        <pre>04:19:06.094 classpath:be/features/rollCall/openRollCall.feature:54
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1045342876,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-369039888,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -1456,7 +1456,7 @@ classpath:be/features/rollCall/openRollCall.feature:54
 </div>
 
 
-  <span class="lead-duration duration">5.304</span>
+  <span class="lead-duration duration">5.303</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-15">
@@ -1553,7 +1553,7 @@ classpath:be/features/rollCall/openRollCall.feature:54
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.260</span>
+  <span class="lead-duration duration">5.259</span>
 
 </div>
 
@@ -1742,7 +1742,7 @@ classpath:be/features/rollCall/openRollCall.feature:54
   <span class="keyword indention">*</span>
   <span class="name">call read(createRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.035</span>
+  <span class="lead-duration duration">0.036</span>
 
 </div>
 
@@ -1788,9 +1788,9 @@ classpath:be/features/rollCall/openRollCall.feature:54
       </div>
       <div id="msg-17" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@91e76b6&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@563f53d8&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@5bb1c104&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@4c39eac6&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@815e8e3&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@566b1b0f&quot;
 }
 </pre>
       </div>
@@ -2111,7 +2111,7 @@ classpath:be/features/rollCall/openRollCall.feature:54
 </div>
 
 
-  <span class="lead-duration duration">5.309</span>
+  <span class="lead-duration duration">5.303</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-21">
@@ -2208,7 +2208,7 @@ classpath:be/features/rollCall/openRollCall.feature:54
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.261</span>
+  <span class="lead-duration duration">5.259</span>
 
 </div>
 
@@ -2397,7 +2397,7 @@ classpath:be/features/rollCall/openRollCall.feature:54
   <span class="keyword indention">*</span>
   <span class="name">call read(createRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.039</span>
+  <span class="lead-duration duration">0.036</span>
 
 </div>
 
@@ -2443,9 +2443,9 @@ classpath:be/features/rollCall/openRollCall.feature:54
       </div>
       <div id="msg-23" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@1184b542&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@6bd5ca02&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@4758f533&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@20961f8b&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@23faae85&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@48f08e9&quot;
 }
 </pre>
       </div>
@@ -2712,7 +2712,7 @@ classpath:be/features/rollCall/openRollCall.feature:54
 </div>
 
 
-  <span class="lead-duration duration">5.305</span>
+  <span class="lead-duration duration">5.310</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-27">
@@ -2809,7 +2809,7 @@ classpath:be/features/rollCall/openRollCall.feature:54
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.260</span>
+  <span class="lead-duration duration">5.259</span>
 
 </div>
 
@@ -2998,7 +2998,7 @@ classpath:be/features/rollCall/openRollCall.feature:54
   <span class="keyword indention">*</span>
   <span class="name">call read(createRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.036</span>
+  <span class="lead-duration duration">0.044</span>
 
 </div>
 
@@ -3044,9 +3044,9 @@ classpath:be/features/rollCall/openRollCall.feature:54
       </div>
       <div id="msg-29" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@12b4a53d&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@262e2c8c&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@636e6791&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@ab2d814&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@1a48e48e&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@6c30efc4&quot;
 }
 </pre>
       </div>
