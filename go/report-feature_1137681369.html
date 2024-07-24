@@ -41,7 +41,7 @@ $(document).ready(function() {
 
 
 
-<title>Cucumber Reports  - Feature: be/features/election/electionSetup.feature</title>
+<title>Cucumber Reports  - Feature: be/features/election/electionEnd.feature</title>
 
 </head>
 <body>
@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>23 Jul 2024, 04:19</td>
+      <td>24 Jul 2024, 04:19</td>
     </tr>
   </tbody>
 </table>
@@ -126,19 +126,19 @@ $(document).ready(function() {
 
         <tbody>
         <tr>
-          <td class="tagname">be/features/election/electionSetup.feature</td>
-          <td      class="passed"    >90</td>
+          <td class="tagname">be/features/election/electionEnd.feature</td>
+          <td      class="passed"    >97</td>
           <td >0</td>
           <td >0</td>
           <td >0</td>
           <td >0</td>
-          <td class="total">90</td>
+          <td class="total">97</td>
 
           <td  class="passed"    >5</td>
           <td >0</td>
           <td class="total">5</td>
 
-          <td class="duration" data-value="51785584414">51.785</td>
+          <td class="duration" data-value="52208879732">52.208</td>
           <td class="passed">Passed</td>
         </tr>
         </tbody>
@@ -175,12 +175,12 @@ $(document).ready(function() {
 
 <div class="brief passed">
   <span class="keyword indention">Feature</span>
-  <span class="name">be/features/election/electionSetup.feature</span>
+  <span class="name">be/features/election/electionEnd.feature</span>
 
 
 </div>
 
-        <div class="description indention">Setup an Election</div>
+        <div class="description indention">Terminate an election</div>
 
         <div class="elements inner-level">
 
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.349</span>
+  <span class="lead-duration duration">5.462</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -396,7 +396,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -529,9 +529,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read(closeRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
+  <span class="name">call read(castVoteScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.080</span>
+  <span class="lead-duration duration">0.190</span>
 
 </div>
 
@@ -577,14 +577,43 @@ $(document).ready(function() {
       </div>
       <div id="msg-3" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@5b1ebbe&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@3b802baa&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@109941fa&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@435e224d&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@788fa91f&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@6dd7af2f&quot;,
+  &quot;election&quot;: &quot;common.model.Election@5e8bc83e&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@6c75c5e8&quot;
 }
 </pre>
       </div>
     </div>
   </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def electionEnd = election.close()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -609,19 +638,19 @@ $(document).ready(function() {
 
 <div class="tags indention">
     <b>Tags:</b>
-       <a href="report-tag_712634124.html">@electionSetup1</a>
        <a href="report-tag_524961969.html">@env=go,scala</a>
+       <a href="report-tag_970163886.html">@electionEnd1</a>
 </div>
 
 
-  <span class="lead-duration duration">5.007</span>
+  <span class="lead-duration duration">5.010</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-4">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Setting up a valid election should succeed</span>
+  <span class="name">Sending a valid election end should succeed</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -653,9 +682,9 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def validElectionSetup =</span>
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">def validElectionEnd =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -677,23 +706,11 @@ $(document).ready(function() {
       <div id="msg-6" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;setup&quot;,
-  &quot;id&quot;: '#(election.id)',
+  &quot;action&quot;: &quot;end&quot;,
   &quot;lao&quot;: '#(lao.id)',
-  &quot;name&quot;: '#(election.name)',
-  &quot;version&quot;: '#(election.version)',
-  &quot;created_at&quot;: '#(election.creation)',
-  &quot;start_time&quot;: '#(election.start)',
-  &quot;end_time&quot;: '#(election.end)',
-  &quot;questions&quot;: [
-    {
-      &quot;id&quot;: '#(question.id)',
-      &quot;question&quot;: '#(question.question)',
-      &quot;voting_method&quot;: '#(question.votingMethod)',
-      &quot;ballot_options&quot;: '#(question.ballotOptions)',
-      &quot;write_in&quot;: '#(question.writeIn)',
-    }
-  ]
+  &quot;election&quot;: '#(election.id)',
+  &quot;created_at&quot;: '#(electionEnd.createdAt)',
+  &quot;registered_votes&quot;: '#(electionEnd.registeredVotes)'
 }</pre>
       </div>
     </div>
@@ -711,7 +728,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(validElectionSetup, lao.channel)</span>
+  <span class="name">organizer.publish(validElectionEnd, election.channel)</span>
 
   <span class="lead-duration duration">0.001</span>
 
@@ -738,9 +755,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(validElectionSetup)</span>
+  <span class="name">json answer = organizer.getBackendResponse(validElectionEnd)</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -763,9 +780,63 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-Then passed">
-  <span class="keyword indention">Then</span>
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">json results = organizer.getElectionResults()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
   <span class="name">match answer contains VALID_MESSAGE</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">match results contains ELECTION_RESULTS</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -832,7 +903,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.355</span>
+  <span class="lead-duration duration">5.425</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-7">
@@ -875,7 +946,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -1037,7 +1108,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1170,9 +1241,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read(closeRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
+  <span class="name">call read(castVoteScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.089</span>
+  <span class="lead-duration duration">0.157</span>
 
 </div>
 
@@ -1218,14 +1289,43 @@ $(document).ready(function() {
       </div>
       <div id="msg-9" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@27103726&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@2df6d461&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@1791670e&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@69374e28&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@39c93af6&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@3903cfc9&quot;,
+  &quot;election&quot;: &quot;common.model.Election@7b1b1784&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@288e50c1&quot;
 }
 </pre>
       </div>
     </div>
   </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def electionEnd = election.close()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1250,7 +1350,7 @@ $(document).ready(function() {
 
 <div class="tags indention">
     <b>Tags:</b>
-       <a href="report-tag_712634125.html">@electionSetup2</a>
+       <a href="report-tag_970163887.html">@electionEnd2</a>
        <a href="report-tag_524961969.html">@env=go,scala</a>
 </div>
 
@@ -1262,7 +1362,7 @@ $(document).ready(function() {
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Setting up an election with invalid election id should fail</span>
+  <span class="name">Sending an election end with invalid election id should return an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1294,9 +1394,9 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionSetup =</span>
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">def invalidElectionEnd =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1318,23 +1418,11 @@ $(document).ready(function() {
       <div id="msg-12" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;setup&quot;,
-  &quot;id&quot;: '#(random.generateElectionSetupId())',
+  &quot;action&quot;: &quot;end&quot;,
   &quot;lao&quot;: '#(lao.id)',
-  &quot;name&quot;: '#(election.name)',
-  &quot;version&quot;: '#(election.version)',
-  &quot;created_at&quot;: '#(election.creation)',
-  &quot;start_time&quot;: '#(election.start)',
-  &quot;end_time&quot;: '#(election.end)',
-  &quot;questions&quot;: [
-    {
-      &quot;id&quot;: '#(question.id)',
-      &quot;question&quot;: '#(question.question)',
-      &quot;voting_method&quot;: '#(question.votingMethod)',
-      &quot;ballot_options&quot;: '#(question.ballotOptions)',
-      &quot;write_in&quot;: '#(question.writeIn)',
-    }
-  ]
+  &quot;election&quot;: '#(random.generateElectionSetupId())',
+  &quot;created_at&quot;: '#(electionEnd.createdAt)',
+  &quot;registered_votes&quot;: '#(electionEnd.registeredVotes)'
 }</pre>
       </div>
     </div>
@@ -1352,9 +1440,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(invalidElectionSetup, lao.channel)</span>
+  <span class="name">organizer.publish(invalidElectionEnd, election.channel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1379,7 +1467,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(invalidElectionSetup)</span>
+  <span class="name">json answer = organizer.getBackendResponse(invalidElectionEnd)</span>
 
   <span class="lead-duration duration">0.003</span>
 
@@ -1473,7 +1561,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.343</span>
+  <span class="lead-duration duration">5.415</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-13">
@@ -1516,7 +1604,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -1570,7 +1658,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.259</span>
+  <span class="lead-duration duration">5.258</span>
 
 </div>
 
@@ -1624,7 +1712,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1811,9 +1899,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read(closeRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
+  <span class="name">call read(castVoteScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.075</span>
+  <span class="lead-duration duration">0.147</span>
 
 </div>
 
@@ -1859,14 +1947,43 @@ $(document).ready(function() {
       </div>
       <div id="msg-15" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@4d5d6297&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@6bd2c51d&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@709c41da&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@58e0d1ac&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@7fba30fe&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@5cbebfba&quot;,
+  &quot;election&quot;: &quot;common.model.Election@66ce4b4&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@58df2864&quot;
 }
 </pre>
       </div>
     </div>
   </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def electionEnd = election.close()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1891,7 +2008,7 @@ $(document).ready(function() {
 
 <div class="tags indention">
     <b>Tags:</b>
-       <a href="report-tag_712634126.html">@electionSetup3</a>
+       <a href="report-tag_970163888.html">@electionEnd3</a>
        <a href="report-tag_524961969.html">@env=go,scala</a>
 </div>
 
@@ -1903,7 +2020,7 @@ $(document).ready(function() {
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Setting up an election with invalid question id should fail</span>
+  <span class="name">Sending an election end message with invalid registered votes field should return an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1935,9 +2052,9 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionSetup =</span>
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">def invalidElectionEnd =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1959,23 +2076,11 @@ $(document).ready(function() {
       <div id="msg-18" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;setup&quot;,
-  &quot;id&quot;: '#(election.id)',
+  &quot;action&quot;: &quot;end&quot;,
   &quot;lao&quot;: '#(lao.id)',
-  &quot;name&quot;: '#(election.name)',
-  &quot;version&quot;: '#(election.version)',
-  &quot;created_at&quot;: '#(election.creation)',
-  &quot;start_time&quot;: '#(election.start)',
-  &quot;end_time&quot;: '#(election.end)',
-  &quot;questions&quot;: [
-    {
-      &quot;id&quot;: '#(random.generateElectionQuestionId())',
-      &quot;question&quot;: '#(question.question)',
-      &quot;voting_method&quot;: '#(question.votingMethod)',
-      &quot;ballot_options&quot;: '#(question.ballotOptions)',
-      &quot;write_in&quot;: '#(question.writeIn)',
-    }
-  ]
+  &quot;election&quot;: '#(election.id)',
+  &quot;created_at&quot;: '#(electionEnd.createdAt)',
+  &quot;registered_votes&quot;: '#(random.generateRegisteredVotesHash())'
 }</pre>
       </div>
     </div>
@@ -1993,7 +2098,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(invalidElectionSetup, lao.channel)</span>
+  <span class="name">organizer.publish(invalidElectionEnd, election.channel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2020,7 +2125,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(invalidElectionSetup)</span>
+  <span class="name">json answer = organizer.getBackendResponse(invalidElectionEnd)</span>
 
   <span class="lead-duration duration">0.002</span>
 
@@ -2114,7 +2219,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.344</span>
+  <span class="lead-duration duration">5.416</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-19">
@@ -2319,7 +2424,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -2452,9 +2557,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read(closeRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
+  <span class="name">call read(castVoteScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.078</span>
+  <span class="lead-duration duration">0.149</span>
 
 </div>
 
@@ -2500,14 +2605,43 @@ $(document).ready(function() {
       </div>
       <div id="msg-21" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@6ca9f1d0&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@4a467f08&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@3741a170&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@76ccde41&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@5f26fc4d&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@3e8eea59&quot;,
+  &quot;election&quot;: &quot;common.model.Election@1fb379e4&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@f9d8285&quot;
 }
 </pre>
       </div>
     </div>
   </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def electionEnd = election.close()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2532,19 +2666,19 @@ $(document).ready(function() {
 
 <div class="tags indention">
     <b>Tags:</b>
+       <a href="report-tag_970163889.html">@electionEnd4</a>
        <a href="report-tag_524961969.html">@env=go,scala</a>
-       <a href="report-tag_712634127.html">@electionSetup4</a>
 </div>
 
 
-  <span class="lead-duration duration">5.007</span>
+  <span class="lead-duration duration">5.004</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-22">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Setting up an election with a question containing empty ballot options should return an error</span>
+  <span class="name">Sending an election end message with registered votes field set to valid election setup id should return an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -2576,9 +2710,9 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionSetup =</span>
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">def invalidElectionEnd =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2600,23 +2734,11 @@ $(document).ready(function() {
       <div id="msg-24" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;setup&quot;,
-  &quot;id&quot;: '#(election.id)',
+  &quot;action&quot;: &quot;end&quot;,
   &quot;lao&quot;: '#(lao.id)',
-  &quot;name&quot;: '#(election.name)',
-  &quot;version&quot;: '#(election.version)',
-  &quot;created_at&quot;: '#(election.creation)',
-  &quot;start_time&quot;: '#(election.start)',
-  &quot;end_time&quot;: '#(election.end)',
-  &quot;questions&quot;: [
-    {
-      &quot;id&quot;: '#(question.id)',
-      &quot;question&quot;: '#(question.question)',
-      &quot;voting_method&quot;: '#(question.votingMethod)',
-      &quot;ballot_options&quot;: [],
-      &quot;write_in&quot;: '#(question.writeIn)',
-    }
-  ]
+  &quot;election&quot;: '#(election.id)',
+  &quot;created_at&quot;: '#(electionEnd.createdAt)',
+  &quot;registered_votes&quot;: '#(election.id)'
 }</pre>
       </div>
     </div>
@@ -2634,9 +2756,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(invalidElectionSetup, lao.channel)</span>
+  <span class="name">organizer.publish(invalidElectionEnd, election.channel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -2661,9 +2783,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(invalidElectionSetup)</span>
+  <span class="name">json answer = organizer.getBackendResponse(invalidElectionEnd)</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -2755,7 +2877,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.361</span>
+  <span class="lead-duration duration">5.458</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-25">
@@ -2798,7 +2920,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -2852,7 +2974,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.259</span>
+  <span class="lead-duration duration">5.268</span>
 
 </div>
 
@@ -2906,7 +3028,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -3093,9 +3215,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read(closeRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
+  <span class="name">call read(castVoteScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.093</span>
+  <span class="lead-duration duration">0.180</span>
 
 </div>
 
@@ -3141,14 +3263,43 @@ $(document).ready(function() {
       </div>
       <div id="msg-27" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@2541b4d3&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@6c5e6da&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@7f027735&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@67b1c3af&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@2e243122&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@2a5c115b&quot;,
+  &quot;election&quot;: &quot;common.model.Election@49b6373f&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@20f3291d&quot;
 }
 </pre>
       </div>
     </div>
   </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def electionEnd = election.close()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3173,19 +3324,19 @@ $(document).ready(function() {
 
 <div class="tags indention">
     <b>Tags:</b>
+       <a href="report-tag_970163890.html">@electionEnd5</a>
        <a href="report-tag_524961969.html">@env=go,scala</a>
-       <a href="report-tag_712634128.html">@electionSetup5</a>
 </div>
 
 
-  <span class="lead-duration duration">5.006</span>
+  <span class="lead-duration duration">5.004</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-28">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Setting up an election with a non-supported voting method should return an error</span>
+  <span class="name">Sending a valid election end too early should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -3217,9 +3368,9 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionSetup =</span>
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">def invalidElectionEnd =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -3241,23 +3392,11 @@ $(document).ready(function() {
       <div id="msg-30" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;setup&quot;,
-  &quot;id&quot;: '#(election.id)',
+  &quot;action&quot;: &quot;end&quot;,
   &quot;lao&quot;: '#(lao.id)',
-  &quot;name&quot;: '#(election.name)',
-  &quot;version&quot;: '#(election.version)',
-  &quot;created_at&quot;: '#(election.creation)',
-  &quot;start_time&quot;: '#(election.start)',
-  &quot;end_time&quot;: '#(election.end)',
-  &quot;questions&quot;: [
-    {
-      &quot;id&quot;: '#(question.id)',
-      &quot;question&quot;: '#(question.question)',
-      &quot;voting_method&quot;: &quot;Random&quot;,
-      &quot;ballot_options&quot;: '#(question.ballotOptions)',
-      &quot;write_in&quot;: '#(question.writeIn)',
-    }
-  ]
+  &quot;election&quot;: '#(election.id)',
+  &quot;created_at&quot;: '#(election.creation - 1)',
+  &quot;registered_votes&quot;: '#(electionEnd.registeredVotes)'
 }</pre>
       </div>
     </div>
@@ -3275,7 +3414,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(invalidElectionSetup, lao.channel)</span>
+  <span class="name">organizer.publish(invalidElectionEnd, election.channel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -3302,9 +3441,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(invalidElectionSetup)</span>
+  <span class="name">json answer = organizer.getBackendResponse(invalidElectionEnd)</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
