@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>27 Jul 2024, 04:18</td>
+      <td>28 Jul 2024, 04:18</td>
     </tr>
   </tbody>
 </table>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >2</td>
           <td class="total">6</td>
 
-          <td class="duration" data-value="52286538146">52.286</td>
+          <td class="duration" data-value="52305656068">52.305</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.372</span>
+  <span class="lead-duration duration">5.386</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.261</span>
+  <span class="lead-duration duration">5.260</span>
 
 </div>
 
@@ -531,7 +531,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.102</span>
+  <span class="lead-duration duration">0.117</span>
 
 </div>
 
@@ -577,11 +577,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-3" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@7200702&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@3eb29382&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@209baf91&quot;,
-  &quot;election&quot;: &quot;common.model.Election@5e1d3188&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@5982255e&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@3095c449&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@236bb278&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@7200702&quot;,
+  &quot;election&quot;: &quot;common.model.Election@3eb29382&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@209baf91&quot;
 }
 </pre>
       </div>
@@ -848,7 +848,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.391</span>
+  <span class="lead-duration duration">5.383</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-7">
@@ -891,7 +891,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -1188,7 +1188,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.125</span>
+  <span class="lead-duration duration">0.117</span>
 
 </div>
 
@@ -1234,11 +1234,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-9" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@7306836f&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@e9c5db9&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@393aac93&quot;,
-  &quot;election&quot;: &quot;common.model.Election@71dac63f&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@36003e90&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@5e1d3188&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@5982255e&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@7306836f&quot;,
+  &quot;election&quot;: &quot;common.model.Election@e9c5db9&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@393aac93&quot;
 }
 </pre>
       </div>
@@ -1440,7 +1440,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validElectionOpen, newElection.channel)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1467,7 +1467,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validElectionOpen)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1511,7 +1511,7 @@ $(document).ready(function() {
       <div id="msg-13" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:874233386,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;-6: sql: no rows in result set\nhquery.(*Handler).Handle\n\tquery.go:46\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:283\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:825532197,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;-6: sql: no rows in result set\nhquery.(*Handler).Handle\n\tquery.go:46\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:283\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
@@ -1536,11 +1536,11 @@ classpath:be/features/election/electionOpen.feature:55</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-14" class="collapse collapsable-details">
-        <pre>04:14:36.390 classpath:be/features/election/electionOpen.feature:55
+        <pre>04:14:29.608 classpath:be/features/election/electionOpen.feature:55
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:874233386,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;-6: sql: no rows in result set\nhquery.(*Handler).Handle\n\tquery.go:46\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:283\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:825532197,&quot;error&quot;:{&quot;code&quot;:-6,&quot;description&quot;:&quot;-6: sql: no rows in result set\nhquery.(*Handler).Handle\n\tquery.go:46\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:283\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
@@ -1609,7 +1609,7 @@ classpath:be/features/election/electionOpen.feature:55
 </div>
 
 
-  <span class="lead-duration duration">5.368</span>
+  <span class="lead-duration duration">5.393</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-15">
@@ -1706,7 +1706,7 @@ classpath:be/features/election/electionOpen.feature:55
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.262</span>
+  <span class="lead-duration duration">5.261</span>
 
 </div>
 
@@ -1949,7 +1949,7 @@ classpath:be/features/election/electionOpen.feature:55
   <span class="keyword indention">*</span>
   <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.096</span>
+  <span class="lead-duration duration">0.122</span>
 
 </div>
 
@@ -1995,11 +1995,11 @@ classpath:be/features/election/electionOpen.feature:55
       </div>
       <div id="msg-17" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@5a1ddc7c&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@362fbd98&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@11e36e5c&quot;,
-  &quot;election&quot;: &quot;common.model.Election@2620264e&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@126ae0ca&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@71dac63f&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@36003e90&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@5a1ddc7c&quot;,
+  &quot;election&quot;: &quot;common.model.Election@362fbd98&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@11e36e5c&quot;
 }
 </pre>
       </div>
@@ -2061,7 +2061,7 @@ classpath:be/features/election/electionOpen.feature:55
 </div>
 
 
-  <span class="lead-duration duration">5.004</span>
+  <span class="lead-duration duration">5.003</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-18">
@@ -2147,7 +2147,7 @@ classpath:be/features/election/electionOpen.feature:55
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidElectionOpen, election.channel)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -2174,7 +2174,7 @@ classpath:be/features/election/electionOpen.feature:55
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidElectionOpen)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -2266,7 +2266,7 @@ classpath:be/features/election/electionOpen.feature:55
 </div>
 
 
-  <span class="lead-duration duration">5.374</span>
+  <span class="lead-duration duration">5.372</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-21">
@@ -2417,7 +2417,7 @@ classpath:be/features/election/electionOpen.feature:55
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -2471,7 +2471,7 @@ classpath:be/features/election/electionOpen.feature:55
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -2606,7 +2606,7 @@ classpath:be/features/election/electionOpen.feature:55
   <span class="keyword indention">*</span>
   <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.107</span>
+  <span class="lead-duration duration">0.103</span>
 
 </div>
 
@@ -2652,11 +2652,11 @@ classpath:be/features/election/electionOpen.feature:55
       </div>
       <div id="msg-23" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@59e24c62&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@5379488c&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@744c16fb&quot;,
-  &quot;election&quot;: &quot;common.model.Election@31e5d408&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@7aaf0f0a&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@2620264e&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@126ae0ca&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@59e24c62&quot;,
+  &quot;election&quot;: &quot;common.model.Election@5379488c&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@744c16fb&quot;
 }
 </pre>
       </div>
@@ -2902,7 +2902,7 @@ classpath:be/features/election/electionOpen.feature:55
       <div id="msg-27" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1934648584,&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;-5: access denied: sender is not the organizer of the channel\nhelection.(*Handler).verifySenderElection\n\telection.go:330\nhelection.(*Handler).handleElectionOpen\n\telection.go:204\nhelection.(*Handler).Handle\n\telection.go:114\nhmessage.(*Handler).Handle\n\tmessage.go:65\nhpublish.(*Handler).Handle\n\tpublish.go:66\nhquery.(*Handler).Handle\n\tquery.go:43\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:283\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-10355163,&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;-5: access denied: sender is not the organizer of the channel\nhelection.(*Handler).verifySenderElection\n\telection.go:330\nhelection.(*Handler).handleElectionOpen\n\telection.go:204\nhelection.(*Handler).Handle\n\telection.go:114\nhmessage.(*Handler).Handle\n\tmessage.go:65\nhpublish.(*Handler).Handle\n\tpublish.go:66\nhquery.(*Handler).Handle\n\tquery.go:43\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:283\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
@@ -2927,11 +2927,11 @@ classpath:be/features/election/electionOpen.feature:94</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-28" class="collapse collapsable-details">
-        <pre>04:14:52.169 classpath:be/features/election/electionOpen.feature:94
+        <pre>04:14:45.405 classpath:be/features/election/electionOpen.feature:94
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1934648584,&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;-5: access denied: sender is not the organizer of the channel\nhelection.(*Handler).verifySenderElection\n\telection.go:330\nhelection.(*Handler).handleElectionOpen\n\telection.go:204\nhelection.(*Handler).Handle\n\telection.go:114\nhmessage.(*Handler).Handle\n\tmessage.go:65\nhpublish.(*Handler).Handle\n\tpublish.go:66\nhquery.(*Handler).Handle\n\tquery.go:43\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:283\n&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-10355163,&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;-5: access denied: sender is not the organizer of the channel\nhelection.(*Handler).verifySenderElection\n\telection.go:330\nhelection.(*Handler).handleElectionOpen\n\telection.go:204\nhelection.(*Handler).Handle\n\telection.go:114\nhmessage.(*Handler).Handle\n\tmessage.go:65\nhpublish.(*Handler).Handle\n\tpublish.go:66\nhquery.(*Handler).Handle\n\tquery.go:43\nhjsonrpc.(*Handler).Handle\n\tjsonrpc.go:49\nhub.(*Hub).runMessageReceiver\n\thub.go:283\n&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
@@ -3000,7 +3000,7 @@ classpath:be/features/election/electionOpen.feature:94
 </div>
 
 
-  <span class="lead-duration duration">5.376</span>
+  <span class="lead-duration duration">5.368</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-29">
@@ -3097,7 +3097,7 @@ classpath:be/features/election/electionOpen.feature:94
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">5.259</span>
+  <span class="lead-duration duration">5.260</span>
 
 </div>
 
@@ -3151,7 +3151,7 @@ classpath:be/features/election/electionOpen.feature:94
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -3205,7 +3205,7 @@ classpath:be/features/election/electionOpen.feature:94
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -3340,7 +3340,7 @@ classpath:be/features/election/electionOpen.feature:94
   <span class="keyword indention">*</span>
   <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.107</span>
+  <span class="lead-duration duration">0.098</span>
 
 </div>
 
@@ -3386,11 +3386,11 @@ classpath:be/features/election/electionOpen.feature:94
       </div>
       <div id="msg-31" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@638b05fb&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@77e42cbf&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@68bef3df&quot;,
-  &quot;election&quot;: &quot;common.model.Election@6aeb769d&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@51f412e6&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@31e5d408&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@7aaf0f0a&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@638b05fb&quot;,
+  &quot;election&quot;: &quot;common.model.Election@77e42cbf&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@68bef3df&quot;
 }
 </pre>
       </div>
@@ -3452,7 +3452,7 @@ classpath:be/features/election/electionOpen.feature:94
 </div>
 
 
-  <span class="lead-duration duration">5.004</span>
+  <span class="lead-duration duration">5.003</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-32">
@@ -3538,7 +3538,7 @@ classpath:be/features/election/electionOpen.feature:94
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidElectionOpen, election.channel)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -3565,7 +3565,7 @@ classpath:be/features/election/electionOpen.feature:94
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidElectionOpen)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -3657,7 +3657,7 @@ classpath:be/features/election/electionOpen.feature:94
 </div>
 
 
-  <span class="lead-duration duration">5.372</span>
+  <span class="lead-duration duration">5.370</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-35">
@@ -3997,7 +3997,7 @@ classpath:be/features/election/electionOpen.feature:94
   <span class="keyword indention">*</span>
   <span class="name">call read(setupElectionScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">0.105</span>
+  <span class="lead-duration duration">0.103</span>
 
 </div>
 
@@ -4043,11 +4043,11 @@ classpath:be/features/election/electionOpen.feature:94
       </div>
       <div id="msg-37" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@7234db3&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@189c6683&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@2972b493&quot;,
-  &quot;election&quot;: &quot;common.model.Election@58e0f079&quot;,
-  &quot;question&quot;: &quot;common.model.ElectionQuestion@45b37003&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@6aeb769d&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@51f412e6&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@7234db3&quot;,
+  &quot;election&quot;: &quot;common.model.Election@189c6683&quot;,
+  &quot;question&quot;: &quot;common.model.ElectionQuestion@2972b493&quot;
 }
 </pre>
       </div>
